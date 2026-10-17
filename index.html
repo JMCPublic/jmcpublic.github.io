@@ -16,6 +16,13 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
 .kick{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--cu);margin:0 0 6px}
 h1{font-family:Fraunces,Georgia,serif;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1;font-size:clamp(36px,6vw,56px)}
 .lead{max-width:470px;margin:0;color:var(--muted);font-size:15px;line-height:1.5}
+.hr{display:flex;flex-direction:column;gap:10px;width:min(100%,460px)}
+.mbb{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;background:var(--ink);color:#fff;text-decoration:none;border-radius:14px;padding:10px 14px}
+.mbb .mbk{grid-column:1;grid-row:1/3;font:700 10px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e0a77f;writing-mode:vertical-rl;transform:rotate(180deg)}
+.mbb b{font:800 19px Fraunces,Georgia,serif;grid-column:2}
+.mbb .mbs{grid-column:2;font-size:12.5px;color:#d9d3c8}
+.mbb .mba{grid-column:3;grid-row:1/3;background:var(--accent);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px}
+.mbb:hover{background:#2a251f}
 .lead b{color:var(--ink);font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .g{position:relative;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px 16px 14px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s,box-shadow .15s}
@@ -50,10 +57,10 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-al
 <div class="wrap">
 <header>
  <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1></div>
- <p class="lead">Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. <b>Each game takes a few minutes</b>, works on phone or computer, and shows its sources. Play against the clock or take your time.</p>
+ <div class="hr"><a class="mbb" href="https://jmcpublic.github.io/natural-wonders-masterbrain/"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">All ten games in one, then see your strengths</span><span class="mba">Play →</span></a></div>
 </header>
 <main class="grid" id="grid"></main>
-<footer>Figures in every game come from named public sources, listed on each game's Sources page.<br>Free to play. No sign-up.</footer>
+<footer>Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. Each game takes a few minutes and works on phone or computer.<br>Figures in every game come from named public sources, listed on each game's Sources page. Free to play. No sign-up.</footer>
 </div>
 <script>
 const B='https://jmcpublic.github.io/natural-wonders-';
