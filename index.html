@@ -80,7 +80,7 @@ const GAMES=[
 {n:'River Cities',slug:'river-cities',ic:'cities',t:'A river winds through a country. Which of ten cities sit on its banks?'},
 {n:'Where is Bigger?',slug:'where-is-bigger',ic:'bigger',t:'Two countries side by side. Which covers more land? Maps have been fooling you for years.'},
 {n:'Which of Five?',slug:'which-of-five',ic:'five',t:'One country to beat and five challengers. Tick every one that’s bigger, then see them all to scale.'},
-{n:'Forests',ic:'forests',soon:1,t:'The great forests of the world, from rainforest to taiga. Coming soon.'}];
+{n:'Forests',slug:'forests',ic:'forests',t:'From the Amazon to Sherwood. Rank the world’s forests by area, or name the one marked on the map.'}];
 document.getElementById('grid').innerHTML=GAMES.map((g,i)=>{
  const inner=`<div class="top"><span class="plate">${i+1}</span><svg class="ic" viewBox="0 0 84 44" aria-hidden="true">${I[g.ic]}</svg></div><h2>${g.n}</h2><p>${g.t}</p><span class="play">${g.soon?'Coming soon':'Play →'}</span>`;
  return g.soon?`<div class="g soon">${inner}</div>`:`<a class="g" href="${B+g.slug}/">${inner}</a>`}).join('');
