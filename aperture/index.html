@@ -730,10 +730,10 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v10';
+document.documentElement.dataset.version='desktop v11';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
-const BUG_CFG={projectId:'',apiKey:'',collection:'aperture_bugs'};
+const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
 (()=>{const $=id=>document.getElementById(id);
 const wrap=$('bugForm'),text=$('bugText'),meta=$('bugMeta'),msg=$('bugMsg'),send=$('bugSend');
 const errors=[];addEventListener('error',e=>{errors.push(String(e.message||e.error||'error').slice(0,200));if(errors.length>3)errors.shift()});
