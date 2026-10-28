@@ -716,9 +716,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.hidden=true;n
 const setHH=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');
 setHH();addEventListener('resize',setHH);
 const fb=$('feedback');let ft;
-new MutationObserver(()=>{if(!fb.textContent){fb.classList.remove('show');return}
-  if(!fb.classList.contains('show'))fb.classList.add('show');clearTimeout(ft);ft=setTimeout(()=>fb.classList.remove('show'),3200)})
-  .observe(fb,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class']});})();
+let lastMsg='';
+new MutationObserver(()=>{const t=fb.textContent;
+  if(!t){lastMsg='';if(fb.classList.contains('show'))fb.classList.remove('show');return}
+  if(t===lastMsg&&fb.classList.contains('show'))return;
+  lastMsg=t;if(!fb.classList.contains('show'))fb.classList.add('show');
+  clearTimeout(ft);ft=setTimeout(()=>{if(fb.classList.contains('show'))fb.classList.remove('show')},3200)})
+  .observe(fb,{childList:true,characterData:true,subtree:true});
+// feedback() resets the class, so put 'show' back after it runs
+const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
+Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 </body>
 </html>
