@@ -165,6 +165,23 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   .phones::-webkit-scrollbar{display:none}
   .phone{--w:min(calc(100cqw - 24px),calc(100cqh * .58));scroll-snap-align:center}
 }
+/* bug report */
+.bugbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--frame,#b9c0cb);background:var(--sheet,#fff);color:var(--faint);display:grid;place-items:center;flex:none}
+.bugbtn:hover{color:var(--blue);border-color:var(--blue)}
+.bugbtn svg{width:15px;height:15px}
+.bugwrap{position:fixed;inset:0;background:rgba(241,243,247,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;z-index:40;padding:16px}
+.bugcard{background:#fff;border:1.5px solid var(--frame,#b9c0cb);border-radius:20px;padding:18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:10px;box-shadow:0 24px 48px -24px rgba(22,24,29,.3)}
+.bugcard h2{font-family:var(--display);font-size:18px;margin:0}
+.bugcard p{margin:0;font-size:12.5px;color:var(--soft)}
+.bugcard textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:15px;line-height:1.4;padding:10px 12px;border-radius:12px;border:1px solid var(--frame,#b9c0cb);background:#fff;color:var(--ink)}
+.bugcard textarea:focus{outline:none;border-color:var(--blue)}
+.bugmeta{font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.4;word-break:break-word}
+.bugbtns{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.bugbtns .msg{flex:1;font-size:12.5px;color:var(--soft)}
+.bugbtns .msg.ok{color:var(--good)}.bugbtns .msg.bad{color:var(--bad)}
+.bugsend{background:var(--ink);color:#fff;border-radius:999px;padding:8px 18px;font-size:13.5px}
+.bugsend:disabled{opacity:.4}
+.bugcancel{color:var(--soft);padding:8px 10px;font-size:13.5px}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
 </style>
 </head>
@@ -180,7 +197,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="stat"><span class="label">Round</span><b id="roundNum">1/5</b></div>
     <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
     <div class="stat"><span class="label">Total</span><b id="totalTime">0:00</b></div>
-    <button class="helpbtn" id="helpBtn" aria-label="How to play">?</button>
+    <button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn" aria-label="How to play">?</button>
   </div>
 </header>
 <a class="tophone" href="https://jmcpublic.github.io/aperture/mobile/">On a phone? Play the mobile version →</a>
@@ -233,6 +250,15 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   </section>
 </main>
 
+<div class="bugwrap" id="bugForm" hidden>
+  <form class="bugcard" id="bugCard" role="dialog" aria-label="Report a problem">
+    <h2>Report a problem</h2>
+    <p>Tell us what went wrong. Your phone or computer type and where you were in the game are added for you.</p>
+    <textarea id="bugText" maxlength="1500" placeholder="e.g. After round 1 the picture didn't load"></textarea>
+    <div class="bugmeta" id="bugMeta"></div>
+    <div class="bugbtns"><span class="msg" id="bugMsg"></span><button type="button" class="bugcancel" id="bugCancel">Cancel</button><button type="submit" class="bugsend" id="bugSend">Send</button></div>
+  </form>
+</div>
 <div class="help" id="help" hidden>
   <div class="helpcard" role="dialog" aria-label="How to play">
     <h2>How to play</h2>
@@ -693,6 +719,7 @@ function finish(){
 }
 
 startGame('daily');
+window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elapsed||0),running:!!S.running,ended:!!S.ended,helps:S.helps||0});
 })();
 </script>
 <script>
@@ -701,6 +728,49 @@ document.getElementById('helpBtn').onclick=()=>{h.hidden=false};
 document.getElementById('helpClose').onclick=()=>{h.hidden=true};
 h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
+</script>
+<script>
+document.documentElement.dataset.version='desktop v10';
+/* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
+   Fill in your project's details below. Until then the form offers to copy the report instead. */
+const BUG_CFG={projectId:'',apiKey:'',collection:'aperture_bugs'};
+(()=>{const $=id=>document.getElementById(id);
+const wrap=$('bugForm'),text=$('bugText'),meta=$('bugMeta'),msg=$('bugMsg'),send=$('bugSend');
+const errors=[];addEventListener('error',e=>{errors.push(String(e.message||e.error||'error').slice(0,200));if(errors.length>3)errors.shift()});
+addEventListener('unhandledrejection',e=>{errors.push(String(e.reason).slice(0,200));if(errors.length>3)errors.shift()});
+function info(){
+  let g={};try{g=window.apertureInfo?window.apertureInfo():{}}catch(e){}
+  return{version:document.documentElement.dataset.version||'',page:location.href.split('#')[0],
+    device:navigator.userAgent,screen:`${screen.width}x${screen.height} @${devicePixelRatio}x · window ${innerWidth}x${innerHeight}`,
+    game:JSON.stringify(g),errors:errors.join(' | ')}}
+function open(){const i=info();meta.textContent=`${i.version} · ${i.screen} · ${JSON.parse(i.game||'{}').set||''} round ${JSON.parse(i.game||'{}').round||'?'}`;
+  msg.textContent='';msg.className='msg';send.disabled=false;send.textContent='Send';send.onclick=null;wrap.hidden=false;setTimeout(()=>text.focus(),50)}
+document.querySelectorAll('[data-bug]').forEach(b=>b.addEventListener('click',open));
+$('bugCancel').onclick=()=>{wrap.hidden=true};
+wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')wrap.hidden=true});
+text.addEventListener('keydown',e=>e.stopPropagation());
+$('bugCard').addEventListener('submit',async e=>{e.preventDefault();
+  const t=text.value.trim();if(!t){msg.textContent='Write a few words first.';msg.className='msg bad';return}
+  const i=info();const report={message:t,...i,created:new Date().toISOString()};
+  if(!BUG_CFG.projectId||!BUG_CFG.apiKey){copyFallback(report);return}
+  send.disabled=true;send.textContent='Sending…';
+  try{
+    const fields={};for(const[k,v]of Object.entries(report))fields[k]=k==='created'?{timestampValue:v}:{stringValue:String(v).slice(0,2000)};
+    const r=await fetch(`https://firestore.googleapis.com/v1/projects/${BUG_CFG.projectId}/databases/(default)/documents/${BUG_CFG.collection}?key=${BUG_CFG.apiKey}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
+    if(!r.ok)throw new Error(r.status);
+    msg.textContent='Thanks, report sent.';msg.className='msg ok';text.value='';send.textContent='Sent';
+    setTimeout(()=>{wrap.hidden=true},1600);
+  }catch(err){copyFallback(report,true)}
+});
+function copyFallback(report,failed){
+  const s=`Aperture problem report\n${report.message}\n\n${report.version} · ${report.screen}\n${report.device}\nGame: ${report.game}\nErrors: ${report.errors||'none'}`;
+  send.disabled=false;send.textContent='Copy report';
+  msg.textContent=failed?"Couldn't send. Copy it and message it instead.":'Copy the report and message it to Jonathan.';msg.className='msg bad';
+  send.onclick=ev=>{ev.preventDefault();try{navigator.clipboard.writeText(s).then(()=>{msg.textContent='Copied.';msg.className='msg ok'},()=>{text.value=s;text.select()})}catch(x){text.value=s;text.select()}};
+}
+})();
 </script>
 </body>
 </html>
