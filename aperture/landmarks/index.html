@@ -58,8 +58,8 @@ h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blu
 @media (max-width:760px){.tophone{display:block}}
 
 /* stats mini phone */
-.statcard{width:var(--mini);height:calc(var(--mini) / .58);flex:none;align-self:center;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;
-  padding:22px 12px 12px;display:flex;flex-direction:column;gap:6px;position:relative;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);font-variant-numeric:tabular-nums}
+.statcard{width:var(--mini);min-height:calc(var(--mini) / .58);height:auto;box-sizing:border-box;overflow:hidden;flex:none;align-self:center;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;
+  padding:22px 12px 16px;display:flex;flex-direction:column;gap:5px;position:relative;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);font-variant-numeric:tabular-nums}
 .statcard::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1)}
 .statcard .sv{display:flex;align-items:baseline;gap:5px;line-height:1.2}
 .statcard .sv.vip small{color:var(--blue);font-weight:500}
@@ -776,7 +776,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v4';
+document.documentElement.dataset.version='landmarks desktop v5';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

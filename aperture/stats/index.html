@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aperture Stats</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Aperture's light look. A summary row per game, then every country in a ranked table, side by side on wide screens. */
+:root{
+  --bg:#f1f3f7; --sheet:#ffffff; --line:#e3e6eb; --frame:#b9c0cb;
+  --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab; --blue:#2b50e0; --blue-wash:#e6edff;
+  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+h1{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.03em;margin:0;display:flex;align-items:center;gap:.3em}
+h1 .o{display:inline-block;width:.6em;height:.6em;border:.14em solid var(--blue);border-radius:50%}
+.sub{margin:4px 0 0;color:var(--soft);font-size:13.5px}
+button{font:inherit;border:1.5px solid #7d8592;background:var(--sheet);border-radius:999px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink)}
+button:hover{border-color:var(--blue);color:var(--blue)}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.game{background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.game h2{font-family:var(--display);font-size:19px;margin:0}
+.game h2 a{color:inherit;text-decoration:none}.game h2 a:hover{color:var(--blue)}
+.nums{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.num{display:flex;flex-direction:column;gap:1px}
+.num b{font-family:var(--mono);font-weight:500;font-size:20px;font-variant-numeric:tabular-nums}
+.num span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.num.vip span{color:var(--blue)}
+.num.test b{color:var(--faint)}
+@media (max-width:420px){.nums{grid-template-columns:repeat(3,minmax(0,1fr))}}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:0 0 6px;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+td.rank{font-family:var(--mono);color:var(--blue);width:28px}
+td.n{font-family:var(--mono)}
+td.share{width:34%}
+.bar{height:6px;border-radius:3px;background:var(--blue-wash);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:3px}
+.empty{color:var(--soft);font-size:14px;margin:0}
+.note{font-size:12.5px;color:var(--soft);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span class="o" aria-hidden="true"></span>Aperture stats</h1>
+      <p class="sub" id="updated">Loading…</p>
+    </div>
+    <button id="refresh">Refresh</button>
+  </header>
+  <div class="games" id="games"></div>
+  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Claude tests are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
+</div>
+<script>
+(()=>{
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aperture Landmarks',url:'../landmarks/'}];
+let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
+const nameOf=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(names?names.of(c):c);
+const fmt=n=>n.toLocaleString('en-GB');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(id){const r=await fetch(`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/stats/${id}?key=${K}`,{cache:'no-store'});
+  if(r.status===404)return{};if(!r.ok)throw new Error(r.status);return (await r.json()).fields||{}}
+const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);
+async function render(){
+  const box=document.getElementById('games');
+  try{
+    const data=await Promise.all(GAMES.map(g=>load(g.id)));
+    box.innerHTML=GAMES.map((g,i)=>{const f=data[i];
+      const c=Object.entries((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0])));
+      const total=c.reduce((s,x)=>s+x[1],0)||1;
+      const rows=c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('');
+      return `<section class="game"><h2><a href="${g.url}?desktop=1">${g.name}</a></h2>
+        <div class="nums">
+          <div class="num"><b>${fmt(num(f.visits))}</b><span>Visits</span></div>
+          <div class="num"><b>${fmt(num(f.uniques))}</b><span>Unique</span></div>
+          <div class="num vip"><b>${fmt(num(f.vip))}</b><span>VIP</span></div>
+          <div class="num"><b>${fmt(num(f.games))}</b><span>Games</span></div>
+          <div class="num test"><b>${fmt(num(f.tests))}</b><span>Tests</span></div>
+        </div>
+        ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
+      </section>`}).join('');
+    document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+c_count(data)+' countries in total';
+  }catch(e){document.getElementById('updated').textContent="Couldn't load the stats. Check your connection and press Refresh."}
+}
+function c_count(data){const s=new Set();data.forEach(f=>Object.keys((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).forEach(k=>s.add(k)));return s.size}
+document.getElementById('refresh').onclick=render;
+render();
+})();
+</script>
+</body>
+</html>
