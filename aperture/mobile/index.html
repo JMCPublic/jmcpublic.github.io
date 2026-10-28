@@ -36,7 +36,7 @@ h1 .ver{font-family:var(--mono);font-weight:400;font-size:.5em;color:var(--blue)
 h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blue);border-radius:50%;margin-right:.28em}
 .right{display:flex;align-items:center;gap:10px}
 #time{font-family:var(--mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
-.helpbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--frame);background:var(--sheet);font-family:var(--mono);font-size:13px;color:var(--soft)}
+.helpbtn{width:auto;height:30px;padding:0 12px;border-radius:999px;white-space:nowrap;border:1px solid var(--frame);background:var(--sheet);font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--soft)}
 .segs{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
 .seg{height:3px;background:rgba(22,24,29,.1);border-radius:3px;overflow:hidden}
 .seg span{display:block;height:100%;width:0;background:var(--blue)}
@@ -175,6 +175,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .bugbtn:hover{background:#fdecea}
 .soundbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--frame,#b9c0cb);background:var(--sheet,#fff);color:var(--soft);display:grid;place-items:center;flex:none}
 .soundbtn svg{width:15px;height:15px}
+@media (max-width:360px){.right{gap:6px}.soundbtn,.bugbtn{width:27px;height:27px}.helpbtn{height:27px;padding:0 8px;font-size:11.5px}h1{font-size:18px}#time{font-size:17px}}
 .soundbtn .x{display:none}
 .soundbtn[aria-pressed="false"] .x{display:inline}
 .soundbtn[aria-pressed="false"] .w1,.soundbtn[aria-pressed="false"] .w2{display:none}
@@ -202,7 +203,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 <header>
   <div class="bar">
     <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">2</sup></h1>
-    <div class="right"><span id="time">2:00</span><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound" title="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn" aria-label="How to play" title="How to play">?</button></div>
+    <div class="right"><span id="time">2:00</span><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound" title="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn" aria-label="Instructions: how to play" title="How to play">Instructions</button></div>
   </div>
   <div class="segs" id="segs"></div>
   <div class="meta">
@@ -280,7 +281,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
       <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel dropped into your answer.</div>
       <div><b>Answer</b>Tap the right word in the list. A wrong answer adds 15 seconds. Not solved in 2 minutes counts as 2:00 plus 30 seconds.</div>
     </div>
-    <a href="https://jmcpublic.github.io/aperture/">Playing on a computer? Use the desktop version</a>
+    <a href="https://jmcpublic.github.io/aperture/?desktop=1">Playing on a computer? Use the desktop version</a>
     <button class="go" id="helpClose">Got it</button>
   </div>
 </div>
@@ -458,7 +459,29 @@ const SFX={
   wrong:()=>tone(196,.25,'sawtooth',.035),
   timeup:()=>{tone(392,.2,'triangle',.06);tone(262,.35,'triangle',.06,.18)}
 };
-function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
+/* ---------- music: lo-fi under each round, fades out for the last 10 seconds ---------- */
+const MUSIC_VOL=.5;let mus=null,mNoise=null;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function menv(g,t,a,p,d){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(p,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d)}
+function mvoice(out,t,m,type,dur,v,cut){const o=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();o.type=type;o.frequency.value=mtof(m);f.type='lowpass';f.frequency.value=cut;menv(g,t,.008,v,dur);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+dur+.06)}
+function mkick(out,t,v){const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(100,t);o.frequency.exponentialRampToValueAtTime(40,t+.15);menv(g,t,.004,v,.22);o.connect(g).connect(out);o.start(t);o.stop(t+.3)}
+function mnoise(out,t,v,dur,hp,lp){if(!mNoise){mNoise=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate);const d=mNoise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const n=AC.createBufferSource(),h=AC.createBiquadFilter(),l=AC.createBiquadFilter(),g=AC.createGain();n.buffer=mNoise;h.type='highpass';h.frequency.value=hp;l.type='lowpass';l.frequency.value=lp;menv(g,t,.002,v,dur);n.connect(h).connect(l).connect(g).connect(out);n.start(t);n.stop(t+dur+.05)}
+function lofiStep(out,st,t,l,spb){
+  const ch=[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]][Math.floor(st/16)%4];
+  if(st%16===0||st%16===10)ch.forEach(m=>{mvoice(out,t,m,'sine',spb*5,.035,2500);mvoice(out,t,m+12,'triangle',spb*2,.01,2000)});
+  if(st%16===0||st%16===7||st%16===10)mkick(out,t,.4);
+  if(st%8===4)mnoise(out,t,.06,.12,1200,5000);
+  if(l>=1&&st%2===0)mnoise(out,t,.018,.03,7000,16000);
+  if(l>=2&&st%4===2)mvoice(out,t,[72,74,76,79,81][(st/4|0)%5],'triangle',.3,.03,4000)}
+function musicLevel(){const st=Math.floor((S.elapsed||0)/STAGE);return st<2?0:st<4?1:2}
+function musicStart(){if(!soundOn||mus)return;const a=ac();if(!a)return;const out=a.createGain();out.gain.setValueAtTime(.0001,a.currentTime);out.gain.exponentialRampToValueAtTime(MUSIC_VOL,a.currentTime+1.2);out.connect(a.destination);
+  mus={out,step:0,next:a.currentTime+.1};
+  mus.timer=setInterval(()=>{if(!mus)return;const l=musicLevel(),spb=60/[78,84,90][l]/4;while(mus.next<AC.currentTime+.15){lofiStep(mus.out,mus.step,mus.next,l,spb);mus.next+=spb;mus.step++}},25)}
+function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
+  try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
+  setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
+function setSound(on){soundOn=on;try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
   const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.title=on?'Sound on':'Sound off'}if(on)SFX.place()}
 setSound(soundOn);
 $('soundBtn').onclick=()=>setSound(!soundOn);
@@ -686,7 +709,7 @@ function loop(now){
   S.elapsed+=Math.min(.25,(now-last)/1000);last=now;
   const stage=Math.floor(S.elapsed/STAGE);
   while(S.stages<stage&&S.stages<STAGES-1){S.stages++;addViewpoint();revealTiles(8);tick(`${S.stages*STAGE} seconds gone. A free viewpoint is open and the negative filled in.`)}
-  const leftS=Math.ceil(LIMIT-S.elapsed);if(leftS<=10&&leftS!==S.lastTick&&leftS>0){S.lastTick=leftS;SFX.tick()}
+  const leftS=Math.ceil(LIMIT-S.elapsed);if(leftS<=10&&mus)musicStop(1.5);if(leftS<=10&&leftS!==S.lastTick&&leftS>0){S.lastTick=leftS;SFX.tick()}
   if(S.elapsed>=LIMIT){S.elapsed=LIMIT;endRound(false);return}
   updateHUD();raf=requestAnimationFrame(loop);
 }
@@ -697,6 +720,7 @@ const overlay=$('overlay');
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 let autoNext=0,beeps=[];const BEAT=3000;
 function startGame(mode){
+  musicStop(.2);
   clearTimeout(autoNext);
   cancelAnimationFrame(raf);
   const key=todayKey();
@@ -728,9 +752,10 @@ function newRound(){
   document.body.classList.add('waiting');
   updateHUD();
 }
-function startRound(){ac();overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;last=performance.now();
+function startRound(){ac();setTimeout(musicStart,150);overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;last=performance.now();
   tick('Clock running. A free viewpoint opens every 20 seconds.');renderSlots();updateHUD();raf=requestAnimationFrame(loop)}
 function endRound(win){
+  musicStop(.6);
   S.running=false;S.ended=true;S.won=win;cancelAnimationFrame(raf);
   const pen=S.pen+(win?0:MISS), time=(win?S.elapsed:LIMIT)+pen;
   G.total+=time;G.totalPen+=pen;
@@ -756,14 +781,17 @@ function finish(){
   const bestKey='aperture2-best-'+(G.mode==='daily'?G.key:'random');
   let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
   const isBest=!best||G.total<best;
+  const solved=G.results.filter(r=>r.win).length, dateTxt=G.mode==='daily'?G.label.replace('Daily · ',''):'random set';
+  const challenge=`🔍 Aperture · ${dateTxt}\nI spotted ${solved===ROUNDS?'all '+ROUNDS:solved+' of '+ROUNDS} hidden objects in ${fmt(G.total)} ⏱ (${G.totalPen?fmtPen(G.totalPen)+' in penalties':'no penalties'})\n${G.results.map(r=>r.win?'✓':'✗').join('')}\nBet you can't beat me 👀 jmcpublic.github.io/aperture`;
   const result=`Aperture 2 · ${G.label}\n${fmt(G.total)} (${fmtPen(G.totalPen)})\n`+G.results.map(r=>`${r.win?'✓':'✗'} ${fmt(r.time)} (${fmtPen(r.pen)})`).join('\n');
   overlay.innerHTML=`<span class="label">${G.label}</span><h3>${fmt(G.total)} <small>(${fmtPen(G.totalPen)})</small></h3>
     <ol>${G.results.map(r=>`<li>${r.win?'':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
     <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
-    <div class="btns"><button class="go" id="copyBtn">Copy result</button>
+    <div class="btns"><button class="go" id="copyBtn">Challenge a friend</button>
     ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Random set</button>':'<button class="go ghost" id="dailyBtn">Today\'s set</button><button class="go ghost" id="randBtn">Another</button>'}</div>`;
-  $('copyBtn').onclick=e=>{const b=e.currentTarget;
-    try{navigator.clipboard.writeText(result).then(()=>{b.textContent='Copied'},()=>{b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))})}
+  $('copyBtn').onclick=async e=>{const b=e.currentTarget;
+    if(navigator.share){try{await navigator.share({text:challenge});b.textContent='Sent';return}catch(err){if(err&&err.name==='AbortError')return}}
+    try{navigator.clipboard.writeText(challenge).then(()=>{b.textContent='Copied'},()=>{b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))})}
     catch(err){b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))}};
   $('randBtn').onclick=()=>startGame('random');
   if($('dailyBtn'))$('dailyBtn').onclick=()=>startGame('daily');
@@ -805,7 +833,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v8';
+document.documentElement.dataset.version='mobile v9';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
