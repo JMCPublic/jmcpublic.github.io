@@ -11,7 +11,7 @@
 /* Layout: one screen, no scrolling. A slim top bar, then three solid white phone cards: A the viewpoints and the help, B the negative and the answer, C the 56 words. On a phone the cards swipe sideways. Light only, by choice. */
 :root{
   --bg:#f1f3f7; --glass:#ffffff; --glass-edge:#e3e6eb; --tile:#ffffff;
-  --veil:#eceff3; --veil2:#e2e6ec; --line:#e3e6eb;
+  --veil:#eceff3; --veil2:#e2e6ec; --line:#e3e6eb; --frame:#b9c0cb;
   --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab;
   --blue:#2b50e0; --blue-wash:#e6edff; --good:#178a52; --bad:#cf3f33;
   --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
@@ -57,7 +57,7 @@ h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blu
 .phones{flex:1;min-height:0;container-type:size;display:flex;justify-content:center;align-items:center;gap:var(--gap)}
 .phone{--w:min(calc((100cqw - 2 * var(--gap)) / 3),calc(100cqh * .58));
   width:var(--w);height:calc(var(--w) / .58);flex:none;position:relative;
-  background:var(--glass);border:1px solid var(--glass-edge);border-radius:calc(var(--w) * .1);
+  background:var(--glass);border:1.5px solid var(--frame);border-radius:calc(var(--w) * .1);
   padding:calc(var(--w) * .085) calc(var(--w) * .05) calc(var(--w) * .05);
   display:flex;flex-direction:column;gap:10px;min-width:0;
   box-shadow:0 1px 2px rgba(22,24,29,.04),0 24px 48px -24px rgba(22,24,29,.22)}
@@ -128,12 +128,12 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 .sort button{font-size:10.5px;padding:3px 8px;border-radius:999px;color:var(--soft)}
 .sort button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(22,24,29,.08)}
 .words{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(14,minmax(0,1fr));gap:3px}
-.chip{min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0 3px;border-radius:8px;
-  background:var(--tile);border:1px solid var(--line);font-size:12px;line-height:1.15;color:var(--ink);overflow:hidden;
+.chip{min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 3px;border-radius:8px;
+  background:var(--tile);border:1px solid var(--line);font-size:13px;font-weight:500;line-height:1.1;color:#0f1115;overflow:hidden;
   transition:background .12s,border-color .12s,opacity .35s,transform .35s}
 .chip span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip b{font-family:var(--mono);font-weight:400;font-size:9.5px;color:var(--faint);letter-spacing:.03em}
-.chip.long span{font-size:11px;letter-spacing:-.01em}
+.chip b{font-family:var(--mono);font-weight:400;font-size:9px;line-height:1;color:var(--faint);letter-spacing:.03em}
+.chip.long span{font-size:11.5px;letter-spacing:-.01em}
 .chip:hover{background:var(--blue-wash);border-color:var(--blue)}
 .chip:hover b{color:var(--blue)}
 .chip.used{opacity:.3}
