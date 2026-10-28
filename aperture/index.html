@@ -18,7 +18,7 @@
   --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
   --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
-  --gap:28px;
+  --gap:28px; --mini:128px;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -51,15 +51,28 @@ h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blu
 .stat b{font-family:var(--mono);font-weight:500;font-size:17px;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
 .stat b small{font-size:11px;color:var(--faint);font-weight:400}
 #roundTime{color:var(--blue)}
-.helpbtn{width:auto;height:30px;padding:0 12px;border-radius:999px;white-space:nowrap;border:1px solid var(--glass-edge);background:var(--glass);font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.helpbtn{width:auto;height:30px;padding:0 12px;border-radius:999px;white-space:nowrap;border:1.5px solid #7d8592;background:var(--glass);font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .helpbtn:hover{border-color:var(--blue);color:var(--blue)}
 
 .tophone{display:none;text-align:center;font-size:13px;color:var(--blue);margin:-6px 0 10px;text-decoration:none;flex:none}
 @media (max-width:760px){.tophone{display:block}}
 
+/* stats mini phone */
+.statcard{width:var(--mini);height:calc(var(--mini) / .58);flex:none;align-self:center;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;
+  padding:22px 12px 12px;display:flex;flex-direction:column;gap:6px;position:relative;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);font-variant-numeric:tabular-nums}
+.statcard::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1)}
+.statcard .sv{display:flex;flex-direction:column;line-height:1.1}
+.statcard .sv b{font-family:var(--mono);font-weight:500;font-size:17px;color:var(--ink)}
+.statcard .sv small{font-size:10.5px;color:var(--soft)}
+.statcard ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--soft)}
+.statcard ol li{display:flex;justify-content:space-between;gap:4px}
+.statcard ol li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.statcard ol li b{font-family:var(--mono);font-weight:500;color:var(--ink)}
+.statcard .label{font-size:9.5px}
+
 /* three phones */
 .phones{flex:1;min-height:0;container-type:size;display:flex;justify-content:center;align-items:center;gap:var(--gap)}
-.phone{--w:min(calc((100cqw - 2 * var(--gap)) / 3),calc(100cqh * .58));
+.phone{--w:min(calc((100cqw - 3 * var(--gap) - var(--mini)) / 3),calc(100cqh * .58));
   width:var(--w);height:calc(var(--w) / .58);flex:none;position:relative;
   background:var(--glass);border:1.5px solid var(--frame);border-radius:calc(var(--w) * .1);
   padding:calc(var(--w) * .085) calc(var(--w) * .05) calc(var(--w) * .05);
@@ -173,15 +186,17 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   .phones{justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}
   .phones::-webkit-scrollbar{display:none}
   .phone{--w:min(calc(100cqw - 24px),calc(100cqh * .58));scroll-snap-align:center}
+  .statcard{display:none}
 }
 /* bug report */
 .bugbtn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bad);background:var(--sheet,#fff);color:var(--bad);display:grid;place-items:center;flex:none}
 .bugbtn:hover{background:#fdecea}
-.soundbtn{width:30px;height:30px;border-radius:50%;border:1px solid var(--frame,#b9c0cb);background:var(--sheet,#fff);color:var(--soft);display:grid;place-items:center;flex:none}
+.soundbtn{width:30px;height:30px;border-radius:50%;border:1.5px solid #7d8592;background:var(--sheet,#fff);color:var(--soft);display:grid;place-items:center;flex:none}
 .soundbtn svg{width:15px;height:15px}
 .soundbtn .x{display:none}
 .soundbtn[aria-pressed="false"] .x{display:inline}
 .soundbtn[aria-pressed="false"] .w1,.soundbtn[aria-pressed="false"] .w2{display:none}
+#musicBtn .x{display:none}#musicBtn[aria-pressed="false"] .x{display:inline}
 .soundbtn[aria-pressed="false"]{color:var(--faint)}
 .soundbtn:hover{color:var(--blue);border-color:var(--blue)}
 .bugbtn svg{width:15px;height:15px}
@@ -213,7 +228,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="stat"><span class="label">Round</span><b id="roundNum">1/5</b></div>
     <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
     <div class="stat"><span class="label">Total</span><b id="totalTime">0:00</b></div>
-    <button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound" title="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn" aria-label="Instructions: how to play" title="How to play">Instructions</button>
+    <button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
   </div>
 </header>
 <a class="tophone" href="https://jmcpublic.github.io/aperture/mobile/">On a phone? Play the mobile version →</a>
@@ -264,6 +279,14 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="cap"><h2><span>C</span>Words</h2><div class="capr"><span class="label" id="wordCount">56 words</span><div class="sort" role="group" aria-label="Order words"><button id="sortMix" aria-pressed="true">Mixed</button><button id="sortAZ" aria-pressed="false">A–Z</button></div></div></div>
     <div class="words" id="words"></div>
   </section>
+
+  <aside class="statcard" aria-label="Game stats">
+    <span class="label">Players</span>
+    <div class="sv"><b id="stVisits">—</b><small>visits</small></div>
+    <div class="sv"><b id="stGames">—</b><small>games played</small></div>
+    <span class="label">Top countries</span>
+    <ol id="stTop"><li><span>Loading…</span></li></ol>
+  </aside>
 </main>
 
 <div class="bugwrap" id="bugForm" hidden>
@@ -444,6 +467,7 @@ const CODES=(()=>{const words=[...new Set([...POOL,...OBJECTS.flatMap(o=>o.answe
 
 /* ---------- sound ---------- */
 let soundOn=true;try{soundOn=localStorage.getItem('aperture2-sound')!=='off'}catch(e){}
+let musicOn=true;try{musicOn=localStorage.getItem('aperture2-music')!=='off'}catch(e){}
 let AC=null;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
 function tone(f,dur,type,vol,when,slide){if(!soundOn)return;const a=ac();if(!a)return;const t=a.currentTime+(when||0);
@@ -479,14 +503,18 @@ function lofiStep(out,st,t,l,spb){
   if(l>=1&&st%2===0)mnoise(out,t,.018,.03,7000,16000);
   if(l>=2&&st%4===2)mvoice(out,t,[72,74,76,79,81][(st/4|0)%5],'triangle',.3,.03,4000)}
 function musicLevel(){const st=Math.floor((S.elapsed||0)/STAGE);return st<2?0:st<4?1:2}
-function musicStart(){if(!soundOn||mus)return;const a=ac();if(!a)return;const out=a.createGain();out.gain.setValueAtTime(.0001,a.currentTime);out.gain.exponentialRampToValueAtTime(MUSIC_VOL,a.currentTime+1.2);out.connect(a.destination);
+function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;const out=a.createGain();out.gain.setValueAtTime(.0001,a.currentTime);out.gain.exponentialRampToValueAtTime(MUSIC_VOL,a.currentTime+1.2);out.connect(a.destination);
   mus={out,step:0,next:a.currentTime+.1};
   mus.timer=setInterval(()=>{if(!mus)return;const l=musicLevel(),spb=60/[78,84,90][l]/4;while(mus.next<AC.currentTime+.15){lofiStep(mus.out,mus.step,mus.next,l,spb);mus.next+=spb;mus.step++}},25)}
 function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
   try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
   setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
-function setSound(on){soundOn=on;try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
-  const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.title=on?'Sound on':'Sound off'}if(on)SFX.place()}
+function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off')}
+  try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
+setMusic(musicOn);
+$('musicBtn').onclick=()=>setMusic(!musicOn);
+function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
+  const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Sound effects on':'Sound effects off')}if(on)SFX.place()}
 setSound(soundOn);
 $('soundBtn').onclick=()=>setSound(!soundOn);
 
@@ -776,6 +804,7 @@ function endRound(win){
   updateHUD();
 }
 function finish(){
+  try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
   const bestKey='aperture2-best-'+(G.mode==='daily'?G.key:'random');
   let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
   const isBest=!best||G.total<best;
@@ -805,7 +834,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v14';
+document.documentElement.dataset.version='desktop v15';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -845,6 +874,45 @@ function copyFallback(report,failed){
   msg.textContent=failed?"Couldn't send. Copy it and message it instead.":'Copy the report and message it to Jonathan.';msg.className='msg bad';
   send.onclick=ev=>{ev.preventDefault();try{navigator.clipboard.writeText(s).then(()=>{msg.textContent='Copied.';msg.className='msg ok'},()=>{text.value=s;text.select()})}catch(x){text.value=s;text.select()}};
 }
+})();
+</script>
+<script>
+/* Visitor stats: visits, finished games and top countries, kept in the same Firebase project as the bug reports.
+   Country is worked out from the device's time zone (and language as a fallback), so no outside service sees anyone's address. */
+(()=>{
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',GAME='objects';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
+const TZ={'Europe/London':'GB','Europe/Belfast':'GB','Europe/Dublin':'IE','Europe/Paris':'FR','Europe/Berlin':'DE','Europe/Madrid':'ES','Europe/Rome':'IT','Europe/Amsterdam':'NL','Europe/Brussels':'BE','Europe/Lisbon':'PT','Europe/Zurich':'CH','Europe/Vienna':'AT','Europe/Stockholm':'SE','Europe/Oslo':'NO','Europe/Copenhagen':'DK','Europe/Helsinki':'FI','Europe/Warsaw':'PL','Europe/Prague':'CZ','Europe/Budapest':'HU','Europe/Athens':'GR','Europe/Istanbul':'TR','Europe/Kiev':'UA','Europe/Kyiv':'UA','Europe/Moscow':'RU','Europe/Bucharest':'RO','Europe/Sofia':'BG','Europe/Belgrade':'RS','Europe/Zagreb':'HR','Europe/Luxembourg':'LU','Europe/Malta':'MT','Atlantic/Reykjavik':'IS','Europe/Gibraltar':'GI','Europe/Jersey':'JE','Europe/Guernsey':'GG','Europe/Isle_of_Man':'IM',
+'America/New_York':'US','America/Chicago':'US','America/Denver':'US','America/Phoenix':'US','America/Los_Angeles':'US','America/Anchorage':'US','Pacific/Honolulu':'US','America/Detroit':'US','America/Toronto':'CA','America/Vancouver':'CA','America/Edmonton':'CA','America/Winnipeg':'CA','America/Halifax':'CA','America/St_Johns':'CA','America/Mexico_City':'MX','America/Sao_Paulo':'BR','America/Argentina/Buenos_Aires':'AR','America/Santiago':'CL','America/Bogota':'CO','America/Lima':'PE','America/Caracas':'VE','America/Jamaica':'JM','America/Barbados':'BB','America/Puerto_Rico':'PR',
+'Australia/Sydney':'AU','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Australia/Hobart':'AU','Australia/Darwin':'AU','Australia/Canberra':'AU','Pacific/Auckland':'NZ','Pacific/Fiji':'FJ',
+'Asia/Tokyo':'JP','Asia/Seoul':'KR','Asia/Shanghai':'CN','Asia/Hong_Kong':'HK','Asia/Taipei':'TW','Asia/Singapore':'SG','Asia/Kuala_Lumpur':'MY','Asia/Bangkok':'TH','Asia/Jakarta':'ID','Asia/Manila':'PH','Asia/Ho_Chi_Minh':'VN','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Karachi':'PK','Asia/Dhaka':'BD','Asia/Colombo':'LK','Asia/Kathmandu':'NP','Asia/Dubai':'AE','Asia/Qatar':'QA','Asia/Riyadh':'SA','Asia/Jerusalem':'IL','Asia/Tehran':'IR','Asia/Baghdad':'IQ',
+'Africa/Johannesburg':'ZA','Africa/Cairo':'EG','Africa/Lagos':'NG','Africa/Nairobi':'KE','Africa/Casablanca':'MA','Africa/Accra':'GH','Africa/Harare':'ZW','Africa/Lusaka':'ZM','Africa/Kampala':'UG','Africa/Dar_es_Salaam':'TZ','Indian/Mauritius':'MU'};
+function country(){let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  if(TZ[tz])return TZ[tz];
+  const langs=navigator.languages||[navigator.language||''];for(const l of langs){const m=/-([A-Z]{2})$/i.exec(l||'');if(m)return m[1].toUpperCase()}
+  return 'XX'}
+let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
+const nameOf=c=>c==='XX'?'Elsewhere':c==='GB'?'UK':c==='US'?'USA':(names?names.of(c):c);
+async function bump(fields){
+  const doc=`projects/${P}/databases/(default)/documents/stats/${GAME}`;
+  try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({writes:[{transform:{document:doc,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
+async function read(){try{const r=await fetch(`${BASE}/stats/${GAME}?key=${K}`);if(!r.ok)return null;const f=(await r.json()).fields||{};
+  const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);const c=(f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{};
+  return{visits:num(f.visits),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]).slice(0,3)}}catch(e){return null}}
+const fmtN=n=>n.toLocaleString('en-GB');
+function show(s){if(!s)return;
+  const v=document.getElementById('stVisits'),g=document.getElementById('stGames'),t=document.getElementById('stTop'),strip=document.getElementById('statStrip');
+  if(v)v.textContent=fmtN(s.visits);if(g)g.textContent=fmtN(s.games);
+  if(t)t.innerHTML=s.top.length?s.top.map(([c,n])=>`<li><span>${nameOf(c)}</span><b>${fmtN(n)}</b></li>`).join(''):'<li><span>No visits yet</span></li>';
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.games)} games played${s.top.length?' · Top: '+s.top.map(([c])=>nameOf(c)).join(', '):''}`}
+(async()=>{
+  let counted=false;try{counted=sessionStorage.getItem('ap-visit-'+GAME)==='1'}catch(e){}
+  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1')}catch(e){}await bump({visits:1,['countries.'+country()]:1})}
+  show(await read());
+})();
+window.apertureGameDone=async()=>{if(LIVE)await bump({games:1});show(await read())};
 })();
 </script>
 </body>
