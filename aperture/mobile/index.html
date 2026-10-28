@@ -144,6 +144,24 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .rules b{display:block;color:var(--ink);font-weight:500}
 .rules code{font-family:var(--mono);color:var(--blue)}
 .helpcard a{color:var(--blue);font-size:13px}
+/* short screens (small phones, in-app browsers): the page scrolls, the clock and answer row stay pinned */
+@media (max-height:700px){
+  html,body{height:auto}
+  body{overflow:visible;min-height:100%;padding-top:0}
+  header{position:sticky;top:0;z-index:6;background:var(--bg);padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:4px}
+  .viewer{width:100%}
+  .tray{position:sticky;top:var(--hh,84px);z-index:5;background:var(--bg);padding-block:4px;box-shadow:0 6px 8px -8px rgba(22,24,29,.25)}
+  .wordsbox{flex:none}
+  .words{overflow:visible;flex:none}
+  #feedback{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+}
+@media (max-width:340px){
+  h1{font-size:19px}
+  #time{font-size:18px}
+  .meta{font-size:11px}
+  .zb{width:30px;height:30px;font-size:14px}
+  .negthumb{width:25%}
+}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
 </style>
 </head>
@@ -695,6 +713,8 @@ document.querySelectorAll('.ask,.vowel').forEach(b=>b.addEventListener('click',(
 $('negThumb').onclick=()=>{$('cBig').getContext('2d').drawImage($('cB'),0,0);neg.hidden=false};
 neg.onclick=()=>{neg.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.hidden=true;neg.hidden=true}});
+const setHH=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');
+setHH();addEventListener('resize',setHH);
 const fb=$('feedback');let ft;
 new MutationObserver(()=>{if(!fb.textContent){fb.classList.remove('show');return}
   if(!fb.classList.contains('show'))fb.classList.add('show');clearTimeout(ft);ft=setTimeout(()=>fb.classList.remove('show'),3200)})
