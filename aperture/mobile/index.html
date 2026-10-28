@@ -22,8 +22,8 @@
 [hidden]{display:none!important}
 html,body{height:100%;background:var(--bg);color:var(--ink)}
 body{margin:0;font-family:var(--body);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 10px;
-  display:flex;flex-direction:column;gap:8px;overflow:hidden;-webkit-tap-highlight-color:transparent}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 8px;
+  display:flex;flex-direction:column;gap:6px;overflow:hidden;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0;touch-action:manipulation}
 button:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
 .label{white-space:nowrap;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);font-weight:500}
@@ -70,19 +70,22 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .go.ghost{background:rgba(255,255,255,.85);color:var(--ink);border:1px solid var(--line)}
 
 /* answer */
-.tray{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
-#slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;min-height:38px}
+.tray{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px}
+#slots{flex:1 1 auto;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:2px 8px;min-height:36px;align-items:center}
 .grp{display:flex;gap:3px;padding:4px 5px;border-radius:9px;transition:background .15s}
 .grp.cur{background:var(--blue-wash)}
-.cell{width:22px;height:28px;display:grid;place-items:center;font-family:var(--mono);font-size:19px;line-height:1;border-bottom:2px solid rgba(22,24,29,.2)}
+.cell{width:20px;height:26px;display:grid;place-items:center;font-family:var(--mono);font-size:19px;line-height:1;border-bottom:2px solid rgba(22,24,29,.2)}
 .cell.filled{border-color:var(--ink)}
 .cell.rev{color:var(--blue);border-color:var(--blue)}
 .cell.ok{color:var(--good);border-color:var(--good)}
 .cell.miss{color:var(--bad);border-color:rgba(207,63,51,.4)}
-.row{display:flex;align-items:center;gap:8px;width:100%}
-#feedback{flex:1;min-width:0;margin:0;font-size:12px;color:var(--soft);line-height:1.3}
+.row{display:flex;align-items:center;gap:6px;flex:none;margin-left:auto}
+#feedback{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);max-width:calc(100% - 24px);width:max-content;margin:0;padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,.92);box-shadow:0 4px 14px -6px rgba(22,24,29,.35);font-size:12.5px;line-height:1.3;color:var(--soft);text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:3}
+#feedback.show{opacity:1}
 #feedback.bad{color:var(--bad)}#feedback.good{color:var(--good)}
-.pill{flex:none;border:1px solid var(--frame);background:var(--sheet);border-radius:999px;padding:7px 14px;font-size:13px}
+.pill{flex:none;border:1px solid var(--frame);background:var(--sheet);border-radius:999px;padding:6px 12px;font-size:13px}
 .pill:disabled{opacity:.4}
 #sheetBtn{background:var(--ink);color:#fff;border-color:var(--ink)}
 #sheetBtn span{opacity:.6;font-size:11.5px;margin-left:4px}
@@ -90,7 +93,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-2px)}}
 
 /* words */
-.wordsbox{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;background:var(--sheet);border:1.5px solid var(--frame);border-radius:18px;padding:8px 8px 0}
+.wordsbox{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;background:var(--sheet);border:1.5px solid var(--frame);border-radius:16px;padding:6px 6px 0}
 .whead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 2px;flex:none}
 .whead h2{font-family:var(--display);font-weight:500;font-size:14px;margin:0}
 .whead h2 span{color:var(--blue);font-family:var(--mono);font-size:11px;margin-right:6px}
@@ -98,13 +101,13 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .sort{display:inline-flex;gap:2px;background:rgba(22,24,29,.06);border-radius:999px;padding:2px}
 .sort button{font-size:11px;padding:4px 10px;border-radius:999px;color:var(--soft)}
 .sort button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(22,24,29,.08)}
-.words{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:40px;gap:4px;padding-bottom:8px;align-content:start}
-.chip{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 3px;border-radius:9px;
-  background:var(--sheet);border:1px solid var(--line);font-size:14px;font-weight:500;line-height:1.1;color:#0f1115;overflow:hidden;
+.words{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:34px;gap:3px;padding-bottom:6px;align-content:start}
+.chip{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 2px;border-radius:8px;
+  background:var(--sheet);border:1px solid var(--line);font-size:12.5px;font-weight:500;line-height:1.1;color:#0f1115;overflow:hidden;
   transition:background .12s,border-color .12s,opacity .35s,transform .35s}
 .chip span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip b{font-family:var(--mono);font-weight:400;font-size:10px;line-height:1;color:var(--faint);letter-spacing:.03em}
-.chip.long span{font-size:12.5px;letter-spacing:-.01em}
+.chip b{font-family:var(--mono);font-weight:400;font-size:9px;line-height:1;color:var(--faint);letter-spacing:.03em}
+.chip.long span{font-size:11px;letter-spacing:-.02em}
 .chip:active{background:var(--blue-wash);border-color:var(--blue)}
 .chip.used{opacity:.3}
 .chip.gone{display:none}
@@ -169,13 +172,13 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
     <button class="zb" id="zReset" aria-label="Reset view">↺</button>
     <input type="range" id="zoom" min="1" max="5" step="0.1" value="1" aria-label="Zoom"><span id="zoomVal">1.0×</span>
   </div>
+  <p id="feedback" role="status"></p>
   <button class="negthumb" id="negThumb" aria-label="Show the negative larger"><canvas id="cB" width="600" height="600"></canvas><span>B</span></button>
 </div>
 
 <div class="tray" id="tray">
   <div id="slots" aria-live="polite"></div>
   <div class="row">
-    <p id="feedback"></p>
     <button class="pill" id="clear">Clear</button>
     <button class="pill" id="sheetBtn">Help<span id="helpCount">0 used</span></button>
   </div>
@@ -691,7 +694,11 @@ sheet.addEventListener('click',e=>{if(e.target===sheet)sheet.hidden=true});
 document.querySelectorAll('.ask,.vowel').forEach(b=>b.addEventListener('click',()=>{setTimeout(()=>{sheet.hidden=true},180)}));
 $('negThumb').onclick=()=>{$('cBig').getContext('2d').drawImage($('cB'),0,0);neg.hidden=false};
 neg.onclick=()=>{neg.hidden=true};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.hidden=true;neg.hidden=true}});})();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.hidden=true;neg.hidden=true}});
+const fb=$('feedback');let ft;
+new MutationObserver(()=>{if(!fb.textContent){fb.classList.remove('show');return}
+  if(!fb.classList.contains('show'))fb.classList.add('show');clearTimeout(ft);ft=setTimeout(()=>fb.classList.remove('show'),3200)})
+  .observe(fb,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class']});})();
 </script>
 </body>
 </html>
