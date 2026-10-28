@@ -100,6 +100,9 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 .overlay ol{margin:2px 0 0;padding-left:18px;font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
 .overlay .label{color:var(--blue);font-size:10px}
 .overlay .btns{display:flex;gap:6px;flex-wrap:wrap}
+.go.auto{position:relative;overflow:hidden}
+.go.auto::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--blue);transform-origin:left;animation:beat var(--beat,3000ms) linear forwards}
+@keyframes beat{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .go{align-self:flex-start;margin-top:4px;background:var(--ink);color:#fff;border-radius:999px;padding:5px 14px;font-weight:500;font-size:12.5px}
 .go:hover{background:var(--blue)}
 .go.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line)}
@@ -650,7 +653,9 @@ document.addEventListener('visibilitychange',()=>{last=performance.now()});
 /* ---------- rounds ---------- */
 const overlay=$('overlay');
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+let autoNext=0;const BEAT=3000;
 function startGame(mode){
+  clearTimeout(autoNext);
   cancelAnimationFrame(raf);
   const key=todayKey();
   const seed=mode==='daily'?hashStr('aperture2|'+key):(Math.random()*4294967296)>>>0;
@@ -695,8 +700,11 @@ function endRound(win){
   overlay.hidden=false;
   overlay.innerHTML=`<span class="label">${win?'Solved':`Out of time · +${MISS} s`}</span><h3>It was ${S.obj.name}.</h3>
     <div class="pts">${fmt(time)} (${fmtPen(pen)})</div>
-    <button class="go" id="nextBtn">${lastRound?'Final time':'Next round'}</button>`;
-  $('nextBtn').onclick=lastRound?finish:()=>{G.round++;newRound()};
+    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Final time':'Next round'}</button>`;
+  // after a short beat the next round starts by itself; tapping Next round skips the wait
+  const goNext=()=>{clearTimeout(autoNext);G.round++;newRound();startRound()};
+  clearTimeout(autoNext);if(!lastRound)autoNext=setTimeout(goNext,BEAT);
+  $('nextBtn').onclick=lastRound?finish:goNext;
   tick(win?`Solved in ${fmt(S.elapsed)}, plus ${fmtPen(pen)} s of penalties.`:'Two minutes are up.');
   updateHUD();
 }
@@ -730,7 +738,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v11';
+document.documentElement.dataset.version='desktop v12';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
