@@ -61,8 +61,9 @@ h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blu
 .statcard{width:var(--mini);height:calc(var(--mini) / .58);flex:none;align-self:center;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;
   padding:22px 12px 12px;display:flex;flex-direction:column;gap:6px;position:relative;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);font-variant-numeric:tabular-nums}
 .statcard::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1)}
-.statcard .sv{display:flex;flex-direction:column;line-height:1.1}
-.statcard .sv b{font-family:var(--mono);font-weight:500;font-size:17px;color:var(--ink)}
+.statcard .sv{display:flex;align-items:baseline;gap:5px;line-height:1.2}
+.statcard .sv.vip small{color:var(--blue);font-weight:500}
+.statcard .sv b{font-family:var(--mono);font-weight:500;font-size:15px;color:var(--ink)}
 .statcard .sv small{font-size:10.5px;color:var(--soft)}
 .statcard ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--soft)}
 .statcard ol li{display:flex;justify-content:space-between;gap:4px}
@@ -285,7 +286,9 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   <aside class="statcard" aria-label="Game stats">
     <span class="label">Players</span>
     <div class="sv"><b id="stVisits">—</b><small>visits</small></div>
-    <div class="sv"><b id="stGames">—</b><small>games played</small></div>
+    <div class="sv"><b id="stUniques">—</b><small>unique</small></div>
+    <div class="sv vip"><b id="stVip">—</b><small>VIP</small></div>
+    <div class="sv"><b id="stGames">—</b><small>games</small></div>
     <span class="label">Top countries</span>
     <ol id="stTop"><li><span>Loading…</span></li></ol>
   </aside>
@@ -836,7 +839,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v16';
+document.documentElement.dataset.version='desktop v17';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -902,16 +905,21 @@ async function bump(fields){
     body:JSON.stringify({writes:[{transform:{document:doc,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
 async function read(){try{const r=await fetch(`${BASE}/stats/${GAME}?key=${K}`);if(!r.ok)return null;const f=(await r.json()).fields||{};
   const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);const c=(f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{};
-  return{visits:num(f.visits),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))).slice(0,3)}}catch(e){return null}}
+  return{visits:num(f.visits),uniques:num(f.uniques),vip:num(f.vip),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))).slice(0,3)}}catch(e){return null}}
 const fmtN=n=>n.toLocaleString('en-GB');
 function show(s){if(!s)return;
   const v=document.getElementById('stVisits'),g=document.getElementById('stGames'),t=document.getElementById('stTop'),strip=document.getElementById('statStrip');
   if(v)v.textContent=fmtN(s.visits);if(g)g.textContent=fmtN(s.games);
+  const u=document.getElementById('stUniques'),vp=document.getElementById('stVip');if(u)u.textContent=fmtN(s.uniques);if(vp)vp.textContent=fmtN(s.vip);
   if(t)t.innerHTML=[0,1,2].map(i=>{const r=s.top[i];return r?`<li><i>${i+1}</i><span>${nameOf(r[0])}</span><b>${fmtN(r[1])}</b></li>`:`<li class="empty"><i>${i+1}</i><span>—</span></li>`}).join('');
-  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.games)} games played${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
 (async()=>{
+  // VIP: open any Aperture page once with ?vip=jmc-camidge on a device to mark it as Jonathan's
+  let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
   let counted=false;try{counted=sessionStorage.getItem('ap-visit-'+GAME)==='1'}catch(e){}
-  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1')}catch(e){}await bump({visits:1,['countries.'+country()]:1})}
+  let seen=true;try{seen=localStorage.getItem('ap-seen-'+GAME)==='1'}catch(e){}
+  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1');localStorage.setItem('ap-seen-'+GAME,'1')}catch(e){}
+    const f={visits:1,['countries.'+country()]:1};if(!seen)f.uniques=1;if(vip)f.vip=1;await bump(f)}
   show(await read());
 })();
 window.apertureGameDone=async()=>{if(LIVE)await bump({games:1});show(await read())};

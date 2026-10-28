@@ -101,7 +101,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-2px)}}
 
 /* words */
-.statstrip{flex:none;margin:0;align-self:center;max-width:100%;font-size:11px;color:var(--soft);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:3px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.statstrip{flex:none;margin:0;align-self:center;max-width:100%;font-size:11px;color:var(--soft);background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:3px 12px;white-space:normal;text-align:center;line-height:1.35;font-variant-numeric:tabular-nums}
 .wordsbox{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px;background:var(--sheet);border:1.5px solid var(--frame);border-radius:16px;padding:6px 6px 0}
 .whead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 2px;flex:none}
 .whead h2{font-family:var(--display);font-weight:500;font-size:14px;margin:0}
@@ -779,7 +779,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks mobile v2';
+document.documentElement.dataset.version='landmarks mobile v3';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -845,16 +845,21 @@ async function bump(fields){
     body:JSON.stringify({writes:[{transform:{document:doc,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
 async function read(){try{const r=await fetch(`${BASE}/stats/${GAME}?key=${K}`);if(!r.ok)return null;const f=(await r.json()).fields||{};
   const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);const c=(f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{};
-  return{visits:num(f.visits),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))).slice(0,3)}}catch(e){return null}}
+  return{visits:num(f.visits),uniques:num(f.uniques),vip:num(f.vip),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))).slice(0,3)}}catch(e){return null}}
 const fmtN=n=>n.toLocaleString('en-GB');
 function show(s){if(!s)return;
   const v=document.getElementById('stVisits'),g=document.getElementById('stGames'),t=document.getElementById('stTop'),strip=document.getElementById('statStrip');
   if(v)v.textContent=fmtN(s.visits);if(g)g.textContent=fmtN(s.games);
+  const u=document.getElementById('stUniques'),vp=document.getElementById('stVip');if(u)u.textContent=fmtN(s.uniques);if(vp)vp.textContent=fmtN(s.vip);
   if(t)t.innerHTML=[0,1,2].map(i=>{const r=s.top[i];return r?`<li><i>${i+1}</i><span>${nameOf(r[0])}</span><b>${fmtN(r[1])}</b></li>`:`<li class="empty"><i>${i+1}</i><span>—</span></li>`}).join('');
-  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.games)} games played${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
 (async()=>{
+  // VIP: open any Aperture page once with ?vip=jmc-camidge on a device to mark it as Jonathan's
+  let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
   let counted=false;try{counted=sessionStorage.getItem('ap-visit-'+GAME)==='1'}catch(e){}
-  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1')}catch(e){}await bump({visits:1,['countries.'+country()]:1})}
+  let seen=true;try{seen=localStorage.getItem('ap-seen-'+GAME)==='1'}catch(e){}
+  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1');localStorage.setItem('ap-seen-'+GAME,'1')}catch(e){}
+    const f={visits:1,['countries.'+country()]:1};if(!seen)f.uniques=1;if(vip)f.vip=1;await bump(f)}
   show(await read());
 })();
 window.apertureGameDone=async()=>{if(LIVE)await bump({games:1});show(await read())};
