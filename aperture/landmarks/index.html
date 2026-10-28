@@ -292,7 +292,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="sv"><b id="stUniques">—</b><small>unique</small></div>
     <div class="sv vip"><b id="stVip">—</b><small>VIP</small></div>
     <div class="sv"><b id="stGames">—</b><small>games</small></div>
-    <div class="sv test"><b id="stTests">—</b><small>Claude tests</small></div>
+    <div class="sv test"><b id="stTests">—</b><small>Premier access</small></div>
     <span class="label">Top countries</span>
     <ol id="stTop"><li><span>Loading…</span></li></ol>
   </aside>
@@ -776,7 +776,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v5';
+document.documentElement.dataset.version='landmarks desktop v6';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -850,7 +850,7 @@ function show(s){if(!s)return;
   const u=document.getElementById('stUniques'),vp=document.getElementById('stVip');if(u)u.textContent=fmtN(s.uniques);if(vp)vp.textContent=fmtN(s.vip);
   const ts=document.getElementById('stTests');if(ts)ts.textContent=fmtN(s.tests);
   if(t)t.innerHTML=[0,1,2].map(i=>{const r=s.top[i];return r?`<li><i>${i+1}</i><span>${nameOf(r[0])}</span><b>${fmtN(r[1])}</b></li>`:`<li class="empty"><i>${i+1}</i><span>—</span></li>`}).join('');
-  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games · Claude tests ${fmtN(s.tests)}${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games · Premier access ${fmtN(s.tests)}${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
 (async()=>{
   // VIP: open any Aperture page once with ?vip=jmc-camidge on a device to mark it as Jonathan's
   let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}

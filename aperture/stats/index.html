@@ -63,7 +63,7 @@ td.share{width:34%}
     <button id="refresh">Refresh</button>
   </header>
   <div class="games" id="games"></div>
-  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Claude tests are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
+  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
 </div>
 <script>
 (()=>{
@@ -90,7 +90,7 @@ async function render(){
           <div class="num"><b>${fmt(num(f.uniques))}</b><span>Unique</span></div>
           <div class="num vip"><b>${fmt(num(f.vip))}</b><span>VIP</span></div>
           <div class="num"><b>${fmt(num(f.games))}</b><span>Games</span></div>
-          <div class="num test"><b>${fmt(num(f.tests))}</b><span>Tests</span></div>
+          <div class="num test"><b>${fmt(num(f.tests))}</b><span>Premier access</span></div>
         </div>
         ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
       </section>`}).join('');

@@ -844,7 +844,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v13';
+document.documentElement.dataset.version='mobile v14';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -918,7 +918,7 @@ function show(s){if(!s)return;
   const u=document.getElementById('stUniques'),vp=document.getElementById('stVip');if(u)u.textContent=fmtN(s.uniques);if(vp)vp.textContent=fmtN(s.vip);
   const ts=document.getElementById('stTests');if(ts)ts.textContent=fmtN(s.tests);
   if(t)t.innerHTML=[0,1,2].map(i=>{const r=s.top[i];return r?`<li><i>${i+1}</i><span>${nameOf(r[0])}</span><b>${fmtN(r[1])}</b></li>`:`<li class="empty"><i>${i+1}</i><span>—</span></li>`}).join('');
-  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games · Claude tests ${fmtN(s.tests)}${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games · Premier access ${fmtN(s.tests)}${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
 (async()=>{
   // VIP: open any Aperture page once with ?vip=jmc-camidge on a device to mark it as Jonathan's
   let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
