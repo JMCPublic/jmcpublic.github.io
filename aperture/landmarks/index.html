@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aperture Landmarks</title>
+<script>try{if(location.hostname.endsWith('github.io')&&!/[?&]desktop/.test(location.search)&&matchMedia('(max-width:760px) and (pointer:coarse)').matches)location.replace('/aperture/landmarks/mobile/')}catch(e){}</script>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one screen, no scrolling. A slim top bar, then three solid white phone cards: A the viewpoints and the help, B the negative and the answer, C the 56 words. On a phone the cards swipe sideways. Light only, by choice. */
+:root{
+  --bg:#f1f3f7; --glass:#ffffff; --glass-edge:#e3e6eb; --tile:#ffffff;
+  --veil:#eceff3; --veil2:#e2e6ec; --line:#e3e6eb; --frame:#b9c0cb;
+  --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab;
+  --blue:#2b50e0; --blue-wash:#e6edff; --good:#178a52; --bad:#cf3f33;
+  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gap:28px; --mini:128px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;color:var(--ink)}
+html{background:var(--bg)}
+body{margin:0;font-family:var(--body);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  background-color:var(--bg);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 18px;
+  display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+.label{white-space:nowrap;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+
+/* top bar */
+.top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px 36px;max-width:1400px;width:100%;margin:0 auto 14px;flex:none}
+h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.03em;margin:0;line-height:1;display:flex;align-items:center}
+h1 .ver{font-family:var(--mono);font-weight:400;font-size:.45em;color:var(--blue);margin-left:.25em;align-self:flex-start}
+h1 .o{display:inline-block;width:.62em;height:.62em;border:.14em solid var(--blue);border-radius:50%;margin-right:.28em;transform:translateY(.04em)}
+.clock{display:flex;flex-direction:column;gap:6px;min-width:0}
+.segs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.seg{height:3px;background:rgba(22,24,29,.08);border-radius:3px;overflow:hidden}
+.seg span{display:block;height:100%;width:0;background:var(--blue)}
+.clockrow{display:flex;align-items:baseline;gap:12px;min-width:0}
+#time{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+#setLabel{color:var(--blue)}
+#ticker{margin:0;font-size:12.5px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.stats{display:flex;gap:22px;align-items:center}
+.stat{display:flex;flex-direction:column;gap:2px;align-items:flex-end}
+.stat b{font-family:var(--mono);font-weight:500;font-size:17px;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
+.stat b small{font-size:11px;color:var(--faint);font-weight:400}
+#roundTime{color:var(--blue)}
+.helpbtn{width:auto;height:30px;padding:0 12px;border-radius:999px;white-space:nowrap;border:1.5px solid #7d8592;background:var(--glass);font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.helpbtn:hover{border-color:var(--blue);color:var(--blue)}
+
+.tophone{display:none;text-align:center;font-size:13px;color:var(--blue);margin:-6px 0 10px;text-decoration:none;flex:none}
+@media (max-width:760px){.tophone{display:block}}
+
+/* stats mini phone */
+.statcard{width:var(--mini);height:calc(var(--mini) / .58);flex:none;align-self:center;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;
+  padding:22px 12px 12px;display:flex;flex-direction:column;gap:6px;position:relative;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);font-variant-numeric:tabular-nums}
+.statcard::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1)}
+.statcard .sv{display:flex;flex-direction:column;line-height:1.1}
+.statcard .sv b{font-family:var(--mono);font-weight:500;font-size:17px;color:var(--ink)}
+.statcard .sv small{font-size:10.5px;color:var(--soft)}
+.statcard ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--soft)}
+.statcard ol li{display:flex;justify-content:space-between;gap:4px}
+.statcard ol li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.statcard ol li b{font-family:var(--mono);font-weight:500;color:var(--ink)}
+.statcard .label{font-size:9.5px}
+
+/* three phones */
+.phones{flex:1;min-height:0;container-type:size;display:flex;justify-content:center;align-items:center;gap:var(--gap)}
+.phone{--w:min(calc((100cqw - 3 * var(--gap) - var(--mini)) / 3),calc(100cqh * .58));
+  width:var(--w);height:calc(var(--w) / .58);flex:none;position:relative;
+  background:var(--glass);border:1.5px solid var(--frame);border-radius:calc(var(--w) * .1);
+  padding:calc(var(--w) * .085) calc(var(--w) * .05) calc(var(--w) * .05);
+  display:flex;flex-direction:column;gap:10px;min-width:0;
+  box-shadow:0 1px 2px rgba(22,24,29,.04),0 24px 48px -24px rgba(22,24,29,.22)}
+.phone::before{content:"";position:absolute;top:calc(var(--w) * .03);left:50%;transform:translateX(-50%);width:24%;height:5px;border-radius:5px;background:rgba(22,24,29,.1)}
+.cap{display:flex;justify-content:space-between;align-items:center;gap:8px;flex:none;min-height:24px}
+.cap h2{font-family:var(--display);font-weight:500;font-size:15px;margin:0;letter-spacing:-.01em;white-space:nowrap}
+.cap h2 span{color:var(--blue);font-family:var(--mono);font-size:12px;margin-right:7px}
+
+/* A */
+.viewer{position:relative;width:100%;aspect-ratio:1;flex:none;border-radius:14px;overflow:hidden;background:var(--veil);touch-action:none;cursor:grab}
+.viewer.drag{cursor:grabbing}
+.viewer canvas,.negwrap canvas{width:100%;height:100%;display:block;transition:filter .5s ease}
+body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
+.zoom{display:flex;align-items:center;gap:4px;flex:none}
+.zoom input{flex:1;min-width:0;accent-color:var(--blue)}
+.zb{width:26px;height:26px;border-radius:50%;color:var(--soft);font-family:var(--mono);font-size:14px;display:grid;place-items:center;flex:none}
+.zb:hover{background:rgba(255,255,255,.7);color:var(--ink)}
+#zoomVal{font-family:var(--mono);font-size:11px;color:var(--faint);width:32px;text-align:right;font-variant-numeric:tabular-nums}
+.helpers{margin-top:auto;display:flex;flex-direction:column;gap:7px;flex:none}
+.helphead{display:flex;justify-content:space-between;gap:8px}
+.asks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ask{border:1px solid var(--line);background:var(--tile);border-radius:12px;padding:8px 4px;font-size:13px;transition:border-color .15s,background .15s}
+.ask:hover:not(:disabled),.vowel:hover:not(:disabled){border-color:var(--blue);background:var(--blue-wash)}
+.ask:disabled,.vowel:disabled{opacity:.4;cursor:default}
+.vowels{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:6px;align-items:center}
+.vowels .label{padding-right:2px}
+.vowel{height:34px;border:1px solid var(--line);background:var(--tile);border-radius:10px;font-family:var(--mono);font-size:17px;transition:border-color .15s,background .15s}
+.vowel.hit{background:var(--blue-wash);border-color:var(--blue);color:var(--blue);opacity:1}
+.vowel.miss{color:var(--faint);text-decoration:line-through;opacity:.6}
+
+.overlay{position:absolute;top:10px;left:10px;max-width:calc(100% - 20px);width:max-content;background:rgba(255,255,255,.8);backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);
+  border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:9px 11px 10px;display:flex;flex-direction:column;gap:3px;cursor:default;box-shadow:0 4px 16px -6px rgba(22,24,29,.18)}
+.overlay h3{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em;margin:0;line-height:1.2;max-width:24ch}
+.overlay h3 small{font-family:var(--mono);font-weight:400;font-size:12px;color:var(--faint)}
+.overlay p{margin:0;color:var(--soft);font-size:12px}
+.overlay .pts{font-family:var(--mono);font-size:12.5px;color:#1c3aa9;font-weight:500}
+.overlay ol{margin:2px 0 0;padding-left:18px;font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+.overlay .credit{font-size:10.5px;color:var(--soft);max-width:30ch}
+.overlay .credit a{color:inherit}
+.overlay .label{color:#1c3aa9;font-size:10px;font-weight:500}
+.overlay .ans{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--ink)}
+.overlay .btns{display:flex;gap:6px;flex-wrap:wrap}
+.go.auto{position:relative;overflow:hidden}
+.go.auto::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--blue);transform-origin:left;animation:beat var(--beat,3000ms) linear forwards}
+@keyframes beat{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.go{align-self:flex-start;margin-top:4px;background:var(--ink);color:#fff;border-radius:999px;padding:5px 14px;font-weight:500;font-size:12.5px}
+.go:hover{background:var(--blue)}
+.go.ghost{background:rgba(255,255,255,.8);color:var(--ink);border:1px solid var(--line)}
+.go.ghost:hover{border-color:var(--blue);color:var(--blue);background:#fff}
+
+/* B */
+.negwrap{width:100%;aspect-ratio:1;flex:none;border-radius:14px;overflow:hidden;background:var(--veil)}
+.tray{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px}
+#slots{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 4px}
+.grp{display:flex;gap:3px;padding:4px 5px;border-radius:9px;cursor:pointer;transition:background .15s}
+.grp.cur{background:var(--blue-wash)}
+.cell{width:21px;height:30px;display:grid;place-items:center;font-family:var(--mono);font-size:18px;line-height:1;border-bottom:2px solid rgba(22,24,29,.55)}
+.cell.filled{border-color:var(--ink)}
+.sep{font-family:var(--mono);font-size:18px;color:var(--soft);align-self:center;padding:0 1px}
+.guide{font-family:var(--mono);font-size:12px;color:var(--soft);align-self:center;white-space:nowrap}
+.cell.rev{color:var(--blue);border-color:var(--blue)}
+.cell.ok{color:var(--good);border-color:var(--good)}
+.cell.miss{color:var(--bad);border-color:rgba(207,63,51,.4)}
+#feedback{margin:0;font-size:12px;min-height:2.9em;color:var(--soft);text-align:center;text-wrap:balance}
+#feedback.bad{color:var(--bad)}#feedback.good{color:var(--good)}
+#clear{color:var(--soft);padding:6px 16px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}
+#clear:hover:not(:disabled){color:var(--ink);border-color:var(--blue)}
+#clear:disabled{opacity:.35;cursor:default}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-2px)}}
+
+/* C */
+.capr{display:flex;align-items:center;gap:8px}
+#wordCount{font-variant-numeric:tabular-nums}
+.sort{display:inline-flex;gap:2px;background:rgba(22,24,29,.06);border-radius:999px;padding:2px}
+.sort button{font-size:10.5px;padding:3px 8px;border-radius:999px;color:var(--soft)}
+.sort button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(22,24,29,.08)}
+.words{flex:1;min-height:0;container-type:size;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(14,minmax(0,1fr));gap:3px}
+.chip{min-width:0;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(1px,.5cqh,3px);padding:0 3px;border-radius:8px;
+  background:var(--tile);border:1px solid #c3c9d2;font-size:clamp(9px,min(2.9cqh,5.2cqw),14px);font-weight:500;line-height:1.1;color:#0f1115;overflow:hidden;
+  transition:background .12s,border-color .12s,opacity .35s,transform .35s}
+.chip span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip b{font-family:var(--mono);font-weight:400;font-size:clamp(7px,min(1.95cqh,3.4cqw),10px);line-height:1;color:var(--faint);letter-spacing:.03em}
+.chip.long span{font-size:clamp(8.5px,min(2.7cqh,4.5cqw),13px);letter-spacing:-.01em}
+.chip:hover{background:var(--blue-wash);border-color:var(--blue)}
+.chip:hover b{color:var(--blue)}
+.chip.used{opacity:.3}
+.chip.gone{pointer-events:none;background:transparent;border-color:#dfe3e9;border-style:dashed}
+.chip>*{transition:opacity .35s}
+.chip.gone>*{opacity:0}
+.chip.hit{background:var(--blue-wash);border-color:var(--blue);color:var(--blue);opacity:1}
+.chip.hit b{color:var(--blue)}
+
+/* help */
+.help{position:fixed;inset:0;background:rgba(241,243,247,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;z-index:20;padding:16px}
+.helpcard{background:rgba(255,255,255,.9);border:1px solid var(--glass-edge);border-radius:22px;padding:22px 24px;max-width:560px;width:100%;box-shadow:0 24px 48px -24px rgba(40,50,90,.35);display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
+.helpcard h2{font-family:var(--display);font-size:20px;margin:0}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;font-size:13px;color:var(--soft)}
+.rules b{display:block;color:var(--ink);font-weight:500;margin-bottom:2px}
+.rules code{font-family:var(--mono);color:var(--blue);font-size:12px}
+@media (max-width:520px){.rules{grid-template-columns:minmax(0,1fr)}}
+
+/* narrow screens: swipe between the phones */
+@media (max-width:760px){
+  :root{--gap:14px}
+  .top{grid-template-columns:auto auto;gap:10px 16px}
+  .clock{grid-column:1 / -1;order:3}
+  .stats{grid-column:1 / -1;order:2;justify-content:space-between;gap:10px}
+  .stat{align-items:flex-start}
+  .stat b{font-size:15px}
+  .phones{justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}
+  .phones::-webkit-scrollbar{display:none}
+  .phone{--w:min(calc(100cqw - 24px),calc(100cqh * .58));scroll-snap-align:center}
+  .statcard{display:none}
+}
+/* bug report */
+.bugbtn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bad);background:var(--sheet,#fff);color:var(--bad);display:grid;place-items:center;flex:none}
+.bugbtn:hover{background:#fdecea}
+.soundbtn{width:30px;height:30px;border-radius:50%;border:1.5px solid #7d8592;background:var(--sheet,#fff);color:var(--soft);display:grid;place-items:center;flex:none}
+.soundbtn svg{width:15px;height:15px}
+.soundbtn .x{display:none}
+.soundbtn[aria-pressed="false"] .x{display:inline}
+.soundbtn[aria-pressed="false"] .w1,.soundbtn[aria-pressed="false"] .w2{display:none}
+#musicBtn .x{display:none}#musicBtn[aria-pressed="false"] .x{display:inline}
+.soundbtn[aria-pressed="false"]{color:var(--faint)}
+.soundbtn:hover{color:var(--blue);border-color:var(--blue)}
+.bugbtn svg{width:15px;height:15px}
+.bugwrap{position:fixed;inset:0;background:rgba(241,243,247,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;z-index:40;padding:16px}
+.bugcard{background:#fff;border:1.5px solid var(--frame,#b9c0cb);border-radius:20px;padding:18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:10px;box-shadow:0 24px 48px -24px rgba(22,24,29,.3)}
+.bugcard h2{font-family:var(--display);font-size:18px;margin:0}
+.bugcard p{margin:0;font-size:12.5px;color:var(--soft)}
+.bugcard textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:15px;line-height:1.4;padding:10px 12px;border-radius:12px;border:1px solid var(--frame,#b9c0cb);background:#fff;color:var(--ink)}
+.bugcard textarea:focus{outline:none;border-color:var(--blue)}
+.bugmeta{font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.4;word-break:break-word}
+.bugbtns{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.bugbtns .msg{flex:1;font-size:12.5px;color:var(--soft)}
+.bugbtns .msg.ok{color:var(--good)}.bugbtns .msg.bad{color:var(--bad)}
+.bugsend{background:var(--ink);color:#fff;border-radius:999px;padding:8px 18px;font-size:13.5px}
+.bugsend:disabled{opacity:.4}
+.bugcancel{color:var(--soft);padding:8px 10px;font-size:13.5px}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">landmarks</sup></h1>
+  <div class="clock">
+    <div class="segs" id="segs"></div>
+    <div class="clockrow"><span id="time">2:00</span><span class="label" id="setLabel">Daily</span><p id="ticker">Press Start when you're ready.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="label">Round</span><b id="roundNum">1/5</b></div>
+    <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
+    <div class="stat"><span class="label">Total</span><b id="totalTime">0:00</b></div>
+    <button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
+  </div>
+</header>
+<a class="tophone" href="https://jmcpublic.github.io/aperture/landmarks/mobile/">On a phone? Play the mobile version →</a>
+
+<main class="phones">
+  <section class="phone" aria-label="A: Viewpoints">
+    <div class="cap"><h2><span>A</span>Viewpoints</h2><span class="label">drag · scroll</span></div>
+    <div class="viewer" id="viewer">
+      <canvas id="cA" width="1200" height="1200" aria-label="Obscured picture of the landmark"></canvas>
+      <div class="overlay" id="overlay"></div>
+    </div>
+    <div class="zoom">
+      <button class="zb" id="zOut" aria-label="Zoom out">−</button>
+      <input type="range" id="zoom" min="1" max="5" step="0.1" value="1" aria-label="Zoom">
+      <button class="zb" id="zIn" aria-label="Zoom in">+</button>
+      <span id="zoomVal">1.0×</span>
+      <button class="zb" id="zReset" aria-label="Reset view" title="Reset view">↺</button>
+    </div>
+    <div class="helpers">
+      <div class="helphead"><span class="label">Help · each adds 15 s</span><span class="label" id="helpCount">0 used</span></div>
+      <div class="asks">
+        <button class="ask" id="askViewpoint">Viewpoint</button>
+        <button class="ask" id="askWords">Fewer words</button>
+      </div>
+      <div class="vowels" id="vowels">
+        <span class="label">Vowel</span>
+        <button class="vowel" data-v="a" aria-label="Reveal a">a</button>
+        <button class="vowel" data-v="e" aria-label="Reveal e">e</button>
+        <button class="vowel" data-v="i" aria-label="Reveal i">i</button>
+        <button class="vowel" data-v="o" aria-label="Reveal o">o</button>
+        <button class="vowel" data-v="u" aria-label="Reveal u">u</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="phone" aria-label="B: The negative">
+    <div class="cap"><h2><span>B</span>The negative</h2><span class="label">fills in</span></div>
+    <div class="negwrap"><canvas id="cB" width="600" height="600" aria-label="Negative image, partly filled in"></canvas></div>
+    <div class="tray" id="tray">
+      <span class="label">Your answer · tap a word or type</span>
+      <div id="slots" aria-live="polite"></div>
+      <p id="feedback"></p>
+      <button id="clear">Clear</button>
+    </div>
+  </section>
+
+  <section class="phone" aria-label="C: The words">
+    <div class="cap"><h2><span>C</span>Words</h2><div class="capr"><span class="label" id="wordCount">56 words</span><div class="sort" role="group" aria-label="Order words"><button id="sortMix" aria-pressed="true">Mixed</button><button id="sortAZ" aria-pressed="false">A–Z</button></div></div></div>
+    <div class="words" id="words"></div>
+  </section>
+
+  <aside class="statcard" aria-label="Game stats">
+    <span class="label">Players</span>
+    <div class="sv"><b id="stVisits">—</b><small>visits</small></div>
+    <div class="sv"><b id="stGames">—</b><small>games played</small></div>
+    <span class="label">Top countries</span>
+    <ol id="stTop"><li><span>Loading…</span></li></ol>
+  </aside>
+</main>
+
+<div class="bugwrap" id="bugForm" hidden>
+  <form class="bugcard" id="bugCard" role="dialog" aria-label="Report a problem">
+    <h2>Report a problem</h2>
+    <p>Tell us what went wrong. Your phone or computer type and where you were in the game are added for you.</p>
+    <textarea id="bugText" maxlength="1500" placeholder="e.g. After round 1 the picture didn't load"></textarea>
+    <div class="bugmeta" id="bugMeta"></div>
+    <div class="bugbtns"><span class="msg" id="bugMsg"></span><button type="button" class="bugcancel" id="bugCancel">Cancel</button><button type="submit" class="bugsend" id="bugSend">Send</button></div>
+  </form>
+</div>
+<div class="help" id="help" hidden>
+  <div class="helpcard" role="dialog" aria-label="How to play">
+    <h2>How to play</h2>
+    <div class="rules">
+      <div><b>Fastest time wins</b>Five landmarks. Everyone gets the same five each day, so you can compare times.</div>
+      <div><b>Six 20-second stages</b>Every 20 seconds a free viewpoint opens in A and more of B fills in. Each landmark has 2 minutes.</div>
+      <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel, which drops every copy of that vowel into your answer.</div>
+      <div><b>The photos</b>Real photos from Wikimedia Commons. The photographer and licence show after each round.</div>
+      <div><b>The words</b>The answer is somewhere in C's 56 words. Each word always has the same three-digit number, whatever round or day it appears in.</div>
+      <div><b>Answering</b>Tap words in C or type letters. It checks itself when every space is full. A wrong answer adds 15 seconds.</div>
+      <div><b>Your time</b>Shown as total time with penalties in brackets, e.g. <code>2:30 (30)</code>. Not solved in 2 minutes counts as 2:00 plus 30 seconds.</div>
+    </div>
+    <button class="go" id="helpClose">Got it</button>
+  </div>
+</div>
+
+<script>
+(()=>{
+const TAU=Math.PI*2;
+let R=Math.random;
+const mulberry32=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const hashStr=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const rnd=(a,b)=>a+R()*(b-a);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const withRng=(rng,fn)=>{const old=R;R=rng;try{return fn()}finally{R=old}};
+const $=id=>document.getElementById(id);
+function rr(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h)}
+function ball(c,x,y,r,a,b){const g=c.createRadialGradient(x-r*.35,y-r*.4,r*.08,x,y,r);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill()}
+function lin(c,x0,y0,x1,y1,stops){const g=c.createLinearGradient(x0,y0,x1,y1);stops.forEach((s,i)=>g.addColorStop(i/(stops.length-1),s));return g}
+
+/* ---------- the landmarks: real photos from Wikimedia Commons, each with its photographer and licence ---------- */
+const IMG_BASE='https://upload.wikimedia.org/wikipedia/commons/thumb/';
+const L=(title,pre,answer,img,artist,lic,file)=>({title,name:pre+title,answer,img:img.startsWith('http')?img:IMG_BASE+img,artist,lic,page:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file.replace(/ /g,'_'))});
+const OBJECTS=[
+ L('London Eye','the ',['london','eye'],'d/d6/London-Eye-2009.JPG/960px-London-Eye-2009.JPG','Khamtran','CC BY-SA 3.0','London-Eye-2009.JPG'),
+ L('Stonehenge','',['stonehenge'],'3/3c/Stonehenge2007_07_30.jpg/960px-Stonehenge2007_07_30.jpg','garethwiscombe','CC BY 2.0','Stonehenge2007 07 30.jpg'),
+ L('Niagara Falls','',['niagara','falls'],'a/ab/3Falls_Niagara.jpg/960px-3Falls_Niagara.jpg','Saffron Blaze','CC BY-SA 3.0','3Falls Niagara.jpg'),
+ L('Forbidden City','the ',['forbidden','city'],'e/ef/The_Forbidden_City_-_View_from_Coal_Hill.jpg/960px-The_Forbidden_City_-_View_from_Coal_Hill.jpg','Pixelflake','CC BY-SA 3.0','The Forbidden City - View from Coal Hill.jpg'),
+ L('Petra','',['petra'],'e/e8/Al_Deir_Petra.JPG/960px-Al_Deir_Petra.JPG','Azurfrog','CC BY-SA 3.0','Al Deir Petra.JPG'),
+ L('Tower Bridge','',['tower','bridge'],'5/59/Tower_Bridge_at_Dawn.jpg/960px-Tower_Bridge_at_Dawn.jpg','Fuzzypiggy','CC BY-SA 3.0','Tower Bridge at Dawn.jpg'),
+ L('Eiffel Tower','the ',['eiffel','tower'],'8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/960px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg','Benh LIEU SONG','Public domain','Tour Eiffel Wikimedia Commons (cropped).jpg'),
+ L('Golden Gate Bridge','the ',['golden','gate','bridge'],'b/bf/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg/960px-Golden_Gate_Bridge_as_seen_from_Battery_East.jpg','Frank Schulenburg','CC BY-SA 4.0','Golden Gate Bridge as seen from Battery East.jpg'),
+ L('Empire State Building','the ',['empire','state','building'],'https://upload.wikimedia.org/wikipedia/commons/1/10/Empire_State_Building_%28aerial_view%29.jpg','Sam Valadi','Public domain','Empire State Building (aerial view).jpg'),
+ L('Edinburgh Castle','',['edinburgh','castle'],'5/59/City_of_Edinburgh_-_Edinburgh_Castle_-_20140421004403.jpg/960px-City_of_Edinburgh_-_Edinburgh_Castle_-_20140421004403.jpg','Enric','CC BY-SA 4.0','City of Edinburgh - Edinburgh Castle - 20140421004403.jpg'),
+ L('Grand Canyon','the ',['grand','canyon'],'3/31/Canyon_River_Tree_%28165872763%29.jpeg/960px-Canyon_River_Tree_%28165872763%29.jpeg','Lennart Sikkema','CC BY 3.0','Canyon River Tree (165872763).jpeg'),
+ L('Atomium','the ',['atomium'],'6/67/The_Atomium_during_civil_twilight_%28DSCF1135%29.jpg/960px-The_Atomium_during_civil_twilight_%28DSCF1135%29.jpg','Trougnouf (Benoit Brummer)','CC BY 4.0','The Atomium during civil twilight (DSCF1135).jpg'),
+ L('Notre-Dame','',['notre','dame'],'f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/960px-Notre-Dame_de_Paris%2C_4_October_2017.jpg','Ali Sabbagh','CC0','Notre-Dame de Paris, 4 October 2017.jpg'),
+ L('Colosseum','the ',['colosseum'],'d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg','FeaturedPics','CC BY-SA 4.0','Colosseo 2020.jpg'),
+ L('Leaning Tower','the ',['leaning','tower'],'4/4b/Italy_-_Pisa_-_Leaning_Tower.jpg/960px-Italy_-_Pisa_-_Leaning_Tower.jpg','Arne Müseler','CC BY-SA 3.0 de','Italy - Pisa - Leaning Tower.jpg'),
+ L('Great Pyramid','the ',['great','pyramid'],'e/e7/Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg/960px-Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg','Douwe C. van der Zee','CC BY-SA 4.0','Great Pyramid of Giza - Pyramid of Khufu.jpg'),
+ L('Mount Fuji','',['mount','fuji'],'f/f8/View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg/960px-View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg','Suicasmo','CC BY-SA 4.0','View of Mount Fuji from Ōwakudani 20211202.jpg'),
+ L('Machu Picchu','',['machu','picchu'],'b/bb/Machu_Picchu%2C_2023_%28012%29.jpg/960px-Machu_Picchu%2C_2023_%28012%29.jpg','Draceane','CC BY-SA 4.0','Machu Picchu, 2023 (012).jpg'),
+ L('Statue of Liberty','the ',['statue','of','liberty'],'8/89/Front_view_of_Statue_of_Liberty_%28cropped%29.jpg/960px-Front_view_of_Statue_of_Liberty_%28cropped%29.jpg','AskALotl','CC0','Front view of Statue of Liberty (cropped).jpg'),
+ L('Harbour Bridge','Sydney ',['harbour','bridge'],'5/55/Sydney_Harbour_Bridge-16_October_2025.jpg/960px-Sydney_Harbour_Bridge-16_October_2025.jpg','Servite et contribuere','CC0','Sydney Harbour Bridge-16 October 2025.jpg'),
+ L('Acropolis','the ',['acropolis'],'2/2c/1029_Acropolis_of_Athens_in_Greece_at_night_Photo_by_Giles_Laurent.jpg/960px-1029_Acropolis_of_Athens_in_Greece_at_night_Photo_by_Giles_Laurent.jpg','Giles Laurent','CC BY-SA 4.0','1029 Acropolis of Athens in Greece at night Photo by Giles Laurent.jpg'),
+ L('Buckingham Palace','',['buckingham','palace'],'8/8d/Buckingham_Palace_London_Morning_2020_01_%28cropped%29.jpg/960px-Buckingham_Palace_London_Morning_2020_01_%28cropped%29.jpg','Julian Herzog','CC BY 4.0','Buckingham Palace London Morning 2020 01 (cropped).jpg'),
+ L('Sagrada Familia','the ',['sagrada','familia'],'e/ef/SF_maig_2_cropped.jpg/960px-SF_maig_2_cropped.jpg','Canaan','CC BY-SA 4.0','SF maig 2 cropped.jpg'),
+ L('Arc de Triomphe','the ',['arc','de','triomphe'],'1/1a/Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg/960px-Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg','ZeusUpsistos','CC BY-SA 4.0','Arc de Triomphe - Août 2026.jpg'),
+ L('Opera House','Sydney ',['opera','house'],'e/e1/Sydney_Opera_House_2026.jpg/960px-Sydney_Opera_House_2026.jpg','BAVhah','CC BY-SA 4.0','Sydney Opera House 2026.jpg'),
+ L('Giants Causeway','the ',['giants','causeway'],'c/c0/Causeway-code_poet-4.jpg/960px-Causeway-code_poet-4.jpg','code poet on Flickr','CC BY-SA 2.0','Causeway-code poet-4.jpg'),
+ L('Moai','the Easter Island ',['moai'],'https://upload.wikimedia.org/wikipedia/commons/5/50/AhuTongariki.JPG','Ian Sewell','CC BY 2.5','AhuTongariki.JPG'),
+ L('Angkor Wat','',['angkor','wat'],'4/41/Angkor_Wat.jpg/960px-Angkor_Wat.jpg','Bjørn Christian Tørrissen','CC BY-SA 4.0','Angkor Wat.jpg'),
+ L('Table Mountain','',['table','mountain'],'d/dc/Table_Mountain_DanieVDM.jpg/960px-Table_Mountain_DanieVDM.jpg','Danie van der Merwe','CC BY 2.0','Table Mountain DanieVDM.jpg'),
+ L('Brandenburg Gate','the ',['brandenburg','gate'],'a/a6/Brandenburger_Tor_abends.jpg/960px-Brandenburger_Tor_abends.jpg','Thomas Wolf, www.foto-tw.de','CC BY-SA 3.0','Brandenburger Tor abends.jpg'),
+ L('Chichen Itza','',['chichen','itza'],'5/51/Chichen_Itza_3.jpg/960px-Chichen_Itza_3.jpg','Daniel Schwen','CC BY-SA 4.0','Chichen Itza 3.jpg'),
+ L('Matterhorn','the ',['matterhorn'],'6/60/Matterhorn_from_Domh%C3%BCtte_-_2.jpg/960px-Matterhorn_from_Domh%C3%BCtte_-_2.jpg','chil (Camptocamp.org), derivative by Zacharie Grossen','CC BY-SA 3.0','Matterhorn from Domhütte - 2.jpg'),
+ L('Space Needle','the ',['space','needle'],'2/23/Space_Needle_2011-07-04.jpg/960px-Space_Needle_2011-07-04.jpg','Jordon Kalilich','Public domain','Space Needle 2011-07-04.jpg'),
+ L('Neuschwanstein','',['neuschwanstein'],'f/f8/Schloss_Neuschwanstein_2013.jpg/960px-Schloss_Neuschwanstein_2013.jpg','Thomas Wolf, www.foto-tw.de','CC BY-SA 3.0 de','Schloss Neuschwanstein 2013.jpg'),
+ L('Taj Mahal','the ',['taj','mahal'],'1/1d/Taj_Mahal_%28Edited%29.jpeg/960px-Taj_Mahal_%28Edited%29.jpeg','Yann, edited by Jim Carter','CC BY-SA 4.0','Taj Mahal (Edited).jpeg'),
+ L('Great Wall','the ',['great','wall'],'2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/960px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg','Severin.stalder','CC BY-SA 3.0','The Great Wall of China at Jinshanling-edit.jpg'),
+ L('Hollywood Sign','the ',['hollywood','sign'],'2/2f/Hollywood_sign_%288485145044%29.jpg/960px-Hollywood_sign_%288485145044%29.jpg','Gnaphron','CC BY-SA 2.0','Hollywood sign (8485145044).jpg'),
+ L('Sphinx','the ',['sphinx'],'4/42/Sphinx_with_the_third_pyramid.jpg/960px-Sphinx_with_the_third_pyramid.jpg','Hesham Ebaid','CC0','Sphinx with the third pyramid.jpg'),
+ L('Victoria Falls','',['victoria','falls'],'d/da/Cataratas_Victoria%2C_Zambia-Zimbabue%2C_2018-07-27%2C_DD_04.jpg/960px-Cataratas_Victoria%2C_Zambia-Zimbabue%2C_2018-07-27%2C_DD_04.jpg','Diego Delso','CC BY-SA 4.0','Cataratas Victoria, Zambia-Zimbabue, 2018-07-27, DD 04.jpg'),
+ L('Burj Khalifa','the ',['burj','khalifa'],'9/90/Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg/960px-Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg','imran shahabuddin','CC BY 2.0','Burj Khalifa (worlds tallest building) and the Dubai skyline (25781049892).jpg'),
+ L('Mont Saint Michel','',['mont','saint','michel'],'7/78/Mont-Saint-Michel_vu_du_ciel.jpg/960px-Mont-Saint-Michel_vu_du_ciel.jpg','Amaustan','CC BY-SA 4.0','Mont-Saint-Michel vu du ciel.jpg'),
+ L('Golden Temple','the ',['golden','temple'],'9/94/The_Golden_Temple_of_Amrithsar_7.jpg/960px-The_Golden_Temple_of_Amrithsar_7.jpg','Shagil Kannur','CC BY-SA 4.0','The Golden Temple of Amrithsar 7.jpg'),
+ L('Mount Rushmore','',['mount','rushmore'],'8/87/Mount_Rushmore_detail_view_%28100MP%29.jpg/960px-Mount_Rushmore_detail_view_%28100MP%29.jpg','Thomas Wolf, www.foto-tw.de','CC BY-SA 3.0','Mount Rushmore detail view (100MP).jpg'),
+ L('Uluru','',['uluru'],'a/a8/ULURU.jpg/960px-ULURU.jpg','Ek2030372672','CC BY-SA 4.0','ULURU.jpg'),
+ L('Trevi Fountain','the ',['trevi','fountain'],'c/c7/Trevi_Fountain_-_Roma.jpg/960px-Trevi_Fountain_-_Roma.jpg','NikonZ7II','CC BY-SA 4.0','Trevi Fountain - Roma.jpg'),
+ L('Angel of the North','the ',['angel','of','the','north'],'9/93/Angel_of_the_North_2010.jpg/960px-Angel_of_the_North_2010.jpg','saw2th','CC BY-SA 2.0','Angel of the North 2010.jpg'),
+ L('Christ the Redeemer','',['christ','the','redeemer'],'4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg/960px-Christ_the_Redeemer_-_Cristo_Redentor.jpg','Arne Müseler','CC BY-SA 3.0 de','Christ the Redeemer - Cristo Redentor.jpg'),
+ L('Big Ben','',['big','ben'],'0/05/Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg/960px-Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg','Christian David','CC BY-SA 4.0','Elizabeth Tower and the north front of the Palace of Westminster, London.jpg')
+];
+/* load a landmark's photo once; the game waits for it before a round starts */
+const IMGS={};
+function loadImg(o){if(!IMGS[o.img])IMGS[o.img]=new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=()=>rej(new Error('photo failed'));im.src=o.img});return IMGS[o.img]}
+
+const POOL=('castle palace temple cathedral abbey church chapel bridge tower falls mount mountain lake river canyon island beach gate arch fountain square museum opera hall dome statue garden park harbour bay cliff valley desert pyramid wall city old new royal grand great golden silver crystal north south east west saint kremlin alhambra vatican venice rome paris london sydney dubai cairo athens tokyo kyoto delhi rio berlin madrid lisbon prague vienna york boston seattle chicago moscow peak glacier volcano reef rock stone needle wheel eye sign house state building liberty empire giant table angel clock bell spire tomb shrine fort citadel lighthouse marina pier tower').split(/\s+/).filter(Boolean);
+
+/* ---------- fixed numbers: every word always gets the same three digits ---------- */
+const CODES=(()=>{const words=[...new Set([...POOL,...OBJECTS.flatMap(o=>o.answer)])].sort();const used=new Set(),out={};
+  words.forEach(w=>{let n=hashStr('code|'+w)%900;while(used.has(n))n=(n+1)%900;used.add(n);out[w]=String(n+100)});return out})();
+
+/* ---------- sound ---------- */
+let soundOn=true;try{soundOn=localStorage.getItem('aperture2-sound')!=='off'}catch(e){}
+let musicOn=true;try{musicOn=localStorage.getItem('aperture2-music')!=='off'}catch(e){}
+let AC=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function tone(f,dur,type,vol,when,slide){if(!soundOn)return;const a=ac();if(!a)return;const t=a.currentTime+(when||0);
+  const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol||.06,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.03)}
+const SFX={
+  beep:()=>tone(880,.1,'sine',.07),
+  go:()=>tone(1320,.2,'sine',.08),
+  view:()=>{tone(523,.12,'triangle',.06);tone(784,.16,'triangle',.05,.08)},
+  vowel:()=>tone(659,.12,'triangle',.07),
+  miss:()=>tone(330,.16,'triangle',.05,0,260),
+  words:()=>tone(1100,.22,'sine',.04,0,420),
+  place:()=>tone(440,.05,'triangle',.035),
+  tick:()=>tone(1050,.035,'square',.02),
+  right:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.18,'sine',.06,i*.08))},
+  wrong:()=>tone(196,.25,'sawtooth',.035),
+  timeup:()=>{tone(392,.2,'triangle',.06);tone(262,.35,'triangle',.06,.18)}
+};
+/* ---------- music: lo-fi under each round, fades out for the last 10 seconds ---------- */
+const MUSIC_VOL=.5;let mus=null,mNoise=null;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function menv(g,t,a,p,d){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(p,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d)}
+function mvoice(out,t,m,type,dur,v,cut){const o=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain();o.type=type;o.frequency.value=mtof(m);f.type='lowpass';f.frequency.value=cut;menv(g,t,.008,v,dur);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+dur+.06)}
+function mkick(out,t,v){const o=AC.createOscillator(),g=AC.createGain();o.frequency.setValueAtTime(100,t);o.frequency.exponentialRampToValueAtTime(40,t+.15);menv(g,t,.004,v,.22);o.connect(g).connect(out);o.start(t);o.stop(t+.3)}
+function mnoise(out,t,v,dur,hp,lp){if(!mNoise){mNoise=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate);const d=mNoise.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  const n=AC.createBufferSource(),h=AC.createBiquadFilter(),l=AC.createBiquadFilter(),g=AC.createGain();n.buffer=mNoise;h.type='highpass';h.frequency.value=hp;l.type='lowpass';l.frequency.value=lp;menv(g,t,.002,v,dur);n.connect(h).connect(l).connect(g).connect(out);n.start(t);n.stop(t+dur+.05)}
+function lofiStep(out,st,t,l,spb){
+  const ch=[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]][Math.floor(st/16)%4];
+  if(st%16===0||st%16===10)ch.forEach(m=>{mvoice(out,t,m,'sine',spb*5,.035,2500);mvoice(out,t,m+12,'triangle',spb*2,.01,2000)});
+  if(st%16===0||st%16===7||st%16===10)mkick(out,t,.4);
+  if(st%8===4)mnoise(out,t,.06,.12,1200,5000);
+  if(l>=1&&st%2===0)mnoise(out,t,.018,.03,7000,16000);
+  if(l>=2&&st%4===2)mvoice(out,t,[72,74,76,79,81][(st/4|0)%5],'triangle',.3,.03,4000)}
+function musicLevel(){const st=Math.floor((S.elapsed||0)/STAGE);return st<2?0:st<4?1:2}
+function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;const out=a.createGain();out.gain.setValueAtTime(.0001,a.currentTime);out.gain.exponentialRampToValueAtTime(MUSIC_VOL,a.currentTime+1.2);out.connect(a.destination);
+  mus={out,step:0,next:a.currentTime+.1};
+  mus.timer=setInterval(()=>{if(!mus)return;const l=musicLevel(),spb=60/[78,84,90][l]/4;while(mus.next<AC.currentTime+.15){lofiStep(mus.out,mus.step,mus.next,l,spb);mus.next+=spb;mus.step++}},25)}
+function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
+  try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
+  setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
+function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off')}
+  try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
+setMusic(musicOn);
+$('musicBtn').onclick=()=>setMusic(!musicOn);
+function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
+  const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Sound effects on':'Sound effects off')}if(on)SFX.place()}
+setSound(soundOn);
+$('soundBtn').onclick=()=>setSound(!soundOn);
+
+/* ---------- rules ---------- */
+const ROUNDS=5, STAGE=20, STAGES=6, LIMIT=STAGE*STAGES, PEN=15, MISS=30, THIN=Math.round(56*.2), MAX_THINS=4;
+const fmt=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const fmtPen=s=>{s=Math.round(s);return s<60?String(s):fmt(s)};
+let sortMode='mix';try{if(localStorage.getItem('aperture2-sort')==='az')sortMode='az'}catch(e){}
+
+let G={}, S={};
+const objC=document.createElement('canvas');objC.width=objC.height=600;
+const negC=document.createElement('canvas');negC.width=negC.height=600;
+const revC=document.createElement('canvas');revC.width=revC.height=600;
+const cA=$('cA'), xA=cA.getContext('2d'), cB=$('cB'), xB=cB.getContext('2d');
+let view={s:1,tx:0,ty:0};
+
+/* ---------- pictures ---------- */
+function drawWood(c){
+  c.fillStyle=lin(c,0,0,600,600,['#6e4527','#4d2e18','#5f3b20']);c.fillRect(0,0,600,600);
+  for(let i=0;i<70;i++){const y=rnd(-20,620),a=rnd(4,14),f=rnd(.004,.012),ph=rnd(0,9);
+    c.strokeStyle=R()<.5?`rgba(30,15,5,${rnd(.08,.22)})`:`rgba(200,140,80,${rnd(.05,.12)})`;c.lineWidth=rnd(1,4);
+    c.beginPath();for(let x=0;x<=600;x+=12)c.lineTo(x,y+Math.sin(x*f+ph)*a);c.stroke()}
+  const v=c.createRadialGradient(300,300,150,300,300,440);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.45)');c.fillStyle=v;c.fillRect(0,0,600,600);
+}
+function buildObject(obj){
+  const c=objC.getContext('2d');c.fillStyle='#d9dde3';c.fillRect(0,0,600,600);
+  const im=obj._im;if(im){const w=im.naturalWidth,h=im.naturalHeight,q=Math.min(w,h);c.drawImage(im,(w-q)/2,(h-q)/2,q,q,0,0,600,600)}
+  // negative: inverted into a blue duotone
+  const n=negC.getContext('2d');n.clearRect(0,0,600,600);n.drawImage(objC,0,0);
+  const d=n.getImageData(0,0,600,600),p=d.data;
+  for(let i=0;i<p.length;i+=4){const k=1-(p[i]*.3+p[i+1]*.59+p[i+2]*.11)/255;p[i]=29+k*213;p[i+1]=42+k*203;p[i+2]=107+k*148}
+  n.putImageData(d,0,0);
+}
+function shapePath(t){
+  const p=new Path2D();
+  switch(t.type){
+    case 'line':p.rect(-t.w/2,-t.h/2,t.w,t.h);break;
+    case 'circle':p.arc(0,0,t.r,0,TAU);break;
+    case 'keyhole':p.arc(0,-16,26,0,TAU);p.moveTo(-15,-4);p.lineTo(15,-4);p.lineTo(24,52);p.lineTo(-24,52);p.closePath();break;
+    case 'star':for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?26:62;i?p.lineTo(Math.cos(a)*r,Math.sin(a)*r):p.moveTo(Math.cos(a)*r,Math.sin(a)*r)}p.closePath();break;
+    case 'triangle':for(let i=0;i<3;i++){const a=-Math.PI/2+i*TAU/3;i?p.lineTo(Math.cos(a)*62,Math.sin(a)*62):p.moveTo(Math.cos(a)*62,Math.sin(a)*62)}p.closePath();break;
+    case 'cross':p.rect(-60,-11,120,22);p.rect(-11,-60,22,120);break;
+  }
+  const out=new Path2D();out.addPath(p,new DOMMatrix().translate(t.x,t.y).rotate(t.rot));return out;
+}
+function newShape(first){
+  if(first)return{type:'line',x:rnd(230,370),y:300,w:20,h:rnd(360,440),rot:rnd(-8,8)};
+  const types=['line','line','line','circle','keyhole','star','triangle','cross'];
+  let best=null,bestD=-1;
+  for(let k=0;k<10;k++){
+    const type=types[Math.floor(R()*types.length)];
+    const s={type,x:rnd(150,450),y:rnd(140,470),rot:type==='line'?[0,90,35,-35,60,-60,rnd(0,180)][Math.floor(rnd(0,7))]:rnd(0,360),w:rnd(18,26),h:rnd(300,420),r:rnd(36,54)};
+    const d=Math.min(...S.viewpoints.map(o=>Math.hypot(o.x-s.x,o.y-s.y)));
+    if(d>bestD){bestD=d;best=s}
+  }
+  return best;
+}
+function buildReveal(){
+  const c=revC.getContext('2d');c.globalCompositeOperation='source-over';c.clearRect(0,0,600,600);c.fillStyle='#fff';
+  S.viewpoints.forEach(t=>c.fill(shapePath(t)));
+  c.globalCompositeOperation='source-in';c.drawImage(objC,0,0);c.globalCompositeOperation='source-over';
+}
+function renderA(){
+  xA.setTransform(1,0,0,1,0,0);xA.fillStyle='#eceff3';xA.fillRect(0,0,1200,1200);
+  const k=2*view.s;xA.setTransform(k,0,0,k,view.tx,view.ty);
+  xA.drawImage(S.ended?objC:revC,0,0);
+  if(!S.ended){xA.strokeStyle='rgba(43,80,224,.6)';xA.lineWidth=1.4/view.s;S.viewpoints.forEach(t=>xA.stroke(shapePath(t)))}
+  xA.setTransform(1,0,0,1,0,0);
+}
+function renderB(){
+  xB.fillStyle='#eceff3';xB.fillRect(0,0,600,600);
+  const n=8,sz=600/n;
+  for(let i=0;i<n*n;i++){
+    const x=(i%n)*sz,y=Math.floor(i/n)*sz;
+    if(S.ended||S.shown.has(i))xB.drawImage(negC,x,y,sz,sz,x,y,sz,sz);
+    else{xB.fillStyle=(i+Math.floor(i/n))%2?'#eceff3':'#e5e9ee';xB.fillRect(x,y,sz,sz)}
+  }
+  xB.strokeStyle='#ffffff';xB.lineWidth=2;
+  for(let i=1;i<n;i++){xB.beginPath();xB.moveTo(i*sz,0);xB.lineTo(i*sz,600);xB.moveTo(0,i*sz);xB.lineTo(600,i*sz);xB.stroke()}
+  const big=$('cBig');if(big)big.getContext('2d').drawImage(cB,0,0);
+}
+function revealTiles(k){let a=0;while(a<k&&S.tileQueue.length){S.shown.add(S.tileQueue.shift());a++}renderB()}
+function addViewpoint(){withRng(S.rngV,()=>S.viewpoints.push(newShape(false)));buildReveal();renderA();SFX.view()}
+
+/* ---------- zoom & pan ---------- */
+function clampView(){const W=1200,cw=W*view.s;view.tx=Math.min(0,Math.max(W-cw,view.tx));view.ty=Math.min(0,Math.max(W-cw,view.ty))}
+function zoomTo(ns,px=600,py=600){ns=Math.min(5,Math.max(1,ns));view.tx=px-(px-view.tx)*(ns/view.s);view.ty=py-(py-view.ty)*(ns/view.s);view.s=ns;clampView();
+  $('zoom').value=ns;$('zoomVal').textContent=ns.toFixed(1)+'×';renderA()}
+const viewer=$('viewer');
+function toCanvas(e){const r=cA.getBoundingClientRect();return[(e.clientX-r.left)*1200/r.width,(e.clientY-r.top)*1200/r.height]}
+cA.addEventListener('wheel',e=>{e.preventDefault();const[px,py]=toCanvas(e);zoomTo(view.s*(e.deltaY<0?1.15:1/1.15),px,py)},{passive:false});
+cA.addEventListener('dblclick',e=>{const[px,py]=toCanvas(e);zoomTo(view.s*1.6,px,py)});
+let drag=null;
+cA.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty};cA.setPointerCapture(e.pointerId);viewer.classList.add('drag')});
+cA.addEventListener('pointermove',e=>{if(!drag)return;const r=cA.getBoundingClientRect(),f=1200/r.width;view.tx=drag.tx+(e.clientX-drag.x)*f;view.ty=drag.ty+(e.clientY-drag.y)*f;clampView();renderA()});
+const endDrag=()=>{drag=null;viewer.classList.remove('drag')};
+cA.addEventListener('pointerup',endDrag);cA.addEventListener('pointercancel',endDrag);
+$('zoom').addEventListener('input',e=>zoomTo(+e.target.value));
+$('zIn').onclick=()=>zoomTo(view.s+.5);$('zOut').onclick=()=>zoomTo(view.s-.5);$('zReset').onclick=()=>zoomTo(1);
+
+/* ---------- words (C) ---------- */
+function buildWords(obj){
+  const ans=obj.answer;
+  const decoys=shuffle([...new Set(POOL)].filter(w=>!ans.includes(w))).slice(0,56-ans.length);
+  S.words=shuffle([...ans,...decoys]).map(w=>({w,code:CODES[w]}));
+  S.gone=new Set();
+  const grid=$('words');grid.innerHTML='';
+  S.words.forEach(o=>{const b=document.createElement('button');b.className=o.w.length>7?'chip long':'chip';
+    b.title=`${o.code} ${o.w}`;
+    b.innerHTML=`<b>${o.code}</b><span>${o.w}</span>`;b.onclick=()=>placeWord(o.w);o.el=b;grid.appendChild(b)});
+  layoutWords();
+}
+function layoutWords(){
+  const grid=$('words');if(!S.words)return;
+  let list=[...S.words];
+  if(sortMode==='az')list.sort((a,b)=>a.w.localeCompare(b.w));
+  list.forEach(o=>grid.appendChild(o.el));
+  $('sortMix').setAttribute('aria-pressed',sortMode==='mix');$('sortAZ').setAttribute('aria-pressed',sortMode==='az');
+  $('wordCount').textContent=`${56-S.gone.size} words`;
+}
+function setSort(m){sortMode=m;try{localStorage.setItem('aperture2-sort',m)}catch(e){}layoutWords()}
+$('sortMix').onclick=()=>setSort('mix');$('sortAZ').onclick=()=>setSort('az');
+function thinWords(){
+  if(S.thins>=MAX_THINS)return false;
+  const out=withRng(S.rngW,()=>shuffle(S.words.filter(o=>!S.obj.answer.includes(o.w)&&!S.gone.has(o.w))).slice(0,THIN));
+  out.forEach(o=>{S.gone.add(o.w);o.el.classList.add('gone');o.el.disabled=true});
+  S.slots.forEach(g=>{if(groupFull(g)&&S.gone.has(groupText(g)))g.forEach(c=>{if(!c.rev)c.val=''})});
+  S.thins++;SFX.words();revealTiles(8);renderSlots();$('wordCount').textContent=`${56-S.gone.size} words`;setTimeout(layoutWords,380);return true;
+}
+
+/* ---------- answer slots (B) ---------- */
+const groupFull=g=>g.every(c=>c.rev||c.val);
+const groupText=g=>g.map(c=>c.rev?c.ch:c.val).join('');
+function buildSlots(obj){S.slots=obj.answer.map(w=>[...w].map(ch=>({ch,rev:false,val:''})));S.cur=0;renderSlots()}
+function renderSlots(){
+  const el=$('slots');el.innerHTML='';
+  S.slots.forEach((g,gi)=>{const d=document.createElement('div');d.className='grp'+(gi===S.cur&&S.running?' cur':'');
+    d.onclick=()=>{if(!S.running)return;S.cur=gi;renderSlots()};
+    g.forEach(c=>{const s=document.createElement('span');let cls='cell',t='';
+      if(S.ended){t=c.ch;cls+=S.won?' ok':(c.rev?' rev':' miss')}
+      else if(c.rev){t=c.ch;cls+=' rev'}
+      else if(c.val){t=c.val;cls+=' filled'}
+      s.className=cls;s.textContent=t;d.appendChild(s)});
+    if(gi>0){const sep=document.createElement('span');sep.className='sep';sep.textContent='/';el.appendChild(sep)}
+    el.appendChild(d)});
+  const gd=document.createElement('span');gd.className='guide';gd.textContent=`(${S.slots.map(g=>g.length).join(',')})`;el.appendChild(gd);
+  const placed=new Set(S.slots.filter(groupFull).map(groupText));
+  if(S.words&&!S.ended)S.words.forEach(o=>o.el.classList.toggle('used',placed.has(o.w)));
+}
+function nextOpen(from){for(let k=0;k<S.slots.length;k++){const i=(from+k)%S.slots.length;if(!groupFull(S.slots[i]))return i}return -1}
+function shake(){const t=$('tray');t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake')}
+function feedback(msg,cls){const f=$('feedback');f.textContent=msg;f.className=cls||''}
+function placeWord(w){
+  if(!S.running){if(!S.ended)feedback('Press Start first.','bad');return}
+  let gi=groupFull(S.slots[S.cur])?nextOpen(S.cur):S.cur;if(gi<0)gi=S.cur;
+  const g=S.slots[gi];
+  if(w.length!==g.length){feedback(`“${w}” has ${w.length} letters. This space needs ${g.length}.`,'bad');shake();return}
+  const clash=g.find((c,i)=>c.rev&&c.ch!==w[i]);
+  if(clash){feedback(`“${w}” doesn't fit the ${clash.ch} you revealed.`,'bad');shake();return}
+  g.forEach((c,i)=>{if(!c.rev)c.val=w[i]});feedback('');SFX.place();
+  const n=nextOpen(gi);S.cur=n<0?gi:n;renderSlots();autoCheck();
+}
+function typeLetter(ch){
+  let gi=groupFull(S.slots[S.cur])?nextOpen(S.cur):S.cur;if(gi<0)return;
+  S.slots[gi].find(c=>!c.rev&&!c.val).val=ch;
+  if(groupFull(S.slots[gi])){const n=nextOpen(gi);S.cur=n<0?gi:n}else S.cur=gi;
+  feedback('');renderSlots();autoCheck();
+}
+function backspace(){
+  for(let gi=S.cur;gi>=0;gi--){const g=S.slots[gi];
+    for(let i=g.length-1;i>=0;i--)if(!g[i].rev&&g[i].val){g[i].val='';S.cur=gi;renderSlots();return}}
+}
+function clearSlots(){S.slots.forEach(g=>g.forEach(c=>{if(!c.rev)c.val=''}));S.cur=Math.max(0,nextOpen(0));renderSlots()}
+function autoCheck(){if(S.running&&S.slots.every(groupFull))check()}
+function check(){
+  const guess=S.slots.map(groupText);
+  if(guess.every((w,i)=>w===S.obj.answer[i])){endRound(true);return}
+  S.pen+=PEN;SFX.wrong();
+  feedback(`Not quite: “${guess.join(' ')}”. +${PEN} s.`,'bad');
+  clearSlots();shake();updateHUD();
+}
+$('clear').onclick=()=>{if(S.running){clearSlots();feedback('')}};
+document.addEventListener('keydown',e=>{
+  if(!S.running||!$('help').hidden||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();typeLetter(e.key.toLowerCase())}
+  else if(e.key==='Backspace'){e.preventDefault();backspace()}
+});
+
+/* ---------- help (A) ---------- */
+function useHelp(msg){S.pen+=PEN;S.helps++;tick(`${msg}. +${PEN} s.`);updateHUD()}
+$('askViewpoint').onclick=()=>{if(!S.running)return;addViewpoint();useHelp('A new viewpoint is open')};
+$('askWords').onclick=()=>{if(!S.running||S.thins>=MAX_THINS)return;thinWords();useHelp(`${THIN} wrong words removed and the negative filled in`)};
+document.querySelectorAll('.vowel').forEach(b=>b.onclick=()=>{
+  const v=b.dataset.v;if(!S.running||S.vowels.has(v))return;S.vowels.add(v);
+  let n=0;S.slots.forEach(g=>g.forEach(c=>{if(c.ch===v){c.rev=true;c.val='';n++}}));
+  b.classList.add(n?'hit':'miss');(n?SFX.vowel:SFX.miss)();renderSlots();
+  useHelp(n?`${n} × ${v} placed in your answer`:`No ${v} in this answer`);
+});
+
+/* ---------- clock ---------- */
+const segs=$('segs');for(let i=0;i<STAGES;i++){const d=document.createElement('div');d.className='seg';d.innerHTML='<span></span>';segs.appendChild(d)}
+function tick(msg){$('ticker').textContent=msg}
+function updateHUD(){
+  const left=Math.max(0,LIMIT-S.elapsed);$('time').textContent=fmt(Math.ceil(left));
+  [...segs.children].forEach((s,i)=>{s.firstChild.style.width=Math.min(100,Math.max(0,(S.elapsed-i*STAGE)/STAGE*100))+'%'});
+  $('roundNum').textContent=`${G.round+1}/${ROUNDS}`;
+  $('roundTime').innerHTML=S.ended?'—':`${fmt(S.elapsed+S.pen)}<small> (${fmtPen(S.pen)})</small>`;
+  $('totalTime').innerHTML=`${fmt(G.total)}<small> (${fmtPen(G.totalPen)})</small>`;
+  $('helpCount').textContent=`${S.helps} used`;
+  const off=!S.running;
+  $('askViewpoint').disabled=off;$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
+  document.querySelectorAll('.vowel').forEach(b=>b.disabled=off||S.vowels.has(b.dataset.v));
+}
+let last=0,raf=0;
+function loop(now){
+  if(!S.running)return;
+  S.elapsed+=Math.min(.25,(now-last)/1000);last=now;
+  const stage=Math.floor(S.elapsed/STAGE);
+  while(S.stages<stage&&S.stages<STAGES-1){S.stages++;addViewpoint();revealTiles(8);tick(`${S.stages*STAGE} seconds gone. A free viewpoint is open and the negative filled in.`)}
+  const leftS=Math.ceil(LIMIT-S.elapsed);if(leftS<=10&&mus)musicStop(1.5);if(leftS<=10&&leftS!==S.lastTick&&leftS>0){S.lastTick=leftS;SFX.tick()}
+  if(S.elapsed>=LIMIT){S.elapsed=LIMIT;endRound(false);return}
+  updateHUD();raf=requestAnimationFrame(loop);
+}
+document.addEventListener('visibilitychange',()=>{last=performance.now()});
+
+/* ---------- rounds ---------- */
+const overlay=$('overlay');
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+let autoNext=0,beeps=[];const BEAT=3000;
+function startGame(mode){
+  musicStop(.2);
+  clearTimeout(autoNext);
+  cancelAnimationFrame(raf);
+  const key=todayKey();
+  const seed=mode==='daily'?hashStr('apLandmarks|'+key):(Math.random()*4294967296)>>>0;
+  const label=mode==='daily'?`Daily · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})}`:'Random set';
+  R=mulberry32(seed);
+  const order=shuffle(OBJECTS.map((_,i)=>i)).slice(0,ROUNDS);
+  G={mode,seed,label,key,order,round:0,total:0,totalPen:0,results:[]};
+  $('setLabel').textContent=label;
+  overlay.hidden=false;overlay.innerHTML='<span class="label">Aperture Landmarks</span><h3>Loading the photos…</h3>';
+  document.body.classList.add('waiting');
+  const pick=[...order];
+  Promise.all(pick.map(i=>loadImg(OBJECTS[i]).then(im=>{OBJECTS[i]._im=im}).catch(()=>{
+    // a photo that will not load is swapped for another landmark
+    const spare=OBJECTS.map((_,k)=>k).find(k=>!pick.includes(k)&&!G.order.includes(k));
+    if(spare!=null){G.order[G.order.indexOf(i)]=spare;pick.push(spare);return loadImg(OBJECTS[spare]).then(im=>{OBJECTS[spare]._im=im}).catch(()=>{})}
+  }))).then(()=>{if(G.seed===seed)newRound()});
+}
+function newRound(){
+  cancelAnimationFrame(raf);
+  const rs=(G.seed^Math.imul(G.round+1,2654435761))>>>0;
+  R=mulberry32(rs);
+  const obj=OBJECTS[G.order[G.round]];
+  S={obj,viewpoints:[],shown:new Set(),tileQueue:[],elapsed:0,running:false,ended:false,won:false,pen:0,helps:0,thins:0,stages:0,vowels:new Set(),cur:0,
+     rngV:mulberry32(rs+1),rngW:mulberry32(rs+2)};
+  buildObject(obj);S.viewpoints.push(newShape(true));buildReveal();
+  S.tileQueue=shuffle(Array.from({length:64},(_,i)=>i));revealTiles(6);
+  buildWords(obj);buildSlots(obj);
+  document.querySelectorAll('.vowel').forEach(b=>b.classList.remove('hit','miss'));
+  view={s:1,tx:0,ty:0};zoomTo(1);
+  feedback('');tick('Press Start when you\'re ready.');
+  const n=obj.answer.length;
+  overlay.hidden=false;
+  overlay.innerHTML=`<span class="label">Round ${G.round+1} of ${ROUNDS} · ${n} word${n>1?'s':''}</span><h3>Where in the world?</h3><button class="go" id="startBtn">Start</button>`;
+  $('startBtn').onclick=startRound;
+  document.body.classList.add('waiting');
+  updateHUD();
+}
+function startRound(){ac();setTimeout(musicStart,150);overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;last=performance.now();
+  tick('Clock running. A free viewpoint opens every 20 seconds.');renderSlots();updateHUD();raf=requestAnimationFrame(loop)}
+function endRound(win){
+  musicStop(.6);
+  S.running=false;S.ended=true;S.won=win;cancelAnimationFrame(raf);
+  const pen=S.pen+(win?0:MISS), time=(win?S.elapsed:LIMIT)+pen;
+  G.total+=time;G.totalPen+=pen;
+  G.results.push({name:S.obj.name,answer:S.obj.title,time,pen,win});
+  renderA();renderB();zoomTo(1);renderSlots();
+  S.words.forEach(o=>{const hit=S.obj.answer.includes(o.w);o.el.classList.toggle('hit',hit);o.el.classList.toggle('used',!hit)});
+  (win?SFX.right:SFX.timeup)();
+  feedback(win?`Solved: ${S.obj.title}.`:`Out of time. It was ${S.obj.name}.`,win?'good':'bad');
+  const lastRound=G.round>=ROUNDS-1;
+  overlay.hidden=false;
+  overlay.innerHTML=`<span class="label">${win?'Solved':`Out of time · +${MISS} s`}</span><h3>It was ${S.obj.name.replace(S.obj.title,`<span class="ans">${S.obj.title}</span>`)}.</h3>
+    <div class="pts">${fmt(time)} (${fmtPen(pen)})</div>
+    <p class="credit">Photo: <a href="${S.obj.page}" target="_blank" rel="noopener">${S.obj.artist}</a> · ${S.obj.lic}</p>
+    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Final time':'Next round'}</button>`;
+  // after a short beat the next round starts by itself; tapping Next round skips the wait
+  const goNext=()=>{clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];G.round++;newRound();startRound();SFX.go()};
+  clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];
+  if(!lastRound){autoNext=setTimeout(goNext,BEAT);beeps=[1000,2000].map(t=>setTimeout(SFX.beep,t))}
+  $('nextBtn').onclick=lastRound?finish:goNext;
+  tick(win?`Solved in ${fmt(S.elapsed)}, plus ${fmtPen(pen)} s of penalties.`:'Two minutes are up.');
+  updateHUD();
+}
+function finish(){
+  try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
+  const bestKey='apL-best-'+(G.mode==='daily'?G.key:'random');
+  let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
+  const isBest=!best||G.total<best;
+  const result=`Aperture Landmarks · ${G.label}\n${fmt(G.total)} (${fmtPen(G.totalPen)})\n`+G.results.map(r=>`${r.win?'✓':'✗'} ${fmt(r.time)} (${fmtPen(r.pen)})`).join('\n');
+  overlay.innerHTML=`<span class="label">${G.label}</span><h3>${fmt(G.total)} <small>(${fmtPen(G.totalPen)})</small></h3>
+    <ol>${G.results.map(r=>`<li>${r.win?'':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
+    <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
+    <div class="btns"><button class="go" id="copyBtn">Copy result</button>
+    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Random set</button>':'<button class="go ghost" id="dailyBtn">Today\'s set</button><button class="go ghost" id="randBtn">Another</button>'}</div>`;
+  $('copyBtn').onclick=e=>{const b=e.currentTarget;
+    try{navigator.clipboard.writeText(result).then(()=>{b.textContent='Copied'},()=>{b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))})}
+    catch(err){b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))}};
+  $('randBtn').onclick=()=>startGame('random');
+  if($('dailyBtn'))$('dailyBtn').onclick=()=>startGame('daily');
+  tick(`Final time ${fmt(G.total)}, with ${fmtPen(G.totalPen)} s of penalties.`);
+}
+
+startGame('daily');
+window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elapsed||0),running:!!S.running,ended:!!S.ended,helps:S.helps||0});
+})();
+</script>
+<script>
+(()=>{const h=document.getElementById('help');
+document.getElementById('helpBtn').onclick=()=>{h.hidden=false};
+document.getElementById('helpClose').onclick=()=>{h.hidden=true};
+h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
+</script>
+<script>
+document.documentElement.dataset.version='landmarks desktop v1';
+/* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
+   Fill in your project's details below. Until then the form offers to copy the report instead. */
+const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
+(()=>{const $=id=>document.getElementById(id);
+const wrap=$('bugForm'),text=$('bugText'),meta=$('bugMeta'),msg=$('bugMsg'),send=$('bugSend');
+const errors=[];addEventListener('error',e=>{errors.push(String(e.message||e.error||'error').slice(0,200));if(errors.length>3)errors.shift()});
+addEventListener('unhandledrejection',e=>{errors.push(String(e.reason).slice(0,200));if(errors.length>3)errors.shift()});
+function info(){
+  let g={};try{g=window.apertureInfo?window.apertureInfo():{}}catch(e){}
+  return{version:document.documentElement.dataset.version||'',page:location.href.split('#')[0],
+    device:navigator.userAgent,screen:`${screen.width}x${screen.height} @${devicePixelRatio}x · window ${innerWidth}x${innerHeight}`,
+    game:JSON.stringify(g),errors:errors.join(' | ')}}
+function open(){const i=info();meta.textContent=`${i.version} · ${i.screen} · ${JSON.parse(i.game||'{}').set||''} round ${JSON.parse(i.game||'{}').round||'?'}`;
+  msg.textContent='';msg.className='msg';send.disabled=false;send.textContent='Send';send.onclick=null;wrap.hidden=false;setTimeout(()=>text.focus(),50)}
+document.querySelectorAll('[data-bug]').forEach(b=>b.addEventListener('click',open));
+$('bugCancel').onclick=()=>{wrap.hidden=true};
+wrap.addEventListener('click',e=>{if(e.target===wrap)wrap.hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')wrap.hidden=true});
+text.addEventListener('keydown',e=>e.stopPropagation());
+$('bugCard').addEventListener('submit',async e=>{e.preventDefault();
+  const t=text.value.trim();if(!t){msg.textContent='Write a few words first.';msg.className='msg bad';return}
+  const i=info();const report={message:t,...i,created:new Date().toISOString()};
+  if(!BUG_CFG.projectId||!BUG_CFG.apiKey){copyFallback(report);return}
+  send.disabled=true;send.textContent='Sending…';
+  try{
+    const fields={};for(const[k,v]of Object.entries(report))fields[k]=k==='created'?{timestampValue:v}:{stringValue:String(v).slice(0,2000)};
+    const r=await fetch(`https://firestore.googleapis.com/v1/projects/${BUG_CFG.projectId}/databases/(default)/documents/${BUG_CFG.collection}?key=${BUG_CFG.apiKey}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
+    if(!r.ok)throw new Error(r.status);
+    msg.textContent='Thanks, report sent.';msg.className='msg ok';text.value='';send.textContent='Sent';
+    setTimeout(()=>{wrap.hidden=true},1600);
+  }catch(err){copyFallback(report,true)}
+});
+function copyFallback(report,failed){
+  const s=`Aperture problem report\n${report.message}\n\n${report.version} · ${report.screen}\n${report.device}\nGame: ${report.game}\nErrors: ${report.errors||'none'}`;
+  send.disabled=false;send.textContent='Copy report';
+  msg.textContent=failed?"Couldn't send. Copy it and message it instead.":'Copy the report and message it to Jonathan.';msg.className='msg bad';
+  send.onclick=ev=>{ev.preventDefault();try{navigator.clipboard.writeText(s).then(()=>{msg.textContent='Copied.';msg.className='msg ok'},()=>{text.value=s;text.select()})}catch(x){text.value=s;text.select()}};
+}
+})();
+</script>
+<script>
+/* Visitor stats: visits, finished games and top countries, kept in the same Firebase project as the bug reports.
+   Country is worked out from the device's time zone (and language as a fallback), so no outside service sees anyone's address. */
+(()=>{
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',GAME='landmarks';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
+const TZ={'Europe/London':'GB','Europe/Belfast':'GB','Europe/Dublin':'IE','Europe/Paris':'FR','Europe/Berlin':'DE','Europe/Madrid':'ES','Europe/Rome':'IT','Europe/Amsterdam':'NL','Europe/Brussels':'BE','Europe/Lisbon':'PT','Europe/Zurich':'CH','Europe/Vienna':'AT','Europe/Stockholm':'SE','Europe/Oslo':'NO','Europe/Copenhagen':'DK','Europe/Helsinki':'FI','Europe/Warsaw':'PL','Europe/Prague':'CZ','Europe/Budapest':'HU','Europe/Athens':'GR','Europe/Istanbul':'TR','Europe/Kiev':'UA','Europe/Kyiv':'UA','Europe/Moscow':'RU','Europe/Bucharest':'RO','Europe/Sofia':'BG','Europe/Belgrade':'RS','Europe/Zagreb':'HR','Europe/Luxembourg':'LU','Europe/Malta':'MT','Atlantic/Reykjavik':'IS','Europe/Gibraltar':'GI','Europe/Jersey':'JE','Europe/Guernsey':'GG','Europe/Isle_of_Man':'IM',
+'America/New_York':'US','America/Chicago':'US','America/Denver':'US','America/Phoenix':'US','America/Los_Angeles':'US','America/Anchorage':'US','Pacific/Honolulu':'US','America/Detroit':'US','America/Toronto':'CA','America/Vancouver':'CA','America/Edmonton':'CA','America/Winnipeg':'CA','America/Halifax':'CA','America/St_Johns':'CA','America/Mexico_City':'MX','America/Sao_Paulo':'BR','America/Argentina/Buenos_Aires':'AR','America/Santiago':'CL','America/Bogota':'CO','America/Lima':'PE','America/Caracas':'VE','America/Jamaica':'JM','America/Barbados':'BB','America/Puerto_Rico':'PR',
+'Australia/Sydney':'AU','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Australia/Hobart':'AU','Australia/Darwin':'AU','Australia/Canberra':'AU','Pacific/Auckland':'NZ','Pacific/Fiji':'FJ',
+'Asia/Tokyo':'JP','Asia/Seoul':'KR','Asia/Shanghai':'CN','Asia/Hong_Kong':'HK','Asia/Taipei':'TW','Asia/Singapore':'SG','Asia/Kuala_Lumpur':'MY','Asia/Bangkok':'TH','Asia/Jakarta':'ID','Asia/Manila':'PH','Asia/Ho_Chi_Minh':'VN','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Karachi':'PK','Asia/Dhaka':'BD','Asia/Colombo':'LK','Asia/Kathmandu':'NP','Asia/Dubai':'AE','Asia/Qatar':'QA','Asia/Riyadh':'SA','Asia/Jerusalem':'IL','Asia/Tehran':'IR','Asia/Baghdad':'IQ',
+'Africa/Johannesburg':'ZA','Africa/Cairo':'EG','Africa/Lagos':'NG','Africa/Nairobi':'KE','Africa/Casablanca':'MA','Africa/Accra':'GH','Africa/Harare':'ZW','Africa/Lusaka':'ZM','Africa/Kampala':'UG','Africa/Dar_es_Salaam':'TZ','Indian/Mauritius':'MU'};
+function country(){let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  if(TZ[tz])return TZ[tz];
+  const langs=navigator.languages||[navigator.language||''];for(const l of langs){const m=/-([A-Z]{2})$/i.exec(l||'');if(m)return m[1].toUpperCase()}
+  return 'XX'}
+let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
+const nameOf=c=>c==='XX'?'Elsewhere':c==='GB'?'UK':c==='US'?'USA':(names?names.of(c):c);
+async function bump(fields){
+  const doc=`projects/${P}/databases/(default)/documents/stats/${GAME}`;
+  try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({writes:[{transform:{document:doc,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
+async function read(){try{const r=await fetch(`${BASE}/stats/${GAME}?key=${K}`);if(!r.ok)return null;const f=(await r.json()).fields||{};
+  const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);const c=(f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{};
+  return{visits:num(f.visits),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]).slice(0,3)}}catch(e){return null}}
+const fmtN=n=>n.toLocaleString('en-GB');
+function show(s){if(!s)return;
+  const v=document.getElementById('stVisits'),g=document.getElementById('stGames'),t=document.getElementById('stTop'),strip=document.getElementById('statStrip');
+  if(v)v.textContent=fmtN(s.visits);if(g)g.textContent=fmtN(s.games);
+  if(t)t.innerHTML=s.top.length?s.top.map(([c,n])=>`<li><span>${nameOf(c)}</span><b>${fmtN(n)}</b></li>`).join(''):'<li><span>No visits yet</span></li>';
+  if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.games)} games played${s.top.length?' · Top: '+s.top.map(([c])=>nameOf(c)).join(', '):''}`}
+(async()=>{
+  let counted=false;try{counted=sessionStorage.getItem('ap-visit-'+GAME)==='1'}catch(e){}
+  if(LIVE&&!counted){try{sessionStorage.setItem('ap-visit-'+GAME,'1')}catch(e){}await bump({visits:1,['countries.'+country()]:1})}
+  show(await read());
+})();
+window.apertureGameDone=async()=>{if(LIVE)await bump({games:1});show(await read())};
+})();
+</script>
+</body>
+</html>
