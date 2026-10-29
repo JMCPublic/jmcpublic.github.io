@@ -250,6 +250,12 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 .fact .label a:hover{text-decoration:underline}
 .fact p{-webkit-line-clamp:4}
 .quote blockquote,.fact p{font-size:clamp(9.5px,min(5.2cqw,4.8cqh),15.5px)}
+@media (hover:hover){
+#musicBtn,#soundBtn{position:relative}
+#musicBtn::after,#soundBtn::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,-3px);background:#16181d;color:#fff;
+  font:500 11.5px/1 var(--body,system-ui,sans-serif);letter-spacing:0;text-transform:none;padding:7px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
+#musicBtn:hover::after,#soundBtn:hover::after{opacity:1;transform:translate(-50%,0)}
+}
 </style>
 </head>
 <body>
@@ -548,12 +554,12 @@ function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;const ou
 function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
   try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
   setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
-function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off')}
+function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off');b.dataset.tip=on?'Music on · click to turn off':'Music off · click to turn on'}
   try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
 setMusic(musicOn);
 $('musicBtn').onclick=()=>setMusic(!musicOn);
 function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
-  const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Sound effects on':'Sound effects off')}if(on)SFX.place()}
+  const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Sound effects on':'Sound effects off');b.dataset.tip=on?'Sounds on · click to turn off':'Sounds off · click to turn on'}if(on)SFX.place()}
 setSound(soundOn);
 $('soundBtn').onclick=()=>setSound(!soundOn);
 
@@ -891,7 +897,7 @@ function endRound(win){
   G.total+=time;G.totalPen+=pen;
   G.results.push({name:S.obj.name,answer:S.obj.answer.join(' '),time,pen,win});
   renderA();renderB();zoomTo(1);renderSlots();
-  S.words.forEach(o=>{const hit=S.obj.answer.includes(o.w);o.el.classList.toggle('hit',hit);o.el.classList.toggle('used',!hit)});
+  const lastR=G.round>=ROUNDS-1;S.words.forEach(o=>{const hit=!lastR&&S.obj.answer.includes(o.w);o.el.classList.toggle('hit',hit);o.el.classList.toggle('used',!hit)});
   (win?SFX.right:SFX.timeup)();
   feedback(win?`Solved: ${S.obj.answer.join(' ')}.`:`Out of time. It was ${S.obj.name}.`,win?'good':'bad');
   const lastRound=G.round>=ROUNDS-1;
@@ -941,7 +947,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v26';
+document.documentElement.dataset.version='desktop v27';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
