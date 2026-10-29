@@ -206,6 +206,12 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .quote figcaption{font-size:11.5px;color:var(--soft)}
 .quote figcaption::before{content:"— "}
 .quote .label{color:var(--blue);font-size:9.5px}
+.qwrap{flex:none;display:flex;flex-direction:column;gap:5px}
+.fact{margin:0 6px;padding:6px 10px;border-radius:10px;background:var(--sheet);border:1px solid var(--line);font-size:12px;line-height:1.35;color:var(--soft);text-align:center;animation:qin .5s .15s ease both}
+.fact p{margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.fact b{font-family:var(--mono);color:var(--blue);font-weight:500}
+.fact .label{display:block;color:var(--blue);font-size:9.5px;margin-bottom:1px}
+.fact a{font-size:10.5px;color:var(--faint)}
 @keyframes qin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
 </style>
@@ -239,7 +245,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
   <button class="negthumb" id="negThumb" aria-label="Show the negative larger"><canvas id="cB" width="600" height="600"></canvas><span>B</span></button>
 </div>
 
-<figure class="quote" id="quote" hidden><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure>
+<div class="qwrap" id="qwrap" hidden><figure class="quote" id="quote"><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure><aside class="fact" id="fact" hidden><span class="label">On this day</span><p><b id="fYear"></b> <span id="fText"></span></p><a id="fSrc" href="https://en.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a></aside></div>
 
 <div class="tray" id="tray">
   <div id="slots" aria-live="polite"></div>
@@ -432,6 +438,33 @@ function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'
 setSound(soundOn);
 $('soundBtn').onclick=()=>setSound(!soundOn);
 
+/* ---------- on this day: a hand-picked fact, or one from Wikipedia's "On this day" ---------- */
+const OTD={"1029": [1964, "Jewel thieves led by \"Murph the Surf\" steal the Star of India sapphire from New York's American Museum of Natural History."], "1030": [1973, "The Bosphorus Bridge in Turkey is completed, linking Europe and Asia."], "1031": [1913, "The Lincoln Highway, the first road for cars across the United States, is dedicated."], "1101": [1957, "The Mackinac Bridge in Michigan opens, then the world's longest suspension bridge between anchorages."], "1102": [1959, "The first section of the M1, Britain's first inter-city motorway, opens."], "1104": [1890, "London's first deep-level tube railway opens, between King William Street and Stockwell."], "1107": [1987, "Singapore's Mass Rapid Transit railway opens to passengers."], "1108": [1602, "The Bodleian Library in Oxford opens to the public."], "1111": [1934, "The Shrine of Remembrance opens in Melbourne, Australia."], "1112": [1958, "Climbers led by Warren Harding complete the first ascent of The Nose on El Capitan in Yosemite."], "1115": [1965, "Craig Breedlove sets a land speed record of 600.601 mph at the Bonneville Salt Flats in Utah."], "1117": [1858, "The city of Denver, Colorado, is founded."], "1118": [2020, "Wildlife biologists discover a mysterious metal monolith standing in the Utah desert."], "1121": [1964, "The Verrazzano–Narrows Bridge in New York opens, then the world's longest bridge span."], "1125": [1986, "The King Fahd Causeway, linking Saudi Arabia and Bahrain, officially opens."], "1126": [1778, "Captain James Cook becomes the first European to visit Maui in Hawaii."], "1128": [1520, "Ferdinand Magellan's expedition completes the first passage through the Strait of Magellan into the Pacific."], "1129": [1929, "Admiral Richard E. Byrd leads the first flight over the South Pole."]};
+const OTD_PREFER=new RegExp("\\b(bridge|tower|opens|opened|museum|cathedral|ascent|summit|expedition|reach|reached|canal|railway|highway|tunnel|monument|statue|palace|castle|park|explore|explorer|voyage|first)\\b",'i');
+const OTD_BAD=/\b(kill|killed|kills|dies|died|death|deaths|crash|crashes|war|wars|massacre|terror|terrorist|bomb|bombing|attack|attacks|murder|murdered|execut\w*|assassin\w*|hang|hanged|shot|shoot|disaster|earthquake|flood|floods|famine|genocide|invasion|invade|invades|riot|coup|dictator|nazi|hostage|sink|sank|sinks|wreck|collapse|collapses|explosion|fire|battle|siege|troops|army|soldiers|casualties|surrender|defeat|revolt|rebellion|treaty|election|elected|party|president|prime minister|parliament|independence|occupation|prison|arrest|arrested|slave|slavery|plague|pandemic|epidemic|missile|weapon|rifle|recognize|recognise|outbreak)\b/i;
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+let otdP=null;
+function otdLoad(){
+  if(otdP)return otdP;
+  const [y,m,d]=(G.key||'').split('-');const mm=m,dd=d,k=mm+dd;
+  const page=`https://en.wikipedia.org/wiki/${MONTHS[+mm-1]}_${+dd}`;
+  if(OTD[k])return otdP=Promise.resolve({year:OTD[k][0],text:OTD[k][1],page});
+  const ck='ap-otd-landmarks-'+k;
+  try{const c=sessionStorage.getItem(ck);if(c)return otdP=Promise.resolve(JSON.parse(c))}catch(e){}
+  return otdP=fetch(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/events/${mm}/${dd}`).then(r=>r.ok?r.json():null).then(j=>{
+    const ev=((j&&j.events)||[]).filter(e=>!OTD_BAD.test(e.text)&&OTD_PREFER.test(e.text)&&e.text.length<220);
+    if(!ev.length)return null;
+    const pick=ev[(+mm*31+ +dd)%ev.length];
+    const f={year:pick.year,text:pick.text.trim(),page};
+    try{sessionStorage.setItem(ck,JSON.stringify(f))}catch(e){}
+    return f}).catch(()=>null);
+}
+function showFact(){
+  const el=$('fact');if(!el)return;
+  otdLoad().then(f=>{if(!f){el.hidden=true;return}
+    $('fYear').textContent=f.year<0?(-f.year)+' BC':f.year;$('fText').textContent=f.text;$('fSrc').href=f.page;el.hidden=false});
+}
+
 /* ---------- daily quotes: one to open the game, one to close it ---------- */
 const Q_OPEN=[["The only true voyage of discovery would be not to visit strange lands but to possess other eyes.", "Marcel Proust"], ["A journey of a thousand miles begins with a single step.", "Laozi"], ["Travel is fatal to prejudice, bigotry, and narrow-mindedness.", "Mark Twain"], ["To travel is to discover that everyone is wrong about other countries.", "Aldous Huxley"], ["The use of travelling is to regulate imagination by reality.", "Samuel Johnson"], ["There are no foreign lands. It is the traveller only who is foreign.", "Robert Louis Stevenson"], ["For my part, I travel not to go anywhere, but to go. I travel for travel's sake.", "Robert Louis Stevenson"], ["See Naples and die.", "Italian proverb"], ["Travel makes one modest. You see what a tiny place you occupy in the world.", "Gustave Flaubert"], ["When in Rome, do as the Romans do.", "Proverb"], ["All roads lead to Rome.", "Proverb"], ["Travel, in the younger sort, is a part of education; in the elder, a part of experience.", "Francis Bacon"], ["He that travels much knows much.", "Thomas Fuller"]];
 const Q_CLOSE=[["There is no place like home.", "L. Frank Baum, The Wonderful Wizard of Oz"], ["Home is where the heart is.", "Proverb"], ["East or west, home is best.", "Proverb"], ["There ain't no surer way to find out whether you like people or hate them than to travel with them.", "Mark Twain"], ["Travel and change of place impart new vigour to the mind.", "Seneca"], ["A wise traveller never despises his own country.", "Carlo Goldoni"], ["He who lives sees much; he who travels sees more.", "Arab proverb"], ["Be it ever so humble, there's no place like home.", "John Howard Payne"], ["Travel makes a wise man better, and a fool worse.", "Thomas Fuller"], ["Journeys end in lovers meeting.", "William Shakespeare, Twelfth Night"], ["Tomorrow to fresh woods, and pastures new.", "John Milton"]];
@@ -445,14 +478,14 @@ function quotesFor(){
   return{open,close};
 }
 function showQuote(which){
-  const el=$('quote');if(!el||!G.key)return;
+  const el=$('qwrap');if(!el||!G.key)return;
   if(!G.quotes)G.quotes=quotesFor();
   const [text,by]=G.quotes[which];
   $('qLabel').textContent=which==='open'?"Today's quote":'Until tomorrow';
   $('qText').textContent=`“${text}”`;$('qBy').textContent=by;
-  el.hidden=false;
+  el.hidden=false;showFact();
 }
-function hideQuote(){const el=$('quote');if(el)el.hidden=true}
+function hideQuote(){const el=$('qwrap');if(el)el.hidden=true}
 
 /* ---------- rules ---------- */
 const ROUNDS=5, STAGE=20, STAGES=6, LIMIT=STAGE*STAGES, PEN=15, MISS=30, THIN=Math.round(56*.2), MAX_THINS=4;
@@ -687,7 +720,7 @@ const overlay=$('overlay');
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 let autoNext=0,beeps=[];const BEAT=3000;
 function startGame(mode){
-  hideQuote();
+  hideQuote();otdP=null;
   musicStop(.2);
   clearTimeout(autoNext);
   cancelAnimationFrame(raf);
@@ -812,7 +845,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks mobile v8';
+document.documentElement.dataset.version='landmarks mobile v9';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
