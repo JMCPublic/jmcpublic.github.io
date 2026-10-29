@@ -212,6 +212,18 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .fact a{font-size:10.5px;color:var(--faint)}
 @keyframes qin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
+
+/* quote and "on this day": two matching cards with dark grey outlines */
+.qwrap{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr;gap:10px;margin:0 2px}
+.quote,.fact{border:1.5px solid #7d8592;border-radius:12px;background:var(--sheet);padding:7px 12px;margin:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2px;min-width:0}
+.quote blockquote,.fact p{font-size:14.5px;line-height:1.35}
+.fact p{font-weight:500;color:var(--ink);-webkit-line-clamp:3}
+.quote .label,.fact .label{font-size:9.5px;color:var(--blue);letter-spacing:.11em;margin:0}
+.fact a{align-self:center}
+.overlay{border:1.5px solid #7d8592}
+.fact .label a{text-transform:none;letter-spacing:0;color:var(--faint);font-weight:400;text-decoration:none}
+.fact .label a:hover{text-decoration:underline}
+.fact p{-webkit-line-clamp:4}
 </style>
 </head>
 <body>
@@ -243,7 +255,7 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
   <button class="negthumb" id="negThumb" aria-label="Show the negative larger"><canvas id="cB" width="600" height="600"></canvas><span>B</span></button>
 </div>
 
-<div class="qwrap" id="qwrap" hidden><figure class="quote" id="quote"><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure><aside class="fact" id="fact" hidden><span class="label">On this day</span><p><b id="fYear"></b> <span id="fText"></span></p><a id="fSrc" href="https://en.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a></aside></div>
+<div class="qwrap" id="qwrap" hidden><figure class="quote" id="quote"><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure><aside class="fact" id="fact" hidden><span class="label">On this day <a id="fSrc" href="https://en.wikipedia.org/" target="_blank" rel="noopener">· Wikipedia</a></span><p><b id="fYear"></b> <span id="fText"></span></p></aside></div>
 
 <div class="tray" id="tray">
   <div id="slots" aria-live="polite"></div>
@@ -924,7 +936,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v18';
+document.documentElement.dataset.version='mobile v19';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

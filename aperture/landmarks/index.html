@@ -236,6 +236,22 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 .fact a{font-size:10.5px;color:var(--faint);align-self:flex-end}
 @keyframes qin{from{opacity:0;margin-top:6px}to{opacity:1;margin-top:0}}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}*{transition:none!important}}
+
+/* quote and "on this day": two matching cards with dark grey outlines */
+.negwrap{container-type:size}
+.qwrap{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:1fr 1fr;gap:14px;width:calc(100% - 32px);max-height:calc(100% - 24px)}
+.quote,.fact{border:1.5px solid #7d8592;border-radius:14px;background:rgba(255,255,255,.93);padding:clamp(7px,3.6cqh,13px) clamp(10px,5cqw,16px);margin:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:clamp(2px,1.4cqh,5px);min-height:0;overflow:hidden}
+.quote blockquote,.fact p{font-size:clamp(11.5px,min(5.4cqw,5.2cqh),16.5px);line-height:1.38}
+.fact p{font-weight:500;color:var(--ink);-webkit-line-clamp:3}
+.quote figcaption{font-size:clamp(10px,3.8cqw,12px)}
+.quote .label,.fact .label{font-size:10px;color:var(--blue);letter-spacing:.12em}
+.fact a{align-self:center;font-size:10px}
+.overlay{border:1.5px solid #7d8592}
+.fact .label a{text-transform:none;letter-spacing:0;color:var(--faint);font-weight:400;text-decoration:none}
+.fact .label a:hover{text-decoration:underline}
+.fact p{-webkit-line-clamp:4}
+.quote blockquote,.fact p{font-size:clamp(9.5px,min(5.2cqw,4.8cqh),15.5px)}
 </style>
 </head>
 <body>
@@ -288,7 +304,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 
   <section class="phone" aria-label="B: The negative">
     <div class="cap"><h2><span>B</span>The negative</h2><span class="label">fills in</span></div>
-    <div class="negwrap"><div class="qwrap" id="qwrap" hidden><figure class="quote" id="quote"><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure><aside class="fact" id="fact" hidden><span class="label">On this day</span><p><b id="fYear"></b> <span id="fText"></span></p><a id="fSrc" href="https://en.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a></aside></div><canvas id="cB" width="600" height="600" aria-label="Negative image, partly filled in"></canvas></div>
+    <div class="negwrap"><div class="qwrap" id="qwrap" hidden><figure class="quote" id="quote"><span class="label" id="qLabel">Today's quote</span><blockquote id="qText"></blockquote><figcaption id="qBy"></figcaption></figure><aside class="fact" id="fact" hidden><span class="label">On this day <a id="fSrc" href="https://en.wikipedia.org/" target="_blank" rel="noopener">· Wikipedia</a></span><p><b id="fYear"></b> <span id="fText"></span></p></aside></div><canvas id="cB" width="600" height="600" aria-label="Negative image, partly filled in"></canvas></div>
     <div class="tray" id="tray">
       <span class="label">Your answer · tap a word or type</span>
       <div id="slots" aria-live="polite"></div>
@@ -844,7 +860,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v10';
+document.documentElement.dataset.version='landmarks desktop v11';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
