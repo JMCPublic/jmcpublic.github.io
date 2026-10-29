@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aperture Landmarks Mobile</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -223,6 +228,8 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
 .fact p{-webkit-line-clamp:4}
 @media (max-width:360px){h1{font-size:16px}h1 .ver{font-size:8px;margin-left:.15em}.right{gap:4px}.right .helpbtn{padding:0 7px;font-size:10.5px}}
 </style>
+</head>
+<body>
 
 <header>
   <div class="bar">
@@ -790,6 +797,8 @@ function endRound(win){
   clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];
   if(!lastRound){autoNext=setTimeout(goNext,BEAT);beeps=[1000,2000].map(t=>setTimeout(SFX.beep,t))}
   $('nextBtn').onclick=lastRound?finish:goNext;
+  // the closing quote shows as soon as the last round ends, not only after Final time
+  if(lastRound)showQuote('close');
   tick(win?`Solved in ${fmt(S.elapsed)}, plus ${fmtPen(pen)} s of penalties.`:'Two minutes are up.');
   updateHUD();
 }
@@ -851,7 +860,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks mobile v10';
+document.documentElement.dataset.version='landmarks mobile v11';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -941,3 +950,5 @@ function show(s){if(!s)return;
 window.apertureGameDone=async()=>{if(LIVE&&!/\bClaude\//.test(navigator.userAgent))await bump({games:1});show(await read())};
 })();
 </script>
+</body>
+</html>
