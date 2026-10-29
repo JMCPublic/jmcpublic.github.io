@@ -526,7 +526,7 @@ function quotesFor(){
   // the same pair for everyone on the same day; about one day in four, one of them comes from sport or entertainment
   const d=G.mode==='daily'?Math.floor(Date.parse(G.key+'T00:00:00Z')/86400000):Math.floor(Math.random()*100000);
   let open=Q_OPEN[d%Q_OPEN.length],close=Q_CLOSE[(d*5+3)%Q_CLOSE.length];
-  const h=hashStr('star|'+d);
+  const h=hashStr('star|aperture|'+d);
   if(h%4===0){const star=Q_STAR[(d*3+1)%Q_STAR.length];if((h>>>3)%2)open=star;else close=star}
   return{open,close};
 }
@@ -891,7 +891,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v15';
+document.documentElement.dataset.version='mobile v16';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
