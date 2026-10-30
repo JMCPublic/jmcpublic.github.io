@@ -270,6 +270,9 @@ body:not(.waiting) #ticker{display:none}
 body.done .zoombtns,body.done .negthumb,body.done #feedback{display:none}
 body.done .ovwrap{top:8px}
 .homelink{color:inherit;text-decoration:none;display:flex;align-items:center}
+.overlay .kofi{font-size:11.5px;color:var(--soft);text-decoration:none;margin-top:2px}
+.overlay .kofi u{text-decoration-color:rgba(91,96,107,.4);text-underline-offset:3px}
+.overlay .kofi:hover,.overlay .kofi:hover u{color:var(--blue);text-decoration-color:var(--blue)}
 </style>
 </head>
 <body>
@@ -960,7 +963,8 @@ function finish(){
     <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
     <p class="next">Next quiz in <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Challenge a friend</button>
-    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Random set</button>':'<button class="go ghost" id="dailyBtn">Today\'s set</button><button class="go ghost" id="randBtn">Another</button>'}</div>`;
+    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Random set</button>':'<button class="go ghost" id="dailyBtn">Today\'s set</button><button class="go ghost" id="randBtn">Another</button>'}</div>
+    <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Enjoyed it? <u>Buy me a coffee</u></a>`;
   $('copyBtn').onclick=async e=>{const b=e.currentTarget;
     if(navigator.share){try{await navigator.share({text:challenge});b.textContent='Sent';return}catch(err){if(err&&err.name==='AbortError')return}}
     try{navigator.clipboard.writeText(challenge).then(()=>{b.textContent='Copied'},()=>{b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))})}
@@ -1006,7 +1010,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v27';
+document.documentElement.dataset.version='mobile v28';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
