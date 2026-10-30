@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Natural Wonders · Geography Games</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
 <meta name="description" content="Ten quick geography games: rivers, lakes, seas, mountains, deserts, borders and country sizes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
@@ -51,6 +56,29 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-al
  .g p{margin:0 0 10px;font-size:13.5px}
 }
 @media (min-width:1000px){.grid{grid-template-columns:repeat(5,1fr);gap:12px}.g{padding:14px 14px 12px}.g h2{font-size:18px;margin-bottom:4px}.g p{font-size:13px;margin-bottom:10px;line-height:1.4}.ic{width:64px;height:34px}.top{margin-bottom:6px}.play{padding:6px 14px;font-size:13px}h1{font-size:46px}header{margin-bottom:14px}.wrap{padding-top:16px}.lead{font-size:14px}}
+
+/* your record, kept on this device */
+.rec{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:18px;margin:0 0 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;scroll-margin-top:16px}
+.rec h2{font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 4px}
+.rec .rsub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
+.plates{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.plates .plate{width:30px;height:30px;font-size:13px;filter:grayscale(1) opacity(.35)}
+.plates .plate.y{filter:none}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nums div{background:var(--bg);border-radius:12px;padding:8px 10px}
+.nums b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px}
+.nums span{font-size:11.5px;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bars .lbl{font:600 11px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--cu);margin-bottom:2px}
+.bar{display:grid;grid-template-columns:130px 1fr 52px;gap:8px;align-items:center;font-size:13px}
+.bar .t{height:10px;border-radius:5px;background:#ece6da;overflow:hidden}.bar .t i{display:block;height:100%;border-radius:5px;background:var(--ink)}
+.bar.top .t i{background:#2f7a4a}.bar.low .t i{background:var(--accent)}
+.bar em{font-style:normal;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.bar.none{color:#b9b2a5}.bar.none em{color:#b9b2a5}
+.verdict{margin-top:10px;font-size:13.5px;color:var(--ink);background:var(--bg);border-radius:12px;padding:10px 12px;line-height:1.45}
+.recempty{background:#fff;border:1.5px dashed var(--line);border-radius:16px;padding:12px 16px;margin:0 0 16px;font-size:14px;color:var(--muted)}
+.g .badge{position:absolute;bottom:14px;right:14px;font:600 11px Inter,sans-serif;background:#e7f1ea;color:#2f7a4a;border-radius:999px;padding:3px 8px}
+@media (max-width:700px){.rec{grid-template-columns:1fr}.bar{grid-template-columns:110px 1fr 48px}}
 </style>
 </head>
 <body>
@@ -59,6 +87,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-al
  <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1></div>
  <div class="hr"><a class="mbb" href="/natural-wonders-masterbrain/"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">All ten games in one, then see your strengths</span><span class="mba">Play →</span></a></div>
 </header>
+<section id="record"></section>
 <main class="grid" id="grid"></main>
 <footer>Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. Each game takes a few minutes and works on phone or computer.<br>Figures in every game come from named public sources, listed on each game's Sources page. Free to play. No sign-up.</footer>
 </div>
@@ -91,6 +120,24 @@ const GAMES=[
 document.getElementById('grid').innerHTML=GAMES.map((g,i)=>{
  const inner=`<div class="top"><span class="plate">${i+1}</span><svg class="ic" viewBox="0 0 84 44" aria-hidden="true">${I[g.ic]}</svg></div><h2>${g.n}</h2><p>${g.t}</p><span class="play">${g.soon?'Coming soon':'Play →'}</span>`;
  return g.soon?`<div class="g soon">${inner}</div>`:`<a class="g" href="${B+g.slug}/">${inner}</a>`}).join('');
+
+// ---------- Your Natural Wonders: built from what this device has played ----------
+(()=>{let rec={games:{}};try{rec=JSON.parse(localStorage.getItem('nw_record'))||rec}catch(e){}
+const box=document.getElementById('record');const played=GAMES.filter(g=>rec.games[g.slug]);
+if(!played.length){box.innerHTML='<div class="recempty">🧭 Play any game and your <b style="color:var(--ink)">Natural Wonders record</b> starts here: which games you have explored, your best scores, and your strongest and weakest topics. It stays on this device; no sign-up.</div>';return}
+const plays=played.reduce((a,g)=>a+rec.games[g.slug].played,0),pct=rec.total?Math.round(rec.right/rec.total*100):0;
+const ranked=played.slice().sort((a,b)=>rec.games[b.slug].best-rec.games[a.slug].best),best=ranked[0],worst=ranked[ranked.length-1];
+const nxt=GAMES.find(g=>!rec.games[g.slug]);
+const verdict=played.length===1?`You've started with <b>${best.n}</b>. ${nxt?`Try <b>${nxt.n}</b> next to keep exploring.`:''}`:`<b>Strongest: ${best.n}.</b> Weakest so far: ${worst.n}. ${nxt?`Try <b>${nxt.n}</b> next to keep exploring.`:`You've played all ten. Try to beat your score in ${worst.n}.`}`;
+box.innerHTML=`<div class="rec"><div><h2>Your Natural Wonders</h2><p class="rsub">Kept on this device. No sign-up needed.</p>
+<div class="plates">${GAMES.map((g,i)=>`<span class="plate ${rec.games[g.slug]?'y':''}" title="${g.n}">${i+1}</span>`).join('')}</div>
+<div class="nums"><div><b>${played.length} / ${GAMES.length}</b><span>games explored</span></div><div><b>${plays}</b><span>games played</span></div><div><b>${pct}%</b><span>answers right</span></div></div>
+<div class="verdict">🌍 ${verdict}</div></div>
+<div class="bars"><div class="lbl">Best score in each game</div>${GAMES.map(g=>{const r=rec.games[g.slug];return r?`<div class="bar ${r===rec.games[best.slug]&&played.length>1?'top':''} ${r===rec.games[worst.slug]&&played.length>1?'low':''}"><span>${g.n}</span><span class="t"><i style="width:${Math.max(3,r.best)}%"></i></span><em>${r.bestTxt||r.best+'%'}</em></div>`:`<div class="bar none"><span>${g.n}</span><span class="t"></span><em>–</em></div>`}).join('')}</div></div>`;
+document.querySelectorAll('#grid a.g').forEach(a=>{const slug=(a.getAttribute('href').match(/natural-wonders-([a-z-]+)/)||[])[1];const r=rec.games[slug];if(!r)return;
+  a.insertAdjacentHTML('beforeend',`<span class="badge">Best ${r.bestTxt||r.best+'%'}</span>`);const pl=a.querySelector('.play');if(pl)pl.textContent='Play again →'});
+if(location.hash==='#record')box.scrollIntoView();
+})();
 </script>
 </body>
 </html>
