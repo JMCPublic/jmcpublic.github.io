@@ -3,7 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Aperture 2 Mobile</title>
+<title>Aperture · Two Minute Games</title>
+<meta name="description" content="An everyday object, seen through a few small viewpoints. What is it? Your 2 minute daily quiz, the same for everyone.">
+<link rel="canonical" href="https://twominute.games/aperture/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Two Minute Games">
+<meta property="og:title" content="Aperture: your 2 minute daily quiz">
+<meta property="og:description" content="What everyday object can you see? The same puzzle for everyone, every day.">
+<meta property="og:url" content="https://twominute.games/aperture/">
+<meta property="og:image" content="https://twominute.games/og-aperture.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%232b50e0' stroke-width='5'/%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
@@ -247,15 +257,26 @@ header{--hs:11.5px;gap:8px}
 body:not(.waiting) .quizhead{display:none}
 #ticker{display:block;margin:0;width:max-content;max-width:100%;white-space:nowrap;text-align:center;font-size:10.5px;line-height:1.35;color:var(--soft);background:rgba(255,255,255,.72);border-radius:8px;padding:3px 6px;box-sizing:border-box}
 #overlay[hidden]+#ticker{display:none}
+body:not(.waiting) #ticker{display:none}
 @media (max-width:360px){header{--hs:10.5px}.meta b{font-size:11px}.tlab,.meta i{letter-spacing:.06em}}
 @media (max-width:340px){header{--hs:9.5px}.meta b{font-size:10px!important}.tlab,.meta i{letter-spacing:.04em!important}}
+
+/* end of game: squares, streak and countdown */
+.overlay .sq{font-size:15px;letter-spacing:2px;line-height:1.2;margin-top:2px}
+.overlay .streak{color:var(--ink);font-weight:500}
+.overlay .next{font-size:11.5px;color:var(--soft)}
+.overlay .next b{font-family:var(--mono);font-weight:500;color:var(--blue)}
+/* end of game: the result card gets the whole picture to itself */
+body.done .zoombtns,body.done .negthumb,body.done #feedback{display:none}
+body.done .ovwrap{top:8px}
+.homelink{color:inherit;text-decoration:none;display:flex;align-items:center}
 </style>
 </head>
 <body>
 
 <header>
   <div class="bar">
-    <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">2</sup></h1>
+    <h1><a class="homelink" href="/" title="All games at twominute.games"><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">2</sup></a></h1>
     <div class="right"><button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button></div>
   </div>
   <div class="timerow"><span class="tlab">Time left</span><span id="time">2:00</span><div class="segs" id="segs"></div></div>
@@ -337,7 +358,7 @@ body:not(.waiting) .quizhead{display:none}
       <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel dropped into your answer.</div>
       <div><b>Answer</b>Tap the right word in the list. A wrong answer adds 15 seconds. Not solved in 2 minutes counts as 2:00 plus 30 seconds.</div>
     </div>
-    <a href="https://jmcpublic.github.io/aperture/?desktop=1">Playing on a computer? Use the desktop version</a>
+    <a href="https://twominute.games/aperture/?desktop=1">Playing on a computer? Use the desktop version</a>
     <button class="go" id="helpClose">Got it</button>
   </div>
 </div>
@@ -843,7 +864,19 @@ document.addEventListener('visibilitychange',()=>{last=performance.now()});
 const overlay=$('overlay');
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 let autoNext=0,beeps=[];const BEAT=3000;
+let nextT=0;
+// daily streak, kept on this device: one more for each day in a row a daily set is finished
+function bumpStreak(){
+  let st={last:'',n:0};try{st=JSON.parse(localStorage.getItem('aperture2-streak'))||st}catch(e){}
+  if(st.last===G.key)return st.n;
+  const y=new Date(G.key+'T12:00:00');y.setDate(y.getDate()-1);
+  const yk=`${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;
+  st={last:G.key,n:st.last===yk?st.n+1:1};
+  try{localStorage.setItem('aperture2-streak',JSON.stringify(st))}catch(e){}
+  return st.n;
+}
 function startGame(mode){
+  clearInterval(nextT);document.body.classList.remove('done');
   hideQuote();otdP=null;
   musicStop(.2);
   clearTimeout(autoNext);
@@ -886,7 +919,7 @@ function endRound(win){
   S.running=false;S.ended=true;S.won=win;cancelAnimationFrame(raf);
   const pen=S.pen+(win?0:MISS), time=(win?S.elapsed:LIMIT)+pen;
   G.total+=time;G.totalPen+=pen;
-  G.results.push({name:S.obj.name,answer:S.obj.answer.join(' '),time,pen,win});
+  G.results.push({name:S.obj.name,answer:S.obj.answer.join(' '),time,pen,win,helps:S.helps||0});
   renderA();renderB();zoomTo(1);renderSlots();
   const lastR=G.round>=ROUNDS-1;S.words.forEach(o=>{const hit=!lastR&&S.obj.answer.includes(o.w);o.el.classList.toggle('hit',hit);o.el.classList.toggle('used',!hit)});
   (win?SFX.right:SFX.timeup)();
@@ -907,17 +940,25 @@ function endRound(win){
   updateHUD();
 }
 function finish(){
+  document.body.classList.add('done');
   showQuote('close');
   try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
   const bestKey='aperture2-best-'+(G.mode==='daily'?G.key:'random');
   let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
   const isBest=!best||G.total<best;
+  const streak=G.mode==='daily'?bumpStreak():0;
+  const helps=G.results.reduce((a,r)=>a+(r.helps||0),0), won=G.results.filter(r=>r.win).length;
+  const squares=G.results.map(r=>r.win?'🟦':'⬜').join('');
+  const SHARE=`Aperture · ${G.mode==='daily'?G.label.replace(/^Daily · /,''):'random set'}  ⏱ ${fmt(G.total)}\n${squares}  ${won}/${ROUNDS} · ${helps===0?'no help':helps===1?'1 help':helps+' helps'}${streak>1?`\n🔥 ${streak} days in a row`:''}\ntwominute.games/aperture`;
   const solved=G.results.filter(r=>r.win).length, dateTxt=G.mode==='daily'?G.label.replace('Daily · ',''):'random set';
-  const challenge=`🔍 Aperture · ${dateTxt}\nI spotted ${solved===ROUNDS?'all '+ROUNDS:solved+' of '+ROUNDS} hidden objects in ${fmt(G.total)} ⏱ (${G.totalPen?fmtPen(G.totalPen)+' in penalties':'no penalties'})\n${G.results.map(r=>r.win?'✓':'✗').join('')}\nBet you can't beat me 👀 jmcpublic.github.io/aperture`;
+  const challenge=SHARE;
   const result=`Aperture 2 · ${G.label}\n${fmt(G.total)} (${fmtPen(G.totalPen)})\n`+G.results.map(r=>`${r.win?'✓':'✗'} ${fmt(r.time)} (${fmtPen(r.pen)})`).join('\n');
   overlay.innerHTML=`<span class="label">${G.label}</span><h3>${fmt(G.total)} <small>(${fmtPen(G.totalPen)})</small></h3>
     <ol>${G.results.map(r=>`<li>${r.win?'':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
+    <div class="sq" aria-label="${won} of ${ROUNDS} solved">${squares}</div>
+    ${streak?`<p class="streak">${streak>1?`🔥 ${streak} days in a row`:'🔥 Day 1 of your streak. Come back tomorrow.'}</p>`:''}
     <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
+    <p class="next">Next quiz in <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Challenge a friend</button>
     ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Random set</button>':'<button class="go ghost" id="dailyBtn">Today\'s set</button><button class="go ghost" id="randBtn">Another</button>'}</div>`;
   $('copyBtn').onclick=async e=>{const b=e.currentTarget;
@@ -925,6 +966,7 @@ function finish(){
     try{navigator.clipboard.writeText(challenge).then(()=>{b.textContent='Copied'},()=>{b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))})}
     catch(err){b.textContent='Copy failed';tick(result.replace(/\n/g,' · '))}};
   $('randBtn').onclick=()=>startGame('random');
+  clearInterval(nextT);const tickNext=()=>{const el=$('nextIn');if(!el){clearInterval(nextT);return}const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`};tickNext();nextT=setInterval(tickNext,30000);
   if($('dailyBtn'))$('dailyBtn').onclick=()=>startGame('daily');
   tick(`Final time ${fmt(G.total)}, with ${fmtPen(G.totalPen)} s of penalties.`);
 }
@@ -964,7 +1006,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v22';
+document.documentElement.dataset.version='mobile v26';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

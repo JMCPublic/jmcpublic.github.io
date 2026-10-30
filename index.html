@@ -2,95 +2,132 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Natural Wonders · Geography Games</title>
-<meta name="description" content="Ten quick geography games: rivers, lakes, seas, mountains, deserts, borders and country sizes.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Two Minute Games · daily puzzles in two minutes</title>
+<meta name="description" content="Quick daily games: spot the everyday object, find the landmark, rank the world's natural wonders. The same puzzles for everyone, two minutes a day.">
+<link rel="canonical" href="https://twominute.games/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Two Minute Games">
+<meta property="og:title" content="Two Minute Games">
+<meta property="og:description" content="Quick daily puzzles. The same for everyone, two minutes a day.">
+<meta property="og:url" content="https://twominute.games/">
+<meta property="og:image" content="https://twominute.games/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f1f3f7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%232b50e0' stroke-width='5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
 <style>
-:root{--bg:#f6f3ec;--card:#fff;--ink:#16130f;--muted:#6f685d;--line:#e6e0d4;--accent:#e2552d;--cu:#b8663a;--hl:#d6eaf6}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 24px}
-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
-.kick{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--cu);margin:0 0 6px}
-h1{font-family:Fraunces,Georgia,serif;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1;font-size:clamp(36px,6vw,56px)}
-.lead{max-width:470px;margin:0;color:var(--muted);font-size:15px;line-height:1.5}
-.hr{display:flex;flex-direction:column;gap:10px;width:min(100%,460px)}
-.mbb{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;background:var(--ink);color:#fff;text-decoration:none;border-radius:14px;padding:10px 14px}
-.mbb .mbk{grid-column:1;grid-row:1/3;font:700 10px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e0a77f;writing-mode:vertical-rl;transform:rotate(180deg)}
-.mbb b{font:800 19px Fraunces,Georgia,serif;grid-column:2}
-.mbb .mbs{grid-column:2;font-size:12.5px;color:#d9d3c8}
-.mbb .mba{grid-column:3;grid-row:1/3;background:var(--accent);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px}
-.mbb:hover{background:#2a251f}
-.lead b{color:var(--ink);font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.g{position:relative;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px 16px 14px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s,box-shadow .15s}
-a.g:hover,a.g:focus-visible{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 6px 18px rgba(22,19,15,.08);outline:none}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.plate{width:34px;height:34px;border-radius:7px;display:grid;place-items:center;flex:none;
- font-family:Cinzel,Copperplate,'Copperplate Gothic Bold',Georgia,serif;font-weight:700;font-size:16px;line-height:1;color:#fff4ea;
- background:radial-gradient(circle at 5px 5px,#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at calc(100% - 5px) 5px,#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at 5px calc(100% - 5px),#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#6e3517 1.2px,transparent 1.8px),linear-gradient(135deg,#eab48a 0%,#c47746 30%,#97502a 58%,#d08f60 82%,#a85d33 100%);
- border:1px solid #7a3c1c;box-shadow:inset 0 1px 0 rgba(255,236,215,.6),inset 0 -1px 0 rgba(60,25,8,.35),0 1px 3px rgba(60,30,10,.25);text-shadow:0 -1px 0 rgba(70,30,10,.55)}
-.ic{width:84px;height:44px}
-.g h2{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:22px;letter-spacing:-.01em;margin:0 0 6px}
-.g p{margin:0 0 14px;font-size:14px;line-height:1.45;color:var(--muted);flex:1}
-.play{align-self:flex-start;font-weight:700;font-size:14px;color:#fff;background:var(--accent);border-radius:999px;padding:8px 16px}
-.soon{opacity:.75;border-style:dashed}
-.soon .play{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
-.soon .plate{filter:grayscale(.7)}
-footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-align:center}
-@media (max-width:600px){
- .wrap{padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
- header{margin-bottom:16px;gap:10px}
- .grid{grid-template-columns:1fr;gap:10px}
- .g{display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px}
- .top{grid-row:1/4;flex-direction:column;justify-content:flex-start;gap:8px;margin:0}
- .ic{width:56px;height:30px}
- .g h2{font-size:19px;margin:2px 0 4px}
- .g p{margin:0 0 10px;font-size:13.5px}
+/* Home page for twominute.games: the brand, today's date, one card per game family. Same light look as Aperture. */
+:root{
+  --bg:#f1f3f7; --sheet:#ffffff; --line:#e3e6eb; --frame:#b9c0cb; --edge:#7d8592;
+  --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab; --blue:#2b50e0; --blue-wash:#e6edff;
+  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
 }
-@media (min-width:1000px){.grid{grid-template-columns:repeat(5,1fr);gap:12px}.g{padding:14px 14px 12px}.g h2{font-size:18px;margin-bottom:4px}.g p{font-size:13px;margin-bottom:10px;line-height:1.4}.ic{width:64px;height:34px}.top{margin-bottom:6px}.play{padding:6px 14px;font-size:13px}h1{font-size:46px}header{margin-bottom:14px}.wrap{padding-top:16px}.lead{font-size:14px}}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding:max(28px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(36px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+header{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding-top:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,44px);letter-spacing:-.035em;margin:0;line-height:1;display:flex;align-items:center}
+.brand .o{display:inline-block;width:.6em;height:.6em;border:.14em solid var(--blue);border-radius:50%;margin-right:.3em}
+.brand .tld{color:var(--blue);font-weight:500}
+.tag{margin:0;color:var(--soft);font-size:16px;max-width:36ch}
+.today{color:var(--blue)}
+.today b{font-family:var(--mono);font-weight:500;letter-spacing:0;text-transform:none;font-size:12.5px;margin-left:6px}
+.games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.game{position:relative;display:flex;flex-direction:column;gap:12px;background:var(--sheet);border:1.5px solid var(--frame);border-radius:22px;padding:18px 18px 18px;text-decoration:none;
+  box-shadow:0 1px 2px rgba(22,24,29,.04),0 18px 36px -24px rgba(22,24,29,.25);transition:transform .15s,border-color .15s}
+.game:hover,.game:focus-visible{border-color:var(--blue);transform:translateY(-2px);outline:none}
+.pic{aspect-ratio:16/10;border-radius:14px;overflow:hidden;position:relative;background:#e9ecf1}
+.pic svg{width:100%;height:100%;display:block}
+.game h2{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;margin:0;line-height:1.1}
+.game h2 small{font-family:var(--mono);font-weight:400;font-size:12px;color:var(--blue);margin-left:4px;vertical-align:super}
+.game p{margin:0;color:var(--soft);font-size:14px;line-height:1.45;flex:1}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.play{background:var(--ink);color:#fff;border-radius:999px;padding:8px 18px;font-weight:500;font-size:14px}
+.game:hover .play{background:var(--blue)}
+.status{font-size:12.5px;color:var(--soft);white-space:nowrap}
+.status.done{color:#1f8a4c}
+footer{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--faint);font-size:13px;text-align:center}
+footer a{color:var(--soft);text-decoration:none}footer a:hover{color:var(--blue)}
+@media (max-width:860px){.games{grid-template-columns:minmax(0,1fr);max-width:520px;margin:0 auto;width:100%}}
+@media (max-width:480px){
+  .game{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;row-gap:6px;padding:12px;border-radius:18px}
+  .pic{grid-row:1/4;aspect-ratio:1;border-radius:12px;align-self:start}
+  .game h2{font-size:18px}.game p{font-size:13.5px}
+  .play{padding:6px 14px;font-size:13px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
- <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1></div>
- <div class="hr"><a class="mbb" href="https://jmcpublic.github.io/natural-wonders-masterbrain/"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">All ten games in one, then see your strengths</span><span class="mba">Play →</span></a></div>
-</header>
-<main class="grid" id="grid"></main>
-<footer>Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. Each game takes a few minutes and works on phone or computer.<br>Figures in every game come from named public sources, listed on each game's Sources page. Free to play. No sign-up.</footer>
+  <header>
+    <h1 class="brand"><span class="o" aria-hidden="true"></span>twominute<span class="tld">.games</span></h1>
+    <p class="tag">Quick daily puzzles. The same for everyone, two minutes a day.</p>
+    <span class="label today">Today<b id="today"></b></span>
+  </header>
+
+  <main class="games">
+    <a class="game" href="/aperture/" data-best="aperture2-best-" data-streak="aperture2-streak">
+      <div class="pic" aria-hidden="true">
+        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#5a3a22"/><g opacity=".25" stroke="#2c1a0d" stroke-width="3"><path d="M0 40C80 30 160 55 320 38M0 95C90 85 200 110 320 92M0 150C110 140 210 165 320 148"/></g>
+          <g filter="url(#b)"><ellipse cx="160" cy="110" rx="70" ry="48" fill="#f2c94c"/><circle cx="208" cy="78" r="30" fill="#f2c94c"/><path d="M234 78l22 6-22 8z" fill="#e8892c"/></g>
+          <defs><filter id="b"><feGaussianBlur stdDeviation="9"/></filter><mask id="m"><rect width="320" height="200" fill="#fff"/><rect x="70" y="40" width="22" height="130" rx="4" fill="#000" transform="rotate(-8 81 105)"/><rect x="150" y="62" width="120" height="20" rx="4" fill="#000"/><rect x="200" y="100" width="18" height="80" rx="4" fill="#000"/></mask></defs>
+          <rect width="320" height="200" fill="#eef1f5" mask="url(#m)"/></svg>
+      </div>
+      <h2>Aperture</h2>
+      <p>An everyday object, seen through a few small viewpoints. What is it?</p>
+      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    </a>
+
+    <a class="game" href="/aperture/landmarks/" data-best="apL-best-" data-streak="apL-streak">
+      <div class="pic" aria-hidden="true">
+        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa6e8"/><stop offset="1" stop-color="#c8def5"/></linearGradient>
+          <mask id="m2"><rect width="320" height="200" fill="#fff"/><rect x="128" y="20" width="26" height="170" rx="4" fill="#000"/><rect x="40" y="120" width="120" height="22" rx="4" fill="#000"/><rect x="190" y="70" width="90" height="20" rx="4" fill="#000"/></mask></defs>
+          <rect width="320" height="200" fill="url(#sky)"/><path d="M118 200V70l8-18h28l8 18v130z" fill="#c9a46a"/><path d="M126 52l14-34 14 34z" fill="#8a6a3c"/><circle cx="140" cy="86" r="11" fill="#f4ecd8" stroke="#6b5230" stroke-width="2"/>
+          <path d="M0 200v-36h70v-14h40v50z" fill="#b8925a"/><rect width="320" height="200" fill="#eef1f5" mask="url(#m2)"/></svg>
+      </div>
+      <h2>Aperture <small>landmarks</small></h2>
+      <p>A famous place, revealed bit by bit in a real photo. Where in the world?</p>
+      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    </a>
+
+    <a class="game" href="/wonders/">
+      <div class="pic" aria-hidden="true">
+        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#f6f3ec"/><path d="M0 150l60-70 40 40 50-80 60 90 40-40 70 60v50H0z" fill="#b8663a" opacity=".85"/><path d="M150 40l18 26h-36z" fill="#fff" opacity=".8"/>
+          <path d="M0 176c50-14 80 8 130-4s90-22 190 2v26H0z" fill="#4f8fd6"/></svg>
+      </div>
+      <h2>Natural Wonders</h2>
+      <p>Ten quick geography games: rivers, lakes, peaks, deserts, borders and the true size of countries.</p>
+      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    </a>
+  </main>
+
+  <footer>
+    <span>New puzzles every day at midnight, your time.</span>
+    <span><a href="/about/">About, credits and privacy</a></span>
+  </footer>
 </div>
 <script>
-const B='https://jmcpublic.github.io/natural-wonders-';
-// little monochrome icons: black land, white water, pale-blue highlight
-const L='#16130f',W='#fff',H='#d6eaf6',G='#9a9387';
-const I={
-rivers:`<rect x="1" y="1" width="82" height="42" rx="6" fill="${L}"/><path d="M4 30 C18 10 28 38 42 22 S66 8 80 16" stroke="${W}" stroke-width="3" fill="none"/>`,
-lakes:`<rect x="1" y="1" width="82" height="42" rx="6" fill="${L}"/><ellipse cx="30" cy="22" rx="18" ry="10" fill="${H}" stroke="${G}"/><ellipse cx="62" cy="20" rx="10" ry="6" fill="${W}"/>`,
-water:`<rect x="1" y="1" width="82" height="42" rx="6" fill="${W}" stroke="${G}"/><path d="M1 8 h30 c4 10 -2 18 6 34 H1Z" fill="${L}"/><path d="M83 6 h-22 c-6 12 4 22 -2 36 H83Z" fill="${L}"/><path d="M37 14 c6 2 18 2 22 0 M38 24 c6 2 16 2 20 0 M38 34 c6 2 16 2 20 0" stroke="${G}" fill="none"/>`,
-mountains:`<path d="M2 42 L24 10 L36 26 L52 4 L82 42Z" fill="${L}"/><path d="M47 11 L52 4 L57 11 L54 10 L52 13 L50 10Z" fill="${W}"/>`,
-deserts:`<circle cx="66" cy="12" r="7" fill="none" stroke="${L}" stroke-width="2"/><path d="M1 42 C14 24 28 24 40 34 C52 22 70 22 83 32 V42Z" fill="${L}"/><path d="M8 37 C20 30 30 31 38 37" stroke="${W}" fill="none"/>`,
-borders:`<path d="M22 8 L44 4 L62 12 L58 30 L40 40 L20 34 L14 20Z" fill="${L}"/><path d="M2 14 L14 20 L20 34 L4 38 M44 4 L48 1 M62 12 L82 8 M58 30 L80 34 M40 40 L44 43" stroke="${L}" stroke-dasharray="2 3" fill="none"/>`,
-cities:`<rect x="1" y="1" width="82" height="42" rx="6" fill="${L}"/><path d="M6 34 C20 14 34 34 48 20 S70 10 80 12" stroke="${W}" stroke-width="2.5" fill="none"/><circle cx="20" cy="24" r="4" fill="#b8663a" stroke="${W}"/><circle cx="58" cy="15" r="4" fill="#b8663a" stroke="${W}"/>`,
-bigger:`<path d="M6 10 L30 6 L36 20 L28 38 L10 36 L4 22Z" fill="${L}"/><text x="41" y="30" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="20" fill="#b8663a">?</text><path d="M58 16 L72 14 L76 24 L68 32 L58 28Z" fill="${L}"/>`,
-five:`<path d="M2 8 L24 6 L28 22 L20 38 L4 36Z" fill="#b8663a"/><g fill="${L}"><rect x="36" y="6" width="12" height="12" rx="2"/><rect x="52" y="6" width="9" height="9" rx="2"/><rect x="66" y="6" width="15" height="15" rx="2"/><rect x="38" y="26" width="7" height="7" rx="2"/><rect x="54" y="25" width="13" height="13" rx="2"/></g>`,
-forests:`<g fill="${L}"><path d="M10 40 L20 8 L30 40Z"/><path d="M28 40 L40 4 L52 40Z"/><path d="M50 40 L60 14 L70 40Z"/><path d="M64 40 L73 18 L82 40Z"/></g>`};
-const GAMES=[
-{n:'Rivers',slug:'rivers',ic:'rivers',t:'Put the world’s great rivers in order of length. The Nile or the Amazon? The answers might surprise you.'},
-{n:'Lakes',slug:'lakes',ic:'lakes',t:'Rank lakes by area, depth or length. Each round tells you which, so read the question first.'},
-{n:'Bodies of Water',slug:'bodies-of-water',ic:'water',t:'A sea, strait or lake lights up on the map. Can you name it from five?'},
-{n:'Mountains',slug:'mountains',ic:'mountains',t:'Line up the peaks by height and watch the skyline reveal the order, or name the marked summit.'},
-{n:'Deserts',slug:'deserts',ic:'deserts',t:'Not every desert is hot or sandy. Rank them by size, or name the one that’s highlighted.'},
-{n:'How Many Borders?',slug:'how-many-borders',ic:'borders',t:'One country in silhouette. How many neighbours does it touch by land? Then see them all.'},
-{n:'River Cities',slug:'river-cities',ic:'cities',t:'A river winds through a country. Which of ten cities sit on its banks?'},
-{n:'Where is Bigger?',slug:'where-is-bigger',ic:'bigger',t:'Two countries side by side. Which covers more land? Maps have been fooling you for years.'},
-{n:'Which of Five?',slug:'which-of-five',ic:'five',t:'One country to beat and five challengers. Tick every one that’s bigger, then see them all to scale.'},
-{n:'Forests',slug:'forests',ic:'forests',t:'From the Amazon to Sherwood. Rank the world’s forests by area, or name the one marked on the map.'}];
-document.getElementById('grid').innerHTML=GAMES.map((g,i)=>{
- const inner=`<div class="top"><span class="plate">${i+1}</span><svg class="ic" viewBox="0 0 84 44" aria-hidden="true">${I[g.ic]}</svg></div><h2>${g.n}</h2><p>${g.t}</p><span class="play">${g.soon?'Coming soon':'Play →'}</span>`;
- return g.soon?`<div class="g soon">${inner}</div>`:`<a class="g" href="${B+g.slug}/">${inner}</a>`}).join('');
+(()=>{
+const d=new Date(),key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+document.getElementById('today').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+// show "Done today" or a streak on each game card, from what this device already knows
+document.querySelectorAll('.game[data-best]').forEach(a=>{
+  const st=a.querySelector('.status');let done=false,streak=0;
+  try{done=!!localStorage.getItem(a.dataset.best+key);const s=JSON.parse(localStorage.getItem(a.dataset.streak)||'null');if(s)streak=s.n||0;
+    if(s&&s.last!==key){const y=new Date(d);y.setDate(y.getDate()-1);const yk=`${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;if(s.last!==yk)streak=0}}catch(e){}
+  if(done){st.textContent=streak>1?`✓ Done · 🔥 ${streak}`:'✓ Done today';st.classList.add('done');a.querySelector('.play').textContent='Play again'}
+  else if(streak>0){st.textContent=`🔥 ${streak} · keep it going`}
+});
+})();
 </script>
 </body>
 </html>
