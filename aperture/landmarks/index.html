@@ -1015,7 +1015,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v20';
+document.documentElement.dataset.version='landmarks desktop v21';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1147,6 +1147,24 @@ const fit=()=>{if(!side.clientWidth)return;const z=side.clientWidth/128,h=Math.r
   [sc,card].forEach(el=>{el.style.zoom=z;el.style.width='128px';el.style.height=h+'px'})};
 fit();try{new ResizeObserver(fit).observe(side)}catch(e){}
 addEventListener('resize',fit);
+})();
+
+// keep the answer clear of the negative: when a long answer needs more rows than box B has room for,
+// the negative shrinks (staying square and centred) instead of covering the first word
+(()=>{
+const nw=document.querySelector('.negwrap'),tray=document.getElementById('tray');if(!nw||!tray)return;
+const ph=nw.closest('.phone');let busy=false;
+function fitNeg(){if(busy)return;busy=true;nw.style.width='';nw.style.alignSelf='';
+  const cs=getComputedStyle(ph),gap=parseFloat(cs.rowGap)||10;
+  const inner=ph.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  let used=0,n=0;[...ph.children].forEach(ch=>{const st=getComputedStyle(ch);if(ch===nw||ch===tray||st.position==='absolute'||st.display==='none')return;used+=ch.offsetHeight;n++});
+  const tg=parseFloat(getComputedStyle(tray).rowGap)||8;let need=0,k=0;[...tray.children].forEach(ch=>{if(getComputedStyle(ch).display==='none')return;need+=ch.offsetHeight;k++});need+=tg*Math.max(0,k-1);
+  const over=Math.ceil(need-tray.clientHeight+6);
+  if(over>0){const full=nw.offsetWidth;nw.style.width=Math.max(120,full-over)+'px';nw.style.alignSelf='center'}
+  requestAnimationFrame(()=>{busy=false})}
+try{new MutationObserver(fitNeg).observe(tray,{subtree:true,childList:true,characterData:true})}catch(e){}
+try{new ResizeObserver(fitNeg).observe(ph)}catch(e){}
+addEventListener('resize',fitNeg);if(document.fonts)document.fonts.ready.then(fitNeg);fitNeg();
 })();
 </script>
 </body>
