@@ -287,16 +287,37 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   .tools{grid-column:2;grid-row:1;justify-self:end;gap:6px}
   .side{display:none}
 }
+
+/* v-next: one centre line across the top; every word in the header the same small size */
+.top{--hs:11.5px}
+.top .stat{flex-direction:row;align-items:center;gap:6px}
+.top .stat .label{font-size:var(--hs);line-height:1}
+.top .stat b{font-size:var(--hs);font-weight:500;line-height:1}
+.top .stat b small{font-size:var(--hs)}
+.top .stats{gap:16px}
+.cap .tl b{font-family:var(--mono);font-weight:500;color:var(--blue);letter-spacing:0;font-size:12px;margin-left:3px}
+body.waiting .cap .tl,body:not(.waiting) .cap .hint{display:none}
+.top .helpbtn{font-size:var(--hs)}
+.quizhead{margin:0;width:max-content;min-width:100%;text-align:center;color:var(--blue);font-size:10.5px}
+body:not(.waiting) .quizhead{display:none}
+#ticker{width:max-content;min-width:100%;white-space:nowrap}
+.statcard .today{display:flex;align-items:baseline;justify-content:space-between;gap:4px}
+.statcard .today b{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--blue);white-space:nowrap}
+.statcard .rule{display:block;width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1);margin:4px auto 3px}
+.statcard{min-height:calc(var(--mini) / .5)}
+.top .stats.stack{gap:14px}
+.top .stats.stack .stat{flex-direction:column;gap:4px}
+@media (min-width:761px){
+  .top{height:40px}
+  .top>h1{left:var(--ax);width:var(--aw);justify-content:center}
+}
 </style>
 </head>
 <body>
 
 <header class="top">
   <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">landmarks</sup></h1>
-  <div class="clock">
-    <div class="segs" id="segs"></div>
-    <div class="clockrow"><span id="time">2:00</span><span class="label" id="setLabel">Daily</span></div>
-  </div>
+  <div class="segs" id="segs" hidden></div>
   <div class="stats">
     <div class="stat"><span class="label">Round</span><b id="roundNum">1/5</b></div>
     <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
@@ -309,10 +330,10 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 
 <main class="phones">
   <section class="phone" aria-label="A: Viewpoints">
-    <div class="cap"><h2><span>A</span>Viewpoints</h2><span class="label">drag · scroll</span></div>
+    <div class="cap"><h2><span>A</span>Viewpoints</h2><span class="label"><span class="hint">drag · scroll</span><span class="tl">Time left <b id="time">2:00</b></span></span></div>
     <div class="viewer" id="viewer">
       <canvas id="cA" width="1200" height="1200" aria-label="Obscured picture of the landmark"></canvas>
-      <div class="ovwrap"><div class="overlay" id="overlay"></div><p id="ticker" aria-live="polite">Press Start when you're ready.</p></div>
+      <div class="ovwrap"><p class="quizhead label" id="quizHead">Your 2 minute daily quiz</p><div class="overlay" id="overlay"></div><p id="ticker" aria-live="polite">Press Start when you're ready.</p></div>
     </div>
     <div class="zoom">
       <button class="zb" id="zOut" aria-label="Zoom out">−</button>
@@ -356,6 +377,8 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 
   <div class="side">
   <aside class="statcard" aria-label="Game stats">
+    <div class="today"><span class="label">Today</span><b id="setLabel"></b></div>
+    <i class="rule" aria-hidden="true"></i>
     <span class="label">Players</span>
     <div class="sv"><b id="stVisits">—</b><small>visits</small></div>
     <div class="sv"><b id="stUniques">—</b><small>unique</small></div>
@@ -809,7 +832,8 @@ function startGame(mode){
   R=mulberry32(seed);
   const order=shuffle(OBJECTS.map((_,i)=>i)).slice(0,ROUNDS);
   G={mode,seed,label,key,order,round:0,total:0,totalPen:0,results:[]};
-  $('setLabel').innerHTML=mode==='daily'?`minute daily quiz <span class="dot">·</span> ${label.replace(/^Daily · /,'')}`:'minute quiz <span class="dot">·</span> random set';
+  $('setLabel').textContent=mode==='daily'?label.replace(/^Daily · /,''):'Random set';
+  $('quizHead').textContent=mode==='daily'?'Your 2 minute daily quiz':'Your 2 minute random quiz';
   overlay.hidden=false;overlay.innerHTML='<span class="label">Aperture Landmarks</span><h3>Loading the photos…</h3>';
   document.body.classList.add('waiting');
   const pick=[...order];
@@ -891,11 +915,11 @@ function finish(){
 startGame('daily');
 function alignTop(){const t=document.querySelector('.top'),ph=document.querySelectorAll('.phones .phone');if(!t||ph.length<3)return;
   const o=t.getBoundingClientRect(),r=[...ph].map(p=>p.getBoundingClientRect()),px=n=>Math.round(n)+'px';
-  t.style.setProperty('--ax',px(r[0].left-o.left));t.style.setProperty('--ar',px(o.right-r[0].right));
+  t.style.setProperty('--ax',px(r[0].left-o.left));t.style.setProperty('--aw',px(r[0].width));
   t.style.setProperty('--bx',px(r[1].left-o.left));t.style.setProperty('--bw',px(r[1].width));
   t.style.setProperty('--cx',px(r[2].left-o.left));t.style.setProperty('--cw',px(r[2].width));t.classList.add('aligned');
-  // when the logo and the clock can't share A's width, the clock drops below the logo
-  t.classList.remove('tight');const h=t.querySelector('h1').getBoundingClientRect(),c=t.querySelector('.clock').getBoundingClientRect();if(h.right+14>c.left)t.classList.add('tight')}
+  // if the scores won't fit across B on one line, each label sits over its number instead
+  const st=t.querySelector('.stats');st.classList.remove('stack');let need=0;st.querySelectorAll('.stat').forEach(e=>need+=e.getBoundingClientRect().width);need+=16*(st.children.length-1);if(need>r[1].width-12)st.classList.add('stack')}
 try{new ResizeObserver(alignTop).observe(document.querySelector('.phones'))}catch(e){}
 addEventListener('resize',alignTop);alignTop();if(document.fonts)document.fonts.ready.then(alignTop);
 window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elapsed||0),running:!!S.running,ended:!!S.ended,helps:S.helps||0});
@@ -909,7 +933,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v14';
+document.documentElement.dataset.version='landmarks desktop v15';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
