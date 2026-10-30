@@ -50,6 +50,7 @@ td.share{width:34%}
 .bar{height:6px;border-radius:3px;background:var(--blue-wash);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--blue);border-radius:3px}
 .empty{color:var(--soft);font-size:14px;margin:0}
+.sub3{font-family:var(--display);font-size:15px;margin:6px 0 0}
 .note{font-size:12.5px;color:var(--soft);margin:0}
 </style>
 </head>
@@ -63,7 +64,7 @@ td.share{width:34%}
     <button id="refresh">Refresh</button>
   </header>
   <div class="games" id="games"></div>
-  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
+  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Ads: “Opened” means someone clicked the “Have you tried” card; “Played” means they then pressed Play.</p>
 </div>
 <script>
 (()=>{
@@ -76,6 +77,13 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 async function load(id){const r=await fetch(`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/stats/${id}?key=${K}`,{cache:'no-store'});
   if(r.status===404)return{};if(!r.ok)throw new Error(r.status);return (await r.json()).fields||{}}
 const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);
+const AD_NAMES={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
+// each ad's opens (card clicked, panel shown) and plays (Play button pressed), with plays as a share of opens
+function ads(f){const m=(f.promo&&f.promo.mapValue&&f.promo.mapValue.fields)||{};const ids={};
+  Object.entries(m).forEach(([k,v])=>{const i=k.lastIndexOf('_');const id=k.slice(0,i),what=k.slice(i+1);(ids[id]=ids[id]||{open:0,play:0})[what]=num(v)});
+  const r=Object.entries(ids).sort((a,b)=>b[1].open-a[1].open);
+  if(!r.length)return '<p class="empty">No ad clicks yet.</p>';
+  return `<table><thead><tr><th>Ad for</th><th class="r">Opened</th><th class="r">Played</th><th class="r">Rate</th></tr></thead><tbody>${r.map(([id,x])=>`<tr><td>${esc(AD_NAMES[id]||id)}</td><td class="r n">${fmt(x.open)}</td><td class="r n">${fmt(x.play)}</td><td class="r n">${x.open?Math.round(x.play/x.open*100)+'%':'–'}</td></tr>`).join('')}</tbody></table>`}
 async function render(){
   const box=document.getElementById('games');
   try{
@@ -93,6 +101,8 @@ async function render(){
           <div class="num test"><b>${fmt(num(f.tests))}</b><span>Premier access</span></div>
         </div>
         ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
+        <h3 class="sub3">"Have you tried" ads</h3>
+        ${ads(f)}
       </section>`}).join('');
     document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+c_count(data)+' countries in total';
   }catch(e){document.getElementById('updated').textContent="Couldn't load the stats. Check your connection and press Refresh."}

@@ -331,6 +331,46 @@ body:not(.waiting) .quizhead{display:none}
 .overlay .kofi{font-size:11.5px;color:var(--soft);text-decoration:none;margin-top:2px}
 .overlay .kofi u{text-decoration-color:rgba(91,96,107,.4);text-underline-offset:3px}
 .overlay .kofi:hover,.overlay .kofi:hover u{color:var(--blue);text-decoration-color:var(--blue)}
+
+/* ---------- "Have you tried" ad card, under the stats card ---------- */
+.side{justify-content:space-between}
+.promo{position:relative;flex:none;box-sizing:border-box;overflow:hidden;background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;padding:20px 12px 12px;
+  display:flex;flex-direction:column;cursor:pointer;box-shadow:0 1px 2px rgba(22,24,29,.04),0 16px 32px -20px rgba(22,24,29,.22);transition:border-color .15s}
+.promo::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:26%;height:4px;border-radius:4px;background:rgba(22,24,29,.1)}
+.promo:hover,.promo:focus-visible{border-color:var(--blue);outline:none}
+.promo .pbody{display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;transition:opacity .3s}
+.promo.fade .pbody{opacity:0}
+.promo .art{flex:1;min-height:0;border-radius:12px;overflow:hidden;background:#e9ecf1}
+.promo .art svg{width:100%;height:100%;display:block}
+.promo .ptag{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);font-weight:500;line-height:1.2}
+.promo .psmall{font-family:var(--display);font-weight:700;font-size:14px;line-height:1.15;letter-spacing:-.01em;color:var(--ink)}
+.promo .pmore{font-size:11px;color:var(--soft)}
+.promo .dots{display:flex;gap:4px;justify-content:center;margin-top:2px}
+.promo .dots i{width:5px;height:5px;border-radius:50%;background:rgba(22,24,29,.15)}
+.promo .dots i.on{background:var(--blue)}
+.pveil{position:fixed;inset:0;background:rgba(241,243,247,.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:70;opacity:0;transition:opacity .25s;pointer-events:none}
+.pveil.on{opacity:1;pointer-events:auto}
+.pbig{position:fixed;z-index:80;background:#fff;border:1.5px solid var(--frame);border-radius:22px;box-shadow:0 30px 60px -24px rgba(22,24,29,.35);overflow:hidden;
+  display:grid;grid-template-rows:38% minmax(0,1fr);transition:left .35s cubic-bezier(.2,.8,.2,1),top .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.pbig .art svg{width:100%;height:100%;display:block}
+.pbig .copy{padding:14px 20px 16px;display:flex;flex-direction:column;gap:7px;min-width:0;opacity:0;transition:opacity .25s .15s}
+.pbig.open .copy{opacity:1}
+.pbig .ptag{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:500}
+.pbig h3{font-family:var(--display);font-size:clamp(17px,1.5vw,22px);line-height:1.1;letter-spacing:-.02em;margin:0}
+.pbig p{margin:0;color:var(--soft);font-size:13.5px;line-height:1.45;flex:1;overflow:hidden}
+.pbig .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pbig .go{background:var(--ink);color:#fff;border-radius:999px;padding:9px 18px;font-size:14px;font-weight:500;text-decoration:none}
+.pbig .go:hover{background:var(--blue)}
+.pbig .later{color:var(--soft);font-size:13px;padding:8px 6px}
+.pbig .x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;border:1.5px solid #7d8592;background:rgba(255,255,255,.92);color:var(--soft);display:grid;place-items:center;font-size:15px;line-height:1}
+.pbig .x:hover{border-color:var(--blue);color:var(--blue)}
+/* the side column scales with the phones: 31% of a phone's width */
+@media (min-width:761px){
+  .phone{--w:min(calc((100cqw - 3 * var(--gap)) / 3.31),calc(100cqh * .58))}
+  .side{--w:min(calc((100cqw - 3 * var(--gap)) / 3.31),calc(100cqh * .58));width:calc(var(--w) * .31)}
+  .side .statcard{min-height:0;box-sizing:border-box}
+}
+@media (max-width:760px){.promo,.pbig,.pveil{display:none!important}}
 </style>
 </head>
 <body>
@@ -408,6 +448,7 @@ body:not(.waiting) .quizhead{display:none}
     <span class="label">Top countries</span>
     <ol id="stTop"><li><span>Loading…</span></li></ol>
   </aside>
+  <div class="promo" id="promo" role="button" tabindex="0" aria-label="Try another game"><div class="pbody" id="pbody"></div></div>
   </div>
 </main>
 
@@ -974,7 +1015,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v19';
+document.documentElement.dataset.version='landmarks desktop v20';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1061,7 +1102,51 @@ function show(s){if(!s)return;
     else{const f={visits:1,['countries.'+country()]:1};if(!seen)f.uniques=1;if(vip)f.vip=1;await bump(f)}}
   show(await read());
 })();
+window.apertureBump=f=>LIVE&&!/\bClaude\//.test(navigator.userAgent)?bump(f):Promise.resolve();
 window.apertureGameDone=async()=>{if(LIVE&&!/\bClaude\//.test(navigator.userAgent))await bump({games:1});show(await read())};
+})();
+</script>
+
+<script>
+// ---------- "Have you tried" ad for the other games: opens on click, counts opens and plays ----------
+const PROMOS=[{"id": "aperture", "tag": "Aperture", "small": "What everyday thing is this?", "title": "Can you name an everyday object from a few tiny gaps?", "text": "The same two-minute game, with everyday things instead of famous places. Five objects, the same for everyone. Easy, until it isn’t.", "cta": "Play Aperture", "href": "/aperture/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"320\" height=\"200\" fill=\"#5a3a22\"/><g opacity=\".25\" stroke=\"#2c1a0d\" stroke-width=\"3\"><path d=\"M0 40C80 30 160 55 320 38M0 95C90 85 200 110 320 92M0 150C110 140 210 165 320 148\"/></g>\n          <g filter=\"url(#b_p0)\"><ellipse cx=\"160\" cy=\"110\" rx=\"70\" ry=\"48\" fill=\"#f2c94c\"/><circle cx=\"208\" cy=\"78\" r=\"30\" fill=\"#f2c94c\"/><path d=\"M234 78l22 6-22 8z\" fill=\"#e8892c\"/></g>\n          <defs><filter id=\"b_p0\"><feGaussianBlur stdDeviation=\"9\"/></filter><mask id=\"m_p0\"><rect width=\"320\" height=\"200\" fill=\"#fff\"/><rect x=\"70\" y=\"40\" width=\"22\" height=\"130\" rx=\"4\" fill=\"#000\" transform=\"rotate(-8 81 105)\"/><rect x=\"150\" y=\"62\" width=\"120\" height=\"20\" rx=\"4\" fill=\"#000\"/><rect x=\"200\" y=\"100\" width=\"18\" height=\"80\" rx=\"4\" fill=\"#000\"/></mask></defs>\n          <rect width=\"320\" height=\"200\" fill=\"#eef1f5\" mask=\"url(#m_p0)\"/></svg>"}, {"id": "wonders", "tag": "Natural Wonders", "small": "The Nile or the Amazon?", "title": "Which river is really the longest?", "text": "Ten quick geography games: rivers, lakes, peaks and deserts. The answers surprise most people.", "cta": "Play Natural Wonders", "href": "/wonders/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"320\" height=\"200\" fill=\"#f6f3ec\"/><path d=\"M0 150l60-70 40 40 50-80 60 90 40-40 70 60v50H0z\" fill=\"#b8663a\" opacity=\".85\"/><path d=\"M150 40l18 26h-36z\" fill=\"#fff\" opacity=\".8\"/>\n          <path d=\"M0 176c50-14 80 8 130-4s90-22 190 2v26H0z\" fill=\"#4f8fd6\"/></svg>"}, {"id": "bigger", "tag": "Where is Bigger?", "small": "Maps have been lying to you", "title": "Greenland or Africa: which is bigger?", "text": "Two countries side by side, true to scale. You won’t look at a world map the same way again.", "cta": "Play Where is Bigger?", "href": "/natural-wonders-where-is-bigger/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"320\" height=\"200\" fill=\"#e9eef6\"/><path d=\"M60 40c30-20 70-10 80 20s-10 60-30 80-50 20-60-10-20-70 10-90z\" fill=\"#c2603a\"/><path d=\"M190 70c20-12 60-8 70 14s0 44-20 52-44 4-54-14-14-40 4-52z\" fill=\"#2b50e0\"/></svg>"}];
+let pi=0,ptimer=null;
+const pcount=f=>{try{return window.apertureBump?window.apertureBump(f):Promise.resolve()}catch(e){return Promise.resolve()}};
+function pgo(p,e){e.preventDefault();const t=setTimeout(()=>location.href=p.href,700);pcount({['promo.'+p.id+'_play']:1}).then(()=>{clearTimeout(t);location.href=p.href})}
+
+(()=>{
+const card=document.getElementById('promo'),body=document.getElementById('pbody');if(!card)return;
+let big=null,veil=null;
+function drawSmall(){const p=PROMOS[pi];body.innerHTML=`<div class="art">${p.art}</div><span class="ptag">Have you tried</span><span class="psmall">${p.small}</span><span class="pmore">${p.tag} →</span><div class="dots">${PROMOS.map((_,k)=>`<i class="${k===pi?'on':''}"></i>`).join('')}</div>`}
+function rotate(){if(big||card.matches(':hover'))return;card.classList.add('fade');setTimeout(()=>{pi=(pi+1)%PROMOS.length;drawSmall();card.classList.remove('fade')},300)}
+function startRotate(){clearInterval(ptimer);ptimer=setInterval(rotate,8000)}
+function targetRect(){const c=document.querySelectorAll('.phones .phone')[2].getBoundingClientRect(),s=card.getBoundingClientRect();
+  const w=Math.round(c.width*1.1),h=Math.round(Math.max(c.height/2,Math.min(380,c.height*.62)));return{left:Math.round(s.right-w),top:Math.round(c.bottom-h),width:w,height:h}}
+function open(){
+  if(big)return;clearInterval(ptimer);const p=PROMOS[pi],r=card.getBoundingClientRect();pcount({['promo.'+p.id+'_open']:1});
+  veil=document.createElement('div');veil.className='pveil';document.body.appendChild(veil);
+  big=document.createElement('div');big.className='pbig';big.setAttribute('role','dialog');big.setAttribute('aria-label',p.tag);
+  Object.assign(big.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+  big.innerHTML=`<div class="art">${p.art}</div><div class="copy"><span class="ptag">${p.tag}</span><h3>${p.title}</h3><p>${p.text}</p>
+    <div class="row"><a class="go" href="${p.href}">${p.cta} →</a><button class="later">Not now</button></div></div><button class="x" aria-label="Close">✕</button>`;
+  document.body.appendChild(big);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const t=targetRect();Object.assign(big.style,{left:t.left+'px',top:t.top+'px',width:t.width+'px',height:t.height+'px'});big.classList.add('open');veil.classList.add('on')}));
+  big.querySelector('.x').onclick=close;big.querySelector('.later').onclick=close;veil.onclick=close;
+  big.querySelector('.go').onclick=e=>pgo(p,e);big.querySelector('.go').focus({preventScroll:true});
+}
+function close(){if(!big)return;const r=card.getBoundingClientRect(),b=big,v=veil;big=null;veil=null;b.classList.remove('open');v.classList.remove('on');
+  Object.assign(b.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',opacity:'0'});setTimeout(()=>{b.remove();v.remove()},380);startRotate();card.focus({preventScroll:true})}
+card.onclick=open;
+card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+drawSmall();startRotate();
+// the stats card and the ad card keep the same size relative to box C on every screen:
+// each is drawn at its usual 128 px design size, then zoomed to 31% of box C's width
+const sc=document.querySelector('.statcard'),side=document.querySelector('.side');
+const fit=()=>{if(!side.clientWidth)return;const z=side.clientWidth/128,h=Math.round(side.clientHeight*.41/z);
+  [sc,card].forEach(el=>{el.style.zoom=z;el.style.width='128px';el.style.height=h+'px'})};
+fit();try{new ResizeObserver(fit).observe(side)}catch(e){}
+addEventListener('resize',fit);
 })();
 </script>
 </body>

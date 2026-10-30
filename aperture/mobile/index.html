@@ -273,6 +273,28 @@ body.done .ovwrap{top:8px}
 .overlay .kofi{font-size:11.5px;color:var(--soft);text-decoration:none;margin-top:2px}
 .overlay .kofi u{text-decoration-color:rgba(91,96,107,.4);text-underline-offset:3px}
 .overlay .kofi:hover,.overlay .kofi:hover u{color:var(--blue);text-decoration-color:var(--blue)}
+
+/* ---------- "Have you tried" ad card at the foot of the page ---------- */
+.mpromo{display:flex;gap:12px;align-items:center;background:#fff;border:1.5px solid var(--frame,#b9c0cb);border-radius:18px;padding:10px;margin:2px 0;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%;box-sizing:border-box;flex:none}
+.mpromo .art{width:64px;height:64px;flex:none;border-radius:12px;overflow:hidden;background:#e9ecf1}.mpromo .art svg{width:100%;height:100%;display:block}
+.mpromo .t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.mpromo .ptag{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);font-weight:500}
+.mpromo b{font-family:var(--display);font-size:15px;line-height:1.15;letter-spacing:-.01em}
+.mpromo small{font-size:11.5px;color:var(--soft)}
+.mpromo .chev{color:var(--faint);font-size:18px;padding:0 4px}
+.msheet-veil{position:fixed;inset:0;background:rgba(22,24,29,.35);z-index:70;opacity:0;transition:opacity .25s}
+.msheet-veil.on{opacity:1}
+.msheet{position:fixed;left:0;right:0;bottom:0;z-index:80;background:#fff;border-radius:22px 22px 0 0;max-height:70vh;display:flex;flex-direction:column;overflow:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px)}
+.msheet.on{transform:none}
+.msheet .grab{width:40px;height:5px;border-radius:5px;background:rgba(22,24,29,.15);margin:8px auto 0;flex:none}
+.msheet .art{height:min(150px,22vh);flex:none;margin:10px 14px 0;border-radius:14px;overflow:hidden}.msheet .art svg{width:100%;height:100%;display:block}
+.msheet .copy{padding:12px 18px 16px;display:flex;flex-direction:column;gap:8px}
+.msheet .ptag{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-weight:500}
+.msheet h3{font-family:var(--display);font-size:21px;line-height:1.15;margin:0;letter-spacing:-.02em}
+.msheet p{margin:0;color:var(--soft);font-size:14.5px;line-height:1.45}
+.msheet .prow{display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-top:4px}
+.msheet .go{background:var(--ink);color:#fff;border-radius:999px;padding:11px 20px;font-size:15px;font-weight:500;text-decoration:none}
+.msheet .later{color:var(--soft);font-size:14px;padding:8px}
 </style>
 </head>
 <body>
@@ -318,6 +340,7 @@ body.done .ovwrap{top:8px}
   <div class="whead"><h2><span>C</span>Words</h2><div class="capr"><span class="label" id="wordCount">56 words</span><div class="sort" role="group" aria-label="Order words"><button id="sortMix" aria-pressed="true">Mixed</button><button id="sortAZ" aria-pressed="false">A–Z</button></div></div></div>
   <div class="words" id="words"></div>
 </section>
+<button class="mpromo" id="mpromo" aria-label="Try another game"></button>
 <p class="statstrip" id="statStrip" aria-live="polite">Loading stats…</p>
 
 <div class="scrim" id="sheet" hidden>
@@ -1010,7 +1033,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v28';
+document.documentElement.dataset.version='mobile v29';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1097,7 +1120,29 @@ function show(s){if(!s)return;
     else{const f={visits:1,['countries.'+country()]:1};if(!seen)f.uniques=1;if(vip)f.vip=1;await bump(f)}}
   show(await read());
 })();
+window.apertureBump=f=>LIVE&&!/\bClaude\//.test(navigator.userAgent)?bump(f):Promise.resolve();
 window.apertureGameDone=async()=>{if(LIVE&&!/\bClaude\//.test(navigator.userAgent))await bump({games:1});show(await read())};
+})();
+</script>
+
+<script>
+// ---------- "Have you tried" ad for the other games: opens on click, counts opens and plays ----------
+const PROMOS=[{"id": "landmarks", "tag": "Aperture Landmarks", "small": "Where in the world is this?", "title": "Can you name a landmark from three thin slivers?", "text": "The same idea as Aperture, but with real photos of famous places. Five landmarks, two minutes. Most people get Big Ben. Few get Petra.", "cta": "Play Landmarks", "href": "/aperture/landmarks/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><defs><linearGradient id=\"sky_p0\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#6aa6e8\"/><stop offset=\"1\" stop-color=\"#c8def5\"/></linearGradient>\n          <mask id=\"m2_p0\"><rect width=\"320\" height=\"200\" fill=\"#fff\"/><rect x=\"128\" y=\"20\" width=\"26\" height=\"170\" rx=\"4\" fill=\"#000\"/><rect x=\"40\" y=\"120\" width=\"120\" height=\"22\" rx=\"4\" fill=\"#000\"/><rect x=\"190\" y=\"70\" width=\"90\" height=\"20\" rx=\"4\" fill=\"#000\"/></mask></defs>\n          <rect width=\"320\" height=\"200\" fill=\"url(#sky_p0)\"/><path d=\"M118 200V70l8-18h28l8 18v130z\" fill=\"#c9a46a\"/><path d=\"M126 52l14-34 14 34z\" fill=\"#8a6a3c\"/><circle cx=\"140\" cy=\"86\" r=\"11\" fill=\"#f4ecd8\" stroke=\"#6b5230\" stroke-width=\"2\"/>\n          <path d=\"M0 200v-36h70v-14h40v50z\" fill=\"#b8925a\"/><rect width=\"320\" height=\"200\" fill=\"#eef1f5\" mask=\"url(#m2_p0)\"/></svg>"}, {"id": "wonders", "tag": "Natural Wonders", "small": "The Nile or the Amazon?", "title": "Which river is really the longest?", "text": "Ten quick geography games: rivers, lakes, peaks and deserts. The answers surprise most people.", "cta": "Play Natural Wonders", "href": "/wonders/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"320\" height=\"200\" fill=\"#f6f3ec\"/><path d=\"M0 150l60-70 40 40 50-80 60 90 40-40 70 60v50H0z\" fill=\"#b8663a\" opacity=\".85\"/><path d=\"M150 40l18 26h-36z\" fill=\"#fff\" opacity=\".8\"/>\n          <path d=\"M0 176c50-14 80 8 130-4s90-22 190 2v26H0z\" fill=\"#4f8fd6\"/></svg>"}, {"id": "bigger", "tag": "Where is Bigger?", "small": "Maps have been lying to you", "title": "Greenland or Africa: which is bigger?", "text": "Two countries side by side, true to scale. You won’t look at a world map the same way again.", "cta": "Play Where is Bigger?", "href": "/natural-wonders-where-is-bigger/", "art": "<svg viewBox=\"0 0 320 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"320\" height=\"200\" fill=\"#e9eef6\"/><path d=\"M60 40c30-20 70-10 80 20s-10 60-30 80-50 20-60-10-20-70 10-90z\" fill=\"#c2603a\"/><path d=\"M190 70c20-12 60-8 70 14s0 44-20 52-44 4-54-14-14-40 4-52z\" fill=\"#2b50e0\"/></svg>"}];
+let pi=0,ptimer=null;
+const pcount=f=>{try{return window.apertureBump?window.apertureBump(f):Promise.resolve()}catch(e){return Promise.resolve()}};
+function pgo(p,e){e.preventDefault();const t=setTimeout(()=>location.href=p.href,700);pcount({['promo.'+p.id+'_play']:1}).then(()=>{clearTimeout(t);location.href=p.href})}
+
+(()=>{
+const card=document.getElementById('mpromo');if(!card)return;
+function draw(){const p=PROMOS[pi];card.innerHTML=`<span class="art">${p.art}</span><span class="t"><span class="ptag">Have you tried</span><b>${p.small}</b><small>${p.tag}</small></span><span class="chev">›</span>`}
+function start(){clearInterval(ptimer);ptimer=setInterval(()=>{pi=(pi+1)%PROMOS.length;draw()},8000)}
+card.onclick=()=>{clearInterval(ptimer);const p=PROMOS[pi];pcount({['promo.'+p.id+'_open']:1});
+  const v=document.createElement('div');v.className='msheet-veil';const s=document.createElement('div');s.className='msheet';s.setAttribute('role','dialog');s.setAttribute('aria-label',p.tag);
+  s.innerHTML=`<div class="grab"></div><div class="art">${p.art}</div><div class="copy"><span class="ptag">${p.tag}</span><h3>${p.title}</h3><p>${p.text}</p><div class="prow"><a class="go" href="${p.href}">${p.cta} →</a><button class="later">Not now</button></div></div>`;
+  document.body.append(v,s);requestAnimationFrame(()=>requestAnimationFrame(()=>{v.classList.add('on');s.classList.add('on')}));
+  const close=()=>{v.classList.remove('on');s.classList.remove('on');setTimeout(()=>{v.remove();s.remove()},330);start()};
+  v.onclick=close;s.querySelector('.later').onclick=close;s.querySelector('.go').onclick=e=>pgo(p,e)};
+draw();start();
 })();
 </script>
 </body>
