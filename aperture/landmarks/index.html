@@ -258,6 +258,35 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   font:500 11.5px/1 var(--body,system-ui,sans-serif);letter-spacing:0;text-transform:none;padding:7px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
 #musicBtn:hover::after,#soundBtn:hover::after{opacity:1;transform:translate(-50%,0)}
 }
+
+/* header lined up with the phones: logo on A's left edge, clock on A's right edge, scores centred over B, buttons centred over C */
+.tools{display:flex;gap:10px;align-items:center}
+#setLabel .dot{display:inline-block;margin:0 .15em}
+.ovwrap{position:absolute;top:10px;left:10px;max-width:calc(100% - 20px);display:flex;flex-direction:column;align-items:stretch;gap:7px;z-index:3}
+.ovwrap .overlay{position:relative;top:auto;left:auto;max-width:100%}
+#ticker{width:0;min-width:100%;box-sizing:border-box;white-space:normal;overflow:visible;text-overflow:clip;text-align:center;font-size:10.5px;line-height:1.35;color:var(--soft);
+  background:rgba(255,255,255,.72);border-radius:8px;padding:3px 6px;text-wrap:balance}
+#overlay[hidden]+#ticker{display:none}
+.side{--w:min(calc((100cqw - 3 * var(--gap) - var(--mini)) / 3),calc(100cqh * .58));height:calc(var(--w) / .58);width:var(--mini);flex:none;display:flex;flex-direction:column;justify-content:flex-start}
+.side .statcard{align-self:auto}
+@media (min-width:761px){
+  .top{position:relative;z-index:20;display:block;max-width:none;height:44px}
+  .top>h1,.top>.clock,.top>.stats,.top>.tools{position:absolute;top:50%;transform:translateY(-50%)}
+  .top:not(.aligned){visibility:hidden}
+  .top>h1{left:var(--ax)}
+  .top>.clock{right:var(--ar);align-items:stretch}
+  .top .clockrow{justify-content:flex-end;gap:7px}
+  .top #setLabel{letter-spacing:.08em}
+  .top>.stats{left:var(--bx);width:var(--bw);justify-content:center}
+  .top>.tools{left:var(--cx);width:var(--cw);justify-content:center}
+  .top.tight{height:62px}
+  .top.tight>h1{top:0;transform:none}
+  .top.tight>.clock{top:auto;bottom:0;transform:none}
+}
+@media (max-width:760px){
+  .tools{grid-column:2;grid-row:1;justify-self:end;gap:6px}
+  .side{display:none}
+}
 </style>
 </head>
 <body>
@@ -266,13 +295,14 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
   <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">landmarks</sup></h1>
   <div class="clock">
     <div class="segs" id="segs"></div>
-    <div class="clockrow"><span id="time">2:00</span><span class="label" id="setLabel">Daily</span><p id="ticker">Press Start when you're ready.</p></div>
+    <div class="clockrow"><span id="time">2:00</span><span class="label" id="setLabel">Daily</span></div>
   </div>
   <div class="stats">
     <div class="stat"><span class="label">Round</span><b id="roundNum">1/5</b></div>
     <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
     <div class="stat"><span class="label">Total</span><b id="totalTime">0:00</b></div>
-    <button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
+    </div>
+  <div class="tools"><button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
   </div>
 </header>
 <a class="tophone" href="https://jmcpublic.github.io/aperture/landmarks/mobile/">On a phone? Play the mobile version →</a>
@@ -282,7 +312,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="cap"><h2><span>A</span>Viewpoints</h2><span class="label">drag · scroll</span></div>
     <div class="viewer" id="viewer">
       <canvas id="cA" width="1200" height="1200" aria-label="Obscured picture of the landmark"></canvas>
-      <div class="overlay" id="overlay"></div>
+      <div class="ovwrap"><div class="overlay" id="overlay"></div><p id="ticker" aria-live="polite">Press Start when you're ready.</p></div>
     </div>
     <div class="zoom">
       <button class="zb" id="zOut" aria-label="Zoom out">−</button>
@@ -324,6 +354,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <div class="words" id="words"></div>
   </section>
 
+  <div class="side">
   <aside class="statcard" aria-label="Game stats">
     <span class="label">Players</span>
     <div class="sv"><b id="stVisits">—</b><small>visits</small></div>
@@ -334,6 +365,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
     <span class="label">Top countries</span>
     <ol id="stTop"><li><span>Loading…</span></li></ol>
   </aside>
+  </div>
 </main>
 
 <div class="bugwrap" id="bugForm" hidden>
@@ -777,7 +809,7 @@ function startGame(mode){
   R=mulberry32(seed);
   const order=shuffle(OBJECTS.map((_,i)=>i)).slice(0,ROUNDS);
   G={mode,seed,label,key,order,round:0,total:0,totalPen:0,results:[]};
-  $('setLabel').textContent=label;
+  $('setLabel').innerHTML=mode==='daily'?`minute daily quiz <span class="dot">·</span> ${label.replace(/^Daily · /,'')}`:'minute quiz <span class="dot">·</span> random set';
   overlay.hidden=false;overlay.innerHTML='<span class="label">Aperture Landmarks</span><h3>Loading the photos…</h3>';
   document.body.classList.add('waiting');
   const pick=[...order];
@@ -857,6 +889,15 @@ function finish(){
 }
 
 startGame('daily');
+function alignTop(){const t=document.querySelector('.top'),ph=document.querySelectorAll('.phones .phone');if(!t||ph.length<3)return;
+  const o=t.getBoundingClientRect(),r=[...ph].map(p=>p.getBoundingClientRect()),px=n=>Math.round(n)+'px';
+  t.style.setProperty('--ax',px(r[0].left-o.left));t.style.setProperty('--ar',px(o.right-r[0].right));
+  t.style.setProperty('--bx',px(r[1].left-o.left));t.style.setProperty('--bw',px(r[1].width));
+  t.style.setProperty('--cx',px(r[2].left-o.left));t.style.setProperty('--cw',px(r[2].width));t.classList.add('aligned');
+  // when the logo and the clock can't share A's width, the clock drops below the logo
+  t.classList.remove('tight');const h=t.querySelector('h1').getBoundingClientRect(),c=t.querySelector('.clock').getBoundingClientRect();if(h.right+14>c.left)t.classList.add('tight')}
+try{new ResizeObserver(alignTop).observe(document.querySelector('.phones'))}catch(e){}
+addEventListener('resize',alignTop);alignTop();if(document.fonts)document.fonts.ready.then(alignTop);
 window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elapsed||0),running:!!S.running,ended:!!S.ended,helps:S.helps||0});
 })();
 </script>
@@ -868,7 +909,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v13';
+document.documentElement.dataset.version='landmarks desktop v14';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
