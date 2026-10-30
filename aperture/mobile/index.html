@@ -230,6 +230,25 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
   font:500 11.5px/1 var(--body,system-ui,sans-serif);letter-spacing:0;text-transform:none;padding:7px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
 #musicBtn:hover::after,#soundBtn:hover::after{opacity:1;transform:translate(-50%,0)}
 }
+
+/* tidy header to match desktop: one small size for all header words and numbers; quiz title and status line around the start card */
+header{--hs:11.5px;gap:8px}
+.timerow{gap:8px}
+.tlab,.meta i{font-style:normal;font-size:var(--hs);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:500;white-space:nowrap}
+#time{font-size:12.5px;font-weight:500;color:var(--blue);min-width:3.2ch}
+.meta{font-size:var(--hs);align-items:center}
+.meta span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.meta b{font-size:12px}
+.meta b small{font-size:var(--hs)}
+.right .helpbtn{font-size:var(--hs)}
+.ovwrap{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 20px);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:3}
+.ovwrap .overlay{position:relative;top:auto;left:auto;max-width:100%}
+.quizhead{margin:0;width:max-content;max-width:100%;text-align:center;color:var(--blue);font-size:10px}
+body:not(.waiting) .quizhead{display:none}
+#ticker{display:block;margin:0;width:max-content;max-width:100%;white-space:nowrap;text-align:center;font-size:10.5px;line-height:1.35;color:var(--soft);background:rgba(255,255,255,.72);border-radius:8px;padding:3px 6px;box-sizing:border-box}
+#overlay[hidden]+#ticker{display:none}
+@media (max-width:360px){header{--hs:10.5px}.meta b{font-size:11px}.tlab,.meta i{letter-spacing:.06em}}
+@media (max-width:340px){header{--hs:9.5px}.meta b{font-size:10px!important}.tlab,.meta i{letter-spacing:.04em!important}}
 </style>
 </head>
 <body>
@@ -239,18 +258,18 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
     <h1><span class="o" aria-hidden="true"></span>Aperture<sup class="ver">2</sup></h1>
     <div class="right"><button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button></div>
   </div>
-  <div class="timerow"><span id="time">2:00</span><div class="segs" id="segs"></div></div>
+  <div class="timerow"><span class="tlab">Time left</span><span id="time">2:00</span><div class="segs" id="segs"></div></div>
   <div class="meta">
-    <span>Round <b id="roundNum">1/5</b></span>
-    <span>This <b id="roundTime">0:00</b></span>
-    <span>Total <b id="totalTime">0:00</b></span>
+    <span><i>Round</i><b id="roundNum">1/5</b></span>
+    <span><i>This round</i><b id="roundTime">0:00</b></span>
+    <span><i>Total</i><b id="totalTime">0:00</b></span>
   </div>
-  <span class="label" id="setLabel" hidden>Daily</span><p id="ticker"></p>
+  <span class="label" id="setLabel" hidden>Daily</span>
 </header>
 
 <div class="viewer" id="viewer">
   <canvas id="cA" width="1200" height="1200" aria-label="Obscured picture of the object"></canvas>
-  <div class="overlay" id="overlay"></div>
+  <div class="ovwrap"><p class="quizhead label" id="quizHead">Your 2 minute daily quiz</p><div class="overlay" id="overlay"></div><p id="ticker" aria-live="polite">Press Start when you're ready.</p></div>
   <div class="zoombtns">
     <button class="zb" id="zOut" aria-label="Zoom out">−</button>
     <button class="zb" id="zIn" aria-label="Zoom in">+</button>
@@ -836,6 +855,7 @@ function startGame(mode){
   const order=shuffle(OBJECTS.map((_,i)=>i)).slice(0,ROUNDS);
   G={mode,seed,label,key,order,round:0,total:0,totalPen:0,results:[]};
   $('setLabel').textContent=label;
+  $('quizHead').textContent=mode==='daily'?'Your 2 minute daily quiz · '+label.replace(/^Daily · /,''):'Your 2 minute random quiz';
   newRound();
 }
 function newRound(){
@@ -944,7 +964,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v21';
+document.documentElement.dataset.version='mobile v22';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
