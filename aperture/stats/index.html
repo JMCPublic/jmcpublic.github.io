@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Aperture Stats</title>
+<title>Two Minute Games Stats</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
@@ -59,7 +59,7 @@ tr.now td{background:#f3f6ff}tr.now td:first-child{box-shadow:inset 3px 0 0 var(
 tr.yr td{font-weight:500;border-bottom:none;border-top:1.5px solid var(--ink)}
 .chg{color:var(--faint)}.chg.up{color:var(--up)}.chg.down{color:var(--down)}
 tr.gap td{color:var(--faint);font-size:12.5px;padding:10px 0 4px;border-bottom:1px solid var(--line)}
-@media (max-width:560px){td.barcell,th.barcell{width:auto;padding-right:12px}td.barcell .bar{min-width:44px}#months th.r{padding-left:8px}#months th{letter-spacing:.04em}#months td.m{padding-right:8px}#months{table-layout:auto}.card{overflow:hidden}#months th:last-child,#months td.chg{display:none}.hidesm{display:none}td.m i{display:block;margin-left:0}}
+@media (max-width:560px){td.barcell,th.barcell{width:auto;padding-right:12px}td.barcell .bar{min-width:44px}.months th.r{padding-left:8px}.months th{letter-spacing:.04em}.months td.m{padding-right:8px}.card{overflow:hidden}.months th:last-child,.months td.chg{display:none}.hidesm{display:none}td.m i{display:block;margin-left:0}}
 /* period picker */
 .pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .pick .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-right:4px}
@@ -78,18 +78,21 @@ td.share{width:34%;padding-left:12px}
 .empty{color:var(--soft);font-size:14px;margin:0}
 .sub3{font-family:var(--display);font-size:15px;margin:6px 0 0}
 .note{font-size:12.5px;color:var(--soft);margin:0}
+.fam{font-family:var(--display);font-size:24px;letter-spacing:-.02em;margin:14px 0 -6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.fam small{font-family:var(--body);font-size:13px;font-weight:400;color:var(--soft);letter-spacing:0}
+.nwg td.n{width:70px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div>
-      <h1><span class="o" aria-hidden="true"></span>Aperture stats</h1>
+      <h1><span class="o" aria-hidden="true"></span>twominute.games stats</h1>
       <p class="sub" id="updated">Loading…</p>
     </div>
     <button id="refresh">Refresh</button>
   </header>
 
+  <h2 class="fam">Aperture <small>both games together, then each game below</small></h2>
   <section class="card">
     <div class="h2row"><h2 id="nowTitle">This month so far</h2><small id="nowDays"></small></div>
     <div class="tiles" id="tiles"></div>
@@ -97,13 +100,24 @@ td.share{width:34%;padding-left:12px}
 
   <section class="card">
     <div class="h2row"><h2>Month by month</h2><small id="yrNote"></small></div>
-    <table id="months"></table>
+    <table id="months" class="months"></table>
   </section>
 
   <div class="pick" id="pick"><span class="lab">Show detail for</span></div>
   <div class="games" id="games"></div>
 
-  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the games. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
+  <h2 class="fam">Natural Wonders <small>all 10 games and Masterbrain together</small></h2>
+  <section class="card">
+    <div class="h2row"><h2 id="nwNowTitle">This month so far</h2><small id="nwNowDays"></small></div>
+    <div class="tiles" id="nwTiles"></div>
+  </section>
+  <section class="card">
+    <div class="h2row"><h2>Month by month</h2><small id="nwYrNote"></small></div>
+    <table id="nwMonths" class="months"></table>
+  </section>
+  <section class="card" id="nwDetail"></section>
+
+  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
 </div>
 <script>
 (()=>{
@@ -112,6 +126,8 @@ const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default
 const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aperture Landmarks',url:'../landmarks/'}];
 const AD={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
 const KEYS=['visits','uniques','vip','games','tests'];
+const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played'};
+const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',forests:'Forests',masterbrain:'Masterbrain'};
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
 const nameOf=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(names?names.of(c):c);
@@ -125,11 +141,10 @@ const mid=(y,m)=>y+'-'+String(m).padStart(2,'0');
 const mName=id=>MN[+id.slice(5)-1]+' '+id.slice(0,4);
 const yearOf=id=>{const y=+id.slice(0,4),m=+id.slice(5);return m>=11?y-2025:y-2026}; // Year 1 = Nov 2026 – Oct 2027
 // a record from Firestore fields
-function rec(f){f=f||{};const o={c:{},promo:{}};KEYS.forEach(k=>o[k]=num(f[k]));
-  Object.entries((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).forEach(([k,v])=>o.c[k]=num(v));
-  Object.entries((f.promo&&f.promo.mapValue&&f.promo.mapValue.fields)||{}).forEach(([k,v])=>o.promo[k]=num(v));return o}
+function rec(f){f=f||{};const o={};KEYS.forEach(k=>o[k]=num(f[k]));
+  Object.entries(MAPS).forEach(([x,fld])=>{o[x]={};Object.entries((f[fld]&&f[fld].mapValue&&f[fld].mapValue.fields)||{}).forEach(([k,v])=>o[x][k]=num(v))});return o}
 const blank=()=>rec({});
-function add(a,b,sign=1){KEYS.forEach(k=>a[k]+=sign*b[k]);['c','promo'].forEach(x=>Object.entries(b[x]).forEach(([k,v])=>a[x][k]=(a[x][k]||0)+sign*v));return a}
+function add(a,b,sign=1){KEYS.forEach(k=>a[k]+=sign*b[k]);Object.keys(MAPS).forEach(x=>Object.entries(b[x]).forEach(([k,v])=>a[x][k]=(a[x][k]||0)+sign*v));return a}
 function sumRecs(list){return list.reduce((a,r)=>add(a,r),blank())}
 const adsOpened=r=>Object.entries(r.promo).filter(([k])=>k.endsWith('_open')).reduce((s,[,v])=>s+v,0);
 
@@ -137,13 +152,13 @@ async function loadAll(){
   const docs=[];let tok='';
   do{const r=await fetch(`${BASE}/stats?key=${K}&pageSize=300${tok?'&pageToken='+tok:''}`,{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     const j=await r.json();(j.documents||[]).forEach(d=>docs.push(d));tok=j.nextPageToken||''}while(tok);
-  const all={},months={};GAMES.forEach(g=>all[g.id]=blank());
-  docs.forEach(d=>{const id=d.name.split('/').pop(),m=/^(objects|landmarks)(?:-(\d{4}-\d{2}))?$/.exec(id);if(!m)return;
+  const all={},months={};FAM.forEach(id=>all[id]=blank());
+  docs.forEach(d=>{const id=d.name.split('/').pop(),m=/^(objects|landmarks|wonders)(?:-(\d{4}-\d{2}))?$/.exec(id);if(!m)return;
     if(!m[2])all[m[1]]=rec(d.fields);else{(months[m[2]]=months[m[2]]||{})[m[1]]=rec(d.fields)}});
   // anything counted before monthly records began is the October 2026 launch month
-  const launch={};GAMES.forEach(g=>{launch[g.id]=add(add(blank(),all[g.id]),sumRecs(Object.values(months).map(x=>x[g.id]||blank())),-1);
-    KEYS.forEach(k=>launch[g.id][k]=Math.max(0,launch[g.id][k]));['c','promo'].forEach(x=>Object.keys(launch[g.id][x]).forEach(k=>{if(launch[g.id][x][k]<=0)delete launch[g.id][x][k]}))});
-  const list=Object.keys(months).sort().map(id=>({id,g:Object.fromEntries(GAMES.map(g=>[g.id,months[id][g.id]||blank()]))}));
+  const launch={};FAM.forEach(id=>{launch[id]=add(add(blank(),all[id]),sumRecs(Object.values(months).map(x=>x[id]||blank())),-1);
+    KEYS.forEach(k=>launch[id][k]=Math.max(0,launch[id][k]));Object.keys(MAPS).forEach(x=>Object.keys(launch[id][x]).forEach(k=>{if(launch[id][x][k]<=0)delete launch[id][x][k]}))});
+  const list=Object.keys(months).sort().map(id=>({id,g:Object.fromEntries(FAM.map(f=>[f,months[id][f]||blank()]))}));
   const L={id:'2026-10',launch:true,g:launch};
   if(!list.find(x=>x.id==='2026-10'))list.unshift(L);
   return{all,list};
@@ -155,9 +170,9 @@ async function render(){
   const up=document.getElementById('updated');
   try{state=await loadAll()}catch(e){up.textContent="Couldn't load the stats. Check your connection and press Refresh.";return}
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
-  if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(GAMES.map(g=>[g.id,blank()]))});
+  if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · both games together unless it says otherwise';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+'';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -183,6 +198,27 @@ async function render(){
   if(L)html+=`<tr class="gap"><td colspan="6">Before Year 1</td></tr>`+row(L,null);
   document.getElementById('months').innerHTML=html+'</tbody>';
 
+  // Natural Wonders: same layout, its own numbers
+  const nw=(m,k)=>k==='tried'?Object.keys(m.g.wonders.pl).filter(x=>m.g.wonders.pl[x]>0).length:m.g.wonders[k];
+  document.getElementById('nwNowTitle').textContent='This month so far · '+MN[t.m-1];
+  document.getElementById('nwNowDays').textContent=document.getElementById('nowDays').textContent;
+  document.getElementById('nwTiles').innerHTML=[['Visits','visits'],['New players','uniques'],['Games played','games'],['Games tried','tried']].map(([lab,k])=>{
+    const v=nw(now,k),ch=prev&&k!=='tried'?pct(v,Math.round(nw(prev,k)*frac)):null;
+    return `<div class="tile"><span>${lab}</span><b>${fmt(v)}</b><em class="${ch>0?'up':ch<0?'down':''}">${k==='tried'?'of 11 games':!prev?'First full month':ch===null?'–':(ch>0?'▲ ':ch<0?'▼ ':'')+Math.abs(ch)+'% vs same point in '+mon}</em></div>`}).join('');
+  const nmax=Math.max(1,...list.map(m=>nw(m,'visits')));
+  const nrow=(m,p)=>{const v=nw(m,'visits'),isNow=m.id===nowId,ch=p&&!p.launch&&!isNow?pct(v,nw(p,'visits')):null;
+    return `<tr class="${isNow?'now':''}"><td class="m">${m.launch?'October 2026':mName(m.id)}${m.launch?'<i>launch</i>':''}${isNow?'<i>so far</i>':''}</td>
+    <td class="barcell"><div class="bar"><i style="width:${Math.max(v?2:0,Math.round(v/nmax*100))}%"></i></div></td>
+    <td class="r n">${fmt(v)}</td><td class="r n hidesm">${fmt(nw(m,'uniques'))}</td><td class="r n">${fmt(nw(m,'games'))}</td>
+    <td class="r n chg ${ch>0?'up':ch<0?'down':''}">${isNow?'…':ch===null?'–':(ch>0?'+':'')+ch+'%'}</td></tr>`};
+  let nh=`<thead><tr><th>Month</th><th class="barcell"></th><th class="r">Visits</th><th class="r hidesm">New players</th><th class="r">Games</th><th class="r">Change</th></tr></thead><tbody>`;
+  years.forEach(y=>{const ms=real.filter(m=>yearOf(m.id)===y);
+    ms.slice().reverse().forEach(m=>{const i=list.indexOf(m);nh+=nrow(m,list[i-1])});
+    nh+=`<tr class="yr"><td class="m">Year ${y}${y===yr?' so far':''}</td><td class="barcell"></td><td class="r n">${fmt(ms.reduce((s,m)=>s+nw(m,'visits'),0))}</td><td class="r n hidesm">${fmt(ms.reduce((s,m)=>s+nw(m,'uniques'),0))}</td><td class="r n">${fmt(ms.reduce((s,m)=>s+nw(m,'games'),0))}</td><td></td></tr>`});
+  if(L)nh+=`<tr class="gap"><td colspan="6">Before Year 1</td></tr>`+nrow(L,null);
+  document.getElementById('nwMonths').innerHTML=nh+'</tbody>';
+  document.getElementById('nwYrNote').textContent=document.getElementById('yrNote').textContent;
+
   // detail picker
   const P=[...list.slice().reverse().map(m=>({id:m.id,label:m.id===nowId?'This month':m.launch?'October (launch)':MN[+m.id.slice(5)-1]+(yearOf(m.id)===yr?'':' '+m.id.slice(0,4)),get:g=>m.g[g]})),
     ...years.map(y=>({id:'y'+y,label:`Year ${y}${y===yr?' so far':''}`,get:g=>sumRecs(real.filter(m=>yearOf(m.id)===y).map(m=>m.g[g]))})),
@@ -193,6 +229,7 @@ async function render(){
   detail(P.find(p=>p.id===current));
 }
 function detail(p){
+  nwDetail(p);
   document.getElementById('games').innerHTML=GAMES.map(g=>{const f=p.get(g.id);
     const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
     const ids={};Object.entries(f.promo).forEach(([k,v])=>{const i=k.lastIndexOf('_');(ids[k.slice(0,i)]=ids[k.slice(0,i)]||{open:0,play:0})[k.slice(i+1)]=v});
@@ -209,6 +246,20 @@ function detail(p){
       <h3 class="sub3">"Have you tried" ads</h3>
       ${ads.length?`<table><thead><tr><th>Ad for</th><th class="r">Opened</th><th class="r">Played</th><th class="r">Rate</th></tr></thead><tbody>${ads.map(([k,x])=>`<tr><td>${esc(AD[k]||k)}</td><td class="r n">${fmt(x.open)}</td><td class="r n">${fmt(x.play)}</td><td class="r n">${x.open?Math.round(x.play/x.open*100)+'%':'–'}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">No ad clicks.</p>'}
     </section>`}).join('')}
+function nwDetail(p){const f=p.get('wonders');
+  const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
+  const gs=Object.keys(NWN).map(k=>[k,f.bg[k]||0,f.pl[k]||0]).sort((a,b)=>b[1]-a[1]||b[2]-a[2]),gmax=Math.max(1,...gs.map(x=>x[1]));
+  document.getElementById('nwDetail').innerHTML=`<div class="h2row"><h2><a href="/wonders/">Natural Wonders</a></h2><small>${esc(p.label)} · change it under “Show detail for” above</small></div>
+    <div class="nums">
+      <div class="num"><b>${fmt(f.visits)}</b><span>Visits</span></div>
+      <div class="num"><b>${fmt(f.uniques)}</b><span>${p.id==='all'?'Unique':'New'}</span></div>
+      <div class="num vip"><b>${fmt(f.vip)}</b><span>VIP</span></div>
+      <div class="num"><b>${fmt(f.games)}</b><span>Games</span></div>
+      <div class="num test"><b>${fmt(f.tests)}</b><span>Premier access</span></div>
+    </div>
+    <table class="nwg"><thead><tr><th>Game</th><th class="r">Visits</th><th class="r">Played</th><th></th></tr></thead><tbody>${gs.map(([k,v,pl])=>`<tr><td>${esc(NWN[k])}</td><td class="r n">${fmt(v)}</td><td class="r n">${fmt(pl)}</td><td class="share"><div class="bar"><i style="width:${v?Math.max(3,Math.round(v/gmax*100)):0}%"></i></div></td></tr>`).join('')}</tbody></table>
+    <h3 class="sub3">Countries</h3>
+    ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('')}</tbody></table>`:'<p class="empty">No visits yet.</p>'}`}
 document.getElementById('refresh').onclick=render;
 render();
 })();
