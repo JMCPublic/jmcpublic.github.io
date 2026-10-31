@@ -298,7 +298,7 @@ body.done .ovwrap{top:8px}
 .msheet .prow{display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-top:4px}
 .msheet .go{background:var(--ink);color:#fff;border-radius:999px;padding:11px 20px;font-size:15px;font-weight:500;text-decoration:none}
 .msheet .later{color:var(--soft);font-size:14px;padding:8px}
-</style>
+.asks #askFirst{grid-column:1/-1}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:var(--blue,#2b50e0);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}</style>
 </head>
 <body>
 
@@ -335,6 +335,7 @@ body.done .ovwrap{top:8px}
   <div id="slots" aria-live="polite"></div>
   <div class="row">
     <button class="pill" id="clear">Clear</button>
+    <button class="pill" id="skipBtn">Skip ›</button>
     <button class="pill" id="sheetBtn">Help<span id="helpCount">0 used</span></button>
   </div>
 </div>
@@ -352,6 +353,7 @@ body.done .ovwrap{top:8px}
     <div class="asks">
       <button class="ask" id="askViewpoint">New viewpoint</button>
       <button class="ask" id="askWords">Fewer words</button>
+        <button class="ask" id="askFirst">First letters<small>+30s</small></button>
     </div>
     <div class="vowels">
       <span class="label">Vowel</span>
@@ -385,6 +387,8 @@ body.done .ovwrap{top:8px}
       <div><b>Every 20 seconds</b>A free viewpoint opens and more of the negative fills in. Tap the small picture to see the negative full size. Each object has 2 minutes.</div>
       <div><b>Look closer</b>Pinch or use + and − to zoom, drag to look around.</div>
       <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel dropped into your answer.</div>
+      <div><b>First letters add 30 seconds</b>Each press shows the first letter of the next word: once for word one, twice for word two, and so on.</div>
+      <div><b>Stuck? Skip</b>Tap Skip, then tap again to move on. A skipped object counts as not solved: 2:00 plus 30 seconds.</div>
       <div><b>Answer</b>Tap the right word in the list. A wrong answer adds 15 seconds. Not solved in 2 minutes counts as 2:00 plus 30 seconds.</div>
     </div>
     <a href="https://twominute.games/aperture/?desktop=1">Playing on a computer? Use the desktop version</a>
@@ -545,8 +549,8 @@ const CODES=(()=>{const words=[...new Set([...POOL,...OBJECTS.flatMap(o=>o.answe
   words.forEach(w=>{let n=hashStr('code|'+w)%900;while(used.has(n))n=(n+1)%900;used.add(n);out[w]=String(n+100)});return out})();
 
 /* ---------- sound ---------- */
-let soundOn=true;try{soundOn=localStorage.getItem('aperture2-sound')!=='off'}catch(e){}
-let musicOn=true;try{musicOn=localStorage.getItem('aperture2-music')!=='off'}catch(e){}
+let soundOn=true;try{soundOn=localStorage.getItem('aperture2-sound-v2')!=='off'}catch(e){}
+let musicOn=true;try{musicOn=localStorage.getItem('aperture2-music-v2')!=='off'}catch(e){}
 let AC=null;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
 function tone(f,dur,type,vol,when,slide){if(!soundOn)return;const a=ac();if(!a)return;const t=a.currentTime+(when||0);
@@ -588,11 +592,11 @@ function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;const ou
 function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
   try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
   setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
-function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off');b.dataset.tip=on?'Music on · click to turn off':'Music off · click to turn on'}
+function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music-v2',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off');b.dataset.tip=on?'Music on · click to turn off':'Music off · click to turn on'}
   try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
 setMusic(musicOn);
 $('musicBtn').onclick=()=>setMusic(!musicOn);
-function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound',on?'on':'off')}catch(e){}
+function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound-v2',on?'on':'off')}catch(e){}
   const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Sound effects on':'Sound effects off');b.dataset.tip=on?'Sounds on · click to turn off':'Sounds off · click to turn on'}if(on)SFX.place()}
 setSound(soundOn);
 $('soundBtn').onclick=()=>setSound(!soundOn);
@@ -661,7 +665,7 @@ function showQuote(which){
 function hideQuote(){const el=$('qwrap');if(el)el.hidden=true}
 
 /* ---------- rules ---------- */
-const ROUNDS=5, STAGE=20, STAGES=6, LIMIT=STAGE*STAGES, PEN=15, MISS=30, THIN=Math.round(56*.2), MAX_THINS=4;
+const ROUNDS=5, STAGE=20, STAGES=6, LIMIT=STAGE*STAGES, PEN=15, MISS=30, FIRST=30, THIN=Math.round(56*.2), MAX_THINS=4;
 const fmt=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
 const fmtPen=s=>{s=Math.round(s);return s<60?String(s):fmt(s)};
 let sortMode='mix';try{if(localStorage.getItem('aperture2-sort')==='az')sortMode='az'}catch(e){}
@@ -853,6 +857,11 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ---------- help (A) ---------- */
+function nextFirst(){return S.slots?S.slots.findIndex(g=>!g[0].rev):-1}
+$('askFirst').onclick=()=>{if(!S.running)return;const gi=nextFirst();if(gi<0)return;const c=S.slots[gi][0];c.rev=true;c.val='';S.pen+=FIRST;S.helps++;(SFX.vowel||SFX.place)();renderSlots();const n=S.slots.length;tick(`${n>1?`First letter of word ${gi+1} of ${n}`:'First letter'} shown: ${c.ch.toUpperCase()}. +${FIRST} s.`);updateHUD()};
+// skip: needs a second tap within 3 seconds; counts as not solved (2:00 + 30 s)
+let skipArm=0;$('skipBtn').onclick=()=>{if(!S.running)return;const b=$('skipBtn');if(!skipArm){b.classList.add('arm');b.dataset.t=b.innerHTML;b.innerHTML='Tap again to skip';skipArm=setTimeout(disarmSkip,3000);return}disarmSkip();endRound(false,true)};
+function disarmSkip(){clearTimeout(skipArm);skipArm=0;const b=$('skipBtn');if(b.dataset.t){b.innerHTML=b.dataset.t;delete b.dataset.t}b.classList.remove('arm')}
 function useHelp(msg){S.pen+=PEN;S.helps++;tick(`${msg}. +${PEN} s.`);updateHUD()}
 $('askViewpoint').onclick=()=>{if(!S.running)return;addViewpoint();useHelp('A new viewpoint is open')};
 $('askWords').onclick=()=>{if(!S.running||S.thins>=MAX_THINS)return;thinWords();useHelp(`${THIN} wrong words removed and the negative filled in`)};
@@ -874,7 +883,7 @@ function updateHUD(){
   $('totalTime').innerHTML=`${fmt(G.total)}<small> (${fmtPen(G.totalPen)})</small>`;
   $('helpCount').textContent=`${S.helps} used`;
   const off=!S.running;
-  $('askViewpoint').disabled=off;$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
+  $('askViewpoint').disabled=off;$('askFirst').disabled=off||nextFirst()<0;$('skipBtn').disabled=off;if(off&&skipArm)disarmSkip();$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
   document.querySelectorAll('.vowel').forEach(b=>b.disabled=off||S.vowels.has(b.dataset.v));
 }
 let last=0,raf=0;
@@ -943,19 +952,19 @@ function newRound(){
 }
 function startRound(){hideQuote();ac();setTimeout(musicStart,150);overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;last=performance.now();
   tick('Clock running. A free viewpoint opens every 20 seconds.');renderSlots();updateHUD();raf=requestAnimationFrame(loop)}
-function endRound(win){
+function endRound(win,skipped){
   musicStop(.6);
   S.running=false;S.ended=true;S.won=win;cancelAnimationFrame(raf);
   const pen=S.pen+(win?0:MISS), time=(win?S.elapsed:LIMIT)+pen;
   G.total+=time;G.totalPen+=pen;
-  G.results.push({name:S.obj.name,answer:S.obj.answer.join(' '),time,pen,win,helps:S.helps||0});
+  G.results.push({name:S.obj.name,answer:S.obj.answer.join(' '),time,pen,win,skip:!!skipped,helps:S.helps||0});
   renderA();renderB();zoomTo(1);renderSlots();
   const lastR=G.round>=ROUNDS-1;S.words.forEach(o=>{const hit=!lastR&&S.obj.answer.includes(o.w);o.el.classList.toggle('hit',hit);o.el.classList.toggle('used',!hit)});
   (win?SFX.right:SFX.timeup)();
-  feedback(win?`Solved: ${S.obj.answer.join(' ')}.`:`Out of time. It was ${S.obj.name}.`,win?'good':'bad');
+  feedback(win?`Solved: ${S.obj.answer.join(' ')}.`:`${skipped?'Skipped':'Out of time'}. It was ${S.obj.name}.`,win?'good':'bad');
   const lastRound=G.round>=ROUNDS-1;
   overlay.hidden=false;
-  overlay.innerHTML=`<span class="label">${win?'Solved':`Out of time · +${MISS} s`}</span><h3>It was ${S.obj.name.replace(S.obj.answer.join(' '),`<span class="ans">${S.obj.answer.join(' ')}</span>`)}.</h3>
+  overlay.innerHTML=`<span class="label">${win?'Solved':(skipped?`Skipped · +${MISS} s`:`Out of time · +${MISS} s`)}</span><h3>It was ${S.obj.name.replace(S.obj.answer.join(' '),`<span class="ans">${S.obj.answer.join(' ')}</span>`)}.</h3>
     <div class="pts">${fmt(time)} (${fmtPen(pen)})</div>
     <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Final time':'Next round'}</button>`;
   // after a short beat the next round starts by itself; tapping Next round skips the wait
@@ -965,7 +974,7 @@ function endRound(win){
   $('nextBtn').onclick=lastRound?finish:goNext;
   // the closing quote shows as soon as the last round ends, not only after Final time
   if(lastRound)showQuote('close');
-  tick(win?`Solved in ${fmt(S.elapsed)}, plus ${fmtPen(pen)} s of penalties.`:'Two minutes are up.');
+  tick(win?`Solved in ${fmt(S.elapsed)}, plus ${fmtPen(pen)} s of penalties.`:(skipped?'Skipped. Counts as 2:00 plus 30 seconds.':'Two minutes are up.'));
   updateHUD();
 }
 function finish(){
@@ -983,7 +992,7 @@ function finish(){
   const challenge=SHARE;
   const result=`Aperture 2 · ${G.label}\n${fmt(G.total)} (${fmtPen(G.totalPen)})\n`+G.results.map(r=>`${r.win?'✓':'✗'} ${fmt(r.time)} (${fmtPen(r.pen)})`).join('\n');
   overlay.innerHTML=`<span class="label">${G.label}</span><h3>${fmt(G.total)} <small>(${fmtPen(G.totalPen)})</small></h3>
-    <ol>${G.results.map(r=>`<li>${r.win?'':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
+    <ol>${G.results.map(r=>`<li>${r.win?'':r.skip?'⏭ ':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
     <div class="sq" aria-label="${won} of ${ROUNDS} solved">${squares}</div>
     ${streak?`<p class="streak">${streak>1?`🔥 ${streak} days in a row`:'🔥 Day 1 of your streak. Come back tomorrow.'}</p>`:''}
     <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
@@ -1036,7 +1045,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v31';
+document.documentElement.dataset.version='mobile v32';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
