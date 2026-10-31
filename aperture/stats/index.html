@@ -4,18 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aperture Stats</title>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: Aperture's light look. A summary row per game, then every country in a ranked table, side by side on wide screens. */
+/* Stats counted by month. Month-by-month overview first, then the per-game detail for whichever period is picked. */
 :root{
   --bg:#f1f3f7; --sheet:#ffffff; --line:#e3e6eb; --frame:#b9c0cb;
   --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab; --blue:#2b50e0; --blue-wash:#e6edff;
+  --up:#1f8a4c; --down:#c0392b;
   --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
   --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -26,6 +23,7 @@ html,body{background:var(--bg);color:var(--ink)}
 body{margin:0;font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
 .wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.mockbar{background:#fff7e0;border:1.5px dashed #e0b13a;border-radius:12px;padding:8px 14px;font-size:13px;color:#7a5a00}
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
 h1{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.03em;margin:0;display:flex;align-items:center;gap:.3em}
 h1 .o{display:inline-block;width:.6em;height:.6em;border:.14em solid var(--blue);border-radius:50%}
@@ -33,10 +31,41 @@ h1 .o{display:inline-block;width:.6em;height:.6em;border:.14em solid var(--blue)
 button{font:inherit;border:1.5px solid #7d8592;background:var(--sheet);border-radius:999px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink)}
 button:hover{border-color:var(--blue);color:var(--blue)}
 button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.card{background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font-family:var(--display);font-size:19px;margin:0}
+h2 a{color:inherit;text-decoration:none}h2 a:hover{color:var(--blue)}
+.h2row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.h2row small{color:var(--soft);font-size:13px}
+/* headline tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.tile span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tile b{font-family:var(--mono);font-weight:500;font-size:24px;font-variant-numeric:tabular-nums}
+.tile em{font-style:normal;font-size:12.5px;color:var(--soft)}
+.tile em.up{color:var(--up)}.tile em.down{color:var(--down)}
+@media (max-width:620px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* month table */
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:0 0 6px;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+td.n{font-family:var(--mono)}
+td.m{white-space:nowrap;padding-right:12px}
+td.m i{font-style:normal;color:var(--faint);font-size:12px;margin-left:6px}
+td.barcell{width:38%;padding-right:14px}
+.bar{height:8px;border-radius:4px;background:var(--blue-wash);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:4px}
+tr.now td{background:#f3f6ff}tr.now td:first-child{box-shadow:inset 3px 0 0 var(--blue);padding-left:10px}
+tr.yr td{font-weight:500;border-bottom:none;border-top:1.5px solid var(--ink)}
+.chg{color:var(--faint)}.chg.up{color:var(--up)}.chg.down{color:var(--down)}
+tr.gap td{color:var(--faint);font-size:12.5px;padding:10px 0 4px;border-bottom:1px solid var(--line)}
+@media (max-width:560px){td.barcell,th.barcell{display:none}.hidesm{display:none}}
+/* period picker */
+.pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pick .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+.pick button{padding:6px 14px}
+.pick button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
 .games{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.game{background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
-.game h2{font-family:var(--display);font-size:19px;margin:0}
-.game h2 a{color:inherit;text-decoration:none}.game h2 a:hover{color:var(--blue)}
 .nums{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .num{display:flex;flex-direction:column;gap:1px}
 .num b{font-family:var(--mono);font-weight:500;font-size:20px;font-variant-numeric:tabular-nums}
@@ -44,15 +73,8 @@ button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .num.vip span{color:var(--blue)}
 .num.test b{color:var(--faint)}
 @media (max-width:420px){.nums{grid-template-columns:repeat(3,minmax(0,1fr))}}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:0 0 6px;border-bottom:1px solid var(--line)}
-th.r,td.r{text-align:right}
-td{padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
 td.rank{font-family:var(--mono);color:var(--blue);width:28px}
-td.n{font-family:var(--mono)}
-td.share{width:34%}
-.bar{height:6px;border-radius:3px;background:var(--blue-wash);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--blue);border-radius:3px}
+td.share{width:34%;padding-left:12px}
 .empty{color:var(--soft);font-size:14px;margin:0}
 .sub3{font-family:var(--display);font-size:15px;margin:6px 0 0}
 .note{font-size:12.5px;color:var(--soft);margin:0}
@@ -67,51 +89,126 @@ td.share{width:34%}
     </div>
     <button id="refresh">Refresh</button>
   </header>
+
+  <section class="card">
+    <div class="h2row"><h2 id="nowTitle">This month so far</h2><small id="nowDays"></small></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="card">
+    <div class="h2row"><h2>Month by month</h2><small id="yrNote"></small></div>
+    <table id="months"></table>
+  </section>
+
+  <div class="pick" id="pick"><span class="lab">Show detail for</span></div>
   <div class="games" id="games"></div>
-  <p class="note">Every country each game has been opened in, most visits first. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Ads: “Opened” means someone clicked the “Have you tried” card; “Played” means they then pressed Play.</p>
+
+  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the games. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
 </div>
 <script>
 (()=>{
 const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
 const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aperture Landmarks',url:'../landmarks/'}];
+const AD={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
+const KEYS=['visits','uniques','vip','games','tests'];
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
 const nameOf=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(names?names.of(c):c);
 const fmt=n=>n.toLocaleString('en-GB');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function load(id){const r=await fetch(`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/stats/${id}?key=${K}`,{cache:'no-store'});
-  if(r.status===404)return{};if(!r.ok)throw new Error(r.status);return (await r.json()).fields||{}}
 const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);
-const AD_NAMES={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
-// each ad's opens (card clicked, panel shown) and plays (Play button pressed), with plays as a share of opens
-function ads(f){const m=(f.promo&&f.promo.mapValue&&f.promo.mapValue.fields)||{};const ids={};
-  Object.entries(m).forEach(([k,v])=>{const i=k.lastIndexOf('_');const id=k.slice(0,i),what=k.slice(i+1);(ids[id]=ids[id]||{open:0,play:0})[what]=num(v)});
-  const r=Object.entries(ids).sort((a,b)=>b[1].open-a[1].open);
-  if(!r.length)return '<p class="empty">No ad clicks yet.</p>';
-  return `<table><thead><tr><th>Ad for</th><th class="r">Opened</th><th class="r">Played</th><th class="r">Rate</th></tr></thead><tbody>${r.map(([id,x])=>`<tr><td>${esc(AD_NAMES[id]||id)}</td><td class="r n">${fmt(x.open)}</td><td class="r n">${fmt(x.play)}</td><td class="r n">${x.open?Math.round(x.play/x.open*100)+'%':'–'}</td></tr>`).join('')}</tbody></table>`}
-async function render(){
-  const box=document.getElementById('games');
-  try{
-    const data=await Promise.all(GAMES.map(g=>load(g.id)));
-    box.innerHTML=GAMES.map((g,i)=>{const f=data[i];
-      const c=Object.entries((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0])));
-      const total=c.reduce((s,x)=>s+x[1],0)||1;
-      const rows=c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('');
-      return `<section class="game"><h2><a href="${g.url}?desktop=1">${g.name}</a></h2>
-        <div class="nums">
-          <div class="num"><b>${fmt(num(f.visits))}</b><span>Visits</span></div>
-          <div class="num"><b>${fmt(num(f.uniques))}</b><span>Unique</span></div>
-          <div class="num vip"><b>${fmt(num(f.vip))}</b><span>VIP</span></div>
-          <div class="num"><b>${fmt(num(f.games))}</b><span>Games</span></div>
-          <div class="num test"><b>${fmt(num(f.tests))}</b><span>Premier access</span></div>
-        </div>
-        ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
-        <h3 class="sub3">"Have you tried" ads</h3>
-        ${ads(f)}
-      </section>`}).join('');
-    document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · '+c_count(data)+' countries in total';
-  }catch(e){document.getElementById('updated').textContent="Couldn't load the stats. Check your connection and press Refresh."}
+const pct=(a,b)=>b?Math.round((a-b)/b*100):null;
+// today's month, UK time
+function ukNow(){const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),g=t=>+p.find(x=>x.type===t).value;return{y:g('year'),m:g('month'),d:g('day')}}
+const mid=(y,m)=>y+'-'+String(m).padStart(2,'0');
+const mName=id=>MN[+id.slice(5)-1]+' '+id.slice(0,4);
+const yearOf=id=>{const y=+id.slice(0,4),m=+id.slice(5);return m>=11?y-2025:y-2026}; // Year 1 = Nov 2026 – Oct 2027
+// a record from Firestore fields
+function rec(f){f=f||{};const o={c:{},promo:{}};KEYS.forEach(k=>o[k]=num(f[k]));
+  Object.entries((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).forEach(([k,v])=>o.c[k]=num(v));
+  Object.entries((f.promo&&f.promo.mapValue&&f.promo.mapValue.fields)||{}).forEach(([k,v])=>o.promo[k]=num(v));return o}
+const blank=()=>rec({});
+function add(a,b,sign=1){KEYS.forEach(k=>a[k]+=sign*b[k]);['c','promo'].forEach(x=>Object.entries(b[x]).forEach(([k,v])=>a[x][k]=(a[x][k]||0)+sign*v));return a}
+function sumRecs(list){return list.reduce((a,r)=>add(a,r),blank())}
+const adsOpened=r=>Object.entries(r.promo).filter(([k])=>k.endsWith('_open')).reduce((s,[,v])=>s+v,0);
+
+async function loadAll(){
+  const docs=[];let tok='';
+  do{const r=await fetch(`${BASE}/stats?key=${K}&pageSize=300${tok?'&pageToken='+tok:''}`,{cache:'no-store'});if(!r.ok)throw new Error(r.status);
+    const j=await r.json();(j.documents||[]).forEach(d=>docs.push(d));tok=j.nextPageToken||''}while(tok);
+  const all={},months={};GAMES.forEach(g=>all[g.id]=blank());
+  docs.forEach(d=>{const id=d.name.split('/').pop(),m=/^(objects|landmarks)(?:-(\d{4}-\d{2}))?$/.exec(id);if(!m)return;
+    if(!m[2])all[m[1]]=rec(d.fields);else{(months[m[2]]=months[m[2]]||{})[m[1]]=rec(d.fields)}});
+  // anything counted before monthly records began is the October 2026 launch month
+  const launch={};GAMES.forEach(g=>{launch[g.id]=add(add(blank(),all[g.id]),sumRecs(Object.values(months).map(x=>x[g.id]||blank())),-1);
+    KEYS.forEach(k=>launch[g.id][k]=Math.max(0,launch[g.id][k]));['c','promo'].forEach(x=>Object.keys(launch[g.id][x]).forEach(k=>{if(launch[g.id][x][k]<=0)delete launch[g.id][x][k]}))});
+  const list=Object.keys(months).sort().map(id=>({id,g:Object.fromEntries(GAMES.map(g=>[g.id,months[id][g.id]||blank()]))}));
+  const L={id:'2026-10',launch:true,g:launch};
+  if(!list.find(x=>x.id==='2026-10'))list.unshift(L);
+  return{all,list};
 }
-function c_count(data){const s=new Set();data.forEach(f=>Object.keys((f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{}).forEach(k=>s.add(k)));return s.size}
+const both=(m,k)=>GAMES.reduce((s,g)=>s+(k==='ads'?adsOpened(m.g[g.id]):m.g[g.id][k]),0);
+
+let state=null,current='now';
+async function render(){
+  const up=document.getElementById('updated');
+  try{state=await loadAll()}catch(e){up.textContent="Couldn't load the stats. Check your connection and press Refresh.";return}
+  const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
+  if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(GAMES.map(g=>[g.id,blank()]))});
+  const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · both games together unless it says otherwise';
+  document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
+  document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
+  const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
+  document.getElementById('tiles').innerHTML=[['Visits','visits'],['New players','uniques'],['Games played','games'],['Ad clicks','ads']].map(([lab,k])=>{
+    const v=both(now,k),ch=prev?pct(v,Math.round(both(prev,k)*frac)):null;
+    return `<div class="tile"><span>${lab}</span><b>${fmt(v)}</b><em class="${ch>0?'up':ch<0?'down':''}">${!prev?'First full month':ch===null?'–':(ch>0?'▲ ':ch<0?'▼ ':'')+Math.abs(ch)+'% vs same point in '+mon}</em></div>`}).join('');
+
+  // month table, newest first, grouped by year, launch month at the bottom
+  const real=list.filter(m=>!m.launch),max=Math.max(1,...list.map(m=>both(m,'visits')));
+  const yr=yearOf(nowId);
+  document.getElementById('yrNote').textContent=yr>=1?`Year ${yr} runs 1 Nov ${2025+yr} – 31 Oct ${2026+yr}`:'';
+  const row=(m,p)=>{const v=both(m,'visits'),isNow=m.id===nowId,ch=p&&!p.launch&&!isNow?pct(v,both(p,'visits')):null;
+    return `<tr class="${isNow?'now':''}"><td class="m">${m.launch?'October 2026':mName(m.id)}${m.launch?'<i>launch</i>':''}${isNow?'<i>so far</i>':''}</td>
+    <td class="barcell"><div class="bar"><i style="width:${Math.max(v?2:0,Math.round(v/max*100))}%"></i></div></td>
+    <td class="r n">${fmt(v)}</td><td class="r n hidesm">${fmt(both(m,'uniques'))}</td><td class="r n">${fmt(both(m,'games'))}</td>
+    <td class="r n chg ${ch>0?'up':ch<0?'down':''}">${isNow?'…':ch===null?'–':(ch>0?'+':'')+ch+'%'}</td></tr>`};
+  let html=`<thead><tr><th>Month</th><th class="barcell"></th><th class="r">Visits</th><th class="r hidesm">New players</th><th class="r">Games</th><th class="r">Change</th></tr></thead><tbody>`;
+  const years=[...new Set(real.map(m=>yearOf(m.id)))].sort((a,b)=>b-a);
+  years.forEach(y=>{const ms=real.filter(m=>yearOf(m.id)===y);
+    ms.slice().reverse().forEach(m=>{const i=list.indexOf(m);html+=row(m,list[i-1])});
+    html+=`<tr class="yr"><td class="m">Year ${y}${y===yr?' so far':''}</td><td class="barcell"></td><td class="r n">${fmt(ms.reduce((s,m)=>s+both(m,'visits'),0))}</td><td class="r n hidesm">${fmt(ms.reduce((s,m)=>s+both(m,'uniques'),0))}</td><td class="r n">${fmt(ms.reduce((s,m)=>s+both(m,'games'),0))}</td><td></td></tr>`});
+  const L=list.find(m=>m.launch);
+  if(L)html+=`<tr class="gap"><td colspan="6">Before Year 1</td></tr>`+row(L,null);
+  document.getElementById('months').innerHTML=html+'</tbody>';
+
+  // detail picker
+  const P=[...list.slice().reverse().map(m=>({id:m.id,label:m.id===nowId?'This month':m.launch?'October (launch)':MN[+m.id.slice(5)-1]+(yearOf(m.id)===yr?'':' '+m.id.slice(0,4)),get:g=>m.g[g]})),
+    ...years.map(y=>({id:'y'+y,label:`Year ${y}${y===yr?' so far':''}`,get:g=>sumRecs(real.filter(m=>yearOf(m.id)===y).map(m=>m.g[g]))})),
+    {id:'all',label:'All time',get:g=>all[g]}];
+  if(!P.find(p=>p.id===current))current=nowId;if(current==='now')current=nowId;
+  const pick=document.getElementById('pick');pick.querySelectorAll('button').forEach(b=>b.remove());
+  P.forEach(p=>{const b=document.createElement('button');b.textContent=p.label;b.setAttribute('aria-pressed',p.id===current);b.onclick=()=>{current=p.id;pick.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));detail(p)};pick.appendChild(b)});
+  detail(P.find(p=>p.id===current));
+}
+function detail(p){
+  document.getElementById('games').innerHTML=GAMES.map(g=>{const f=p.get(g.id);
+    const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
+    const ids={};Object.entries(f.promo).forEach(([k,v])=>{const i=k.lastIndexOf('_');(ids[k.slice(0,i)]=ids[k.slice(0,i)]||{open:0,play:0})[k.slice(i+1)]=v});
+    const ads=Object.entries(ids).sort((a,b)=>b[1].open-a[1].open);
+    return `<section class="card"><div class="h2row"><h2><a href="${g.url}?desktop=1">${g.name}</a></h2><small>${esc(p.label)}</small></div>
+      <div class="nums">
+        <div class="num"><b>${fmt(f.visits)}</b><span>Visits</span></div>
+        <div class="num"><b>${fmt(f.uniques)}</b><span>${p.id==='all'?'Unique':'New'}</span></div>
+        <div class="num vip"><b>${fmt(f.vip)}</b><span>VIP</span></div>
+        <div class="num"><b>${fmt(f.games)}</b><span>Games</span></div>
+        <div class="num test"><b>${fmt(f.tests)}</b><span>Premier access</span></div>
+      </div>
+      ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('')}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
+      <h3 class="sub3">"Have you tried" ads</h3>
+      ${ads.length?`<table><thead><tr><th>Ad for</th><th class="r">Opened</th><th class="r">Played</th><th class="r">Rate</th></tr></thead><tbody>${ads.map(([k,x])=>`<tr><td>${esc(AD[k]||k)}</td><td class="r n">${fmt(x.open)}</td><td class="r n">${fmt(x.play)}</td><td class="r n">${x.open?Math.round(x.play/x.open*100)+'%':'–'}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">No ad clicks.</p>'}
+    </section>`}).join('')}
 document.getElementById('refresh').onclick=render;
 render();
 })();
