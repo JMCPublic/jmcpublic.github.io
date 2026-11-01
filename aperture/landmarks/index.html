@@ -1063,7 +1063,7 @@ $('bugCard').addEventListener('submit',async e=>{e.preventDefault();
 function copyFallback(report,failed){
   const s=`Aperture problem report\n${report.message}\n\n${report.version} · ${report.screen}\n${report.device}\nGame: ${report.game}\nErrors: ${report.errors||'none'}`;
   send.disabled=false;send.textContent='Copy report';
-  msg.textContent=failed?"Couldn't send. Copy it and message it instead.":'Copy the report and message it to Jonathan.';msg.className='msg bad';
+  msg.textContent=failed?"Couldn't send. Copy it and message it instead.":'Copy the report and send it to us.';msg.className='msg bad';
   send.onclick=ev=>{ev.preventDefault();try{navigator.clipboard.writeText(s).then(()=>{msg.textContent='Copied.';msg.className='msg ok'},()=>{text.value=s;text.select()})}catch(x){text.value=s;text.select()}};
 }
 })();
@@ -1105,8 +1105,8 @@ function show(s){if(!s)return;
   if(t)t.innerHTML=[0,1,2].map(i=>{const r=s.top[i];return r?`<li><i>${i+1}</i><span>${nameOf(r[0])}</span><b>${fmtN(r[1])}</b></li>`:`<li class="empty"><i>${i+1}</i><span>—</span></li>`}).join('');
   if(strip)strip.textContent=`${fmtN(s.visits)} visits · ${fmtN(s.uniques)} unique · VIP ${fmtN(s.vip)} · ${fmtN(s.games)} games · Premier access ${fmtN(s.tests)}${s.top.length?' · Top: '+s.top.map(([c],i)=>`${i+1}. ${nameOf(c)}`).join('  '):''}`}
 (async()=>{
-  // VIP: open any Aperture page once with ?vip=jmc-camidge on a device to mark it as Jonathan's
-  let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
+  // VIP: open any Aperture page once with the owner's VIP code on a device to mark it as the owner's
+  let vip=false;try{if(/[?&]vip=tmg-owner-k7\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
   let counted=false;try{counted=sessionStorage.getItem('ap-visit-'+GAME)==='1'}catch(e){}
   let seen=true;try{seen=localStorage.getItem('ap-seen-'+GAME)==='1'}catch(e){}
   let seenM=true;try{seenM=localStorage.getItem('ap-seen-'+GAME+'-'+MONTH)==='1'}catch(e){}

@@ -14,4 +14,4 @@ Guess everyday objects through small viewpoints, against the clock.
 ## Files
 - `index.html` contains the whole game (HTML, CSS and JavaScript in one file).
 
-Created by Jonathan Camidge.
+Created by Two Minute Games.

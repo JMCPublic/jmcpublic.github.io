@@ -133,7 +133,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 <div class="wrap">
   <header class="mast">
     <div>
-      <h1>Duggen's Outback Maze<sup class="ver">v14</sup></h1>
+      <h1>Duggen's Outback Maze<sup class="ver">v15</sup></h1>
       <span class="plate">Kangaroos next 51 squares</span>
       <a class="homelink" href="https://twominute.games/">← More games at twominute.games</a>
     </div>
@@ -197,7 +197,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
       <span>Chef's hat: Colin, deliver here</span><span>Yellow arrows: exits</span>
       <span>Glowing rings: things to collect</span><span>Minimap dots: carrots and daisies</span>
     </div></section>
-    <p class="muted" style="margin:0;font-size:12px">© 2026 Jonathan Camidge. Duggen's Outback Maze, its characters, artwork and code are original works. All rights reserved. <a href="https://twominute.games/about/#ownership" style="color:inherit">Ownership and copyright</a></p>
+    <p class="muted" style="margin:0;font-size:12px">© 2026 Two Minute Games. Duggen's Outback Maze, its characters, artwork and code are original works. All rights reserved. <a href="https://twominute.games/about/#ownership" style="color:inherit">Ownership and copyright</a></p>
   </aside>
 </div>
 
@@ -1350,7 +1350,7 @@ const DEVICE=(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,scre
 async function commit(id,fields){try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
   body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
 async function bump(f,m){await commit(GAME,f);await commit(GAME+'-'+MONTH,m||f)}
-let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
+let vip=false;try{if(/[?&]vip=tmg-owner-k7\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
 window.duggenBump=(f)=>{if(!LIVE)return;if(TEST){bump({tests:1});return}const o={...f};if(vip)for(const k of Object.keys(f))o['vip_'+k]=f[k];bump(o)};
 if(!LIVE)return;
 let counted=false,seen=true,seenM=true;
