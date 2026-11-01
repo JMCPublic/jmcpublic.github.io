@@ -80,6 +80,13 @@ td.share{width:34%;padding-left:12px}
 .note{font-size:12.5px;color:var(--soft);margin:0}
 .fam{font-family:var(--display);font-size:24px;letter-spacing:-.02em;margin:14px 0 -6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.fam small{font-family:var(--body);font-size:13px;font-weight:400;color:var(--soft);letter-spacing:0}
 .nwg td.n{width:70px}
+.hrs{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;align-items:end;height:96px;margin-top:4px}
+.hrs i{display:block;background:var(--blue);border-radius:3px 3px 0 0;min-height:2px}.hrs i.z{background:var(--blue-wash)}
+.hlab{display:grid;grid-template-columns:repeat(4,1fr);font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:4px}
+.devs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dev{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.dev span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.dev b{font-family:var(--mono);font-weight:500;font-size:20px}
+.whengrid{display:grid;grid-template-columns:1.6fr 1fr;gap:22px}@media (max-width:700px){.whengrid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -105,6 +112,7 @@ td.share{width:34%;padding-left:12px}
 
   <div class="pick" id="pick"><span class="lab">Show detail for</span></div>
   <div class="games" id="games"></div>
+  <section class="card" id="apWhen"></section>
 
   <h2 class="fam">Natural Wonders <small>all 10 games and Masterbrain together</small></h2>
   <section class="card">
@@ -117,7 +125,7 @@ td.share{width:34%;padding-left:12px}
   </section>
   <section class="card" id="nwDetail"></section>
 
-  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit.</p>
+  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Times and devices are recorded from 1 November 2026, so earlier visits don't appear in them.</p>
 </div>
 <script>
 (()=>{
@@ -126,7 +134,7 @@ const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default
 const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aperture Landmarks',url:'../landmarks/'}];
 const AD={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
 const KEYS=['visits','uniques','vip','games','tests'];
-const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played'};
+const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played',hr:'hours',dv:'device'};
 const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',forests:'Forests',masterbrain:'Masterbrain'};
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
@@ -230,6 +238,7 @@ async function render(){
 }
 function detail(p){
   nwDetail(p);
+  document.getElementById('apWhen').innerHTML=`<div class="h2row"><h2>Aperture · when and on what</h2><small>${esc(p.label)} · both games</small></div>${whenHTML(add(add(blank(),p.get('objects')),p.get('landmarks')))}`;
   document.getElementById('games').innerHTML=GAMES.map(g=>{const f=p.get(g.id);
     const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
     const ids={};Object.entries(f.promo).forEach(([k,v])=>{const i=k.lastIndexOf('_');(ids[k.slice(0,i)]=ids[k.slice(0,i)]||{open:0,play:0})[k.slice(i+1)]=v});
@@ -246,6 +255,14 @@ function detail(p){
       <h3 class="sub3">"Have you tried" ads</h3>
       ${ads.length?`<table><thead><tr><th>Ad for</th><th class="r">Opened</th><th class="r">Played</th><th class="r">Rate</th></tr></thead><tbody>${ads.map(([k,x])=>`<tr><td>${esc(AD[k]||k)}</td><td class="r n">${fmt(x.open)}</td><td class="r n">${fmt(x.play)}</td><td class="r n">${x.open?Math.round(x.play/x.open*100)+'%':'–'}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">No ad clicks.</p>'}
     </section>`}).join('')}
+// when (UK hour of each visit) and on what device, for one record
+function whenHTML(f){const hv=[...Array(24)].map((_,h)=>f.hr['h'+String(h).padStart(2,'0')]||0),hm=Math.max(1,...hv),tot=hv.reduce((a,b)=>a+b,0);
+  const peak=tot?hv.indexOf(Math.max(...hv)):-1,dvt=['phone','tablet','desktop'].map(k=>f.dv[k]||0),dsum=dvt.reduce((a,b)=>a+b,0);
+  const note=tot?`Busiest hour: ${String(peak).padStart(2,'0')}:00–${String(peak+1).padStart(2,'0')}:00`:'No visits with times yet';
+  return `<div class="whengrid"><div><h3 class="sub3">When people play <small style="font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--soft)">· UK time · ${note}</small></h3>
+    <div class="hrs" title="Visits by hour">${hv.map((v,h)=>`<i class="${v?'':'z'}" style="height:${v?Math.max(6,Math.round(v/hm*100)):3}%" title="${String(h).padStart(2,'0')}:00 · ${v} visit${v===1?'':'s'}"></i>`).join('')}</div>
+    <div class="hlab"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span></div></div>
+    <div><h3 class="sub3">On what</h3><div class="devs">${['📱 Phone','Tablet','🖥 Desktop'].map((l,i)=>`<div class="dev"><span>${l}</span><b>${fmt(dvt[i])}</b><div class="bar"><i style="width:${dsum?Math.round(dvt[i]/dsum*100):0}%"></i></div></div>`).join('')}</div></div></div>`}
 function nwDetail(p){const f=p.get('wonders');
   const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
   const gs=Object.keys(NWN).map(k=>[k,f.bg[k]||0,f.pl[k]||0]).sort((a,b)=>b[1]-a[1]||b[2]-a[2]),gmax=Math.max(1,...gs.map(x=>x[1]));
@@ -259,7 +276,8 @@ function nwDetail(p){const f=p.get('wonders');
     </div>
     <table class="nwg"><thead><tr><th>Game</th><th class="r">Visits</th><th class="r">Played</th><th></th></tr></thead><tbody>${gs.map(([k,v,pl])=>`<tr><td>${esc(NWN[k])}</td><td class="r n">${fmt(v)}</td><td class="r n">${fmt(pl)}</td><td class="share"><div class="bar"><i style="width:${v?Math.max(3,Math.round(v/gmax*100)):0}%"></i></div></td></tr>`).join('')}</tbody></table>
     <h3 class="sub3">Countries</h3>
-    ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('')}</tbody></table>`:'<p class="empty">No visits yet.</p>'}`}
+    ${c.length?`<table><thead><tr><th></th><th>Country</th><th class="r">Visits</th><th></th></tr></thead><tbody>${c.map(([k,n],j)=>`<tr><td class="rank">${j+1}</td><td>${esc(nameOf(k))}</td><td class="r n">${fmt(n)}</td><td class="share"><div class="bar"><i style="width:${Math.max(3,Math.round(n/total*100))}%"></i></div></td></tr>`).join('')}</tbody></table>`:'<p class="empty">No visits yet.</p>'}
+    ${whenHTML(f)}`}
 document.getElementById('refresh').onclick=render;
 render();
 })();
