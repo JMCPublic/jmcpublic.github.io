@@ -24,6 +24,8 @@ body{margin:0;background:var(--night);color:var(--cream);font:15px/1.45 var(--bo
 .mast{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(22px,4vw,34px);line-height:1;margin:0;color:var(--sign);text-wrap:balance}
 h1 .ver{font-family:var(--body);font-weight:700;font-size:.38em;vertical-align:super;margin-left:3px;letter-spacing:.02em;color:var(--muted)}
+.homelink{display:inline-block;margin:8px 0 0 10px;color:var(--muted);font-size:13px;text-decoration:none}
+.homelink:hover{color:var(--sign);text-decoration:underline}
 .plate{display:inline-block;margin-top:8px;background:var(--sign);color:#1b120d;font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;padding:5px 8px;border-radius:3px;box-shadow:0 0 0 2px #1b120d inset}
 .hud{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
 .hud > div{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:5px 10px;min-width:64px}
@@ -119,7 +121,6 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 #timers b{color:var(--sign)}
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12px;color:var(--muted)}
 </style>
-<meta name="robots" content="noindex">
 <meta name="description" content="Help Duggen the kangaroo gather Bush Carrots and Yam Daisies for Chef Colin, dodging Truck Stop Pete, Spangled Drongos and exploding leprechauns.">
 <meta property="og:title" content="Duggen's Outback Maze">
 <meta property="og:description" content="Help Duggen the kangaroo gather bush tucker for Chef Colin while Truck Stop Pete and his mates try to stop him.">
@@ -132,8 +133,9 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 <div class="wrap">
   <header class="mast">
     <div>
-      <h1>Duggen's Outback Maze<sup class="ver">v12</sup></h1>
+      <h1>Duggen's Outback Maze<sup class="ver">v13</sup></h1>
       <span class="plate">Kangaroos next 51 squares</span>
+      <a class="homelink" href="https://twominute.games/">← More games at twominute.games</a>
     </div>
     <div class="hud">
       <div><span id="hRoundL">Round</span><b id="hRound">1</b></div>
@@ -1320,7 +1322,12 @@ function frame(now){
   if(S){if(!S.paused)update(dt*SPEED);draw(dt);hudT-=dt;if(hudT<=0){hudT=.12;hud()}}
   requestAnimationFrame(frame);
 }
-newGame();resize();showMenu();requestAnimationFrame(frame);
+newGame();resize();
+const onPhone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820;
+if(onPhone)showCard(`<p class="eyebrow">Heads up</p><h3>Best on a computer for now</h3><p>Duggen's Outback Maze is built for a computer with a keyboard. A proper phone version, with swipe controls and everything on one screen, is on the way.</p><p class="muted">You can still try it here: tap the arrow pad or swipe across the maze to hop, and scroll down for Duggen's kit and Chef Colin's hints.</p>`,
+  [['Try it anyway',showMenu],['More games',()=>{location.href='https://twominute.games/'}]]);
+else showMenu();
+requestAnimationFrame(frame);
 })();
 </script>
 
