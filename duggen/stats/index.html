@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duggen Maze Stats</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Same look as the Two Minute Games stats page: this month first, then month by month, then all-time breakdowns. */
+:root{
+  --bg:#f1f3f7; --sheet:#ffffff; --line:#e3e6eb; --frame:#b9c0cb;
+  --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab; --accent:#c8601f; --wash:#fbe9dc;
+  --up:#1f8a4c; --down:#c0392b;
+  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+h1{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--soft);font-size:13.5px;max-width:62ch}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.links a,button{font:inherit;border:1.5px solid #7d8592;background:var(--sheet);border-radius:999px;padding:7px 16px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink);text-decoration:none}
+.links a:hover,button:hover{border-color:var(--accent);color:var(--accent)}
+.card{background:var(--sheet);border:1.5px solid var(--frame);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font-family:var(--display);font-size:19px;margin:0}
+.h2row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.h2row small{color:var(--soft);font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tile b{font-family:var(--mono);font-weight:500;font-size:24px;font-variant-numeric:tabular-nums}
+.tile em{font-style:normal;font-size:12.5px;color:var(--soft)}
+.tile em.up{color:var(--up)}.tile em.down{color:var(--down)}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:560px}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:500;text-align:left;padding:0 0 6px;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right}
+td{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+td.n{font-family:var(--mono)}
+td.m{white-space:nowrap;padding-right:12px}
+td.barcell{width:32%;padding-right:14px}
+.bar{height:8px;border-radius:4px;background:var(--wash);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+tr.now td{background:#fff6ef}tr.now td:first-child{box-shadow:inset 3px 0 0 var(--accent);padding-left:10px}
+tr.yr td{font-weight:500;border-bottom:none;border-top:1.5px solid var(--ink)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.list li{display:grid;grid-template-columns:minmax(0,1fr) 46% 48px;gap:10px;align-items:center;font-size:14px}
+.list li b{font-family:var(--mono);font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.hours{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;align-items:end;height:110px}
+.hours div{background:var(--accent);border-radius:3px 3px 0 0;min-height:2px}
+.hlabels{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;font-size:10px;color:var(--faint);font-family:var(--mono)}
+.hlabels span{text-align:center}
+.note{color:var(--soft);font-size:13px;margin:0}
+.empty{color:var(--faint);font-size:14px;margin:0}
+#status{color:var(--soft);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Duggen's Outback Maze stats</h1>
+      <p class="sub">Counted by month, UK time. Your own visits (VIP) are left out of the main numbers, and test visits from the Claude app are kept apart.</p>
+    </div>
+    <div class="links"><a href="/duggen/">Play the game</a><a href="/aperture/stats/">All games stats</a><button id="reload" type="button">Refresh</button></div>
+  </header>
+
+  <section class="card">
+    <div class="h2row"><h2 id="monthTitle">This month</h2><small id="status">Loading…</small></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="card">
+    <div class="h2row"><h2>Month by month</h2><small>Year 1 runs 1 Nov 2026 to 31 Oct 2027</small></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Month</th><th>Visits</th><th class="r">Visits</th><th class="r">Unique</th><th class="r">Plays</th><th class="r">Rounds served</th><th class="r">Lessons done</th></tr></thead>
+      <tbody id="months"></tbody>
+    </table></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><div class="h2row"><h2>Top countries</h2><small>all time</small></div><ul class="list" id="countries"></ul></section>
+    <section class="card"><div class="h2row"><h2>Phone or computer</h2><small>all time</small></div><ul class="list" id="device"></ul></section>
+  </div>
+
+  <section class="card">
+    <div class="h2row"><h2>Busiest hours</h2><small>visits by hour, UK time, all time</small></div>
+    <div class="hours" id="hours"></div>
+    <div class="hlabels" id="hlabels"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><div class="h2row"><h2>Outback school</h2><small>lessons completed, all time</small></div><ul class="list" id="lessons"></ul></section>
+    <section class="card"><div class="h2row"><h2>How far players get</h2><small>rounds served, all time</small></div><ul class="list" id="rounds"></ul></section>
+  </div>
+
+  <p class="note" id="extra"></p>
+</div>
+<script>
+(()=>{
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',GAME='duggen';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+const LESSONS=['Meet Duggen',"Chef Colin's order",'Didgeridoo goats',"Topper's leprechauns",'Goat meets leprechaun','Spangled Drongos','The boomerang','Childers','Salties','Drop zones and Pete'];
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('en-GB');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
+const nameOf=c=>c==='XX'?'Elsewhere':c==='GB'?'UK':c==='US'?'USA':(names?names.of(c):c);
+function ukNow(){const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());return{y:+p.find(x=>x.type==='year').value,m:+p.find(x=>x.type==='month').value}}
+const id=(y,m)=>`${y}-${String(m).padStart(2,'0')}`;
+function parse(fields){
+  const num=x=>+((x&&(x.integerValue||x.doubleValue))||0),o={maps:{}};
+  for(const [k,v] of Object.entries(fields||{})){
+    if(v.mapValue){o.maps[k]={};for(const [k2,v2] of Object.entries(v.mapValue.fields||{}))o.maps[k][k2]=num(v2)}
+    else o[k]=num(v);
+  }
+  return o;
+}
+const g=(r,k)=>(r&&r[k])||0;
+const visits=r=>g(r,'visits')-g(r,'vip'),plays=r=>g(r,'plays')-g(r,'vip_plays'),rounds=r=>g(r,'rounds')-g(r,'vip_rounds'),lessons=r=>g(r,'lessons')-g(r,'vip_lessons');
+async function getDoc(name){try{const r=await fetch(`${BASE}/stats/${name}?key=${K}`);if(r.status===404)return null;if(!r.ok)throw new Error(r.status);return parse((await r.json()).fields)}catch(e){if(e.message&&/^\d+$/.test(e.message))throw e;throw new Error('network')}}
+function listRows(el,rows,max){
+  if(!rows.length){el.innerHTML='<li class="empty">Nothing counted yet.</li>';return}
+  const top=Math.max(1,...rows.map(r=>r[1]));
+  el.innerHTML=rows.map(([a,b])=>`<li><span>${esc(a)}</span><div class="bar"><i style="width:${(100*b/top).toFixed(1)}%"></i></div><b>${fmt(b)}</b></li>`).join('');
+}
+function tile(label,val,prev,note){
+  let em='';if(prev!=null){const d=val-prev;em=d>0?`<em class="up">▲ ${fmt(d)} on last month</em>`:d<0?`<em class="down">▼ ${fmt(-d)} on last month</em>`:'<em>same as last month</em>'}
+  if(note)em=`<em>${note}</em>`;
+  return `<div class="tile"><span>${label}</span><b>${fmt(val)}</b>${em}</div>`;
+}
+async function render(){
+  $('status').textContent='Loading…';
+  const now=ukNow(),months=[];
+  for(let y=2026,m=11;y<now.y||(y===now.y&&m<=now.m);m++){if(m>12){m=1;y++}if(y>now.y||(y===now.y&&m>now.m))break;months.push([y,m])}
+  let all,recs;
+  try{[all,...recs]=await Promise.all([getDoc(GAME),...months.map(([y,m])=>getDoc(GAME+'-'+id(y,m)))])}
+  catch(e){$('status').textContent=e.message==='network'?'Could not reach the stats store. Check your connection and press Refresh.':`The stats store refused the request (${e.message}).`;return}
+  const cur=recs[recs.length-1],prev=recs.length>1?recs[recs.length-2]:null;
+  $('monthTitle').textContent=`This month · ${MN[now.m-1]} ${now.y}`;
+  $('tiles').innerHTML=tile('Visits',visits(cur),prev?visits(prev):null)+tile('Unique',g(cur,'uniques'),prev?g(prev,'uniques'):null)+tile('Plays',plays(cur),prev?plays(prev):null)+tile('Rounds served',rounds(cur),prev?rounds(prev):null)+tile('Lessons done',lessons(cur),prev?lessons(prev):null);
+  const mx=Math.max(1,...recs.map(visits));
+  const row=(label,r,cls)=>`<tr class="${cls||''}"><td class="m">${label}</td><td class="barcell"><div class="bar"><i style="width:${cls==='yr'?0:(100*visits(r)/mx).toFixed(1)}%"></i></div></td><td class="n r">${fmt(visits(r))}</td><td class="n r">${fmt(g(r,'uniques'))}</td><td class="n r">${fmt(plays(r))}</td><td class="n r">${fmt(rounds(r))}</td><td class="n r">${fmt(lessons(r))}</td></tr>`;
+  const sum=recs.reduce((a,r)=>{for(const k of ['visits','vip','uniques','plays','vip_plays','rounds','vip_rounds','lessons','vip_lessons'])a[k]=(a[k]||0)+g(r,k);return a},{});
+  $('months').innerHTML=months.map(([y,m],i)=>row(`${MN[m-1]} ${y}`,recs[i],i===months.length-1?'now':'')).reverse().join('')+row('Year 1 so far',sum,'yr')+row('All time',all,'yr');
+  const A=all||{maps:{}},mp=k=>(A.maps&&A.maps[k])||{};
+  listRows($('countries'),Object.entries(mp('countries')).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([c,n])=>[nameOf(c),n]));
+  const dv=mp('device');listRows($('device'),[['Phone',dv.phone||0],['Computer',dv.computer||0]].filter(r=>r[1]||Object.keys(dv).length));
+  const hr=mp('hours'),hv=[...Array(24)].map((_,h)=>hr['h'+String(h).padStart(2,'0')]||0),hm=Math.max(1,...hv);
+  $('hours').innerHTML=hv.map((v,h)=>`<div title="${String(h).padStart(2,'0')}:00 · ${fmt(v)} visits" style="height:${(100*v/hm).toFixed(1)}%"></div>`).join('');
+  $('hlabels').innerHTML=hv.map((_,h)=>`<span>${h%3===0?String(h).padStart(2,'0'):''}</span>`).join('');
+  listRows($('lessons'),LESSONS.map((t,i)=>[`${i+1}. ${t}`,g(A,'lesson'+(i+1))]).filter(r=>r[1]));
+  listRows($('rounds'),[...Array(9)].map((_,i)=>[i<8?`Round ${i+1}`:'Round 9 and up',g(A,'round'+(i+1))]).filter(r=>r[1]));
+  $('extra').textContent=`All time: ${fmt(g(A,'vip'))} of your own visits left out · ${fmt(g(A,'school'))} Outback school starts · ${fmt(g(A,'tests'))} test visits from the Claude app.`;
+  $('status').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+$('reload').addEventListener('click',render);
+render();
+})();
+</script>
+</body>
+</html>

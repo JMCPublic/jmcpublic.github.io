@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duggen's Outback Maze</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bungee&display=swap">
+<style>
+/* Layout: road-sign masthead, a scrolling camera view of the maze with Duggen's kit beneath, field-notes column on the right; one column on phones. One committed dusk-outback palette. */
+:root{
+  color-scheme:dark;
+  --night:#1b120d; --panel:#27180f; --panel2:#33200f; --rule:#4a3121; --cream:#f3e5ca; --muted:#c3a487;
+  --ochre:#e8883a; --sign:#f2c230; --danger:#ef5d44; --good:#a9cb5e; --water:#5aaabd;
+  --display:"Bungee","Arial Black",Impact,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--night);color:var(--cream);font:15px/1.45 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px 22px;align-items:start}
+@media (max-width:920px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.mast{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(22px,4vw,34px);line-height:1;margin:0;color:var(--sign);text-wrap:balance}
+h1 .ver{font-family:var(--body);font-weight:700;font-size:.38em;vertical-align:super;margin-left:3px;letter-spacing:.02em;color:var(--muted)}
+.plate{display:inline-block;margin-top:8px;background:var(--sign);color:#1b120d;font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;padding:5px 8px;border-radius:3px;box-shadow:0 0 0 2px #1b120d inset}
+.hud{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.hud > div{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:5px 10px;min-width:64px}
+.hud span{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hud b{font-family:var(--display);font-weight:400;font-size:18px;font-variant-numeric:tabular-nums}
+.hud .hearts b{color:var(--danger)}
+.hud button,.hud select{background:var(--panel2);color:var(--cream);border:1px solid var(--rule);border-radius:6px;padding:0 12px;font:700 13px var(--body);cursor:pointer;min-height:40px}
+.hud #pauseBtn{background:var(--sign);color:#1b120d;border-color:var(--sign);position:relative;z-index:60;min-width:86px}
+.hud #pauseBtn:disabled{opacity:.5;z-index:auto}
+.stage{display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0}
+.board-wrap{position:relative;width:100%;max-width:max(320px,min(980px,calc(100vh - 130px)));aspect-ratio:1;border-radius:6px;overflow:hidden;box-shadow:0 0 0 3px #3a2617,0 14px 30px rgba(0,0,0,.45);touch-action:none;background:#34401d}
+canvas{display:block;width:100%;height:100%}
+.hintpanel h2 em{font-weight:400;font-size:12px;color:var(--muted)}
+.hintnow{display:flex;gap:10px;align-items:flex-start;border-radius:8px;padding:9px 10px;font:700 15px/1.35 var(--body);background:#33200f;color:var(--muted);border:2px solid transparent;transition:background 1.6s ease,color 1.6s ease,border-color 1.6s ease}
+.hintnow.fresh{background:#f6f1e4;color:#1b120d;border-color:var(--sign);transition:none}
+.hintnow kbd,.hintlog kbd{font:700 12px var(--body);background:#1b120d;color:#f2c230;border-radius:4px;padding:0 5px}
+.hintnow .hface{flex:none;width:28px;height:28px;border-radius:50%;background:#e8b98e;border:2px solid #1b120d;position:relative;margin-top:6px}
+.hintnow .hface::before{content:'';position:absolute;left:1px;right:1px;top:-10px;height:13px;background:#fff;border:2px solid #1b120d;border-radius:7px 7px 2px 2px}
+.hintlog{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:5px;max-height:170px;overflow:auto;font-size:13px;color:var(--muted)}
+.hintlog li{display:flex;gap:8px;line-height:1.35}
+.hintlog .ht{flex:none;font-variant-numeric:tabular-nums;color:#8a6c52;min-width:34px}
+.yellpill{position:absolute;right:10px;top:10px;background:var(--sign);color:#1b120d;font:700 13px var(--body);padding:5px 10px;border-radius:999px;border:2px solid #1b120d;pointer-events:none;box-shadow:0 4px 10px rgba(0,0,0,.4);transition:opacity .6s}
+.yellpill.fade{opacity:0}
+.hint{position:absolute;left:50%;transform:translateX(-50%);top:10px;width:min(92%,560px);display:flex;gap:10px;align-items:center;background:#f6f1e4;color:#1b120d;border:3px solid #1b120d;border-radius:14px;padding:8px 12px 8px 8px;font:700 15px/1.3 var(--body);box-shadow:0 6px 16px rgba(0,0,0,.45);pointer-events:none;transition:opacity .3s}
+.hint.low{top:auto;bottom:10px}
+.hint .face{flex:none;width:40px;height:40px;border-radius:50%;background:#e8b98e;border:2px solid #1b120d;position:relative;overflow:visible}
+.hint .face::before{content:'';position:absolute;left:3px;right:3px;top:-14px;height:20px;background:#fff;border:2px solid #1b120d;border-radius:10px 10px 3px 3px}
+.hint .face::after{content:'';position:absolute;left:10px;top:18px;width:18px;height:5px;border-bottom:3px solid #1b120d;border-radius:0 0 50% 50%}
+.hint .who{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#a2442a}
+.hint kbd{font:700 13px var(--body);background:#1b120d;color:#f2c230;border-radius:4px;padding:0 6px}
+#mapCv{display:block;width:100%;aspect-ratio:1;max-width:100%;border-radius:4px;background:#1b120d;image-rendering:pixelated}
+.task{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:10px;align-items:flex-start;justify-content:space-between;background:rgba(27,18,13,.88);border:1px solid var(--sign);border-radius:6px;padding:7px 10px;font-size:13px;line-height:1.35}
+.task .tt{font-family:var(--display);font-size:12px;color:var(--sign);display:block}
+.task .tb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:none}
+.card{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(20,12,8,.78)}
+.card .inner{background:var(--panel);border:2px solid var(--sign);border-radius:8px;width:100%;max-width:560px;max-height:100%;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+#cardBody{overflow:auto;min-height:0;padding:18px 20px 12px;display:flex;flex-direction:column;gap:10px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:2px}
+.lessons button{background:#33200f;border:1px solid #5a3c26;color:var(--cream);border-radius:6px;padding:7px 9px;text-align:left;font:700 13px var(--body);cursor:pointer}
+.lessons button:hover{border-color:var(--ochre)}
+.lessons b{color:var(--sign);margin-right:4px}
+.keyhint{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
+.card h3{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.1;margin:0;color:var(--sign);text-wrap:balance}
+.card p{margin:0}
+.card .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card .quote{font-size:17px}
+.card .threat{color:#f2b3a4}
+.card .taskline{background:#33200f;border-left:3px solid var(--sign);padding:8px 10px;border-radius:0 4px 4px 0}
+.card ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14px}
+.card kbd{font:700 11px var(--body);background:#4a3121;border-radius:3px;padding:1px 5px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--rule);background:var(--panel2);flex:none}
+.go{background:var(--sign);color:#1b120d;border:0;border-radius:6px;padding:10px 16px;font:400 14px var(--display);cursor:pointer}
+.go.alt{background:#4a3121;color:var(--cream);font:700 13px var(--body);padding:9px 12px}
+.controls{width:100%;max-width:760px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.dpad{display:none;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(3,56px);gap:4px;touch-action:none;user-select:none;-webkit-user-select:none}
+@media (pointer:coarse){.dpad{display:grid}}
+.dpad button{background:var(--panel2);border:1px solid #5a3c26;border-radius:8px;color:var(--sign);font:400 20px var(--display);touch-action:none}
+.dpad button:active{background:#4a3121}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;flex:1;min-width:240px}
+.act{background:var(--panel2);border:1px solid #5a3c26;color:var(--cream);border-radius:6px;padding:7px 10px;text-align:left;cursor:pointer;font:inherit;touch-action:manipulation;display:flex;flex-direction:column;gap:1px;min-width:0}
+.act .top{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+.act b{font-size:13px}
+.act .n{font-family:var(--display);color:var(--sign);font-size:14px;font-variant-numeric:tabular-nums}
+.act small{color:var(--muted);font-size:11px}
+.act:disabled{opacity:.42;cursor:default}
+.act.guide{border-style:dashed}
+.act.guide[aria-pressed="true"]{background:#4a3121;border:2px solid var(--gcol,var(--sign));box-shadow:0 0 0 2px rgba(242,194,48,.18)}
+#gCarrot{--gcol:#ff6a1a}#gYam{--gcol:#fff04a}#gExit{--gcol:#4fc3ff}
+.act.guide b::before{content:'';display:inline-block;width:0;height:0;border-left:9px solid var(--gcol);border-top:6px solid transparent;border-bottom:6px solid transparent;margin-right:6px;vertical-align:0}
+.act.guide[aria-pressed="true"] small{color:var(--cream)}
+.act:not(:disabled):hover{border-color:var(--ochre)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-offset:2px}
+.notes{display:flex;flex-direction:column;gap:12px;min-width:0}
+.notes section{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:11px 13px}
+.notes h2{font-family:var(--display);font-weight:400;font-size:13px;color:var(--ochre);margin:0 0 8px;display:flex;justify-content:space-between;gap:8px}
+.notes h2 em{font-style:normal;font-family:var(--body);font-weight:700;color:var(--cream);font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0;font-variant-numeric:tabular-nums}
+.row + .row{border-top:1px dashed #3d291b}
+.row .lbl{display:flex;align-items:center;gap:8px;min-width:0}
+.sw{width:10px;height:10px;border-radius:2px;flex:none}
+.meter{height:6px;background:#3a2617;border-radius:3px;overflow:hidden;margin:2px 0 4px}
+.meter i{display:block;height:100%;background:var(--good)}
+.wbar{display:flex;height:10px;background:#3a2617;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.wbar i{display:block;height:100%;border-right:1px solid #27180f}
+.mini{background:#4a3121;color:var(--cream);border:0;border-radius:4px;padding:3px 9px;font:700 12px var(--body);cursor:pointer}
+.mini:disabled{opacity:.4;cursor:default}
+.muted{color:var(--muted);font-size:13px}
+#log{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:13px}
+#log li{line-height:1.35}
+#log li:first-child{color:var(--sign)}
+#timers{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px;font-variant-numeric:tabular-nums}
+#timers li{display:flex;justify-content:space-between;gap:8px}
+#timers b{color:var(--sign)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12px;color:var(--muted)}
+</style>
+<meta name="robots" content="noindex">
+<meta name="description" content="Help Duggen the kangaroo gather Bush Carrots and Yam Daisies for Chef Colin, dodging Truck Stop Pete, Spangled Drongos and exploding leprechauns.">
+<meta property="og:title" content="Duggen's Outback Maze">
+<meta property="og:description" content="Help Duggen the kangaroo gather bush tucker for Chef Colin while Truck Stop Pete and his mates try to stop him.">
+<meta property="og:image" content="https://twominute.games/duggen/og-duggen.png">
+<meta property="og:url" content="https://twominute.games/duggen/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico">
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <h1>Duggen's Outback Maze<sup class="ver">v12</sup></h1>
+      <span class="plate">Kangaroos next 51 squares</span>
+    </div>
+    <div class="hud">
+      <div><span id="hRoundL">Round</span><b id="hRound">1</b></div>
+      <div class="hearts"><span>Hops left</span><b id="hLives">3</b></div>
+      <div><span>Service in</span><b id="hClock">7:00</b></div>
+      <div><span>Score</span><b id="hScore">0</b></div>
+      <button id="pauseBtn" type="button">Pause</button>
+      <select id="speed" aria-label="Game speed"><option value="0.7">Slow</option><option value="1" selected>Normal</option><option value="1.3">Quick</option></select>
+      <button id="muteBtn" type="button" aria-pressed="false">Sound on</button>
+      <button id="hintBtn" type="button" aria-pressed="true">Hints on</button>
+      <button id="helpBtn" type="button">How to play</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="board-wrap" id="boardWrap">
+      <canvas id="board" aria-label="The maze"></canvas>
+      <div class="hint" id="hint" hidden aria-live="polite"><span class="face" aria-hidden="true"></span><span><span class="who">Chef Colin yells</span><span id="hintText"></span></span></div>
+      <div class="yellpill fade" id="yellPill" aria-hidden="true">Colin's yelling: see hints →</div>
+      <div class="task" id="task" hidden>
+        <div><span class="tt" id="taskTitle"></span><span id="taskText"></span></div>
+        <div class="tb"><button class="mini" id="skipLesson" type="button">Skip lesson</button><button class="mini" id="leaveTrain" type="button">Leave training</button></div>
+      </div>
+      <div class="card" id="card"><div class="inner"><div id="cardBody"></div><div class="btns" id="cardBtns"></div></div></div>
+    </div>
+    <div class="controls">
+      <div class="dpad" id="dpad">
+        <span></span><button type="button" data-dir="0" aria-label="Up">▲</button><span></span>
+        <button type="button" data-dir="3" aria-label="Left">◀</button><span></span><button type="button" data-dir="1" aria-label="Right">▶</button>
+        <span></span><button type="button" data-dir="2" aria-label="Down">▼</button><span></span>
+      </div>
+      <div class="acts" id="acts">
+        <button class="act" id="aGoat" data-action="goat" type="button"><span class="top"><b>Didgeridoo</b><span class="n" id="nGoat">0</span></span><small>Call a goat · Space</small></button>
+        <button class="act" id="aDoll" data-action="doll" type="button"><span class="top"><b>Send doll</b><span class="n" id="nDoll">0</span></span><small>Scout ahead · 2</small></button>
+        <button class="act" id="aChild" data-action="childers" type="button"><span class="top"><b>Childers</b><span class="n" id="nChild">✓</span></span><small>Walk ahead · 3</small></button>
+        <button class="act" id="aBeer" data-action="beer" type="button"><span class="top"><b>Crack a can</b><span class="n" id="nBeer">0</span></span><small>Froth drongos · 4</small></button>
+        <button class="act" id="aBoom" data-action="boom" type="button"><span class="top"><b>Boomerang</b><span class="n" id="nBoom">✓</span></span><small>Round a corner · 5</small></button>
+        <button class="act" id="aPoo" data-action="poo" type="button"><span class="top"><b>Drop poo</b><span class="n" id="nPoo">0</span></span><small>Block leprechauns · 6</small></button>
+        <button class="act" id="aPick" data-action="pick" type="button"><span class="top"><b>Pick up</b><span class="n">E</span></span><small>Poo under Duggen</small></button>
+        <button class="act guide" id="gCarrot" data-guide="carrot" type="button" aria-pressed="false"><span class="top"><b>Find carrot</b><span class="n">C</span></span><small>Arrows to the next one</small></button>
+        <button class="act guide" id="gYam" data-guide="yam" type="button" aria-pressed="false"><span class="top"><b>Find daisy</b><span class="n">Y</span></span><small>Arrows to the next one</small></button>
+        <button class="act guide" id="gExit" data-guide="exit" type="button" aria-pressed="false"><span class="top"><b>Find exit</b><span class="n">X</span></span><small>Arrows to the nearest exit</small></button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="notes">
+    <section class="hintpanel"><h2>Chef Colin yells <em id="hintState">hints on · H</em></h2><div class="hintnow" id="hintNow"><span class="hface" aria-hidden="true"></span><span id="hintNowText">Hints about drongos, leprechauns, crocs and Pete will appear here.</span></div><ol class="hintlog" id="hintLog" aria-label="Earlier hints"></ol></section>
+    <section><h2>Map <em class="muted" style="font-weight:400;font-size:12px">you · Colin · Pete</em></h2><canvas id="mapCv" width="300" height="300" aria-label="Map of the whole maze"></canvas></section>
+    <section><h2>Chef Colin's order <em id="covers"></em></h2><div id="order"></div></section>
+    <section><h2>Duggen's pouch <em id="wt">0 / 20</em></h2><div class="wbar" id="wbar"></div><div id="pouch"></div></section>
+    <section id="zoneSec" hidden><h2>Drop zone <em>stash</em></h2><div id="zone"></div></section>
+    <section><h2>Kit</h2><div id="kit"></div></section>
+    <section><h2>Timers</h2><ul id="timers"></ul></section>
+    <section><h2>Bush telegraph</h2><ol id="log"></ol></section>
+    <section><h2>Map key</h2><div class="legend">
+      <span>Gold blades: tall grass, slow</span><span>Green: grazed by a goat, fast</span>
+      <span>Blue: ford, maybe a saltie</span><span>Crate: drop zone</span>
+      <span>Chef's hat: Colin, deliver here</span><span>Yellow arrows: exits</span>
+      <span>Glowing rings: things to collect</span><span>Minimap dots: carrots and daisies</span>
+    </div></section>
+  </aside>
+</div>
+
+<script>
+(()=>{
+let N=41,C=20,EX=[];
+const CAP=20,DL=[[0,-1],[1,0],[0,1],[-1,0]];
+const W={yam:1,carrot:2,poo:2,beer:3,doll:1,shortbread:1};
+const NAMES={yam:'Yam Daisy',carrot:'Bush Carrot',poo:'Echidna poo',beer:'Beer can',doll:'Mini Duggen doll',shortbread:'Shortbread'};
+const PLURAL={yam:'Yam Daisies',carrot:'Bush Carrots',poo:'Echidna poo',beer:'Beer cans',doll:'Mini dolls',shortbread:'Shortbread'};
+const COL={yam:'#f2d14b',carrot:'#e2742f',poo:'#6b4426',beer:'#cfd6da',doll:'#d9a067',shortbread:'#e8c98a'};
+const ORDER=['carrot','yam','doll','poo','beer','shortbread'];
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const key=(x,y)=>x+','+y;
+const hash=(x,y)=>{let h=(x*374761393+y*668265263)>>>0;h=(h^(h>>>13))*1274126177>>>0;return h};
+const $=id=>document.getElementById(id);
+
+let S=null,T=24,VW=19,dpr=1,dirty=true,held=null,queued=null,heldStack=[],hudT=0,tm=0,SPEED=1;
+const cam={x:0,y:0};
+const cv=$('board'),g=cv.getContext('2d');
+const stat=document.createElement('canvas'),mini=document.createElement('canvas');
+try{const v=localStorage.getItem('duggen-speed');if(v){$('speed').value=v;SPEED=+v||1}}catch(_){}
+
+/* ---------- sound (synthesised) ---------- */
+let AC=null,MG=null,NB=null,muted=false,lastHop=0;
+try{muted=localStorage.getItem('duggen-muted')==='1'}catch(_){}
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(_){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function master(){if(!MG){MG=AC.createGain();MG.gain.value=.6;MG.connect(AC.destination)}return MG}
+function noiseBuf(){if(!NB){NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}return NB}
+function tone(f,d,type,vol,f2,at){const t=AC.currentTime+(at||0),o=AC.createOscillator(),gn=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(vol||.2,t+.01);gn.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(gn).connect(master());o.start(t);o.stop(t+d+.03)}
+function noise(d,vol,ff,ff2,ftype,at){const t=AC.currentTime+(at||0),s=AC.createBufferSource(),f=AC.createBiquadFilter(),gn=AC.createGain();s.buffer=noiseBuf();s.loop=true;f.type=ftype||'lowpass';f.frequency.setValueAtTime(ff,t);if(ff2)f.frequency.exponentialRampToValueAtTime(ff2,t+d);gn.gain.setValueAtTime(vol,t);gn.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f).connect(gn).connect(master());s.start(t);s.stop(t+d+.03)}
+function wobble(base,type,lfoF,lfoAmt,dur,vol,filt){const t=AC.currentTime,o=AC.createOscillator(),l=AC.createOscillator(),lg=AC.createGain(),gn=AC.createGain();o.type=type;o.frequency.value=base;l.frequency.value=lfoF;lg.gain.value=lfoAmt;gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(vol,t+.06);gn.gain.setValueAtTime(vol,t+dur*.7);gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  if(filt){const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=filt;f.Q.value=4;l.connect(lg).connect(f.frequency);o.connect(f).connect(gn)}else{l.connect(lg).connect(o.frequency);o.connect(gn)}
+  gn.connect(master());o.start(t);l.start(t);o.stop(t+dur+.05);l.stop(t+dur+.05)}
+function sfx(n){
+  if(muted||!AC||AC.state!=='running')return;
+  try{switch(n){
+    case 'hop':{const now=AC.currentTime;if(now-lastHop<.09)return;lastHop=now;tone(150,.08,'sine',.1,90);break}
+    case 'pick':tone(660,.07,'square',.05);tone(990,.09,'square',.05,null,.06);break;
+    case 'full':tone(220,.15,'square',.05,180);break;
+    case 'deliver':[523,659,784,1047].forEach((f,i)=>tone(f,.16,'triangle',.13,null,i*.08));break;
+    case 'boom':noise(.5,.45,1200,80);tone(90,.4,'sine',.3,40);break;
+    case 'bigboom':noise(1,.6,2000,60);tone(70,.8,'sine',.4,30);noise(.6,.25,4000,500,'highpass',.1);break;
+    case 'didge':wobble(73,'sawtooth',5,350,1.1,.35,500);break;
+    case 'bleat':wobble(520,'square',28,40,.45,.06);break;
+    case 'snap':noise(.06,.55,3000,null,'highpass');noise(.08,.45,2500,null,'highpass',.09);tone(120,.12,'square',.1,60);break;
+    case 'munch':for(let i=0;i<3;i++)noise(.05,.25,1800,null,'bandpass',i*.09);break;
+    case 'chirp':tone(1800,.07,'sine',.07,2600);tone(2200,.08,'sine',.07,1500,.09);tone(2000,.06,'sine',.06,2800,.2);break;
+    case 'paper':noise(.35,.22,3000,1200,'bandpass');break;
+    case 'cork':tone(900,.05,'square',.09,400);tone(1100,.05,'square',.07,500,.07);break;
+    case 'beer':noise(.08,.35,5000,null,'highpass');noise(1,.28,6000,900,'bandpass',.06);break;
+    case 'whoosh':noise(.4,.18,600,2400,'bandpass');noise(.4,.18,2400,600,'bandpass',.4);break;
+    case 'thwack':tone(300,.08,'square',.1,120);noise(.1,.25,1500);break;
+    case 'chime':[880,1175,1568].forEach((f,i)=>tone(f,.6,'sine',.07,null,i*.12));break;
+    case 'heaven':[523,784,1047,1568].forEach((f,i)=>tone(f,.35,'triangle',.06,null,i*.1));break;
+    case 'hurt':tone(440,.35,'sawtooth',.1,110);break;
+    case 'doll':tone(500,.06,'triangle',.08,800);break;
+    case 'poo':tone(110,.12,'sine',.18,70);noise(.08,.12,500);break;
+    case 'horn':for(const at of [0,.55]){tone(196,.45,'sawtooth',.08,null,at);tone(247,.45,'sawtooth',.07,null,at)}break;
+    case 'pinch':tone(700,.06,'square',.07);tone(350,.18,'square',.07,200,.07);break;
+    case 'fanfare':[392,523,659,784,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.13,null,i*.11));break;
+    case 'over':[392,330,262,196].forEach((f,i)=>tone(f,.35,'triangle',.13,null,i*.25));break;
+    case 'lep':tone(1200,.05,'square',.05);tone(1500,.05,'square',.05,null,.07);tone(1800,.05,'square',.04,null,.14);break;
+    case 'click':tone(800,.03,'square',.04);break;
+  }}catch(_){}
+}
+function setMute(m){muted=m;try{localStorage.setItem('duggen-muted',m?'1':'0')}catch(_){}const b=$('muteBtn');b.textContent=m?'Sound off':'Sound on';b.setAttribute('aria-pressed',String(m))}
+
+/* ---------- maze ---------- */
+function genMaze(loops){
+  const gr=Array.from({length:N},()=>Array(N).fill(0));
+  const st=[[1,1]];gr[1][1]=1;
+  while(st.length){
+    const [x,y]=st[st.length-1],o=[];
+    for(const [dx,dy] of DL){const nx=x+dx*2,ny=y+dy*2;if(nx>0&&ny>0&&nx<N-1&&ny<N-1&&!gr[ny][nx])o.push([nx,ny,dx,dy])}
+    if(!o.length){st.pop();continue}
+    const [nx,ny,dx,dy]=o[rnd(o.length)];gr[y+dy][x+dx]=1;gr[ny][nx]=1;st.push([nx,ny]);
+  }
+  for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){
+    if(gr[y][x])continue;
+    const h=gr[y][x-1]&&gr[y][x+1]&&!gr[y-1][x]&&!gr[y+1][x];
+    const v=gr[y-1][x]&&gr[y+1][x]&&!gr[y][x-1]&&!gr[y][x+1];
+    if((h||v)&&Math.random()<loops)gr[y][x]=1;
+  }
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)gr[C+dy][C+dx]=1;
+  for(const [x,y] of EX)gr[y][x]=1;
+  return gr;
+}
+const open=(x,y)=>x>=0&&y>=0&&x<N&&y<N&&S.grid[y][x]===1;
+const inClearing=(x,y)=>Math.abs(x-C)<=1&&Math.abs(y-C)<=1;
+const onBorder=(x,y)=>x===0||y===0||x===N-1||y===N-1;
+function bfs(starts,pass){
+  const dist=new Int16Array(N*N).fill(-1),q=[];
+  for(const [x,y] of starts){const i=y*N+x;if(dist[i]<0){dist[i]=0;q.push(i)}}
+  for(let h=0;h<q.length;h++){const i=q[h],x=i%N,y=(i/N)|0;
+    for(const [dx,dy] of DL){const nx=x+dx,ny=y+dy;if(!pass(nx,ny))continue;const j=ny*N+nx;if(dist[j]<0){dist[j]=dist[i]+1;q.push(j)}}}
+  return dist;
+}
+function stepToward(e,targets,pass,maxD){
+  const dist=bfs(targets,pass);let best=null,bd=1e9;
+  for(let k=0;k<4;k++){const nx=e.x+DL[k][0],ny=e.y+DL[k][1];if(!pass(nx,ny))continue;const v=dist[ny*N+nx];if(v>=0&&v<bd){bd=v;best=k}}
+  if(best===null)return null;
+  if(maxD!==undefined&&bd+1>maxD)return null;
+  const here=dist[e.y*N+e.x];if(here>=0&&bd>=here)return null;
+  return best;
+}
+function nextAlong(x,y,dir,random){
+  if(open(x+DL[dir][0],y+DL[dir][1]))return dir;
+  const l=(dir+3)%4,r=(dir+1)%4,lo=open(x+DL[l][0],y+DL[l][1]),ro=open(x+DL[r][0],y+DL[r][1]);
+  if(lo&&ro)return random?(Math.random()<.5?l:r):l;
+  if(lo)return l;if(ro)return r;return null;
+}
+const computeDist=()=>{S.dist=bfs([[C,C],...EX],open);S.home=bfs([[C,C]],open)};
+const crocAt=(x,y)=>S.crocs.find(c=>c.x===x&&c.y===y);
+const zoneAt=(x,y)=>S.zones.find(z=>z.x===x&&z.y===y);
+const weight=()=>ORDER.reduce((s,k)=>s+S.inv[k]*W[k],0);
+
+/* ---------- entities ---------- */
+const ent=(x,y,extra)=>Object.assign({x,y,px:x,py:y,t:1,dur:1},extra);
+function moveEnt(e,nx,ny,dur){e.px=e.x;e.py=e.y;e.x=nx;e.y=ny;e.t=0;e.dur=dur/1000}
+function adv(e,dt){if(e.t<1){e.t=Math.min(1,e.t+dt/e.dur);return e.t>=1}return false}
+const pos=e=>[e.px+(e.x-e.px)*e.t,e.py+(e.y-e.py)*e.t];
+const dist2=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function delay(x,y){if(S.fords.has(key(x,y)))return 300;const gl=S.grass[y][x];return gl===2?380:gl===1?270:180}
+
+/* ---------- messages & effects ---------- */
+function say(t,fx,fy,ft){S.log.unshift(t);S.log.length=Math.min(S.log.length,6);if(ft!==undefined)float(ft,fx,fy);S.hudSig=''}
+function float(text,x,y){if(x===undefined){x=S.d.x;y=S.d.y}S.floats.push({x,y,text,life:1.3})}
+function burst(p,n,colors,speed,life,kind){for(let i=0;i<n;i++){const a=Math.random()*6.283,v=speed*(.3+Math.random());S.parts.push({x:p[0],y:p[1],vx:Math.cos(a)*v,vy:Math.sin(a)*v,life,max:life,c:colors[rnd(colors.length)],r:.06+Math.random()*.1,kind:kind||'dot'})}}
+function boom(p,big){sfx(big?'bigboom':'boom');burst(p,big?40:20,['#ffd34d','#ff8a2a','#ef5d44','#fff1b8'],big?5:3,.7);S.shake=big?.45:.25}
+const st=k=>{S.stats[k]=(S.stats[k]||0)+1};
+function hurt(msg){
+  if(S.d.invuln>0)return false;
+  S.d.invuln=2.5;S.shake=.4;sfx('hurt');
+  if(S.training){S.stats.safeT=0;say(msg+' No hops lost in training.');return true}
+  S.lives--;say(msg+' '+(S.lives>0?`${S.lives} hop${S.lives>1?'s':''} left.`:''));
+  if(S.lives<=0)setTimeout(gameOver,600);
+  return true;
+}
+function openWalls(cx,cy){
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const x=cx+dx,y=cy+dy;if(x>0&&y>0&&x<N-1&&y<N-1&&!S.grid[y][x]){S.grid[y][x]=1;S.grass[y][x]=0;S.scorch.add(key(x,y))}}
+  computeDist();dirty=true;st('gaps');
+}
+function childersToHeaven(msg){const c=S.ch;c.state='heaven';c.timer=10;sfx('heaven');st('heaven');burst(pos(c),14,['#f6d7ff','#ffffff','#e9a7a0'],1.5,1);say(msg+' He has gone to mole rat heaven for 10 seconds.')}
+
+/* ---------- level building ---------- */
+function freshState(){return{round:0,score:0,lives:3,inv:{yam:0,carrot:0,poo:2,beer:1,doll:4,shortbread:1},charges:2,corks:true,meditated:0,log:[],floats:[],parts:[],stats:{},training:false}}
+function freeTiles(){
+  const out=[];
+  for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){const k=key(x,y);if(open(x,y)&&!inClearing(x,y)&&!S.fords.has(k)&&!zoneAt(x,y)&&!S.items.has(k))out.push([x,y])}
+  return shuffle(out);
+}
+function tilesAt(a,b){const dd=bfs([[S.d.x,S.d.y]],open);return freeTiles().filter(([x,y])=>{const v=dd[y*N+x];return v>=a&&v<=b})}
+function placeNear(type,a,b){const c=tilesAt(a,b);if(c.length){const [x,y]=c[0];S.items.set(key(x,y),type)}}
+function buildLevel(o){
+  N=o.n;C=(N-1)/2;EX=[[C,0],[C,N-1],[0,C],[N-1,C]];
+  S.grid=genMaze(o.loops||.12);
+  S.grass=S.grid.map(row=>row.map(v=>v?2:0));
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)S.grass[C+dy][C+dx]=0;
+  for(const [x,y] of EX)S.grass[y][x]=0;
+  S.scorch=new Set();S.items=new Map();S.poo=new Set();S.zones=[];S.goal=null;
+  const fc=[],minC=Math.min(4,C-2);
+  for(let y=2;y<N-2;y++)for(let x=2;x<N-2;x++){
+    if(!S.grid[y][x]||Math.abs(x-C)+Math.abs(y-C)<minC)continue;
+    const u=S.grid[y-1][x],d=S.grid[y+1][x],l=S.grid[y][x-1],rr=S.grid[y][x+1];
+    if((u&&d&&!l&&!rr)||(l&&rr&&!u&&!d))fc.push([x,y]);
+  }
+  shuffle(fc);const fords=[];
+  for(const f of fc){if(fords.length>=o.fords)break;if(fords.every(q=>Math.abs(q[0]-f[0])+Math.abs(q[1]-f[1])>3))fords.push(f)}
+  S.fords=new Set(fords.map(f=>key(f[0],f[1])));
+  S.crocs=shuffle(fords.slice()).slice(0,Math.min(fords.length,o.crocs)).map(([x,y])=>({x,y,calm:0,seen:false}));
+  if(o.zones){
+    const minD=Math.max(3,Math.round(N*.28));
+    for(const [qx,qy] of [[0,0],[1,0],[0,1],[1,1]]){
+      const cand=[];for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){
+        if(!open(x,y)||S.fords.has(key(x,y)))continue;
+        if((x>C)!==!!qx||(y>C)!==!!qy||x===C||y===C)continue;
+        if(Math.abs(x-C)+Math.abs(y-C)<minD)continue;cand.push([x,y]);
+      }
+      if(cand.length){const [x,y]=cand[rnd(cand.length)];S.zones.push({x,y,stash:{}})}
+    }
+  }
+  S.d=ent(C,C+1,{face:2,stun:0,invuln:0});
+  S.ch=ent(C,C,{state:'follow',timer:0});
+  const ft=freeTiles();
+  for(const [t,n] of Object.entries(o.items||{}))for(let i=0;i<n&&ft.length;i++){const [x,y]=ft.pop();S.items.set(key(x,y),t)}
+  S.goats=[];S.leps=[];S.drongos=[];S.dolls=[];S.parts=[];S.floats=[];S.boom=null;
+  S.pete={x:C,y:-2,state:'away',timer:o.pete||0,face:1,off:o.pete==null,loot:{}};S.pete.bbq=sidePoint(['N','S','E','W'][rnd(4)],C+rnd(9)-4,C+rnd(9)-4);S.bbqLoot={carrot:0,yam:0};
+  S.lepQueue=(o.leps||[]).slice();S.droQueue=(o.dros||[]).slice();
+  S.lepTotal=S.lepQueue.length;S.droTotal=S.droQueue.length;
+  S.clock=0;S.service=o.service||0;S.shake=0;S.hudSig='';S.hintShow=0;S.hintCd={};$('hint').hidden=true;S.guide=null;
+  computeDist();dirty=true;snapCam();
+}
+function startRound(r){
+  S.round=r;const covers=2+r;S.covers=covers;
+  S.need={carrot:covers,yam:covers*2};S.got={carrot:0,yam:0};
+  const crocs=Math.min(10,1+r);
+  buildLevel({n:51,loops:.12,fords:13,crocs,zones:true,
+    items:{yam:S.need.yam+10,carrot:S.need.carrot+6,poo:6,beer:4,shortbread:crocs+4,goat:5,corks:2},
+    leps:Array.from({length:2+r},(_,i)=>8+i*10),dros:Array.from({length:r+1},(_,i)=>20+i*22),
+    pete:Math.max(18,36-r*3),service:420+45*r});
+  say(`Round ${r}. Chef Colin needs ${S.need.carrot} Bush Carrots and ${S.need.yam} Yam Daisies.`);
+  if(r===1)clearHints();
+  showWelcome();
+}
+function newGame(){S=freshState();startRound(1)}
+function resume(){S.paused=false;S.hudSig=''}
+
+/* ---------- Chef Colin's hints ---------- */
+let hintsOn=true;try{hintsOn=localStorage.getItem('duggen-hints')!=='0'}catch(_){}
+const K=t=>`<kbd>${t}</kbd>`;
+function setHints(on){hintsOn=on;try{localStorage.setItem('duggen-hints',on?'1':'0')}catch(_){}const b=$('hintBtn');b.textContent=on?'Hints on':'Hints off';b.setAttribute('aria-pressed',String(on));$('hintState').textContent=on?'hints on · H':'hints off · H';if(!on){$('hint').hidden=true;if(S)S.welcome=false}}
+let hintLog=[],freshTimer=null,pillTimer=null;
+function renderHintLog(){$('hintLog').innerHTML=hintLog.slice(1,13).map(h=>`<li><span class="ht">${h.t}</span><span>${h.html}</span></li>`).join('')}
+function postHint(html,quiet){
+  const t=S&&S.round?`R${S.round} ${fmt(S.clock)}`:S&&S.training?`L${S.lesson+1} ${fmt(S.clock)}`:'';
+  hintLog.unshift({t:fmt(S?S.clock:0),html});hintLog.length=Math.min(hintLog.length,40);
+  $('hintNowText').innerHTML=html;renderHintLog();
+  const box=$('hintNow');box.classList.add('fresh');clearTimeout(freshTimer);
+  const words=html.replace(/<[^>]+>/g,'').split(/\s+/).length;
+  freshTimer=setTimeout(()=>box.classList.remove('fresh'),2500+words*280);
+  if(quiet)return;
+  const pill=$('yellPill');pill.textContent=matchMedia('(max-width:920px)').matches?"Colin's yelling: see hints below":"Colin's yelling: see hints →";
+  pill.classList.remove('fade');clearTimeout(pillTimer);pillTimer=setTimeout(()=>pill.classList.add('fade'),2200);
+}
+function clearHints(){hintLog=[];$('hintLog').innerHTML='';$('hintNowText').textContent='Hints about drongos, leprechauns, crocs and Pete will appear here.';$('hintNow').classList.remove('fresh')}
+function yell(id,html,cool){
+  const now=S.clock;S.hintCd=S.hintCd||{};
+  if(S.welcome)return false;
+  if(S.hintGap>0)return false;
+  if(S.hintCd[id]&&now<S.hintCd[id])return false;
+  S.hintCd[id]=now+(cool||25);S.hintGap=3;
+  postHint(html);return true;
+}
+const WELCOME=`G'day Duggen! Grab the glowing Bush Carrots and Yam Daisies and bring them to me in the centre. `+(matchMedia('(pointer:coarse)').matches?'Tap an arrow on the pad, or swipe across the maze, to start hopping.':'Press an arrow key (or WASD) to start hopping.');
+function showWelcome(){
+  if(!hintsOn)return;S.welcome=true;S.praiseT=0;
+  $('hintText').innerHTML=WELCOME;const h=$('hint');h.hidden=false;h.classList.remove('low');
+  postHint(WELCOME,true);
+}
+function praise(){
+  S.welcome=false;S.praiseT=3.5;sfx('chime');
+  const msg=`Good on ya, Duggen! That's the way to hop. Watch the side panel for my tips.`;
+  $('hintText').innerHTML=msg;postHint(msg,true);
+}
+function pathDist(ax,ay,bx,by,max){const dd=bfs([[ax,ay]],open);const v=dd[by*N+bx];return v<0?99:v}
+function coach(dt){
+  if(S.hintGap>0)S.hintGap-=dt;
+  if(S.praiseT>0){S.praiseT-=dt;if(S.praiseT<=0)$('hint').hidden=true}
+  if(!hintsOn)return;
+  S.coachT=(S.coachT||0)-dt;if(S.coachT>0)return;S.coachT=.4;
+  const d=S.d,dp=pos(d),near=(a,r)=>dist2(dp,a)<r;
+  // danger first
+  const dro=S.drongos.find(b=>near([b.x,b.y],7));
+  if(dro){
+    if(S.inv.beer)return yell('beer',`Spangled Drongo incoming! Crack a beer and froth it out of the sky: press ${K('4')}`,12);
+    return yell('boom',`Drongo coming and no beer! Face it and throw the boomerang: press ${K('5')}`,12);
+  }
+  const lep=S.leps.find(l=>near(pos(l),7)&&pathDist(d.x,d.y,l.x,l.y)<=8);
+  if(lep){
+    if(S.charges)return yell('lepgoat',`Leprechaun! Turn to face it and play the didgeridoo, ${K('Space')}. A goat will blow it up.`,15);
+    if(S.inv.poo)return yell('leppoo',`Leprechaun after you! Run, then drop echidna poo behind you to block it: press ${K('6')}`,15);
+    return yell('leprun',`Leprechaun! Run the other way and look for a goat note or some echidna poo.`,15);
+  }
+  if(!S.pete.off&&(S.pete.state==='toFord'||S.pete.state==='walkIn'))return yell('peteLarder',`Pete's walking in from the ford to raid my larder! Get between us and drop echidna poo on his path, ${K('6')}. He won't step in it.`,18);
+  if(!S.pete.off&&S.pete.state==='walkOut')return yell('peteOut',`He's nicked half my larder! That's going on his barbie. Bring me more veg, quick.`,30);
+  if(!S.pete.off&&S.pete.state==='prowl'){
+    const z=S.zones.find(q=>ORDER.some(k=>q.stash[k]));
+    if(z)return yell('peteZone',`Truck Stop Pete is going for your stash at the crate! Grab it back before he gets there.`,20);
+    if(!inClearing(d.x,d.y)&&near([S.pete.x,S.pete.y],8))return yell('pete',`Pete's coming through the hedges for your pouch! Run to my kitchen in the centre, he won't come in.`,15);
+  }
+  for(const k of [0,1,2,3]){const nx=d.x+DL[k][0],ny=d.y+DL[k][1];
+    if(S.fords.has(key(nx,ny))){const cr=crocAt(nx,ny);
+      if(cr&&cr.seen&&cr.calm<=0&&!S.inv.shortbread)return yell('noSB',`That's a saltie! You need shortbread to cross. Find another way round.`,15);
+      if(!(cr&&cr.seen))return yell('ford',`Water crossing ahead. Could be a croc! Send a doll first: face it and press ${K('2')}`+(S.inv.shortbread?`. You've got shortbread if it bites.`:''),20);
+    }}
+  if(S.d.stun>0)return yell('stun',`He's reading that leaflet again… Next time crack a beer, ${K('4')}, before the drongo gets you.`,30);
+  // jobs
+  if(S.need&&(S.need.carrot||S.need.yam)){
+    const ready=['carrot','yam'].every(k=>S.got[k]+S.inv[k]>=S.need[k]),some=S.inv.carrot||S.inv.yam;
+    if(ready&&!(d.x===C&&d.y===C))return yell('ready',`That's the lot! Follow the white arrows to my kitchen.`,20);
+    if(weight()>=CAP-1&&some)return yell('full',`Pouch is full! Follow the white arrows to my kitchen in the centre.`,25);
+  }
+  if(S.grass[d.y][d.x]===2&&S.charges&&S.clock>8)return yell('grass',`Long grass slowing you down? Play the didgeridoo, ${K('Space')}, and a goat will chew you a fast green path.`,40);
+  if(!S.guide&&!guideOn()&&S.need&&(S.need.carrot||S.need.yam)&&S.clock>15)return yell('guideTip',`Can't find the veg? Press ${K('C')} for arrows to the nearest Bush Carrot, or ${K('Y')} for a Yam Daisy. ${K('X')} finds an exit.`,120);
+  if(S.ch.state==='follow'&&S.clock>25)return yell('childers',`Not sure what's round the corner? Send Childers ahead: press ${K('3')}`,90);
+}
+function spawnLep(){
+  const dd=bfs([[S.d.x,S.d.y]],open);let mx=0;for(const v of dd)if(v>mx)mx=v;
+  const want=Math.min(12,Math.floor(mx*.6)),cand=[];
+  for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){const v=dd[y*N+x];if(v>=want&&!S.fords.has(key(x,y))&&!inClearing(x,y))cand.push([x,y])}
+  if(!cand.length)return;
+  const [x,y]=cand[rnd(cand.length)];
+  S.leps.push(ent(x,y,{dir:rnd(4)}));sfx('lep');burst([x,y],10,['#3d9b48','#f2c230'],1.4,.6);
+  say('Topper has released an exploding leprechaun into the maze.');
+}
+function spawnDrongo(){sfx('chirp');S.drongos.push({x:S.d.x+Math.random()*16-8,y:S.d.y-VW/2-2,ph:Math.random()*6});say('Truck Stop Pete has launched a Spangled Drongo from the truck stop.')}
+
+/* ---------- actions ---------- */
+function act(a){
+  if(!S||S.paused)return;
+  const d=S.d;
+  if(a==='goat'){
+    if(S.charges<=0){float('No goats');return}
+    S.charges--;const fx=d.x+DL[d.face][0],fy=d.y+DL[d.face][1];
+    const [gx,gy]=open(fx,fy)?[fx,fy]:[d.x,d.y];
+    S.goats.push(ent(gx,gy,{dir:d.face,state:'walk',med:0}));sfx('didge');setTimeout(()=>sfx('bleat'),900);
+    if(S.grass[gy][gx]){S.grass[gy][gx]=0;dirty=true}
+    burst([gx,gy],16,['#d8c7ff','#ffffff','#f2c230'],1.6,.8);
+    say('The didgeridoo drones and a goat appears, already chewing.',gx,gy,'Goat!');
+  }else if(a==='doll'){
+    if(S.inv.doll<=0){float('No dolls');return}
+    S.inv.doll--;sfx('doll');S.dolls.push(ent(d.x,d.y,{dir:d.face,state:'walk',steps:0,timer:0}));st('dolls');
+    say('A mini Duggen doll hops off ahead.');
+  }else if(a==='childers'){
+    const c=S.ch;
+    if(c.state==='heaven'){float('Childers is in heaven');return}
+    if(c.state==='scout'){float('Already scouting');return}
+    c.state='scout';c.timer=12;sfx('click');st('scouts');say('Childers adjusts his goggles and walks five squares ahead for 12 seconds.');
+  }else if(a==='beer'){
+    if(S.inv.beer<=0){float('No cans');return}
+    S.inv.beer--;sfx('beer');const p=pos(d);let n=0;
+    for(const b of S.drongos)if(dist2([b.x,b.y],p)<=4.2){b.dead=true;n++;burst([b.x,b.y],10,['#14161c','#69c3f0'],2,.8)}
+    S.stats.beerKO=(S.stats.beerKO||0)+n;
+    burst(p,60,['#ffffff','#fff6d8','#f1e2a8'],5,1.1,'foam');
+    say(n?`Psssht! A mighty gush of froth knocks ${n} drongo${n>1?'s':''} out of the sky.`:'Psssht! A mighty gush of froth, and not a drongo in range.');
+  }else if(a==='boom'){
+    if(S.boom){float('Still in the air');return}
+    let x=d.x,y=d.y;const dir=d.face,path=[];
+    for(let i=0;i<3;i++){const nx=x+DL[dir][0],ny=y+DL[dir][1];if(!open(nx,ny))break;x=nx;y=ny;path.push([x,y])}
+    if(!path.length){float('Facing scrub');say('No room to throw. Turn Duggen to face an open path first.');return}
+    let turned=false;
+    for(const td of [(dir+3)%4,(dir+1)%4]){
+      if(!open(x+DL[td][0],y+DL[td][1]))continue;
+      for(let i=0;i<3;i++){const nx=x+DL[td][0],ny=y+DL[td][1];if(!open(nx,ny))break;x=nx;y=ny;path.push([x,y])}
+      turned=true;break;
+    }
+    sfx('whoosh');S.boom={path:[[d.x,d.y],...path,...path.slice(0,-1).reverse(),[d.x,d.y]],i:0,t:0};
+    say(turned?'Boomerang away, round the corner and back.':'Boomerang away. No corner in range, so it comes straight back.');
+  }else if(a==='poo'){
+    const k=key(d.x,d.y);
+    if(S.inv.poo<=0){float('No poo');return}
+    if(S.poo.has(k)||S.fords.has(k)||(d.x===C&&d.y===C)||onBorder(d.x,d.y)){float('Not here');return}
+    S.inv.poo--;S.poo.add(k);sfx('poo');st('poo');say('Duggen drops a square of echidna poo. Leprechauns will not cross it.');
+  }else if(a==='pick'){
+    const k=key(d.x,d.y);
+    if(S.poo.has(k)){if(weight()+W.poo>CAP){float('Pouch full');return}S.poo.delete(k);S.inv.poo++;sfx('pick');float('+1 Echidna poo')}
+    else float('Nothing here');
+  }
+  S.hudSig='';
+}
+
+/* ---------- update ---------- */
+function update(dt){
+  S.clock+=dt;if(!S.training)S.service=Math.max(0,S.service-dt);
+  while(S.lepQueue.length&&S.lepQueue[0]<=S.clock){S.lepQueue.shift();spawnLep()}
+  while(S.droQueue.length&&S.droQueue[0]<=S.clock){S.droQueue.shift();spawnDrongo()}
+  for(const c of S.crocs)if(c.calm>0)c.calm-=dt;
+  if(S.shake>0)S.shake-=dt;
+  updDuggen(dt);checkGuide();updChilders(dt);updGoats(dt);updDolls(dt);updLeps(dt);updDrongos(dt);updBoom(dt);updPete(dt);collide();
+  coach(dt);
+  for(const p of S.parts){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.92;p.vy*=.92;if(p.kind==='leaf')p.vy+=dt*1.2}
+  S.parts=S.parts.filter(p=>p.life>0);
+  for(const f of S.floats)f.life-=dt;S.floats=S.floats.filter(f=>f.life>0);
+  if(S.training&&!S.lessonDone){
+    const L=LESSONS[S.lesson];if(L.tick)L.tick(dt);
+    if(L.check()){S.lessonDone=true;sfx('fanfare');const i=S.lesson;window.duggenBump&&duggenBump({lessons:1,['lesson'+(i+1)]:1});
+      setTimeout(()=>{if(!S.training||S.lesson!==i)return;showCard(`<p class="eyebrow">Lesson ${i+1} done</p><h3>${L.title}: sorted</h3><p>${L.done}</p>`,
+        [[i+1<LESSONS.length?'Next lesson':'Finish training',()=>startLesson(i+1)],['Repeat lesson',()=>startLesson(i)],['Leave training',showMenu]])},700)}
+  }
+}
+function updDuggen(dt){
+  const d=S.d;if(d.invuln>0)d.invuln-=dt;
+  if(adv(d,dt))arrive();
+  if(d.stun>0){d.stun-=dt;queued=null;return}
+  if(d.t<1)return;
+  const dir=held!==null?held:queued;queued=null;if(dir===null)return;
+  d.face=dir;const nx=d.x+DL[dir][0],ny=d.y+DL[dir][1];
+  if(!open(nx,ny))return;
+  const cr=crocAt(nx,ny);
+  if(cr&&cr.calm<=0){
+    cr.seen=true;
+    if(S.inv.shortbread>0){S.inv.shortbread--;cr.calm=10;sfx('munch');st('fed');say('Duggen tosses the saltie a shortbread. 10 seconds of peace.',nx,ny,'Shortbread!')}
+    else{sfx('snap');if(!hurt('A saltwater croc bit Duggen at the ford!'))float('Snap!',nx,ny);return}
+  }
+  moveEnt(d,nx,ny,delay(nx,ny));sfx('hop');if(S.welcome)praise();
+  if(S.grass[ny][nx]===2){S.grass[ny][nx]=1;dirty=true}
+}
+function arrive(){
+  const d=S.d,k=key(d.x,d.y),it=S.items.get(k);
+  if(it==='goat'){sfx('chime');S.charges++;S.items.delete(k);say('Duggen found a didgeridoo note. +1 goat.',d.x,d.y,'+1 Goat')}
+  else if(it==='corks'){if(!S.corks){sfx('cork');S.corks=true;S.items.delete(k);say('Fresh corks on the steel Akubra. Drongo shield ready.',d.x,d.y,'Corks!')}}
+  else if(it){if(weight()+W[it]<=CAP){S.inv[it]++;S.items.delete(k);sfx('pick');float('+1 '+NAMES[it])}else{sfx('full');float('Pouch full')}}
+  for(const o of S.dolls)if(!o.dead&&o.state==='idle'&&o.x===d.x&&o.y===d.y){if(weight()+1<=CAP){o.dead=true;S.inv.doll++;sfx('pick');float('Doll back')}}
+  if(d.x===C&&d.y===C)deliver();
+  S.hudSig='';
+}
+function deliver(){
+  const c=Math.min(S.inv.carrot,S.need.carrot-S.got.carrot),y=Math.min(S.inv.yam,S.need.yam-S.got.yam);
+  if(c<=0&&y<=0){if(S.inv.carrot||S.inv.yam)float('Colin has enough of those',C,C);return}
+  sfx('deliver');S.inv.carrot-=c;S.inv.yam-=y;S.got.carrot+=c;S.got.yam+=y;
+  const parts=[];if(c)parts.push(`${c} Bush Carrot${c>1?'s':''}`);if(y)parts.push(`${y} Yam Dais${y>1?'ies':'y'}`);
+  say(`Chef Colin puts ${parts.join(' and ')} in his larder. Watch out: Pete can walk in and raid it.`,C,C,'Delivered!');
+  if(!S.training&&S.got.carrot>=S.need.carrot&&S.got.yam>=S.need.yam)roundDone();
+}
+function roundDone(){
+  window.duggenBump&&duggenBump({rounds:1,['round'+Math.min(S.round,9)]:1});
+  sfx('fanfare');S.paused=true;const tips=Math.floor(S.service/3),pts=S.covers*10;S.score+=pts+tips;
+  showCard(`<h3>Service!</h3><p class="quote">“Beaut, Duggen. ${S.covers} covers fed.”</p><p>Covers: <b>${pts}</b> points. Tips for speed: <b>${tips}</b>. Score: <b>${S.score}</b>.</p><p class="muted">Items left at drop zones stay behind in this maze. Everything in Duggen's pouch comes with him.</p>`,
+    [['Next round',()=>{startRound(S.round+1);showCard(orderHTML(),[['Hop to it',resume]])}]]);
+}
+function gameOver(){
+  if(!S||S.over)return;S.over=true;S.paused=true;sfx('over');
+  showCard(`<h3>Out of hops</h3><p>Truck Stop Pete is firing up the roadside barbie, but Duggen gets away bruised and hungry. Chef Colin closes early.</p><p>Rounds reached: <b>${S.round}</b>. Score: <b>${S.score}</b>.</p>`,
+    [['Play again',()=>{newGame();showCard(orderHTML(),[['Hop to it',resume]])}],['Menu',showMenu]]);
+}
+function updChilders(dt){
+  const c=S.ch;adv(c,dt);
+  if(c.state==='heaven'){c.timer-=dt;if(c.timer<=0){c.state='return';c.x=c.px=C;c.y=c.py=C;c.t=1;say('Childers is reincarnated at the centre and heads back to Duggen.')}return}
+  if(c.state==='scout'){c.timer-=dt;if(c.timer<=0){c.state='follow';st('scoutEnd');say('Childers trots back behind Duggen.')}}
+  if(c.t<1)return;
+  const d=S.d;let target,stop;
+  if(c.state==='scout'){target=ahead();stop=0}else{target=[d.x,d.y];stop=1}
+  const man=Math.abs(c.x-target[0])+Math.abs(c.y-target[1]);
+  if(man<=stop){if(c.state==='return')c.state='follow';return}
+  const k=stepToward(c,[target],open);if(k===null)return;
+  const nx=c.x+DL[k][0],ny=c.y+DL[k][1],cr=crocAt(nx,ny);
+  if(cr&&cr.calm<=0){cr.seen=true;sfx('snap');float('Snap!',nx,ny);childersToHeaven('A saltie got Childers at a ford. Now you know there is a croc there.');return}
+  moveEnt(c,nx,ny,c.state==='follow'?170:200);
+}
+function ahead(){let x=S.d.x,y=S.d.y,dir=S.d.face;for(let i=0;i<5;i++){const nd=nextAlong(x,y,dir,false);if(nd===null)break;x+=DL[nd][0];y+=DL[nd][1];dir=nd}return[x,y]}
+function updGoats(dt){
+  for(const gt of S.goats){
+    adv(gt,dt);
+    if(gt.state==='med'){gt.med-=dt;if(gt.med<=0){gt.dead=true;S.meditated++;st('med');if(S.meditated%2===0){S.charges++;setTimeout(()=>sfx('heaven'),300);say('Two goats have become one with the ether. A new goat is reincarnated: +1 didgeridoo goat.')}}continue}
+    if(gt.t<1)continue;
+    if(S.dist[gt.y*N+gt.x]===0){gt.state='med';gt.med=2;sfx('chime');say(`A goat reaches ${gt.x===C&&gt.y===C?'the centre':'an exit'} and starts to meditate.`);continue}
+    const opts=[];for(let k=0;k<4;k++){if(k===(gt.dir+2)%4)continue;if(open(gt.x+DL[k][0],gt.y+DL[k][1]))opts.push(k)}
+    const dv=k=>S.dist[(gt.y+DL[k][1])*N+gt.x+DL[k][0]];
+    let k;
+    if(!opts.length)k=(gt.dir+2)%4;
+    else if(opts.length===1)k=opts[0];
+    else k=Math.random()<.75?opts.sort((a,b)=>dv(a)-dv(b))[0]:opts[rnd(opts.length)];
+    const nx=gt.x+DL[k][0],ny=gt.y+DL[k][1];
+    if(!open(nx,ny)){gt.dir=(gt.dir+2)%4;continue}
+    const cr=crocAt(nx,ny);
+    if(cr&&cr.calm<=0){cr.seen=true;sfx('snap');gt.dir=(k+2)%4;float('Snap!',nx,ny);say('A saltie snapped at a goat. It turned tail.');continue}
+    gt.dir=k;moveEnt(gt,nx,ny,560);if(Math.random()<.04)sfx('bleat');
+    if(S.grass[ny][nx]){S.grass[ny][nx]=0;dirty=true}
+  }
+  S.goats=S.goats.filter(x=>!x.dead);
+}
+function updDolls(dt){
+  for(const o of S.dolls){
+    adv(o,dt);
+    if(o.state==='bitten'){o.timer-=dt;if(o.timer<=0){o.state='idle';float('Doll ready',o.x,o.y)}continue}
+    if(o.state!=='walk'||o.t<1)continue;
+    if(o.steps>=10){o.state='idle';continue}
+    const nd=nextAlong(o.x,o.y,o.dir,true);if(nd===null){o.state='idle';continue}
+    const nx=o.x+DL[nd][0],ny=o.y+DL[nd][1],cr=crocAt(nx,ny);
+    if(cr&&cr.calm<=0){cr.seen=true;sfx('snap');o.state='bitten';o.timer=30;st('dollBitten');float('Snap!',nx,ny);say('A doll got bitten at a ford. There is a saltie there! The doll is out of action for 30 seconds.');continue}
+    o.dir=nd;moveEnt(o,nx,ny,240);o.steps++;
+  }
+  S.dolls=S.dolls.filter(x=>!x.dead);
+}
+function updLeps(dt){
+  const pass=(x,y)=>open(x,y)&&!S.poo.has(key(x,y));
+  const targets=[[S.d.x,S.d.y],...S.dolls.map(o=>[o.x,o.y])];
+  for(const l of S.leps){
+    adv(l,dt);if(l.t<1)continue;
+    let k=stepToward(l,targets,pass,12);
+    if(k===null){
+      const opts=[];for(let j=0;j<4;j++){if(j===(l.dir+2)%4)continue;if(pass(l.x+DL[j][0],l.y+DL[j][1]))opts.push(j)}
+      const b=(l.dir+2)%4;k=opts.length?opts[rnd(opts.length)]:(pass(l.x+DL[b][0],l.y+DL[b][1])?b:null);
+    }
+    if(k===null)continue;
+    const nx=l.x+DL[k][0],ny=l.y+DL[k][1],cr=crocAt(nx,ny);
+    if(cr&&cr.calm<=0){cr.seen=true;l.dead=true;boom([nx,ny],false);say('A saltie snapped up a leprechaun. It did not end well for the leprechaun.');continue}
+    l.dir=k;moveEnt(l,nx,ny,620);
+  }
+  S.leps=S.leps.filter(x=>!x.dead);
+}
+function updDrongos(dt){
+  const dp=pos(S.d);
+  for(const b of S.drongos){
+    if(b.dead)continue;
+    let tgt=dp,tobj=null,best=dist2([b.x,b.y],dp);
+    for(const o of S.dolls){if(o.dead)continue;const p=pos(o),v=dist2([b.x,b.y],p);if(v<best){best=v;tgt=p;tobj=o}}
+    const dx=tgt[0]-b.x,dy=tgt[1]-b.y,m=Math.hypot(dx,dy)||1;
+    b.x+=dx/m*1.6*dt;b.y+=dy/m*1.6*dt;b.face=dx<0?3:1;
+    if(m<.45){
+      b.dead=true;
+      if(tobj){sfx('paper');tobj.dead=true;burst(tgt,12,['#ffffff','#e8e2d0'],1.5,1,'leaf');say('A Spangled Drongo flattened a doll with a copy of Be Responsible and Kind.')}
+      else if(S.corks){sfx('cork');S.corks=false;burst(dp,10,['#d9b27a','#a9b3b8'],2.5,.8);say('The corks on the steel Akubra swatted the drongo away. It is just an ordinary hat now.',S.d.x,S.d.y,'Corks gone')}
+      else{sfx('paper');S.d.stun=3;burst(dp,14,['#ffffff','#f4ecd6'],1.4,1.4,'leaf');say('A Spangled Drongo dropped Be Responsible and Kind on Duggen. He has stopped to read it.',S.d.x,S.d.y,'Reading…')}
+    }
+  }
+  S.drongos=S.drongos.filter(x=>!x.dead);
+}
+function updBoom(dt){
+  const B=S.boom;if(!B)return;
+  B.t+=dt/.11;while(B.t>=1){B.t-=1;B.i++;if(B.i>=B.path.length-1){S.boom=null;float('Caught');return}}
+  const a=B.path[B.i],b=B.path[B.i+1],p=[a[0]+(b[0]-a[0])*B.t,a[1]+(b[1]-a[1])*B.t];B.pos=p;
+  for(const dr of S.drongos)if(!dr.dead&&dist2([dr.x,dr.y],p)<.85){dr.dead=true;sfx('thwack');st('boomKO');burst([dr.x,dr.y],12,['#14161c','#69c3f0'],2,.8);say('Thwack! The boomerang knocked a drongo out of the sky.')}
+}
+/* ---------- Truck Stop Pete ---------- */
+function sidePoint(side,px,py){const cl=v=>Math.max(3,Math.min(N-4,Math.round(v)));
+  return side==='N'?{side,x:cl(px),y:0}:side==='S'?{side,x:cl(px),y:N-1}:side==='W'?{side,x:0,y:cl(py)}:{side,x:N-1,y:cl(py)}}
+function nearestSide(px,py){const c=[['N',py],['S',N-1-py],['W',px],['E',N-1-px]].sort((a,b)=>a[1]-b[1])[0][0];return sidePoint(c,px,py)}
+function route(sx,sy,tx,ty,pass){
+  const dd=bfs([[tx,ty]],pass);if(dd[sy*N+sx]<0)return null;const out=[];let x=sx,y=sy,guard=0;
+  while(!(x===tx&&y===ty)&&guard++<5000){let best=null;for(const [dx,dy] of DL){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=N||ny>=N)continue;const v=dd[ny*N+nx];if(v>=0&&v<dd[y*N+x]){best=[nx,ny];break}}if(!best)return null;out.push(best);x=best[0];y=best[1]}
+  return out}
+const peteFoot=(x,y)=>open(x,y)&&!S.poo.has(key(x,y));
+function peteHedge(tx,ty,dt){
+  const p=S.pete,dx=tx-p.x,dy=ty-p.y,m=Math.hypot(dx,dy),sp=(.9+S.round*.06);
+  if(m>.01){const st=Math.min(m,sp*dt);p.x+=dx/m*st;p.y+=dy/m*st}
+  if(Math.abs(dx)>.05)p.face=dx<0?3:1;
+  const rx=p.x-C,ry=p.y-C,B=2.2;
+  if(Math.abs(rx)<B&&Math.abs(ry)<B){
+    if(B-Math.abs(rx)<B-Math.abs(ry)){p.x=C+Math.sign(rx||1)*B;p.y+=Math.sign(ry||1)*sp*dt}
+    else{p.y=C+Math.sign(ry||1)*B;p.x+=Math.sign(rx||1)*sp*dt}
+  }
+  return Math.hypot(tx-p.x,ty-p.y)<.2;
+}
+function peteWalk(dt){
+  const p=S.pete;if(!p.path||!p.path.length)return true;
+  const [tx,ty]=p.path[0],dx=tx-p.x,dy=ty-p.y,m=Math.hypot(dx,dy),st=2.3*dt;
+  if(Math.abs(dx)>.05)p.face=dx<0?3:1;
+  if(m<=st){p.x=tx;p.y=ty;p.path.shift();p.tile=[tx,ty];return 'step'}
+  p.x+=dx/m*st;p.y+=dy/m*st;return false;
+}
+function peteToSide(){const p=S.pete;p.bbq=nearestSide(p.x,p.y);p.state='toSide';S.hudSig=''}
+function updPete(dt){
+  const p=S.pete,d=S.d;if(p.off)return;
+  if(p.state==='away'){p.timer-=dt;if(p.timer<=0){
+    p.x=p.bbq.x;p.y=p.bbq.y;p.state='prowl';p.loot={};sfx('horn');say('Truck Stop Pete leaves his barbie and strides into the maze, straight through the hedges.')}return}
+  if(p.state==='prowl'){
+    const larder=S.got.carrot+S.got.yam;
+    if(larder>0&&S.fords.size){
+      const fs=[...S.fords].map(k=>k.split(',').map(Number)).sort((a,b)=>dist2(a,[p.x,p.y])-dist2(b,[p.x,p.y]));
+      p.ford=fs[0];p.state='toFord';S.hudSig='';
+      say('Truck Stop Pete is heading for a ford. He can\'t go through the hedges into Colin\'s kitchen, so he\'ll have to walk in.');return}
+    const z=S.zones.filter(q=>ORDER.some(k=>q.stash[k])).sort((a,b)=>dist2([a.x,a.y],[p.x,p.y])-dist2([b.x,b.y],[p.x,p.y]))[0];
+    const dp=pos(d),safe=inClearing(d.x,d.y);
+    if(z){if(peteHedge(z.x,z.y,dt)){const n=ORDER.reduce((s2,k)=>s2+(z.stash[k]||0),0);
+      p.loot.carrot=(p.loot.carrot||0)+(z.stash.carrot||0);p.loot.yam=(p.loot.yam||0)+(z.stash.yam||0);z.stash={};sfx('horn');
+      say(`Truck Stop Pete raided a drop zone and grabbed ${n} item${n>1?'s':''}. He's off to his barbie with them.`,z.x,z.y,'Raided!');peteToSide()}return}
+    peteHedge(dp[0],dp[1],dt);
+    if(!safe&&d.invuln<=0&&dist2(dp,[p.x,p.y])<.6){
+      const k=['carrot','yam','shortbread','beer','doll','poo'].find(q=>S.inv[q]>0);sfx('pinch');
+      if(k){S.inv[k]--;if(k==='carrot'||k==='yam')p.loot[k]=(p.loot[k]||0)+1;say(`Truck Stop Pete pinched a ${NAMES[k]} from Duggen's pouch and walked off through a hedge.`,d.x,d.y,'-1 '+NAMES[k])}
+      else{d.stun=1.2;say('Truck Stop Pete rummaged in an empty pouch, grumbled and shoved Duggen.',d.x,d.y,'Shoved')}
+      peteToSide()}
+    return}
+  if(p.state==='toFord'){
+    if(peteHedge(p.ford[0],p.ford[1],dt)){p.x=p.ford[0];p.y=p.ford[1];p.tile=p.ford.slice();
+      p.path=route(p.ford[0],p.ford[1],C,C,peteFoot);sfx('horn');
+      if(!p.path){say('Truck Stop Pete: "Echidna poo everywhere! I\'m not walking through that." He gives up.',p.x,p.y,'Blocked!');peteToSide();return}
+      p.state='walkIn';S.hudSig='';say('Truck Stop Pete at the ford: "Right. I\'m walking to the centre. Normally." Block his path with echidna poo!',p.x,p.y,'"Walking in. Normally."')}
+    return}
+  if(p.state==='walkIn'){
+    const r=peteWalk(dt);
+    if(r==='step'||r===true){
+      if(inClearing(p.tile[0],p.tile[1])||(p.tile[0]===C&&p.tile[1]===C)){
+        const t={};for(const k of ['carrot','yam']){const n=Math.ceil(S.got[k]/2);S.got[k]-=n;t[k]=n;p.loot[k]=(p.loot[k]||0)+n}
+        sfx('pinch');const bits=[];if(t.carrot)bits.push(`${t.carrot} Bush Carrot${t.carrot>1?'s':''}`);if(t.yam)bits.push(`${t.yam} Yam Dais${t.yam>1?'ies':'y'}`);
+        say(bits.length?`Truck Stop Pete swiped half of Colin's larder: ${bits.join(' and ')}. He's walking back out to his ford.`:'Truck Stop Pete found the larder empty and walks back out, grumbling.',C,C,bits.length?'Larder raided!':'Empty!');
+        p.path=route(p.tile[0],p.tile[1],p.ford[0],p.ford[1],open)||[];p.state='walkOut';S.hudSig='';return}
+      p.path=route(p.tile[0],p.tile[1],C,C,peteFoot);
+      if(!p.path){say('Echidna poo in the way! Truck Stop Pete won\'t step in it, so he turns back.',p.x,p.y,'Blocked!');p.path=route(p.tile[0],p.tile[1],p.ford[0],p.ford[1],open)||[];p.state='walkOut';S.hudSig=''}
+    }
+    return}
+  if(p.state==='walkOut'){if(peteWalk(dt)===true){peteToSide()}return}
+  if(p.state==='toSide'){
+    if(peteHedge(p.bbq.x,p.bbq.y,dt)){
+      const c=p.loot.carrot||0,y=p.loot.yam||0;S.bbqLoot.carrot+=c;S.bbqLoot.yam+=y;p.loot={};
+      if(c||y){sfx('horn');burst([p.x,p.y],18,['#9a9a9a','#cfcfcf','#ff8a2a'],1.2,1.4);say(`Sizzle. Truck Stop Pete throws ${c+y} stolen veg on his mobile barbie on the ${{N:'north',S:'south',E:'east',W:'west'}[p.bbq.side]} side.`)}
+      p.state='away';p.timer=18;S.hudSig=''}
+  }
+}
+function collide(){
+  const dp=pos(S.d);
+  for(const l of S.leps){
+    if(l.dead)continue;const lp=pos(l);
+    if(dist2(lp,dp)<.6){l.dead=true;boom(lp,false);hurt('BOOM! A leprechaun blew up on Duggen.');continue}
+    let hit=false;
+    for(const gt of S.goats){if(gt.dead||dist2(lp,pos(gt))>=.6)continue;
+      l.dead=gt.dead=true;boom(pos(gt),true);openWalls(gt.x,gt.y);say('A goat met a leprechaun. KABOOM! A new gap has opened in the maze.');hit=true;break}
+    if(hit)continue;
+    for(const o of S.dolls){if(o.dead||dist2(lp,pos(o))>=.6)continue;o.dead=l.dead=true;boom(lp,false);say('A leprechaun blew up a mini Duggen doll.');hit=true;break}
+    if(hit)continue;
+    const c=S.ch;if(c.state!=='heaven'&&dist2(lp,pos(c))<.6){l.dead=true;boom(lp,false);childersToHeaven('A leprechaun collided with Childers.')}
+  }
+  S.leps=S.leps.filter(x=>!x.dead);S.goats=S.goats.filter(x=>!x.dead);S.dolls=S.dolls.filter(x=>!x.dead);
+}
+
+/* ---------- camera ---------- */
+function camTarget(){const p=pos(S.d);const f=v=>N<=VW?(N-VW)/2:Math.max(0,Math.min(N-VW,v+.5-VW/2));return[f(p[0]),f(p[1])]}
+function snapCam(){const [x,y]=camTarget();cam.x=x;cam.y=y}
+
+/* ---------- drawing ---------- */
+function drawStatic(){
+  const sc=Math.min(dpr,4096/(N*T));
+  stat.width=stat.height=Math.round(N*T*sc);const s=stat.getContext('2d');s.setTransform(sc,0,0,sc,0,0);
+  mini.width=mini.height=N;const m=mini.getContext('2d');
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const px=x*T,py=y*T,h=hash(x,y),k=key(x,y);
+    if(!S.grid[y][x]){
+      m.fillStyle='#283216';m.fillRect(x,y,1,1);
+      s.fillStyle='#34401d';s.fillRect(px,py,T+.5,T+.5);
+      s.fillStyle='#4a5a28';for(let i=0;i<3;i++){const ox=((h>>(i*5))&31)/31,oy=((h>>(i*5+3))&31)/31;s.beginPath();s.arc(px+T*(.18+ox*.64),py+T*(.18+oy*.64),T*.24,0,7);s.fill()}
+      s.fillStyle='#5f7032';s.beginPath();s.arc(px+T*(.3+((h>>17)&7)/18),py+T*(.3+((h>>20)&7)/18),T*.1,0,7);s.fill();
+      continue;
+    }
+    if(S.fords.has(k)){
+      m.fillStyle='#4aa0b8';m.fillRect(x,y,1,1);
+      s.fillStyle='#3e8ea3';s.fillRect(px,py,T+.5,T+.5);
+      s.strokeStyle='rgba(220,240,245,.45)';s.lineWidth=1;for(let i=0;i<3;i++){s.beginPath();s.moveTo(px+T*.15,py+T*(.25+i*.25));s.quadraticCurveTo(px+T*.5,py+T*(.15+i*.25),px+T*.85,py+T*(.25+i*.25));s.stroke()}
+      s.fillStyle='#8c7a63';for(const [a,b] of [[.3,.5],[.7,.5]]){s.beginPath();s.ellipse(px+T*a,py+T*b,T*.09,T*.06,0,0,7);s.fill()}
+      continue;
+    }
+    const gl=S.grass[y][x],grazed=gl===0&&!inClearing(x,y)&&!onBorder(x,y)&&!S.scorch.has(k);
+    let base=inClearing(x,y)?'#b9663b':S.scorch.has(k)?'#7d3d22':grazed?'#5d8d38':'#a24c29';
+    m.fillStyle=grazed?'#6ea046':inClearing(x,y)?'#e0c070':'#b0582f';m.fillRect(x,y,1,1);
+    s.fillStyle=base;s.fillRect(px,py,T+.5,T+.5);
+    if(grazed){s.fillStyle='#74a646';for(let i=0;i<5;i++){s.fillRect(px+T*(((h>>(i*3))&7)/8),py+T*(((h>>(i*3+9))&7)/8),T*.08,T*.08)}continue}
+    s.fillStyle='rgba(60,20,8,.25)';s.beginPath();s.arc(px+T*(((h>>4)&15)/15),py+T*(((h>>9)&15)/15),T*.05,0,7);s.fill();
+    if(gl){
+      s.strokeStyle=gl===2?'#dcbb4e':'#b99a43';s.lineWidth=Math.max(1,T*.05);s.lineCap='round';
+      const n=gl===2?7:3;
+      for(let i=0;i<n;i++){const hx=px+T*(.12+(((h>>(i*3))&7)/7)*.76),hy=py+T*(.3+(((h>>(i*3+11))&7)/7)*.6),lean=(((h>>(i+5))&3)-1.5)*T*.05;s.beginPath();s.moveTo(hx,hy);s.lineTo(hx+lean,hy-T*(gl===2?.32:.18));s.stroke()}
+    }
+    if(onBorder(x,y)){
+      s.fillStyle='rgba(242,194,48,.9)';const cxp=px+T/2,cyp=py+T/2;s.beginPath();
+      if(y===0){s.moveTo(cxp-T*.2,cyp);s.lineTo(cxp,cyp-T*.25);s.lineTo(cxp+T*.2,cyp)}
+      else if(y===N-1){s.moveTo(cxp-T*.2,cyp);s.lineTo(cxp,cyp+T*.25);s.lineTo(cxp+T*.2,cyp)}
+      else if(x===0){s.moveTo(cxp,cyp-T*.2);s.lineTo(cxp-T*.25,cyp);s.lineTo(cxp,cyp+T*.2)}
+      else{s.moveTo(cxp,cyp-T*.2);s.lineTo(cxp+T*.25,cyp);s.lineTo(cxp,cyp+T*.2)}
+      s.fill();
+    }
+  }
+  dirty=false;
+}
+const ctr=p=>[(p[0]+.5)*T,(p[1]+.5)*T];
+function drawRoo(x,y,s,face,o){
+  g.save();g.translate(x,y);if(face===3)g.scale(-1,1);
+  g.strokeStyle=o.dark||'#8f5225';g.lineWidth=s*.11;g.lineCap='round';g.beginPath();g.moveTo(-s*.1,s*.28);g.quadraticCurveTo(-s*.42,s*.36,-s*.44,s*.12);g.stroke();
+  g.fillStyle=o.col||'#c98244';g.beginPath();g.ellipse(0,s*.12,s*.2,s*.28,-.2,0,7);g.fill();
+  g.beginPath();g.ellipse(s*.13,-s*.19,s*.14,s*.1,.3,0,7);g.fill();
+  g.beginPath();g.ellipse(s*.02,-s*.34,s*.04,s*.11,-.3,0,7);g.fill();g.beginPath();g.ellipse(s*.1,-s*.36,s*.04,s*.11,.1,0,7);g.fill();
+  g.fillStyle='#1b120d';g.beginPath();g.arc(s*.18,-s*.21,s*.028,0,7);g.fill();g.beginPath();g.arc(s*.26,-s*.17,s*.025,0,7);g.fill();
+  g.strokeStyle=o.dark||'#8f5225';g.lineWidth=s*.04;g.beginPath();g.arc(s*.04,s*.16,s*.1,.2,2.6);g.stroke();
+  if(o.hat){
+    g.fillStyle='#aab4b9';g.beginPath();g.ellipse(s*.09,-s*.3,s*.21,s*.05,.2,0,7);g.fill();
+    g.fillStyle='#8d979c';g.beginPath();g.ellipse(s*.09,-s*.33,s*.11,s*.08,.2,Math.PI,0);g.fill();
+    if(o.corks){g.strokeStyle='#4d3b28';g.lineWidth=1;for(let i=0;i<3;i++){const cx0=s*(-.07+i*.12);g.beginPath();g.moveTo(cx0,-s*.28);g.lineTo(cx0,-s*.17);g.stroke();g.fillStyle='#d9b27a';g.fillRect(cx0-s*.03,-s*.17,s*.06,s*.07)}}
+  }
+  if(o.leaflet){g.fillStyle='#f6f0de';g.fillRect(s*.12,-s*.02,s*.22,s*.28);g.fillStyle='#7a6a55';for(let i=0;i<3;i++)g.fillRect(s*.15,s*.04+i*s*.06,s*.15,s*.02)}
+  g.restore();
+}
+function drawLep(x,y,s){
+  g.save();g.translate(x,y);
+  g.fillStyle='#3d9b48';g.beginPath();g.arc(0,s*.12,s*.2,0,7);g.fill();
+  g.fillStyle='#f0c9a0';g.beginPath();g.arc(0,-s*.1,s*.12,0,7);g.fill();
+  g.fillStyle='#e0702a';g.beginPath();g.arc(0,-s*.04,s*.11,0,Math.PI);g.fill();
+  g.fillStyle='#1f5a2a';g.fillRect(-s*.17,-s*.23,s*.34,s*.05);g.fillRect(-s*.1,-s*.42,s*.2,s*.2);
+  g.fillStyle='#f2c230';g.fillRect(-s*.045,-s*.28,s*.09,s*.05);
+  g.strokeStyle='#2a1a10';g.lineWidth=1.5;g.beginPath();g.moveTo(0,-s*.42);g.quadraticCurveTo(s*.1,-s*.54,s*.17,-s*.5);g.stroke();
+  if((tm*9|0)%2){g.fillStyle='#ffd34d';g.beginPath();g.arc(s*.18,-s*.5,s*.07,0,7);g.fill()}
+  g.restore();
+}
+function drawGoat(x,y,s,face,glow){
+  g.save();g.translate(x,y);
+  if(glow>0){g.fillStyle=`rgba(216,199,255,${.5*glow})`;g.beginPath();g.arc(0,0,s*(.5+(1-glow)*.6),0,7);g.fill();g.globalAlpha=Math.max(.15,glow)}
+  if(face===3)g.scale(-1,1);
+  g.strokeStyle='#cfc6b2';g.lineWidth=s*.05;for(const lx of [-.18,-.08,.06,.14]){g.beginPath();g.moveTo(s*lx,s*.15);g.lineTo(s*lx,s*.3);g.stroke()}
+  g.fillStyle='#f4efe2';g.beginPath();g.ellipse(-s*.03,s*.05,s*.25,s*.16,0,0,7);g.fill();
+  g.beginPath();g.ellipse(s*.21,-s*.08,s*.11,s*.08,.4,0,7);g.fill();
+  g.strokeStyle='#6b5a44';g.lineWidth=s*.045;g.beginPath();g.moveTo(s*.18,-s*.14);g.quadraticCurveTo(s*.1,-s*.32,s*.01,-s*.24);g.stroke();
+  g.fillStyle='#1b120d';g.beginPath();g.arc(s*.24,-s*.1,s*.022,0,7);g.fill();
+  g.restore();
+}
+function drawDrongo(x,y,s,face,ph){
+  g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(x,y+s*.55,s*.22,s*.07,0,0,7);g.fill();
+  g.save();g.translate(x,y);if(face===3)g.scale(-1,1);
+  const f=Math.sin(tm*15+ph)*.45;
+  g.fillStyle='#15171d';
+  g.beginPath();g.moveTo(-s*.05,0);g.lineTo(-s*.32,-s*.28*(1+f));g.lineTo(-s*.12,-s*.02);g.fill();
+  g.beginPath();g.moveTo(s*.05,0);g.lineTo(s*.12,-s*.34*(1+f));g.lineTo(s*.18,-s*.02);g.fill();
+  g.beginPath();g.ellipse(0,0,s*.2,s*.09,0,0,7);g.fill();
+  g.beginPath();g.arc(s*.2,-s*.04,s*.08,0,7);g.fill();
+  g.beginPath();g.moveTo(-s*.18,0);g.lineTo(-s*.38,s*.1);g.lineTo(-s*.3,0);g.lineTo(-s*.38,-s*.06);g.fill();
+  g.fillStyle='#ef5d44';g.beginPath();g.arc(s*.23,-s*.06,s*.025,0,7);g.fill();
+  g.fillStyle='#69c3f0';for(const [a,b] of [[-.08,-.02],[.04,.03],[-.2,-.12],[.1,-.15],[0,-.04]]){g.beginPath();g.arc(s*a,s*b,s*.022,0,7);g.fill()}
+  g.restore();
+}
+function drawCroc(x,y,s,vertical,c){
+  g.save();g.translate(x,y);if(vertical)g.rotate(Math.PI/2);
+  g.fillStyle='#3c5a2b';g.beginPath();g.ellipse(-s*.05,0,s*.36,s*.13,0,0,7);g.fill();
+  g.beginPath();g.ellipse(s*.3,0,s*.18,s*.07,0,0,7);g.fill();
+  g.fillStyle='#2a4020';for(let i=-3;i<=2;i++){g.beginPath();g.arc(i*s*.08,-s*.05,s*.025,0,7);g.fill()}
+  g.fillStyle='#e8d35a';g.beginPath();g.arc(s*.17,-s*.07,s*.035,0,7);g.arc(s*.17,s*.07,s*.035,0,7);g.fill();
+  g.restore();
+  if(c.calm>0){ring(x,y,s*.46,c.calm/10,'#f2c230');label(Math.ceil(c.calm)+'s',x,y-s*.5)}
+}
+function drawPete(x,y,s,face){
+  g.fillStyle='rgba(0,0,0,.32)';g.beginPath();g.ellipse(x,y+s*.42,s*.3,s*.08,0,0,7);g.fill();
+  g.save();g.translate(x,y);if(face===3)g.scale(-1,1);
+  g.fillStyle='#34456a';g.fillRect(-s*.18,s*.15,s*.14,s*.27);g.fillRect(s*.04,s*.15,s*.14,s*.27);
+  g.fillStyle='#f28c28';g.beginPath();g.ellipse(0,0,s*.3,s*.26,0,0,7);g.fill();
+  g.fillStyle='#f2f05a';g.fillRect(-s*.29,-s*.03,s*.58,s*.05);
+  g.fillStyle='#e3a77f';g.beginPath();g.arc(s*.04,-s*.32,s*.15,0,7);g.fill();
+  g.fillStyle='#5a3a24';g.beginPath();g.arc(s*.04,-s*.25,s*.11,0,Math.PI);g.fill();
+  g.fillStyle='#c0392b';g.beginPath();g.arc(s*.04,-s*.38,s*.15,Math.PI,0);g.fill();g.fillRect(s*.04,-s*.41,s*.25,s*.05);
+  g.fillStyle='#1b120d';g.beginPath();g.arc(s*.1,-s*.33,s*.022,0,7);g.fill();
+  g.strokeStyle='#aab4b9';g.lineWidth=s*.035;g.lineCap='round';g.beginPath();g.moveTo(s*.26,0);g.lineTo(s*.5,-s*.2);g.moveTo(s*.28,s*.05);g.lineTo(s*.52,-s*.13);g.stroke();
+  g.restore();
+}
+function ring(x,y,r,f,col){g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=3;g.beginPath();g.arc(x,y,r,0,7);g.stroke();g.strokeStyle=col;g.lineWidth=2.5;g.beginPath();g.arc(x,y,r,-Math.PI/2,-Math.PI/2+6.283*Math.max(0,Math.min(1,f)));g.stroke()}
+function label(t,x,y,col){g.font=`700 ${Math.max(10,T*.4)}px Atkinson Hyperlegible, system-ui, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.lineWidth=3;g.strokeStyle='rgba(20,12,8,.85)';g.strokeText(t,x,y);g.fillStyle=col||'#f3e5ca';g.fillText(t,x,y)}
+function drawChilders(x,y,s){
+  g.save();g.translate(x,y);
+  g.fillStyle='#e9a7a0';g.beginPath();g.ellipse(0,s*.05,s*.18,s*.13,0,0,7);g.fill();
+  g.strokeStyle='#d4877f';g.lineWidth=s*.03;g.beginPath();g.moveTo(-s*.17,s*.08);g.quadraticCurveTo(-s*.3,s*.12,-s*.32,s*.02);g.stroke();
+  g.fillStyle='#6b4122';g.beginPath();g.arc(s*.04,-s*.02,s*.13,Math.PI,0);g.fill();
+  g.fillStyle='#9fd3e0';g.strokeStyle='#3a2617';g.lineWidth=1.2;for(const gx of [.02,.13]){g.beginPath();g.arc(s*gx,-s*.02,s*.045,0,7);g.fill();g.stroke()}
+  g.fillStyle='#f6e7d6';g.fillRect(s*.15,s*.06,s*.03,s*.04);
+  g.restore();
+}
+function drawBBQ(x,y,s){
+  g.save();g.translate(x,y);
+  g.fillStyle='#c0392b';g.fillRect(-s*.42,-s*.2,s*.84,s*.34);g.fillStyle='#f2f05a';g.fillRect(-s*.42,-s*.05,s*.84,s*.05);
+  g.fillStyle='#1b120d';g.beginPath();g.arc(-s*.24,s*.17,s*.09,0,7);g.arc(s*.24,s*.17,s*.09,0,7);g.fill();
+  g.fillStyle='#3a3a3a';g.fillRect(-s*.28,-s*.36,s*.56,s*.14);
+  g.fillStyle='rgba(220,220,220,.55)';for(let i=0;i<3;i++){const t=(tm*.6+i/3)%1;g.beginPath();g.arc(-s*.1+i*s*.1+Math.sin(tm*2+i)*s*.05,-s*.4-t*s*.6,s*(.06+t*.08),0,7);g.fill()}
+  g.restore();
+}
+function guideOn(){
+  if(!S.home||!S.need||!(S.need.carrot||S.need.yam))return false;const d=S.d;if(inClearing(d.x,d.y))return false;
+  const food=S.inv.carrot+S.inv.yam;if(!food)return false;
+  const ready=['carrot','yam'].every(k=>S.got[k]+S.inv[k]>=S.need[k]);
+  return ready||weight()>=CAP-1;
+}
+const GUIDES={carrot:{name:'Carrot',col:'#ff6a1a',full:'Bush Carrot'},yam:{name:'Daisy',col:'#fff04a',full:'Yam Daisy'},exit:{name:'Exit',col:'#4fc3ff',full:'exit'}};
+function guideSources(kind){const out=[];if(kind==='exit')return EX.slice();for(const [k2,t] of S.items)if(t===kind)out.push(k2.split(',').map(Number));return out}
+function activeGuide(){
+  if(guideOn())return{field:S.home,col:'#ffffff',name:'Colin'};
+  if(!S.guide)return null;const src=guideSources(S.guide);if(!src.length)return null;
+  const G=GUIDES[S.guide];return{field:bfs(src,open),col:G.col,name:G.name};
+}
+function setGuide(kind){
+  if(!S||S.paused)return;
+  if(S.guide===kind){S.guide=null;say('Guide arrows off.');S.hudSig='';return}
+  if(kind!=='exit'&&!guideSources(kind).length){float('None left');say(`There are no ${PLURAL[kind]} left in the maze.`);return}
+  S.guide=kind;sfx('click');say(kind==='exit'?'Arrows now point to the nearest exit.':`Arrows now point to the nearest ${GUIDES[kind].full}. They'll move on to the next one after each pick-up.`);S.hudSig='';
+}
+function checkGuide(){
+  if(!S.guide)return;const d=S.d,k=S.guide;
+  if(onBorder(d.x,d.y)&&d.t>=1){S.guide=null;say(k==='exit'?'Duggen reached an exit. Guide arrows off.':'Duggen left the maze at an exit, so the guide has reset.');S.hudSig='';return}
+  if(k!=='exit'){
+    if(!guideSources(k).length){S.guide=null;say(`That's every ${GUIDES[k].full} in the maze collected. Guide arrows off.`);S.hudSig='';return}
+    if(S.need&&S.need[k]>0&&S.got[k]+S.inv[k]>=S.need[k]){S.guide=null;say(`Duggen has all the ${PLURAL[k]} Colin ordered. Guide arrows off.`);S.hudSig='';return}
+  }
+}
+function guidePath(G){
+  let x=S.d.x,y=S.d.y;const pts=[];
+  for(let i=0;i<600;i++){let best=null;const v=G.field[y*N+x];if(v<=0)break;for(const [dx,dy] of DL){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=N||ny>=N)continue;const w=G.field[ny*N+nx];if(w>=0&&w<v){best=[nx,ny,dx,dy];break}}if(!best)break;pts.push(best);x=best[0];y=best[1]}
+  return pts;
+}
+function drawGuide(G){
+  const pts=guidePath(G);G.end=pts.length?pts[pts.length-1]:[S.d.x,S.d.y];
+  pts.slice(0,14).forEach(([px,py,dx,dy],i)=>{const cx=(px+.5)*T,cy=(py+.5)*T,a=Math.atan2(dy,dx),al=(1-i/20)*(.7+.3*Math.sin((tm*6-i*.8)));
+    g.save();g.translate(cx,cy);g.rotate(a);g.globalAlpha=Math.max(.15,al);g.fillStyle=G.col;g.strokeStyle='#1b120d';g.lineWidth=2;
+    g.beginPath();g.moveTo(T*.3,0);g.lineTo(-T*.16,-T*.27);g.lineTo(-T*.05,0);g.lineTo(-T*.16,T*.27);g.closePath();g.stroke();g.fill();g.restore()});
+  g.globalAlpha=1;
+}
+function drawCompass(view,G){
+  const tx=G.name==='Colin'?C:G.end[0],ty=G.name==='Colin'?C:G.end[1];
+  const cx=(tx+.5-cam.x)*T,cy=(ty+.5-cam.y)*T,m=34;
+  if(cx>m&&cx<view-m&&cy>m&&cy<view-m)return;
+  const vx=cx-view/2,vy=cy-view/2,sc=Math.min((view/2-m)/Math.abs(vx||1e-6),(view/2-m)/Math.abs(vy||1e-6)),ex=view/2+vx*sc,ey=view/2+vy*sc,a=Math.atan2(vy,vx),pl=.85+.15*Math.sin(tm*6);
+  g.save();g.translate(ex,ey);g.fillStyle='rgba(27,18,13,.85)';g.beginPath();g.arc(0,0,26,0,7);g.fill();
+  g.strokeStyle=G.col;g.lineWidth=2;g.stroke();g.rotate(a);g.scale(pl,pl);g.fillStyle=G.col;
+  g.beginPath();g.moveTo(16,0);g.lineTo(-8,-12);g.lineTo(-3,0);g.lineTo(-8,12);g.closePath();g.fill();g.restore();
+  label(G.name,ex,ey+(ey>view/2?-36:36),G.col);
+}
+function drawItem(t,x,y,s){
+  g.save();g.translate(x,y);
+  if(t==='yam'){g.strokeStyle='#5d7a2e';g.lineWidth=1.5;g.beginPath();g.moveTo(0,s*.05);g.lineTo(0,s*.3);g.stroke();g.fillStyle='#f2d14b';for(let i=0;i<8;i++){const a=i*.785;g.beginPath();g.ellipse(Math.cos(a)*s*.13,Math.sin(a)*s*.13-s*.05,s*.07,s*.035,a,0,7);g.fill()}g.fillStyle='#e58a2a';g.beginPath();g.arc(0,-s*.05,s*.06,0,7);g.fill()}
+  else if(t==='carrot'){g.fillStyle='#e2742f';g.beginPath();g.moveTo(-s*.1,-s*.12);g.lineTo(s*.1,-s*.12);g.lineTo(s*.01,s*.3);g.closePath();g.fill();g.strokeStyle='#4f8a2e';g.lineWidth=2;for(const a of [-.3,0,.3]){g.beginPath();g.moveTo(0,-s*.12);g.lineTo(Math.sin(a)*s*.2,-s*.32);g.stroke()}}
+  else if(t==='poo'){g.fillStyle='#5b3a22';g.fillRect(-s*.14,-s*.14,s*.28,s*.28);g.fillStyle='#7a5434';g.fillRect(-s*.1,-s*.1,s*.1,s*.08)}
+  else if(t==='beer'){g.fillStyle='#cfd6da';g.fillRect(-s*.1,-s*.2,s*.2,s*.38);g.fillStyle='#c0392b';g.fillRect(-s*.1,-s*.06,s*.2,s*.12);g.fillStyle='#8e989d';g.fillRect(-s*.1,-s*.22,s*.2,s*.04)}
+  else if(t==='shortbread'){g.fillStyle='#e8c98a';g.fillRect(-s*.18,-s*.1,s*.36,s*.2);g.fillStyle='#b48a4d';for(let i=0;i<3;i++){g.beginPath();g.arc(-s*.09+i*s*.09,0,s*.02,0,7);g.fill()}}
+  else if(t==='goat'){g.rotate(-.6);g.fillStyle='#7a4a24';g.fillRect(-s*.32,-s*.05,s*.64,s*.1);g.fillStyle='#e8883a';for(const p of [-.2,0,.2])g.fillRect(s*p,-s*.05,s*.05,s*.1);g.rotate(.6);g.fillStyle='#f4efe2';g.font=`700 ${s*.28}px system-ui`;g.textAlign='center';g.fillText('♪',s*.2,-s*.15)}
+  else if(t==='corks'){g.fillStyle='#d9b27a';for(let i=0;i<3;i++)g.fillRect(-s*.18+i*s*.13,-s*.1+(i%2)*s*.06,s*.08,s*.14)}
+  g.restore();
+}
+const HALO={carrot:'#ff8a2a',yam:'#ffe14a',goat:'#d8c7ff',corks:'#f2c230',beer:'#e8f4ff',shortbread:'#ffe0a0',poo:'#c89060'};
+function drawPickup(t,x,y){
+  const cx=(x+.5)*T,cy=(y+.5)*T,food=t==='carrot'||t==='yam',ph=hash(x,y)%100/16;
+  const pulse=.5+.5*Math.sin(tm*4+ph),bob=Math.sin(tm*3+ph)*T*.05;
+  const r=T*(food?.46:.38);
+  g.fillStyle='rgba(20,12,8,.55)';g.beginPath();g.arc(cx,cy,r,0,7);g.fill();
+  g.strokeStyle=HALO[t]||'#f3e5ca';g.lineWidth=food?2.5:1.6;g.globalAlpha=food?.55+.45*pulse:.7;
+  g.beginPath();g.arc(cx,cy,r-1+(food?pulse*T*.06:0),0,7);g.stroke();g.globalAlpha=1;
+  drawItem(t,cx,cy+bob,T*(food?1.35:1.1));
+}
+function drawOrderHud(view){
+  if(!S.need||!(S.need.carrot||S.need.yam))return;
+  const rows=[['carrot','Bush Carrots'],['yam','Yam Daisies']].filter(([k])=>S.need[k]>0);
+  const fs=Math.max(12,Math.min(16,view/34)),lh=fs*1.6,pad=fs*.6;
+  const ready=rows.every(([k])=>S.got[k]+S.inv[k]>=S.need[k]),done=rows.every(([k])=>S.got[k]>=S.need[k]);
+  g.font=`700 ${fs}px Atkinson Hyperlegible, system-ui, sans-serif`;g.textBaseline='middle';g.textAlign='left';
+  const title=S.training?'Colin needs':`Colin's order · ${S.covers} covers`;
+  const foot=done?'Order complete':ready?'Pouch ready: hop to Colin!':'';
+  const lines=rows.map(([k,n])=>{const extra=S.inv[k]&&S.got[k]<S.need[k]?`  +${S.inv[k]} in pouch`:'';return[k,`${S.got[k]}/${S.need[k]}  ${n}`,extra]});
+  let w=g.measureText(title).width;for(const [,a,b] of lines)w=Math.max(w,g.measureText(a+b).width+fs*1.6);if(foot)w=Math.max(w,g.measureText(foot).width);
+  w+=pad*2;const h=pad*2+lh*(1+lines.length+(foot?1:0));
+  const x0=8,y0=view-h-8;
+  g.fillStyle='rgba(27,18,13,.88)';g.strokeStyle=ready?'#a9cb5e':'#f2c230';g.lineWidth=2;
+  g.beginPath();if(g.roundRect)g.roundRect(x0,y0,w,h,6);else g.rect(x0,y0,w,h);g.fill();g.stroke();
+  let y=y0+pad+lh/2;
+  g.fillStyle='#e8883a';g.fillText(title,x0+pad,y);
+  for(const [k,a,b] of lines){y+=lh;const ok=S.got[k]>=S.need[k];
+    g.fillStyle=COL[k];g.beginPath();g.arc(x0+pad+fs*.45,y,fs*.38,0,7);g.fill();
+    g.fillStyle=ok?'#a9cb5e':'#f3e5ca';g.fillText((ok?'✓ ':'')+a,x0+pad+fs*1.3,y);
+    if(b){const aw=g.measureText((ok?'✓ ':'')+a).width;g.fillStyle='#c3a487';g.fillText(b,x0+pad+fs*1.3+aw,y)}}
+  if(foot){y+=lh;g.fillStyle=done?'#a9cb5e':(Math.sin(tm*6)>0?'#a9cb5e':'#f2c230');g.fillText(foot,x0+pad,y)}
+}
+const mapCv=document.getElementById('mapCv'),mg=mapCv.getContext('2d');
+function drawMinimap(){
+  const g=mg,m=mapCv.width,x0=0,y0=0,u=m/N;
+  g.fillStyle='#1b120d';g.fillRect(0,0,m,m);
+  g.imageSmoothingEnabled=false;g.drawImage(mini,0,0,m,m);g.imageSmoothingEnabled=true;
+  const dot=(x,y,c,r)=>{g.fillStyle=c;g.beginPath();g.arc(x0+(x+.5)*u,y0+(y+.5)*u,r*1.4,0,7);g.fill()};
+  for(const [k2,t] of S.items){if(t!=='carrot'&&t!=='yam')continue;const [ix,iy]=k2.split(',').map(Number);dot(ix,iy,COL[t],1.8)}
+  for(const z of S.zones)dot(z.x,z.y,'#e8b26a',2.5);
+  for(const l of S.leps)dot(l.x,l.y,'#3fd05a',2);
+  for(const gt of S.goats)dot(gt.x,gt.y,'#ffffff',2);
+  dot(C,C,'#ffffff',3);
+  if(!S.pete.off){dot(S.pete.bbq.x,S.pete.bbq.y,'#f28c28',2.5);if(S.pete.state!=='away')dot(S.pete.x,S.pete.y,'#ff5a3a',3.5)}
+  if(S.goal)dot(S.goal[0],S.goal[1],'#f2c230',3);
+  dot(S.d.x,S.d.y,'#f2c230',3.5);
+  g.strokeStyle='#f3e5ca';g.lineWidth=1.5;g.strokeRect(x0+cam.x*u,y0+cam.y*u,VW*u,VW*u);
+}
+function draw(dt){
+  const view=VW*T;g.setTransform(dpr,0,0,dpr,0,0);
+  if(dirty)drawStatic();
+  const [tx,ty]=camTarget();const k=Math.min(1,dt*7);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k;
+  g.fillStyle='#2a3416';g.fillRect(0,0,view,view);
+  g.save();
+  if(S.shake>0)g.translate((Math.random()-.5)*8*S.shake,(Math.random()-.5)*8*S.shake);
+  g.translate(-cam.x*T,-cam.y*T);
+  g.drawImage(stat,0,0,N*T,N*T);
+  for(const z of S.zones){const x=z.x*T,y=z.y*T;g.strokeStyle='#e8b26a';g.lineWidth=2;g.strokeRect(x+T*.12,y+T*.12,T*.76,T*.76);g.beginPath();g.moveTo(x+T*.12,y+T*.12);g.lineTo(x+T*.88,y+T*.88);g.moveTo(x+T*.88,y+T*.12);g.lineTo(x+T*.12,y+T*.88);g.stroke();
+    const n=Object.values(z.stash).reduce((a,b)=>a+b,0);if(n)label(String(n),x+T*.82,y+T*.2,'#f2c230')}
+  if(S.goal){const [x,y]=ctr(S.goal),r=T*(.35+.08*Math.sin(tm*5));g.strokeStyle='#f2c230';g.lineWidth=3;g.beginPath();g.arc(x,y,r,0,7);g.stroke();g.fillStyle='#f2c230';g.fillRect(x-1,y-T*.35,2,T*.5);g.beginPath();g.moveTo(x+1,y-T*.35);g.lineTo(x+T*.25,y-T*.27);g.lineTo(x+1,y-T*.19);g.fill()}
+  {const [x,y]=ctr([C,C]);g.fillStyle='#f6f1e4';for(const [a,b,r] of [[-.15,-.12,.14],[0,-.2,.16],[.15,-.12,.14]]){g.beginPath();g.arc(x+a*T,y+b*T,r*T,0,7);g.fill()}g.fillRect(x-T*.2,y-T*.08,T*.4,T*.22);g.fillStyle='#c9bfa8';g.fillRect(x-T*.2,y+T*.08,T*.4,T*.04)}
+  for(const k2 of S.poo){const [x,y]=k2.split(',').map(Number);drawItem('poo',(x+.5)*T,(y+.5)*T,T)}
+  for(const [k2,t] of S.items){const [x,y]=k2.split(',').map(Number);drawPickup(t,x,y)}
+  for(const c of S.crocs){if(!c.seen)continue;const [x,y]=ctr([c.x,c.y]);drawCroc(x,y,T,open(c.x,c.y-1),c)}
+  for(const o of S.dolls){const [x,y]=ctr(pos(o));g.save();if(o.state==='bitten')g.globalAlpha=.55;drawRoo(x,y,T*.6,o.dir,{col:'#dcae78',dark:'#a5733e'});g.restore();if(o.state==='bitten'){ring(x,y,T*.36,o.timer/30,'#ef5d44');label(Math.ceil(o.timer)+'s',x,y-T*.48)}}
+  for(const gt of S.goats){const [x,y]=ctr(pos(gt));drawGoat(x,y,T,gt.dir,gt.state==='med'?gt.med/2:0)}
+  for(const l of S.leps){const [x,y]=ctr(pos(l));drawLep(x,y,T)}
+  const c=S.ch;if(c.state!=='heaven'){const [x,y]=ctr(pos(c));drawChilders(x,y,T);if(c.state==='scout')ring(x,y,T*.32,c.timer/12,'#69c3f0')}
+  {const d=S.d,[x,y]=ctr(pos(d));g.save();if(d.invuln>0&&(tm*10|0)%2)g.globalAlpha=.4;drawRoo(x,y,T,d.face,{hat:true,corks:S.corks,leaflet:d.stun>0});g.restore();
+    if(d.stun>0)label(d.stun.toFixed(1)+'s',x,y-T*.6,'#f2c230');
+    const fx=x+DL[d.face][0]*T*.48,fy=y+DL[d.face][1]*T*.48;g.fillStyle='#f2c230';g.beginPath();g.arc(fx,fy,T*.06,0,7);g.fill()}
+  if(S.boom&&S.boom.pos){const [x,y]=ctr(S.boom.pos);g.save();g.translate(x,y);g.rotate(tm*18);g.strokeStyle='#8a5328';g.lineWidth=T*.12;g.lineCap='round';g.beginPath();g.moveTo(-T*.25,-T*.12);g.lineTo(0,T*.1);g.lineTo(T*.25,-T*.12);g.stroke();g.restore()}
+  if(!S.pete.off){const b=S.pete.bbq;drawBBQ((b.x+.5)*T,(b.y+.5)*T,T);const n=S.bbqLoot.carrot+S.bbqLoot.yam;label(n?`Pete's barbie: ${n}`:"Pete's barbie",(b.x+.5)*T,(b.y+.5)*T-T*.85,'#f28c28')}
+  if(!S.pete.off&&S.pete.state!=='away'){const x=(S.pete.x+.5)*T,y=(S.pete.y+.5)*T;drawPete(x,y,T*1.3,S.pete.face);const foot=S.pete.state==='walkIn'||S.pete.state==='walkOut';label(foot?'PETE (on foot)':'PETE',x,y-T*.85,'#f28c28');const lt=(S.pete.loot.carrot||0)+(S.pete.loot.yam||0);if(lt)label('+'+lt+' veg',x,y+T*.75,'#ffb15a')}
+  const GA=activeGuide();if(GA)drawGuide(GA);
+  for(const b of S.drongos){const x=(b.x+.5)*T,y=(b.y+.5)*T-T*.25;drawDrongo(x,y,T,b.face,b.ph)}
+  for(const p of S.parts){const a=Math.max(0,p.life/p.max);g.globalAlpha=a;g.fillStyle=p.c;const [x,y]=ctr([p.x,p.y]);if(p.kind==='leaf')g.fillRect(x-T*.08,y-T*.1,T*.16,T*.2);else{g.beginPath();g.arc(x,y,p.r*T*(p.kind==='foam'?2:1.4),0,7);g.fill()}}
+  g.globalAlpha=1;
+  for(const f of S.floats){const [x,y]=ctr([f.x,f.y-(1.3-f.life)*.8]);g.globalAlpha=Math.min(1,f.life*2);label(f.text,x,y-T*.4,'#fff4d6')}
+  g.globalAlpha=1;g.restore();
+  if(GA&&GA.end)drawCompass(view,GA);
+  drawMinimap();
+  drawOrderHud(view);
+}
+
+/* ---------- training ---------- */
+const respawnLep=()=>{if(!S.leps.length&&!S.lepQueue.length)S.lepQueue.push(S.clock+3)};
+const respawnDro=()=>{if(!S.drongos.length&&!S.droQueue.length)S.droQueue.push(S.clock+3)};
+const tick=v=>v?'✓':'○';
+const LESSONS=[
+  {title:'Meet Duggen',
+   intro:'<p>Duggen is a kangaroo with a big pouch and a bigger heart. Hop with the arrow keys or WASD. On a phone, use the pad or swipe across the maze.</p><p>Tall gold grass slows him down. Grass he has hopped through is a bit quicker, and green grass a goat has eaten is quickest.</p>',
+   task:'Hop to the flashing yellow flag.',
+   setup(){const c=tilesAt(9,14);S.goal=c.length?c[0]:tilesAt(4,40)[0]},
+   check:()=>S.goal&&S.d.x===S.goal[0]&&S.d.y===S.goal[1]&&S.d.t>=1,
+   done:'Duggen knows his way around. Next, meet the man he works for.'},
+  {title:'Chef Colin\'s order',
+   intro:'<p>Chef Colin runs a bush kitchen at the centre of the maze, under the chef\'s hat. Each round he books covers and orders Bush Carrots and Yam Daisies to feed them.</p><p>Duggen\'s pouch holds 20. A Yam Daisy weighs 1 and a Bush Carrot weighs 2, so watch the weight bar in the pouch panel.</p>',
+   task:'Collect 1 Bush Carrot and 2 Yam Daisies, then hop onto Colin\'s chef\'s hat.',
+   need:{carrot:1,yam:2},
+   setup(){placeNear('carrot',3,7);placeNear('yam',2,6);placeNear('yam',4,8)},
+   status:()=>`Delivered: Bush Carrot ${S.got.carrot}/1, Yam Daisies ${S.got.yam}/2.`,
+   check:()=>S.got.carrot>=1&&S.got.yam>=2,
+   done:'Colin is happy. In a real round the order is bigger and the clock is running.'},
+  {title:'Didgeridoo goats',
+   intro:'<p>Play the didgeridoo (Space) and a goat appears ahead of Duggen. It grazes the grass short and green as it walks, turns round at dead ends, and heads for the nearest exit or the centre.</p><p>When it gets there it meditates and becomes one with the ether. Every two goats that vanish reincarnate as a new goat.</p>',
+   task:'Call a goat and let it reach an exit or the centre.',
+   charges:3,
+   tick(){if(!S.charges&&!S.goats.length)S.charges=2},
+   check:()=>(S.stats.med||0)>=1,
+   done:'A goat walking ahead of you clears a fast green path. Useful when you need to make a run for it.'},
+  {title:'Topper\'s leprechauns',
+   intro:'<p>Topper wears a tin-foil hat. He spent his life savings on tiny exploding leprechauns he found on whocaniblamethisweek.com. They chase Duggen and blow up on contact.</p><p>Echidna poo (6) blocks them. Drop it in a corridor behind Duggen. Stand on it and press E to pick it back up. It weighs 2.</p>',
+   task:'Stay clear of the leprechauns for 30 seconds in a row. Drop echidna poo to block them.',
+   inv:{poo:3},level:{leps:[3]},
+   tick(dt){respawnLep();if(S.clock>3)S.stats.safeT=(S.stats.safeT||0)+dt},
+   status:()=>S.clock<3?'A leprechaun is on its way…':`Stay safe: ${Math.max(0,Math.ceil(30-(S.stats.safeT||0)))} seconds to go. A hit restarts the count.`,
+   check:()=>(S.stats.safeT||0)>=30,
+   done:'Poo in a corridor buys you time. Leprechauns go round the long way.'},
+  {title:'Goat meets leprechaun',
+   intro:'<p>When a goat and a leprechaun meet, both vanish in a bang that blows a new gap through the hedges. That can open a shortcut.</p>',
+   task:'Call goats into a leprechaun\'s path until one blows a gap in the maze.',
+   charges:4,level:{leps:[2]},
+   tick(){respawnLep();if(!S.charges&&!S.goats.length)S.charges=3},
+   check:()=>(S.stats.gaps||0)>=1,
+   done:'New gaps stay open for the rest of the round, for everyone.'},
+  {title:'Spangled Drongos',
+   intro:'<p>Truck Stop Pete\'s Spangled Drongos fly straight over the hedges and drop copies of <i>Be Responsible and Kind</i> on Duggen, who stops to read every word.</p><p>The corks on Duggen\'s steel Akubra swat one drongo away, once. A beer can (4) froths up and knocks every drongo within 4 squares out of the sky. A can weighs 3.</p>',
+   task:'Knock a drongo out of the sky with a beer can.',
+   inv:{beer:2},level:{dros:[3]},
+   tick(){respawnDro();if(!S.inv.beer)S.inv.beer=2},
+   check:()=>(S.stats.beerKO||0)>=1,
+   done:'Wait until the drongo is close, then crack the can.'},
+  {title:'The boomerang',
+   intro:'<p>The boomerang (5) flies up to three squares in the direction Duggen faces, rounds a corner if there is one, flies three more, then comes back. Anything it passes in the air gets knocked down.</p>',
+   task:'Hit a drongo with the boomerang.',
+   corks:false,level:{dros:[3]},
+   tick(){respawnDro()},
+   check:()=>(S.stats.boomKO||0)>=1,
+   done:'The boomerang never runs out, but it is only good for drongos.'},
+  {title:'Childers',
+   intro:'<p>Childers is a naked mole rat in an old leather crash helmet and goggles. He follows Duggen everywhere.</p><p>Press 3 and he walks five squares ahead for 12 seconds. If he meets a leprechaun or a croc he goes to mole rat heaven, then comes back 10 seconds later, starting from the centre.</p>',
+   task:'Send Childers ahead and let him finish his walk, or lose him to a leprechaun.',
+   level:{leps:[8]},
+   status:()=>S.ch.state==='scout'?`Childers is scouting: ${Math.ceil(S.ch.timer)} seconds left.`:'Press 3 to send Childers ahead.',
+   check:()=>(S.stats.scoutEnd||0)+(S.stats.heaven||0)>=1,
+   done:'Send Childers ahead into corridors you are not sure about.'},
+  {title:'Salties',
+   intro:'<p>Saltwater crocodiles lurk at fords, the blue squares, and you cannot see them until they bite. Send a mini Duggen doll ahead (2) to test a ford. The doll gets bitten, not eaten, and is out of action for 30 seconds before you can pick it up.</p><p>A shortbread calms a croc for 10 seconds. One is used automatically when Duggen steps into a croc\'s ford.</p>',
+   task:'Find a saltie with a doll, then cross a croc\'s ford using shortbread.',
+   inv:{doll:4,shortbread:3},level:{fords:3,crocs:3},
+   status:()=>`${tick(S.stats.dollBitten)} A doll finds a croc   ${tick(S.stats.fed)} Duggen feeds a croc shortbread`,
+   check:()=>S.stats.dollBitten&&S.stats.fed,
+   done:'Every fed croc shows a 10 second timer. Get across before it runs out.'},
+  {title:'Drop zones and Truck Stop Pete',
+   intro:'<p>Crates are drop zones. Stand on one and use Leave and Take in the pouch panel to store things you cannot carry.</p><p>Truck Stop Pete runs a haulage firm and a roadside barbie, and he wants kangaroo on it. He walks straight through hedges and can never be caught. He raids any stocked drop zone, or pinches from Duggen\'s pouch. He will not go near Colin\'s kitchen.</p>',
+   task:'Leave an item at a drop zone, take it back, then hide in Colin\'s kitchen while Pete is in the maze.',
+   inv:{yam:4},level:{zones:true,pete:20},
+   status:()=>`${tick(S.stats.stashed)} Leave an item   ${tick(S.stats.taken)} Take it back   ${tick(S.pete.state!=='away'&&inClearing(S.d.x,S.d.y))} Hide in the kitchen while Pete prowls${S.pete.state==='away'?` (Pete arrives in ${Math.ceil(S.pete.timer)}s)`:''}`,
+   check:()=>S.stats.stashed&&S.stats.taken&&S.pete.state!=='away'&&inClearing(S.d.x,S.d.y),
+   done:'You are ready for a full service. Good luck, Duggen.'}
+];
+function startLesson(i){
+  if(i>=LESSONS.length){S=freshState();buildLevel({n:17,fords:0,crocs:0});
+    showCard('<h3>Training complete</h3><p>Duggen knows every trick in the pouch. Chef Colin is ready for a proper service.</p>',[['Play the real thing',()=>{newGame();showCard(orderHTML(),[['Hop to it',resume]])}],['Back to menu',showMenu]]);return}
+  const L=LESSONS[i];
+  S=freshState();S.training=true;S.lesson=i;S.lessonDone=false;S.lives=3;
+  S.inv=Object.assign({yam:0,carrot:0,poo:0,beer:0,doll:0,shortbread:0},L.inv||{});
+  S.charges=L.charges||0;S.corks=L.corks!==undefined?L.corks:true;
+  buildLevel(Object.assign({n:17,loops:.18,fords:0,crocs:0,zones:false,items:{},leps:[],dros:[],pete:null},L.level||{}));
+  S.need=L.need||{carrot:0,yam:0};S.got={carrot:0,yam:0};S.covers=0;
+  if(L.setup)L.setup();
+  dirty=true;
+  showCard(`<p class="eyebrow">Outback school · Lesson ${i+1} of ${LESSONS.length}</p><h3>${L.title}</h3>${L.intro}<p class="taskline"><b>Your task:</b> ${L.task}</p>`,
+    [['Start',resume],['Skip lesson',()=>startLesson(i+1)],['Leave training',showMenu]]);
+}
+function showTraining(){
+  showCard(`<h3>Outback school</h3><p>Ten short lessons introduce the characters, the controls and the kit. Each one sets a small task in a little maze. Nothing costs a hop here, and you can skip any lesson or leave whenever you like.</p><p class="muted">Or jump straight to a lesson:</p><div class="lessons">${LESSONS.map((l,i)=>`<button type="button" data-lesson="${i}"><b>${i+1}</b>${l.title}</button>`).join('')}</div>`,
+    [['Start lesson 1',()=>{window.duggenBump&&duggenBump({school:1});startLesson(0)}],['Back to menu',showMenu]]);
+}
+
+/* ---------- HUD ---------- */
+const fmt=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+function hud(){
+  const tr=S.training;
+  $('hRoundL').textContent=tr?'Lesson':'Round';$('hRound').textContent=tr?S.lesson+1:S.round;
+  $('hLives').textContent=tr?'∞':('●'.repeat(Math.max(0,S.lives))||'0');
+  $('hClock').textContent=tr?'—':fmt(S.service);$('hScore').textContent=S.score;
+  $('task').hidden=!tr||!$('card').hidden;
+  if(tr){const L=LESSONS[S.lesson];$('taskTitle').textContent=`Lesson ${S.lesson+1}: ${L.title}`;$('taskText').textContent=L.status?L.status():L.task}
+  const tl=[];
+  if(S.d.stun>0)tl.push(['Duggen reading the leaflet',S.d.stun]);
+  if(S.ch.state==='scout')tl.push(['Childers scouting ahead',S.ch.timer]);
+  if(S.ch.state==='heaven')tl.push(['Childers in mole rat heaven',S.ch.timer]);
+  for(const cr of S.crocs)if(cr.calm>0)tl.push(['Fed saltie stays calm',cr.calm]);
+  for(const o of S.dolls)if(o.state==='bitten')tl.push(['Bitten doll recovers',o.timer]);
+  if(!S.pete.off&&S.pete.state==='away')tl.push(['Truck Stop Pete returns',S.pete.timer]);
+  $('timers').innerHTML=tl.length?tl.map(([a,b])=>`<li><span>${a}</span><b>${b.toFixed(1)}s</b></li>`).join(''):'<li class="muted">Nothing ticking right now.</li>';
+  const z=zoneAt(S.d.x,S.d.y);
+  const sig=JSON.stringify([S.inv,S.got,S.charges,S.corks,!!S.boom,S.ch.state,z&&z.stash,S.log[0],S.leps.length,S.drongos.length,S.lepQueue.length,S.droQueue.length,S.paused,S.pete.state,S.bbqLoot,S.guide,tr,S.lesson]);
+  if(sig===S.hudSig)return;S.hudSig=sig;
+  $('covers').textContent=tr?'training':`${S.covers} covers`;
+  const ord=['carrot','yam'].filter(k=>S.need[k]>0);
+  $('order').innerHTML=ord.length?ord.map(k=>`<div class="row"><span class="lbl"><i class="sw" style="background:${COL[k]}"></i>${PLURAL[k]}</span><span>${S.got[k]} / ${S.need[k]} <span class="muted">· ${S.inv[k]} in pouch</span></span></div><div class="meter"><i style="width:${100*S.got[k]/S.need[k]}%"></i></div>`).join('')+'<p class="muted" style="margin:4px 0 0">Hop onto Colin\'s chef\'s hat in the centre to deliver.</p>':'<p class="muted" style="margin:0">No order in this lesson.</p>';
+  const w=weight();$('wt').textContent=`${w} / ${CAP}`;
+  $('wbar').innerHTML=ORDER.filter(k=>S.inv[k]).map(k=>`<i style="width:${100*S.inv[k]*W[k]/CAP}%;background:${COL[k]}" title="${NAMES[k]}"></i>`).join('');
+  $('pouch').innerHTML=ORDER.map(k=>`<div class="row"><span class="lbl"><i class="sw" style="background:${COL[k]}"></i>${PLURAL[k]} <span class="muted">×${W[k]}</span></span><span>${S.inv[k]}${z?` <button class="mini" type="button" data-leave="${k}" ${S.inv[k]?'':'disabled'}>Leave</button>`:''}</span></div>`).join('');
+  $('zoneSec').hidden=!z;
+  if(z){const ks=ORDER.filter(k=>z.stash[k]);$('zone').innerHTML=ks.length?ks.map(k=>`<div class="row"><span class="lbl"><i class="sw" style="background:${COL[k]}"></i>${PLURAL[k]}</span><span>${z.stash[k]} <button class="mini" type="button" data-take="${k}" ${w+W[k]>CAP?'disabled':''}>Take</button></span></div>`).join(''):'<p class="muted" style="margin:0">Empty. Use Leave in the pouch to stash items here.</p>'}
+  const chs={follow:'Following Duggen',scout:'Scouting ahead',heaven:'In mole rat heaven',return:'Heading back'}[S.ch.state];
+  const rows=[
+    ['Steel Akubra',S.corks?'Corks on, blocks one drongo':'Ordinary hat'],
+    ['Boomerang',S.boom?'In the air':'In hand'],
+    ['Didgeridoo goats',S.charges],
+    ['Childers',chs]];
+  if(S.lepTotal||S.leps.length)rows.push(['Topper\'s leprechauns',`${S.leps.length+S.lepQueue.length} about`]);
+  if(S.droTotal||S.drongos.length)rows.push(['Pete\'s drongos',`${S.drongos.length+S.droQueue.length} about`]);
+  if(!S.pete.off){rows.push(['Truck Stop Pete',{prowl:'Prowling through hedges',toFord:'Heading for a ford',walkIn:'Walking in to the larder',walkOut:'Walking out with loot',toSide:'Taking loot to his barbie',away:'At his barbie'}[S.pete.state]]);rows.push(['On Pete\'s barbie',`${S.bbqLoot.carrot} carrots · ${S.bbqLoot.yam} daisies`])}
+  $('kit').innerHTML=rows.map(([a,b])=>`<div class="row"><span>${a}</span><span class="muted">${b}</span></div>`).join('');
+  $('log').innerHTML=S.log.map(t=>`<li>${t}</li>`).join('');
+  $('nGoat').textContent=S.charges;$('nDoll').textContent=S.inv.doll;$('nBeer').textContent=S.inv.beer;$('nPoo').textContent=S.inv.poo;
+  $('nChild').textContent=S.ch.state==='follow'?'✓':'…';$('nBoom').textContent=S.boom?'…':'✓';
+  $('aGoat').disabled=!S.charges;$('aDoll').disabled=!S.inv.doll;$('aBeer').disabled=!S.inv.beer;$('aPoo').disabled=!S.inv.poo;
+  $('aChild').disabled=S.ch.state!=='follow';$('aBoom').disabled=!!S.boom;
+  for(const [id,k] of [['gCarrot','carrot'],['gYam','yam'],['gExit','exit']])$(id).setAttribute('aria-pressed',String(S.guide===k));
+}
+document.querySelector('.notes').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||!S||S.paused)return;const z=zoneAt(S.d.x,S.d.y);if(!z)return;
+  if(b.dataset.leave){const k=b.dataset.leave;if(S.inv[k]>0){S.inv[k]--;z.stash[k]=(z.stash[k]||0)+1;st('stashed');sfx('poo')}}
+  if(b.dataset.take){const k=b.dataset.take;if(z.stash[k]>0&&weight()+W[k]<=CAP){z.stash[k]--;S.inv[k]++;st('taken');sfx('pick')}}
+  S.hudSig='';
+});
+
+/* ---------- cards & menus ---------- */
+const card=$('card'),cardBody=$('cardBody'),cardBtns=$('cardBtns');
+let cardKind='';
+function showCard(html,buttons,kind){
+  cardKind=kind||'';
+  cardBody.innerHTML=html;cardBtns.innerHTML='';cardBody.scrollTop=0;
+  buttons.forEach(([text,fn],i)=>{const b=document.createElement('button');b.type='button';b.className=i===0?'go':'go alt';b.textContent=text;
+    b.addEventListener('click',()=>{audio();sfx('click');card.hidden=true;cardKind='';fn();if(S)S.hudSig='';syncPause()});cardBtns.appendChild(b)});
+  const hint=document.createElement('span');hint.className='keyhint';hint.textContent=`Enter: ${buttons[0][0]}`;cardBtns.appendChild(hint);
+  card.hidden=false;if(S)S.paused=true;$('task').hidden=true;syncPause();
+  setTimeout(()=>{const f=cardBtns.querySelector('button');if(f)try{f.focus({preventScroll:true})}catch(_){}},30);
+}
+function syncPause(){const b=$('pauseBtn');const p=!card.hidden&&cardKind==='pause';b.textContent=p?'Resume':'Pause';b.disabled=!card.hidden&&!p}
+cardBody.addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(!b)return;audio();sfx('click');card.hidden=true;cardKind='';startLesson(+b.dataset.lesson)});
+function introHTML(){return `<h3>Duggen's Outback Maze</h3>
+<p>Duggen the kangaroo forages a big grassy maze for Bush Carrots and Yam Daisies so Chef Colin can feed his diners. Truck Stop Pete wants kangaroo on his roadside barbie. He sends Spangled Drongos after Duggen while he himself walks through hedges to raid Duggen's supplies, and his mate Topper sets loose exploding leprechauns.</p>
+<p class="muted">New here? Outback school teaches the characters, controls and kit in ten short lessons. Every lesson can be skipped.</p>`}
+function orderHTML(){return `<h3>Round ${S.round}: Chef Colin's order</h3>
+<p class="quote">“${S.covers} covers tonight, Duggen. I need <b>${S.need.carrot} Bush Carrots</b> and <b>${S.need.yam} Yam Daisies</b>.”</p>
+<p class="threat">Topper has <b>${S.lepTotal}</b> exploding leprechauns. Truck Stop Pete has <b>${S.droTotal}</b> Spangled Drongo${S.droTotal>1?'s':''}, and he is coming himself, straight through the hedges, to raid drop zones and pinch from Duggen's pouch. Somewhere at the fords, ${S.crocs.length} saltie${S.crocs.length>1?'s are':' is'} waiting.</p>
+<p class="muted">Service is in ${fmt(S.service)}. The minimap in the corner shows Colin, the drop zones and Pete.</p>`}
+function helpHTML(){return `<h3>How to play</h3><ul>
+<li><b>Move</b>: arrows or WASD. On a phone, the pad or a swipe on the maze. <b>Pause</b>: the Pause button, P or Esc. <b>M</b> toggles sound. <b>H</b> turns Chef Colin's hints on or off.</li>
+<li><b>Deliver</b>: collect Bush Carrots and Yam Daisies and hop onto Colin's chef's hat in the centre.</li>
+<li><b>Goats</b> (Space): graze a fast green path and head for the nearest exit or the centre. Every two that vanish reincarnate. A goat that meets a leprechaun blows a new gap in the maze.</li>
+<li><b>Echidna poo</b> (6): leprechauns cannot cross it. E picks it back up.</li>
+<li><b>Beer can</b> (4): froth knocks drongos within 4 squares out of the sky. <b>Boomerang</b> (5): three squares, round a corner, three more, and back.</li>
+<li><b>Steel Akubra</b>: corks stop one drongo. Spare corks are hidden in the maze.</li>
+<li><b>Childers</b> (3): walks 5 squares ahead for 12 seconds. <b>Dolls</b> (2): test fords for salties. <b>Shortbread</b>: calms a croc for 10 seconds.</li>
+<li><b>Truck Stop Pete</b>: walks through hedges and can't be caught, but not into Colin's kitchen. He raids stocked crates and pinches from the pouch. To raid Colin's larder he must go to a ford and walk in along the paths, then take half of each veg and walk back out. Echidna poo blocks him on foot. Stolen veg goes on his mobile barbie at the edge of the maze before he comes back in.</li>
+<li><b>Guide buttons</b>: Find carrot (C), Find daisy (Y) and Find exit (X) show arrows to the nearest one. Carrot and daisy guides move on to the next after each pick-up, and switch off at an exit or when there are none left to collect. Press again to turn off.</li>
+<li><b>White arrows</b> appear when the pouch is full or holds the whole order, pointing the way to Colin's kitchen.</li></ul>`}
+function showMenu(){
+  if(!S||S.training)newGame();
+  showCard(introHTML(),[['Play',()=>{window.duggenBump&&duggenBump({plays:1});newGame();showCard(orderHTML(),[['Hop to it',resume]])}],['Outback school',showTraining],['How to play',()=>showCard(helpHTML(),[['Back',showMenu]])]]);
+}
+function pauseGame(){
+  if(!S||!card.hidden)return;
+  const btns=[['Resume',resume]];
+  if(S.training){const i=S.lesson;btns.push(['Skip lesson',()=>startLesson(i+1)],['Leave training',showMenu])}else btns.push(['Quit to menu',showMenu]);
+  showCard('<h3>Paused</h3><p>Duggen is having a breather under a coolabah tree.</p><p class="muted">Press Space, Enter, P or Esc, or the Resume button, to carry on.</p>',btns,'pause');
+}
+function resumeFromPause(){if(cardKind!=='pause')return;card.hidden=true;cardKind='';resume();syncPause()}
+$('pauseBtn').addEventListener('click',()=>{audio();if(!card.hidden&&cardKind==='pause')resumeFromPause();else pauseGame();$('pauseBtn').blur()});
+$('helpBtn').addEventListener('click',()=>{if(!S||!card.hidden)return;showCard(helpHTML(),[['Back to the maze',resume]])});
+$('hintBtn').addEventListener('click',()=>{audio();setHints(!hintsOn);sfx('click');$('hintBtn').blur()});setHints(hintsOn);
+$('muteBtn').addEventListener('click',()=>{audio();setMute(!muted);sfx('click')});setMute(muted);
+$('speed').addEventListener('change',e=>{SPEED=+e.target.value||1;try{localStorage.setItem('duggen-speed',e.target.value)}catch(_){}e.target.blur()});
+$('skipLesson').addEventListener('click',()=>{if(S&&S.training)startLesson(S.lesson+1)});
+$('leaveTrain').addEventListener('click',()=>showMenu());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGame()});
+
+/* ---------- input ---------- */
+const KD={ArrowUp:0,KeyW:0,ArrowRight:1,KeyD:1,ArrowDown:2,KeyS:2,ArrowLeft:3,KeyA:3};
+const KA={Space:'goat',Digit1:'goat',Digit2:'doll',Digit3:'childers',Digit4:'beer',Digit5:'boom',Digit6:'poo',KeyE:'pick'};
+const KG={KeyC:'carrot',KeyY:'yam',KeyX:'exit'};
+addEventListener('pointerdown',()=>audio(),true);
+addEventListener('keydown',e=>{
+  audio();
+  if(e.target.tagName==='SELECT')return;
+  if(e.code==='KeyM'){setMute(!muted);return}
+  if(e.code==='KeyH'){setHints(!hintsOn);return}
+  if(!card.hidden){
+    if(cardKind==='pause'&&['Space','Enter','KeyP','Escape'].includes(e.code)){e.preventDefault();sfx('click');resumeFromPause();return}
+    if(e.code==='Enter'||e.code==='Space'){if(e.target.tagName==='BUTTON'&&e.target.closest('#card'))return;e.preventDefault();const b=cardBtns.querySelector('button');if(b)b.click()}
+    return}
+  if(e.code in KD){e.preventDefault();if(!heldStack.includes(e.code))heldStack.push(e.code);held=KD[e.code];queued=held;return}
+  if(e.code in KA){e.preventDefault();if(!e.repeat)act(KA[e.code]);return}
+  if(e.code in KG){e.preventDefault();if(!e.repeat)setGuide(KG[e.code]);return}
+  if(e.code==='Escape'||e.code==='KeyP')pauseGame();
+});
+addEventListener('keyup',e=>{if(e.code in KD){heldStack=heldStack.filter(c=>c!==e.code);held=heldStack.length?KD[heldStack[heldStack.length-1]]:null}});
+addEventListener('blur',()=>{heldStack=[];held=null});
+$('acts').addEventListener('click',e=>{const g2=e.target.closest('[data-guide]');if(g2){setGuide(g2.dataset.guide);g2.blur();return}const b=e.target.closest('[data-action]');if(b)act(b.dataset.action)});
+for(const b of document.querySelectorAll('#dpad button')){
+  const d=+b.dataset.dir;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}held=d;queued=d});
+  const up=()=>{if(held===d)held=null};
+  b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);
+}
+let sw=null;
+cv.addEventListener('pointerdown',e=>{sw=[e.clientX,e.clientY]});
+cv.addEventListener('pointerup',e=>{if(!sw)return;const dx=e.clientX-sw[0],dy=e.clientY-sw[1];sw=null;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;queued=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0)});
+
+/* ---------- sizing & loop ---------- */
+function resize(){const w=$('boardWrap').clientWidth;dpr=Math.min(2,window.devicePixelRatio||1);VW=w<520?15:w<800?19:21;T=w/VW;cv.width=Math.round(w*dpr);cv.height=Math.round(w*dpr);dirty=true;if(S)snapCam()}
+new ResizeObserver(resize).observe($('boardWrap'));
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;tm+=dt;
+  if(S){if(!S.paused)update(dt*SPEED);draw(dt);hudT-=dt;if(hudT<=0){hudT=.12;hud()}}
+  requestAnimationFrame(frame);
+}
+newGame();resize();showMenu();requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+/* Visitor stats for twominute.games/duggen, in the same Firebase project as Aperture and Natural Wonders.
+   Only counts on the live site. Country comes from the device's time zone, so no outside service sees anyone's address. */
+(()=>{
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',GAME='duggen';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+const LIVE=location.protocol==='https:'&&/(^|\.)twominute\.games$|github\.io$/.test(location.hostname);
+const TEST=/\bClaude\//.test(navigator.userAgent);
+const TZ={'Europe/London':'GB','Europe/Belfast':'GB','Europe/Dublin':'IE','Europe/Paris':'FR','Europe/Berlin':'DE','Europe/Madrid':'ES','Europe/Rome':'IT','Europe/Amsterdam':'NL','Europe/Brussels':'BE','Europe/Lisbon':'PT','Europe/Zurich':'CH','Europe/Vienna':'AT','Europe/Stockholm':'SE','Europe/Oslo':'NO','Europe/Copenhagen':'DK','Europe/Helsinki':'FI','Europe/Warsaw':'PL','Europe/Athens':'GR','America/New_York':'US','America/Chicago':'US','America/Denver':'US','America/Phoenix':'US','America/Los_Angeles':'US','America/Toronto':'CA','America/Vancouver':'CA','Australia/Sydney':'AU','Australia/Melbourne':'AU','Australia/Brisbane':'AU','Australia/Perth':'AU','Australia/Adelaide':'AU','Australia/Hobart':'AU','Australia/Darwin':'AU','Pacific/Auckland':'NZ','Asia/Tokyo':'JP','Asia/Singapore':'SG','Asia/Kuala_Lumpur':'MY','Asia/Hong_Kong':'HK','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Dubai':'AE','Africa/Johannesburg':'ZA'};
+function country(){let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}
+  if(TZ[tz])return TZ[tz];const langs=navigator.languages||[navigator.language||''];for(const l of langs){const m=/-([A-Z]{2})$/i.exec(l||'');if(m)return m[1].toUpperCase()}return 'XX'}
+const uk=(o)=>{try{return new Intl.DateTimeFormat('en-GB',Object.assign({timeZone:'Europe/London'},o)).formatToParts(new Date())}catch(e){return null}};
+const MONTH=(()=>{const p=uk({year:'numeric',month:'2-digit'});if(!p){const d=new Date();return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')}return p.find(x=>x.type==='year').value+'-'+p.find(x=>x.type==='month').value})();
+const HOUR=(()=>{const p=uk({hour:'2-digit',hourCycle:'h23'});return p?p.find(x=>x.type==='hour').value:'00'})();
+const DEVICE=(matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820)?'phone':'computer';
+async function commit(id,fields){try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
+async function bump(f,m){await commit(GAME,f);await commit(GAME+'-'+MONTH,m||f)}
+let vip=false;try{if(/[?&]vip=jmc-camidge\b/.test(location.search))localStorage.setItem('ap-vip','1');vip=localStorage.getItem('ap-vip')==='1'}catch(e){}
+window.duggenBump=(f)=>{if(!LIVE)return;if(TEST){bump({tests:1});return}const o={...f};if(vip)for(const k of Object.keys(f))o['vip_'+k]=f[k];bump(o)};
+if(!LIVE)return;
+let counted=false,seen=true,seenM=true;
+try{counted=sessionStorage.getItem('dg-visit')==='1';seen=localStorage.getItem('dg-seen')==='1';seenM=localStorage.getItem('dg-seen-'+MONTH)==='1'}catch(e){}
+if(counted)return;
+try{sessionStorage.setItem('dg-visit','1');localStorage.setItem('dg-seen','1');localStorage.setItem('dg-seen-'+MONTH,'1')}catch(e){}
+if(TEST){bump({tests:1});return}
+const f={visits:1,['countries.'+country()]:1,['hours.h'+HOUR]:1,['device.'+DEVICE]:1};if(vip)f.vip=1;
+const m={...f};if(!seen)f.uniques=1;if(!seenM)m.uniques=1;bump(f,m);
+})();
+</script>
+</body>
+</html>
