@@ -87,6 +87,9 @@ td.share{width:34%;padding-left:12px}
 .dev{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
 .dev span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.dev b{font-family:var(--mono);font-weight:500;font-size:20px}
 .whengrid{display:grid;grid-template-columns:1.6fr 1fr;gap:22px}@media (max-width:700px){.whengrid{grid-template-columns:minmax(0,1fr)}}
+.dbar{display:grid;gap:3px;align-items:end;height:90px;margin-top:4px}
+.dbar i{display:block;background:var(--blue);border-radius:3px 3px 0 0;min-height:2px}.dbar i.z{background:var(--blue-wash)}.dbar i.t{background:#e2742f}.dbar i.f{background:transparent;border:1px dashed var(--line);border-bottom:0}
+.dlab{display:grid;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:4px}
 </style>
 </head>
 <body>
@@ -104,6 +107,7 @@ td.share{width:34%;padding-left:12px}
     <div class="h2row"><h2 id="nowTitle">This month so far</h2><small id="nowDays"></small></div>
     <div class="tiles" id="tiles"></div>
   </section>
+  <section class="card" id="apDay"></section>
 
   <section class="card">
     <div class="h2row"><h2>Month by month</h2><small id="yrNote"></small></div>
@@ -119,13 +123,14 @@ td.share{width:34%;padding-left:12px}
     <div class="h2row"><h2 id="nwNowTitle">This month so far</h2><small id="nwNowDays"></small></div>
     <div class="tiles" id="nwTiles"></div>
   </section>
+  <section class="card" id="nwDay"></section>
   <section class="card">
     <div class="h2row"><h2>Month by month</h2><small id="nwYrNote"></small></div>
     <table id="nwMonths" class="months"></table>
   </section>
   <section class="card" id="nwDetail"></section>
 
-  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Times and devices are recorded from 1 November 2026, so earlier visits don't appear in them.</p>
+  <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Each day starts fresh at midnight UK time and feeds into the month; daily numbers begin on 3 November 2026. Times and devices are recorded from 1 November 2026, so earlier visits don't appear in them.</p>
 </div>
 <script>
 (()=>{
@@ -160,16 +165,17 @@ async function loadAll(){
   const docs=[];let tok='';
   do{const r=await fetch(`${BASE}/stats?key=${K}&pageSize=300${tok?'&pageToken='+tok:''}`,{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     const j=await r.json();(j.documents||[]).forEach(d=>docs.push(d));tok=j.nextPageToken||''}while(tok);
-  const all={},months={};FAM.forEach(id=>all[id]=blank());
-  docs.forEach(d=>{const id=d.name.split('/').pop(),m=/^(objects|landmarks|wonders)(?:-(\d{4}-\d{2}))?$/.exec(id);if(!m)return;
-    if(!m[2])all[m[1]]=rec(d.fields);else{(months[m[2]]=months[m[2]]||{})[m[1]]=rec(d.fields)}});
+  const all={},months={},days={};FAM.forEach(id=>all[id]=blank());
+  docs.forEach(d=>{const id=d.name.split('/').pop(),m=/^(objects|landmarks|wonders)(?:-(\d{4}-\d{2})(?:-(\d{2}))?)?$/.exec(id);if(!m)return;
+    if(m[3]){(days[m[2]+'-'+m[3]]=days[m[2]+'-'+m[3]]||{})[m[1]]=rec(d.fields)}
+    else if(!m[2])all[m[1]]=rec(d.fields);else{(months[m[2]]=months[m[2]]||{})[m[1]]=rec(d.fields)}});
   // anything counted before monthly records began is the October 2026 launch month
   const launch={};FAM.forEach(id=>{launch[id]=add(add(blank(),all[id]),sumRecs(Object.values(months).map(x=>x[id]||blank())),-1);
     KEYS.forEach(k=>launch[id][k]=Math.max(0,launch[id][k]));Object.keys(MAPS).forEach(x=>Object.keys(launch[id][x]).forEach(k=>{if(launch[id][x][k]<=0)delete launch[id][x][k]}))});
   const list=Object.keys(months).sort().map(id=>({id,g:Object.fromEntries(FAM.map(f=>[f,months[id][f]||blank()]))}));
   const L={id:'2026-10',launch:true,g:launch};
   if(!list.find(x=>x.id==='2026-10'))list.unshift(L);
-  return{all,list};
+  return{all,list,days};
 }
 const both=(m,k)=>GAMES.reduce((s,g)=>s+(k==='ads'?adsOpened(m.g[g.id]):m.g[g.id][k]),0);
 
@@ -205,6 +211,21 @@ async function render(){
   const L=list.find(m=>m.launch);
   if(L)html+=`<tr class="gap"><td colspan="6">Before Year 1</td></tr>`+row(L,null);
   document.getElementById('months').innerHTML=html+'</tbody>';
+
+  // today and day by day (UK days; each day's numbers also feed the month above)
+  const dayId=nowId+'-'+String(t.d).padStart(2,'0'),yd=new Date(Date.UTC(t.y,t.m-1,t.d-1)),ydId=yd.toISOString().slice(0,10);
+  const dayRec=(id,fam)=>(state.days[id]&&state.days[id][fam])||blank();
+  const dayCard=(el,fams,label)=>{const g=(id,k)=>fams.reduce((a,f)=>a+(k==='ads'?adsOpened(dayRec(id,f)):dayRec(id,f)[k]),0);
+    const dates=[...Array(dim)].map((_,i)=>nowId+'-'+String(i+1).padStart(2,'0')),vals=dates.map(id=>g(id,'visits')),mx=Math.max(1,...vals);
+    const wd=new Date(Date.UTC(t.y,t.m-1,t.d)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
+    document.getElementById(el).innerHTML=`<div class="h2row"><h2>Today so far · ${wd}</h2><small>${label} · starts fresh at midnight UK time</small></div>
+    <div class="tiles">${[['Visits','visits'],['New players','uniques'],['Games played','games']].map(([l,k])=>`<div class="tile"><span>${l}</span><b>${fmt(g(dayId,k))}</b><em>Yesterday ${fmt(g(ydId,k))}</em></div>`).join('')}
+      <div class="tile"><span>Best day this month</span><b>${fmt(Math.max(...vals))}</b><em>${Math.max(...vals)?'visits on '+(vals.indexOf(Math.max(...vals))+1)+' '+MN[t.m-1].slice(0,3):'–'}</em></div></div>
+    <h3 class="sub3">Day by day · ${MN[t.m-1]} <small style="font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--soft)">· visits each day, today in orange</small></h3>
+    <div class="dbar" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((v,i)=>{const day=i+1,cls=day===t.d?'t':day>t.d?'f':v?'':'z';return `<i class="${cls}" style="height:${day>t.d?12:v?Math.max(6,Math.round(v/mx*100)):3}%" title="${day} ${MN[t.m-1].slice(0,3)} · ${v} visit${v===1?'':'s'}"></i>`}).join('')}</div>
+    <div class="dlab" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((_,i)=>`<span>${[1,8,15,22,29].includes(i+1)?i+1:''}</span>`).join('')}</div>`};
+  dayCard('apDay',['objects','landmarks'],'both games');
+  dayCard('nwDay',['wonders'],'all Natural Wonders games');
 
   // Natural Wonders: same layout, its own numbers
   const nw=(m,k)=>k==='tried'?Object.keys(m.g.wonders.pl).filter(x=>m.g.wonders.pl[x]>0).length:m.g.wonders[k];
