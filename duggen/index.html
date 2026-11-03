@@ -121,9 +121,9 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 #timers b{color:var(--sign)}
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:12px;color:var(--muted)}
 </style>
-<meta name="description" content="Help Duggen the kangaroo gather Bush Carrots and Yam Daisies for Chef Colin, dodging Truck Stop Pete, Spangled Drongos and exploding leprechauns.">
+<meta name="description" content="Help Digger Duggen the kangaroo gather Bush Carrots and Yam Daisies for Chef Colin, dodging Truck Stop Pete, Spangled Drongos and exploding leprechauns.">
 <meta property="og:title" content="Duggen's Outback Maze">
-<meta property="og:description" content="Help Duggen the kangaroo gather bush tucker for Chef Colin while Truck Stop Pete and his mates try to stop him.">
+<meta property="og:description" content="Help Digger Duggen the kangaroo gather bush tucker for Chef Colin while Truck Stop Pete and his mates try to stop him.">
 <meta property="og:image" content="https://twominute.games/duggen/og-duggen.png">
 <meta property="og:url" content="https://twominute.games/duggen/">
 <meta name="twitter:card" content="summary_large_image">
@@ -135,7 +135,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 <div class="wrap">
   <header class="mast">
     <div>
-      <h1>Duggen's Outback Maze<sup class="ver">v16</sup></h1>
+      <h1>Duggen's Outback Maze<sup class="ver">v17</sup></h1>
       <span class="plate">Kangaroos next 51 squares</span>
       <a class="homelink" href="https://twominute.games/">← More games at twominute.games</a>
     </div>
@@ -1246,8 +1246,8 @@ function showCard(html,buttons,kind){
 }
 function syncPause(){const b=$('pauseBtn');const p=!card.hidden&&cardKind==='pause';b.textContent=p?'Resume':'Pause';b.disabled=!card.hidden&&!p}
 cardBody.addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(!b)return;audio();sfx('click');card.hidden=true;cardKind='';startLesson(+b.dataset.lesson)});
-function introHTML(){return `<h3>Duggen's Outback Maze</h3>
-<p>Duggen the kangaroo forages a big grassy maze for Bush Carrots and Yam Daisies so Chef Colin can feed his diners. Truck Stop Pete wants kangaroo on his roadside barbie. He sends Spangled Drongos after Duggen while he himself walks through hedges to raid Duggen's supplies, and his mate Topper sets loose exploding leprechauns.</p>
+function introHTML(){return `<p class="eyebrow">In development · mobile game coming soon</p><h3>Duggen's Outback Maze</h3>
+<p>Digger Duggen the kangaroo forages a big grassy maze for Bush Carrots and Yam Daisies so Chef Colin can feed his diners. Truck Stop Pete wants kangaroo on his roadside barbie. He sends Spangled Drongos after Duggen while he himself walks through hedges to raid Duggen's supplies, and his mate Topper sets loose exploding leprechauns.</p>
 <p class="muted">New here? Outback school teaches the characters, controls and kit in ten short lessons. Every lesson can be skipped.</p>`}
 function orderHTML(){return `<h3>Round ${S.round}: Chef Colin's order</h3>
 <p class="quote">“${S.covers} covers tonight, Duggen. I need <b>${S.need.carrot} Bush Carrots</b> and <b>${S.need.yam} Yam Daisies</b>.”</p>
@@ -1268,7 +1268,7 @@ function helpHTML(){return `<h3>How to play</h3><ul>
 function firstVisit(){try{return localStorage.getItem('dg-intro-done')!=='1'}catch(_){return false}}
 function introDone(){try{localStorage.setItem('dg-intro-done','1')}catch(_){}}
 function showFirstVisit(){
-  showCard(`<p class="eyebrow">G'day, first time here?</p><h3>Start with Outback school</h3><p>Duggen has a lot of kit: goats, echidna poo, beer cans, a boomerang and more. Outback school shows you each one in ten short lessons, so your first real round isn't over before you know what hit you.</p><p class="muted">It takes a few minutes, and you can skip any lesson.</p>`,
+  showCard(`<p class="eyebrow">G'day, first time here? · Game in development</p><h3>Start with Outback school</h3><p>Duggen has a lot of kit: goats, echidna poo, beer cans, a boomerang and more. Outback school shows you each one in ten short lessons, so your first real round isn't over before you know what hit you.</p><p class="muted">It takes a few minutes, and you can skip any lesson.</p>`,
     [['Start Outback school',()=>{introDone();showTraining()}],['Skip, just play',()=>{introDone();showMenu()}]]);
 }
 function showMenu(){
@@ -1335,7 +1335,7 @@ function frame(now){
 }
 newGame();resize();
 const onPhone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820;
-if(onPhone)showCard(`<p class="eyebrow">Heads up</p><h3>Best on a computer for now</h3><p>Duggen's Outback Maze is built for a computer with a keyboard. A proper phone version, with swipe controls and everything on one screen, is on the way.</p><p class="muted">You can still try it here: tap the arrow pad or swipe across the maze to hop, and scroll down for Duggen's kit and Chef Colin's hints.</p>${firstVisit()?`<p><b>First time here?</b> Start with Outback school: ten short lessons on the characters, controls and kit. You can skip any lesson.</p>`:''}`,
+if(onPhone)showCard(`<p class="eyebrow">Heads up · in development</p><h3>Best on a computer for now</h3><p>Duggen's Outback Maze is still being built, and for now it's made for a computer with a keyboard. A proper mobile game, with swipe controls and everything on one screen, is coming soon.</p><p class="muted">You can still try it here: tap the arrow pad or swipe across the maze to hop, and scroll down for Duggen's kit and Chef Colin's hints.</p>${firstVisit()?`<p><b>First time here?</b> Start with Outback school: ten short lessons on the characters, controls and kit. You can skip any lesson.</p>`:''}`,
   firstVisit()?[['Try Outback school',()=>{introDone();if(!S||S.training)newGame();showTraining()}],['Just play',()=>{introDone();showMenu()}],['More games',()=>{location.href='https://twominute.games/'}]]
              :[['Try it anyway',showMenu],['More games',()=>{location.href='https://twominute.games/'}]]);
 else showMenu();
