@@ -1335,8 +1335,9 @@ function frame(now){
 }
 newGame();resize();
 const onPhone=matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820;
-if(onPhone)showCard(`<p class="eyebrow">Heads up</p><h3>Best on a computer for now</h3><p>Duggen's Outback Maze is built for a computer with a keyboard. A proper phone version, with swipe controls and everything on one screen, is on the way.</p><p class="muted">You can still try it here: tap the arrow pad or swipe across the maze to hop, and scroll down for Duggen's kit and Chef Colin's hints.</p>`,
-  [['Try it anyway',showMenu],['More games',()=>{location.href='https://twominute.games/'}]]);
+if(onPhone)showCard(`<p class="eyebrow">Heads up</p><h3>Best on a computer for now</h3><p>Duggen's Outback Maze is built for a computer with a keyboard. A proper phone version, with swipe controls and everything on one screen, is on the way.</p><p class="muted">You can still try it here: tap the arrow pad or swipe across the maze to hop, and scroll down for Duggen's kit and Chef Colin's hints.</p>${firstVisit()?`<p><b>First time here?</b> Start with Outback school: ten short lessons on the characters, controls and kit. You can skip any lesson.</p>`:''}`,
+  firstVisit()?[['Try Outback school',()=>{introDone();if(!S||S.training)newGame();showTraining()}],['Just play',()=>{introDone();showMenu()}],['More games',()=>{location.href='https://twominute.games/'}]]
+             :[['Try it anyway',showMenu],['More games',()=>{location.href='https://twominute.games/'}]]);
 else showMenu();
 requestAnimationFrame(frame);
 })();
