@@ -127,13 +127,15 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--sign);outline-
 <meta property="og:image" content="https://twominute.games/duggen/og-duggen.png">
 <meta property="og:url" content="https://twominute.games/duggen/">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/duggen/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/duggen/icon-32.png">
+<link rel="apple-touch-icon" href="/duggen/apple-touch-icon.png">
 </head>
 <body>
 <div class="wrap">
   <header class="mast">
     <div>
-      <h1>Duggen's Outback Maze<sup class="ver">v15</sup></h1>
+      <h1>Duggen's Outback Maze<sup class="ver">v16</sup></h1>
       <span class="plate">Kangaroos next 51 squares</span>
       <a class="homelink" href="https://twominute.games/">← More games at twominute.games</a>
     </div>
@@ -1262,8 +1264,16 @@ function helpHTML(){return `<h3>How to play</h3><ul>
 <li><b>Truck Stop Pete</b>: walks through hedges and can't be caught, but not into Colin's kitchen. He raids stocked crates and pinches from the pouch. To raid Colin's larder he must go to a ford and walk in along the paths, then take half of each veg and walk back out. Echidna poo blocks him on foot. Stolen veg goes on his mobile barbie at the edge of the maze before he comes back in.</li>
 <li><b>Guide buttons</b>: Find carrot (C), Find daisy (Y) and Find exit (X) show arrows to the nearest one. Carrot and daisy guides move on to the next after each pick-up, and switch off at an exit or when there are none left to collect. Press again to turn off.</li>
 <li><b>White arrows</b> appear when the pouch is full or holds the whole order, pointing the way to Colin's kitchen.</li></ul>`}
+// first visit on this device: suggest Outback school before the first game
+function firstVisit(){try{return localStorage.getItem('dg-intro-done')!=='1'}catch(_){return false}}
+function introDone(){try{localStorage.setItem('dg-intro-done','1')}catch(_){}}
+function showFirstVisit(){
+  showCard(`<p class="eyebrow">G'day, first time here?</p><h3>Start with Outback school</h3><p>Duggen has a lot of kit: goats, echidna poo, beer cans, a boomerang and more. Outback school shows you each one in ten short lessons, so your first real round isn't over before you know what hit you.</p><p class="muted">It takes a few minutes, and you can skip any lesson.</p>`,
+    [['Start Outback school',()=>{introDone();showTraining()}],['Skip, just play',()=>{introDone();showMenu()}]]);
+}
 function showMenu(){
   if(!S||S.training)newGame();
+  if(firstVisit())return showFirstVisit();
   showCard(introHTML(),[['Play',()=>{window.duggenBump&&duggenBump({plays:1});newGame();showCard(orderHTML(),[['Hop to it',resume]])}],['Outback school',showTraining],['How to play',()=>showCard(helpHTML(),[['Back',showMenu]])]]);
 }
 function pauseGame(){
