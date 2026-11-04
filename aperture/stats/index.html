@@ -90,6 +90,9 @@ td.share{width:34%;padding-left:12px}
 .dbar{display:grid;gap:3px;align-items:end;height:90px;margin-top:4px}
 .dbar i{display:block;background:var(--blue);border-radius:3px 3px 0 0;min-height:2px}.dbar i.z{background:var(--blue-wash)}.dbar i.t{background:#e2742f}.dbar i.f{background:transparent;border:1px dashed var(--line);border-bottom:0}
 .dlab{display:grid;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:4px}
+.dbar i.sel{outline:2px solid var(--ink);outline-offset:1px}
+.dday{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;font-size:14px;color:var(--soft)}.dday>b{color:var(--ink)}
+.dcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dcs span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--ink)}.dcs span b{font-family:var(--mono);font-weight:500;color:var(--blue);margin-left:4px}.dcs .none{border:0;padding:0;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -221,9 +224,19 @@ async function render(){
     document.getElementById(el).innerHTML=`<div class="h2row"><h2>Today so far · ${wd}</h2><small>${label} · starts fresh at midnight UK time</small></div>
     <div class="tiles">${[['Visits','visits'],['New players','uniques'],['Games played','games']].map(([l,k])=>`<div class="tile"><span>${l}</span><b>${fmt(g(dayId,k))}</b><em>Yesterday ${fmt(g(ydId,k))}</em></div>`).join('')}
       <div class="tile"><span>Best day this month</span><b>${fmt(Math.max(...vals))}</b><em>${Math.max(...vals)?'visits on '+(vals.indexOf(Math.max(...vals))+1)+' '+MN[t.m-1].slice(0,3):'–'}</em></div></div>
-    <h3 class="sub3">Day by day · ${MN[t.m-1]} <small style="font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--soft)">· visits each day, today in orange</small></h3>
-    <div class="dbar" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((v,i)=>{const day=i+1,cls=day===t.d?'t':day>t.d?'f':v?'':'z';return `<i class="${cls}" style="height:${day>t.d?12:v?Math.max(6,Math.round(v/mx*100)):3}%" title="${day} ${MN[t.m-1].slice(0,3)} · ${v} visit${v===1?'':'s'}"></i>`}).join('')}</div>
-    <div class="dlab" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((_,i)=>`<span>${[1,8,15,22,29].includes(i+1)?i+1:''}</span>`).join('')}</div>`};
+    <h3 class="sub3">Day by day · ${MN[t.m-1]} <small style="font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--soft)">· visits each day, today in orange · tap a day to see it</small></h3>
+    <div class="dbar" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((v,i)=>{const day=i+1,cls=day===t.d?'t':day>t.d?'f':v?'':'z';return `<i class="${cls}" data-day="${dates[i]}" style="height:${day>t.d?12:v?Math.max(6,Math.round(v/mx*100)):3}%;${day<=t.d?'cursor:pointer':''}" title="${day} ${MN[t.m-1].slice(0,3)} · ${v} visit${v===1?'':'s'} · tap for that day"></i>`}).join('')}</div>
+    <div class="dlab" style="grid-template-columns:repeat(${dim},minmax(0,1fr))">${vals.map((_,i)=>`<span>${[1,8,15,22,29].includes(i+1)?i+1:''}</span>`).join('')}</div>
+    <div class="dday" id="${el}Detail"></div>`;
+    const box=document.getElementById(el),det=document.getElementById(el+'Detail');
+    const show=id=>{const r=fams.reduce((a,f)=>add(a,dayRec(id,f)),blank()),dt=new Date(id+'T12:00:00Z').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'});
+      const cs=Object.entries(r.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),dv=['phone','tablet','desktop'].map(k=>[k,r.dv[k]||0]).filter(x=>x[1]);
+      box.querySelectorAll('.dbar i').forEach(b=>b.classList.toggle('sel',b.dataset.day===id));
+      det.innerHTML=`<b>${id===dayId?'Today · ':''}${dt}</b> · ${fmt(r.visits)} visit${r.visits===1?'':'s'} · ${fmt(r.uniques)} new · ${fmt(r.games)} game${r.games===1?'':'s'}
+        <div class="dcs">${cs.length?cs.map(([k,n])=>`<span>${esc(nameOf(k))} <b>${fmt(n)}</b></span>`).join(''):'<span class="none">No visits from any country that day</span>'}</div>
+        ${dv.length?`<div class="dcs dv">${dv.map(([k,n])=>`<span>${k==='phone'?'📱 Phone':k==='tablet'?'Tablet':'🖥 Desktop'} <b>${fmt(n)}</b></span>`).join('')}</div>`:''}`};
+    box.querySelectorAll('.dbar i[data-day]').forEach(b=>{if(b.dataset.day<=dayId)b.onclick=()=>show(b.dataset.day)});
+    show(dayId)};
   dayCard('apDay',['objects','landmarks'],'both games');
   dayCard('nwDay',['wonders'],'all Natural Wonders games');
 
