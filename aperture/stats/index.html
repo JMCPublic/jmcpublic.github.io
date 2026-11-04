@@ -93,6 +93,17 @@ td.share{width:34%;padding-left:12px}
 .dbar i.sel{outline:2px solid var(--ink);outline-offset:1px}
 .dday{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;font-size:14px;color:var(--soft)}.dday>b{color:var(--ink)}
 .dcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dcs span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--ink)}.dcs span b{font-family:var(--mono);font-weight:500;color:var(--blue);margin-left:4px}.dcs .none{border:0;padding:0;color:var(--faint)}
+.msgbtn{font:inherit;font-weight:600;font-size:14px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:10px 18px;cursor:pointer;align-self:flex-start}
+.msglink{font:inherit;font-size:12.5px;background:none;border:0;color:var(--blue);cursor:pointer;padding:0}
+.msgnote{margin:0;color:var(--soft);font-size:14px}
+.msgs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.msgs li{border:1.5px solid var(--frame);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.msgs .mh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--soft)}
+.msgs .k{font-weight:600;color:var(--ink);font-size:13px}
+.msgs .t{font-size:15px;white-space:pre-wrap;word-break:break-word}
+.msgs .c{font-size:13px;color:var(--blue)}
+.msgs .w{font-size:11.5px;color:var(--faint);word-break:break-word}
+.msgs .del{margin-left:auto}
 </style>
 </head>
 <body>
@@ -132,6 +143,9 @@ td.share{width:34%;padding-left:12px}
     <table id="nwMonths" class="months"></table>
   </section>
   <section class="card" id="nwDetail"></section>
+
+  <h2 class="fam">Messages <small>feedback and bug reports · private, only you can read them</small></h2>
+  <section class="card" id="msgCard"><div class="h2row"><h2>Inbox</h2><small id="msgWho"></small></div><div id="msgBody"><p class="msgnote">Loading…</p></div></section>
 
   <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Each day starts fresh at midnight UK time and feeds into the month; daily numbers begin on 3 November 2026. Times and devices are recorded from 1 November 2026, so earlier visits don't appear in them.</p>
 </div>
@@ -314,6 +328,37 @@ function nwDetail(p){const f=p.get('wonders');
     ${whenHTML(f)}`}
 document.getElementById('refresh').onclick=render;
 render();
+})();
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+// Messages: only the owner's Google account can read feedback (rules v8)
+(()=>{const OWNER='mybetterbrain109@gmail.com',P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+const body=document.getElementById('msgBody'),who=document.getElementById('msgWho');
+const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+if(!window.firebase){body.innerHTML='<p class="msgnote">Couldn’t load the sign-in. Refresh the page to try again.</p>';return}
+firebase.initializeApp({apiKey:K,authDomain:P+'.firebaseapp.com',projectId:P},'msgs');
+const auth=firebase.app('msgs').auth();
+const signIn=()=>{body.innerHTML='<p class="msgnote">Sign in with your Google account to read messages from players.</p><button class="msgbtn" id="msgIn">Sign in with Google</button>';who.textContent='';
+  document.getElementById('msgIn').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{body.insertAdjacentHTML('beforeend',`<p class="msgnote">Sign-in didn’t work (${esc(e.code||e.message)}).</p>`)})};
+const KIND={idea:'💡 Idea',like:'👍 Like it',wrong:'🐞 Something’s wrong'};
+const val=f=>f==null?'':f.stringValue??f.timestampValue??f.integerValue??(f.mapValue?JSON.stringify(f.mapValue):'');
+const when=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Europe/London',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();
+  body.innerHTML='<p class="msgnote">Loading messages…</p>';const tok=await u.getIdToken();
+  const H={headers:{Authorization:'Bearer '+tok}};const base=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
+  const get=async c=>{let out=[],pt='';do{const r=await fetch(base+c+'?pageSize=300'+(pt?'&pageToken='+pt:''),H);if(!r.ok)throw r.status;const j=await r.json();out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);return out};
+  let fb=[],bugs=[],err='';try{fb=await get('feedback')}catch(e){err=e}try{bugs=await get('aperture_bugs')}catch(e){}
+  if(err&&!fb.length&&!bugs.length){body.innerHTML=`<p class="msgnote">Couldn’t read messages (error ${esc(err)}). If this is new, check the Firebase rules are v8.</p>`;return}
+  const rows=fb.map(d=>({d,t:val(d.fields.at)||d.createTime,k:KIND[val(d.fields.kind)]||'Message',m:val(d.fields.message),c:val(d.fields.contact),g:val(d.fields.game),dv:val(d.fields.device),w:[val(d.fields.page),val(d.fields.where)].filter(Boolean).join(' · ')}))
+    .concat(bugs.map(d=>({d,t:d.createTime,k:'🐞 Bug report (old form)',m:val(d.fields.message),c:'',g:'Aperture',dv:'',w:[val(d.fields.page),val(d.fields.version),val(d.fields.screen)].filter(Boolean).join(' · ')})))
+    .sort((a,b)=>new Date(b.t)-new Date(a.t));
+  if(!rows.length){body.innerHTML='<p class="msgnote">No messages yet. When players send feedback from any game, it appears here.</p>';return}
+  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><ul class="msgs">${rows.map((r,i)=>`<li><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div><div class="t">${esc(r.m)}</div>${r.c?`<div class="c">Reply to: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
+  body.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{const r=rows[b.dataset.i];if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to delete';setTimeout(()=>{b.dataset.arm='';b.textContent='Delete'},3000);return}
+    const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok)b.closest('li').remove();else b.textContent='Couldn’t delete'})}
+auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()!==OWNER){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();body.innerHTML='<p class="msgnote">This Google account can’t read messages. Sign out and use the owner account.</p>';return}load(u).catch(e=>{body.innerHTML=`<p class="msgnote">Something went wrong loading messages (${esc(e)}).</p>`})});
 })();
 </script>
 </body>

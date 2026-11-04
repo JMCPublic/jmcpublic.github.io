@@ -372,7 +372,7 @@ body:not(.waiting) .quizhead{display:none}
   .side .statcard{min-height:0;box-sizing:border-box}
 }
 @media (max-width:760px){.promo,.pbig,.pveil{display:none!important}}
-.asks{grid-template-columns:1fr 1fr 1.25fr}.ask{white-space:nowrap}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--blue,#2b50e0);margin-left:4px}.trayrow{display:flex;gap:10px;justify-content:center;align-items:center}#skipBtn{color:var(--ink,#16181d);padding:6px 14px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}#skipBtn small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--faint,#9aa0ab);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}#skipBtn:disabled{opacity:.45}</style>
+.asks{grid-template-columns:1fr 1fr 1.25fr}.ask{white-space:nowrap}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--blue,#2b50e0);margin-left:4px}.trayrow{display:flex;gap:10px;justify-content:center;align-items:center}#skipBtn{color:var(--ink,#16181d);padding:6px 14px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}#skipBtn small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--faint,#9aa0ab);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}#skipBtn:disabled{opacity:.45}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}</style>
 </head>
 <body>
 
@@ -384,7 +384,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="stat"><span class="label">This round</span><b id="roundTime">0:00</b></div>
     <div class="stat"><span class="label">Total</span><b id="totalTime">0:00</b></div>
     </div>
-  <div class="tools"><button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn" data-bug aria-label="Report a problem" title="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M12 8v12M9.5 5.5l1.5 2.5M14.5 5.5L13 8M7 11H4M20 11h-3M7 16H4M20 16h-3"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
+  <div class="tools"><button class="soundbtn" id="musicBtn" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/><path class="x" d="M4 4l16 16"/></svg></button><button class="soundbtn" id="soundBtn" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="w1" d="M15.5 9a4 4 0 0 1 0 6"/><path class="w2" d="M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button><button class="bugbtn fbbtn" data-tmg-feedback aria-label="Feedback or report a problem" title="Feedback or report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></button><button class="helpbtn" id="helpBtn">How to play</button>
   </div>
 </header>
 <a class="tophone" href="https://twominute.games/aperture/mobile/">On a phone? Play the mobile version →</a>
@@ -1105,7 +1105,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v41';
+document.documentElement.dataset.version='desktop v42';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1261,5 +1261,67 @@ try{new ResizeObserver(fitNeg).observe(ph)}catch(e){}
 addEventListener('resize',fitNeg);if(document.fonts)document.fonts.ready.then(fitNeg);fitNeg();
 })();
 </script>
+<script>window.tmgFbWhere=()=>{try{const g=window.apertureInfo?window.apertureInfo():{};return (document.documentElement.dataset.version||'')+' · '+(g.set||'')+' round '+(g.round||'?')}catch(e){return ''}}</script>
+<!-- tmg-feedback: one Feedback button for ideas, likes and bug reports. Messages go privately to Firestore 'feedback'; only the owner can read them (stats page, signed in). -->
+<style>
+.tmgfb-pill{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:6px;background:var(--ink,#16181d);color:#fff;border:0;border-radius:999px;padding:9px 15px;font-family:inherit;font-weight:600;font-size:13.5px;line-height:1;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.22)}
+.tmgfb-pill[hidden],body.timed .tmgfb-pill,body:has(.play) .tmgfb-pill{display:none}
+.tmgfb-pill svg,.tmgfb-icon svg{width:15px;height:15px}
+.tmgfb-v{position:fixed;inset:0;z-index:2147483000;background:rgba(22,24,29,.35);display:flex;align-items:center;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.tmgfb-v[hidden]{display:none}
+.tmgfb-c{background:#fff;color:var(--ink,#16181d);border:1.5px solid var(--line,#d9dde4);border-radius:20px;padding:22px 22px 18px;width:100%;max-width:400px;max-height:calc(100% - 8px);overflow:auto;box-sizing:border-box;box-shadow:0 24px 48px -20px rgba(0,0,0,.35);font-family:inherit;font-size:15px;line-height:1.45;text-align:left}
+.tmgfb-c h2{margin:0 0 4px;font-size:20px;line-height:1.2}
+.tmgfb-c p{margin:0 0 14px;color:var(--muted,var(--soft,#5b606b));font-size:13.5px}
+.tmgfb-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tmgfb-chip{border:1.5px solid var(--line,#d9dde4);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;background:#fff;color:inherit;cursor:pointer}
+.tmgfb-chip[aria-pressed="true"]{background:var(--ink,#16181d);color:#fff;border-color:var(--ink,#16181d)}
+.tmgfb-c textarea,.tmgfb-c input{width:100%;box-sizing:border-box;border:1.5px solid var(--line,#d9dde4);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;color:inherit;background:#fff;outline:none}
+.tmgfb-c textarea{height:96px;resize:none}
+.tmgfb-c input{margin-top:8px}
+.tmgfb-c textarea:focus,.tmgfb-c input:focus{border-color:var(--ink,#16181d)}
+.tmgfb-meta{font-size:12px;color:var(--muted,var(--soft,#5b606b));margin-top:8px}
+.tmgfb-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:14px}
+.tmgfb-msg{flex:1;font-size:13px;color:var(--muted,var(--soft,#5b606b))}
+.tmgfb-b{border-radius:999px;padding:9px 18px;font:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--line,#d9dde4);background:#fff;color:inherit;cursor:pointer}
+.tmgfb-b.go{background:var(--ink,#16181d);color:#fff;border-color:var(--ink,#16181d)}
+.tmgfb-b:disabled{opacity:.5}
+</style>
+<script>
+(()=>{if(window.tmgFb||window.top!==window)return;
+const CFG={p:'aperture-c0961',k:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI'};
+const ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>';
+const KINDS=[['idea','💡 Idea','What would make it better?'],['like','👍 Like it','What did you enjoy?'],['wrong','🐞 Something’s wrong','What went wrong, and where?']];
+let v,kind='idea';
+const dev=()=>{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c?(m>=600?'tablet':'phone'):'desktop'};
+function build(){v=document.createElement('div');v.className='tmgfb-v';v.hidden=true;
+  v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="Feedback or report a problem"><h2>Tell us what you think</h2>
+  <p>Ideas, likes, gripes or something broken. It goes privately to Two Minute Games; nobody else can read it.</p>
+  <div class="tmgfb-chips">${KINDS.map(k=>`<button type="button" class="tmgfb-chip" data-k="${k[0]}" aria-pressed="${k[0]===kind}">${k[1]}</button>`).join('')}</div>
+  <textarea maxlength="1500" required aria-label="Your message"></textarea>
+  <input maxlength="150" autocomplete="email" placeholder="Name or email, only if you’d like a reply (optional)" aria-label="Name or email (optional)">
+  <div class="tmgfb-meta">We also send which game you were on and your type of device, nothing else.</div>
+  <div class="tmgfb-row"><span class="tmgfb-msg" aria-live="polite"></span><button type="button" class="tmgfb-b">Cancel</button><button type="submit" class="tmgfb-b go">Send</button></div></form>`;
+  document.body.appendChild(v);const f=v.querySelector('form'),t=f.querySelector('textarea'),c=f.querySelector('input'),m=f.querySelector('.tmgfb-msg'),go=f.querySelector('.go');
+  const setK=k=>{kind=k;f.querySelectorAll('.tmgfb-chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));t.placeholder=KINDS.find(x=>x[0]===k)[2]};setK(kind);
+  f.querySelectorAll('.tmgfb-chip').forEach(b=>b.onclick=()=>setK(b.dataset.k));
+  f.querySelector('.tmgfb-b:not(.go)').onclick=close;v.addEventListener('click',e=>{if(e.target===v)close()});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!v.hidden)close()});
+  f.onsubmit=async e=>{e.preventDefault();const msg=t.value.trim();if(!msg){t.focus();return}
+    go.disabled=true;m.textContent='Sending…';let where='';try{if(window.tmgFbWhere)where=String(window.tmgFbWhere()).slice(0,400)}catch(_){}
+    const s=x=>({stringValue:String(x)});
+    const fields={kind:s(kind),message:s(msg.slice(0,1500)),contact:s(c.value.trim().slice(0,150)),game:s(document.title.slice(0,120)),page:s(location.pathname.slice(0,200)),device:s(dev()),where:s(where),ua:s(navigator.userAgent.slice(0,300)),at:{timestampValue:new Date().toISOString()}};
+    try{const r=await fetch(`https://firestore.googleapis.com/v1/projects/${CFG.p}/databases/(default)/documents/feedback?key=${CFG.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
+      if(!r.ok)throw 0;m.textContent='Thank you. Sent!';t.value='';c.value='';setTimeout(close,1400)}
+    catch(_){m.textContent='Couldn’t send just now. Please try again in a moment.';go.disabled=false}}}
+function open(){if(!v)build();const m=v.querySelector('.tmgfb-msg');m.textContent='';v.querySelector('.go').disabled=false;v.hidden=false;setTimeout(()=>v.querySelector('textarea').focus(),50)}
+function close(){if(v)v.hidden=true}
+window.tmgFb={open,close};
+function wire(){const own=document.querySelectorAll('[data-tmg-feedback]');
+  if(own.length){own.forEach(b=>b.addEventListener('click',e=>{e.preventDefault();open()}));return}
+  const p=document.createElement('button');p.type='button';p.className='tmgfb-pill';p.setAttribute('aria-label','Feedback or report a problem');p.innerHTML=ICON+'Feedback or bug';p.onclick=open;document.body.appendChild(p)}
+if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
+})();
+</script>
+<!-- /tmg-feedback -->
 </body>
 </html>
