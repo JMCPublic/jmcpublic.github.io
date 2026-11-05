@@ -96,5 +96,11 @@ function witw(ch,cc){const done=ls('tmg-witw2');if(done)return;const NAME=ch==='
       f.querySelectorAll('.ww-x,.ww-go').forEach(b=>b.onclick=()=>close())}
     catch(_){go.disabled=false;err.textContent='Couldn’t send just now. Please try again in a moment.'}};
   addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.contains(v))close('closed')})}
+// --- languages: which language a game is played in, how players reached it, and whether they finish (needs rules v10) ---
+if(/^\/natural-wonders-where-is-bigger\//.test(location.pathname)){const L=(document.documentElement.lang||'en').slice(0,2).toLowerCase().replace(/[^a-z]/g,'')||'en';
+  const f={[`langs.${L}.visits`]:1},fresh=ls('tmg-lang-'+L)!=='1';if(fresh){ls('tmg-lang-'+L,'1');f[`langs.${L}.uniques`]=1}
+  const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
+  ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
+  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
 window.tmgReach={src,me,link:tag};
 })();

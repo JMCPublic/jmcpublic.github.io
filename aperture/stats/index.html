@@ -152,6 +152,7 @@ td.share{width:34%;padding-left:12px}
 
   <h2 class="fam" data-tab="reach">Reach <small>where visitors came from, how far your links spread, and who's on the map</small></h2>
   <section class="card" data-tab="reach" id="rcSrc"><p class="msgnote">Loading…</p></section>
+  <section class="card" data-tab="reach" id="rcLang"></section>
   <section class="card" data-tab="reach" id="rcSpread"><div class="h2row"><h2>How far your links spread</h2><small>Patient Zero · anonymous codes, no names</small></div><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see this.</p></div></section>
   <section class="card" data-tab="reach" id="rcWitw"><div class="h2row"><h2>Where in the World</h2><small>your LinkedIn and Facebook links, plus walk-ins by country</small></div><div id="rcWtiles" class="tiles"></div><svg id="rcMap" style="width:100%;height:auto;background:#f6f8ff;border-radius:14px"></svg><p class="msgnote" id="rcKey">● people who sent the form · shaded: countries with walk-ins</p><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see the names.</p></div></section>
 
@@ -388,14 +389,26 @@ const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
 let docs={},WM=null,entries=[],period='month';
 const getDoc=id=>fetch(B+'stats/'+id+'?key='+K).then(r=>r.ok?r.json():{fields:{}}).then(j=>j.fields||{}).catch(()=>({}));
-async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawWitw()}
+async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawWitw()}
 function cur(){return docs[period]||{}}
 function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur().src);
   const rows=Object.entries(src).map(([k,v])=>{const f=map(v);return [k,num(f.visits),num(f.uniques),num(f.played),num(f.back)]}).sort((a,b)=>(a[0]==='walkin')-(b[0]==='walkin')||b[1]-a[1]);
   el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
   ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
-  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawWitw()})}
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawWitw()})}
+const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch']};
+function drawLang(){const el=document.getElementById('rcLang');const L=map(cur().langs);
+  const rows=Object.entries(L).map(([k,v])=>{const f=map(v),vis=num(f.visits),fin=num(f.finished);
+    const via=['link','offer','switch'].map(x=>[x,num(f['via_'+x])]).filter(x=>x[1]);
+    const cc=Object.entries(f).filter(([x])=>/^cc_[A-Z]{2}$/.test(x)).map(([x,n])=>[x.slice(3),num(n)]).sort((a,b)=>b[1]-a[1]);
+    return {k,vis,uni:num(f.uniques),fin,rate:vis?Math.round(fin/vis*100)+'%':'—',via,cc}}).sort((a,b)=>(a.k!=='en')-(b.k!=='en')||b.vis-a.vis);
+  const other=rows.filter(r=>r.k!=='en'&&r.cc.length);
+  el.innerHTML=`<div class="h2row"><h2>Languages</h2><small>Where is Bigger? · ${period==='month'?'this month':'all time'} · finish rate shows whether the translation reads well</small></div>
+  ${rows.length?`<table class="rt"><tr><th>Language</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Finished a game</th><th class="n">Finish rate</th><th>Arrived by</th></tr>${rows.map(r=>`<tr><td>${(LNAME[r.k]||['',r.k.toUpperCase()]).join(' ')}</td><td class="n">${r.vis}</td><td class="n">${r.uni}</td><td class="n">${r.fin}</td><td class="n">${r.rate}</td><td>${r.via.length?r.via.map(x=>x[0]+' '+x[1]).join(' · '):'—'}</td></tr>`).join('')}</table>
+  ${other.map(r=>`<p class="msgnote"><b>${esc({de:"German"}[r.k]||r.k.toUpperCase())} players by country:</b> ${r.cc.map(([c,n])=>flag(c)+' '+esc(c==='GB'?'UK':cn(c))+' '+n).join(' · ')}</p>`).join('')}
+  <p class="msgnote">German link to post: twominute.games/de/ · “link” = came through it, “offer” = said yes to the German offer on the English page, “switch” = used the EN | DE button.</p>`
+  :'<p class="msgnote">Nothing yet. Counting starts once Firestore rules v10 are published.</p>'}`}
 async function drawWitw(){const w=map(cur().witw),walk=map(cur().walkc);const t=k=>{const f=map(w[k]);return [num(f.shown),num(f.sent),num(f.closed)]};const li=t('li'),fb=t('fb');
   const wsum=Object.values(walk).reduce((a,v)=>a+num(v),0);
   document.getElementById('rcWtiles').innerHTML=`<div class="tile"><span>LinkedIn</span><b>${li[0]}</b><em>${li[1]} sent the form · ${li[2]} closed it</em></div><div class="tile"><span>Facebook</span><b>${fb[0]}</b><em>${fb[1]} sent · ${fb[2]} closed</em></div><div class="tile"><span>Walk-ins</span><b>${wsum}</b><em>new visitors, by country</em></div><div class="tile"><span>Countries</span><b>${new Set([...Object.keys(walk),...entries.map(e=>e.country)]).size}</b><em>on the map</em></div>`;

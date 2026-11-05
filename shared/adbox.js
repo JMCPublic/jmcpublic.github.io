@@ -37,7 +37,10 @@ const st=d.createElement('style');st.textContent=css;d.head.appendChild(st);
 const KOFI={href:'https://ko-fi.com/twominutegames',b:'Enjoying the games? Buy us a coffee ☕',pb:'Enjoying the games? ☕',s:'Two Minute Games is free, with no sign-up. Tips keep it going.',i:'Support us'};
 const CROSS=isNW?{href:'/aperture/',b:'Try Aperture: what can you see?',pb:'Try Aperture: what can you see?',s:'An everyday object, seen through a few small viewpoints. Two minutes a day.',i:'Play Aperture →'}
                 :{href:'/wonders/',b:'Try Natural Wonders',pb:'Try Natural Wonders',s:'Ten quick geography games: rivers, lakes, peaks, deserts and borders.',i:'Play →'};
-function house(wide){const h=Math.random()<.5?KOFI:CROSS;const ext=/^https?:/.test(h.href);
+const DE=d.documentElement.lang==='de';
+const KOFI_DE={href:KOFI.href,b:'Gefallen dir die Spiele? Spendier uns einen Kaffee ☕',pb:'Gefallen dir die Spiele? ☕',s:'Two Minute Games ist kostenlos und ohne Anmeldung. Trinkgeld hält es am Laufen.',i:'Unterstützen'};
+const CROSS_DE={href:'/aperture/',b:'Probier Aperture: Was siehst du?',pb:'Probier Aperture: Was siehst du?',s:'Ein Alltagsgegenstand, durch ein paar kleine Fenster gesehen. Zwei Minuten am Tag (auf Englisch).',i:'Aperture spielen →'};
+function house(wide){const h=Math.random()<.5?(DE?KOFI_DE:KOFI):(DE?CROSS_DE:CROSS);const ext=/^https?:/.test(h.href);
   return `<a class="tmgad-house" href="${h.href}"${ext?' target="_blank" rel="noopener"':''}><div><b>${wide?h.b:h.pb}</b><span>${h.s}</span></div><i>${h.i}</i></a>`}
 function fill(slot,wide){const id=wide?ADS.slotWide:ADS.slotPhone;
   if(!id){slot.innerHTML=house(wide);return}
@@ -51,8 +54,8 @@ function build(){
   mode=apDesk&&!narrow?'inline':'fixed';
   if(box&&box.dataset.k===mode+wide)return sync();
   if(box)box.remove();
-  box=d.createElement('aside');box.id='tmgAd';box.className=mode;box.dataset.k=mode+wide;box.setAttribute('aria-label','Advertisement');
-  box.innerHTML=`<div class="tmgad-in ${wide?'w':'p'}">${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}<span class="tmgad-l">Advertisement</span><div class="tmgad-slot ${wide?'w':'p'}"></div>${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}</div>`;
+  box=d.createElement('aside');box.id='tmgAd';box.className=mode;box.dataset.k=mode+wide;box.setAttribute('aria-label',DE?'Anzeige':'Advertisement');
+  box.innerHTML=`<div class="tmgad-in ${wide?'w':'p'}">${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}<span class="tmgad-l">${DE?'Anzeige':'Advertisement'}</span><div class="tmgad-slot ${wide?'w':'p'}"></div>${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}</div>`;
   if(mode==='inline'){const m=d.querySelector('main.phones');m.after(box);root.classList.remove('tmgad-on')}
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
   fill(box.querySelector('.tmgad-slot'),wide);sync()}
