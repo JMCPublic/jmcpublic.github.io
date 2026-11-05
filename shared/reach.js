@@ -78,7 +78,7 @@ function witw(ch,cc){const done=ls('tmg-witw');if(done)return;const NAME=ch==='l
   <div class="ww-g"><label>First name<input name="first" maxlength="40" autocomplete="given-name"></label><label>Last name<input name="last" maxlength="40" autocomplete="family-name"></label>
   <label>Country<select name="country"><option value="">Choose…</option>${opts}</select>${cc?'<div class="ww-h">Our best guess. Change it if wrong.</div>':''}</label><label>City or town<input name="town" maxlength="60" autocomplete="address-level2"></label></div>
   <button type="submit" class="ww-go">Add me to the map</button><div class="ww-e" aria-live="polite"></div>
-  <p class="ww-s">Only the site owner sees your name. Town level only, never your address. Want it removed? Use the feedback button any time.</p>
+  <p class="ww-s"><b>This is just for Michael.</b> It isn’t public and isn’t shared with anyone. Town level only, never your address. Want it removed? Use the feedback button any time.</p>
   <div class="ww-f"><a href="/" class="ww-back">← Back to twominute.games</a><span>Two-minute puzzles, free daily</span></div></form>`;
   document.body.appendChild(v);const f=v.querySelector('form'),err=v.querySelector('.ww-e'),go=v.querySelector('.ww-go');
   const count=k=>bump({[`witw.${ch}.${k}`]:1});count('shown');
@@ -92,7 +92,7 @@ function witw(ch,cc){const done=ls('tmg-witw');if(done)return;const NAME=ch==='l
       ls('tmg-witw','sent');count('sent');
       const first=String(d.first||'').trim(),town=String(d.town||'').trim(),place=(town?town+', ':'')+(names[country]||country);
       f.innerHTML=`<button type="button" class="ww-x" aria-label="Close">✕</button><span class="ww-i">${ICON}</span><h2>You’re on the map!</h2><h3>${place.replace(/</g,'&lt;')} 📍</h3>
-      <p>${first?`Thank you ${first.replace(/</g,'&lt;')}.`:'Thank you.'} Michael will be pleased to see you on the map.</p><button type="button" class="ww-go">Close</button>`;
+      <p>${first?`Thank you ${first.replace(/</g,'&lt;')}.`:'Thank you.'} Michael will be pleased to see you on the map.</p><p class="ww-s">Your pin is only on Michael’s private map, not shown publicly.</p><button type="button" class="ww-go">Close</button>`;
       f.querySelectorAll('.ww-x,.ww-go').forEach(b=>b.onclick=()=>close())}
     catch(_){go.disabled=false;err.textContent='Couldn’t send just now. Please try again in a moment.'}};
   addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.contains(v))close('closed')})}
