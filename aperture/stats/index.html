@@ -383,7 +383,7 @@ auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()
 const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>v?+(v.integerValue||v.doubleValue||0):0;const map=v=>(v&&v.mapValue&&v.mapValue.fields)||{};
 const g=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());const MONTH=g.find(x=>x.type==='year').value+'-'+g.find(x=>x.type==='month').value;
-const LABEL=k=>k==='li'?'LinkedIn (?ww=li)':k==='fb'?'Facebook (?ww=fb)':k==='walkin'?'Walk-ins (no tag)':'?from='+k.replace(/^t_/,'').replace(/_/g,'-');
+const LABEL=k=>k==='li'?'LinkedIn (?ww=jmc_linkedin)':k==='fb'?'Facebook (?ww=jmc_facebook)':k==='walkin'?'Walk-ins (no tag)':'?from='+k.replace(/^t_/,'').replace(/_/g,'-');
 const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'';
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
 let docs={},WM=null,entries=[],period='month';

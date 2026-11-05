@@ -1,5 +1,5 @@
 /* twominute.games reach (step 1, built 5 Nov 2026)
-   - Campaign links: ?from=TAG (e.g. ?from=reddit-au). LinkedIn and Facebook links use ?ww=li and ?ww=fb.
+   - Campaign links: ?from=TAG (e.g. ?from=reddit-au). LinkedIn and Facebook links use ?ww=jmc_linkedin and ?ww=jmc_facebook (stored as li / fb).
    - Patient Zero: every share link gets an anonymous code ?r=CODE-STEP-ROOT, so we can see how far a link travels. No names.
    - Where in the World: people arriving from ?ww=li / ?ww=fb get a short form (country filled in from the time zone).
    - Walk-ins (no tag): counted by country only.
@@ -22,7 +22,7 @@ const cname=c=>{if(c==='GB')return 'the UK';if(c==='US')return 'the US';try{retu
 // --- who sent this visitor (first visit on this device wins) ---
 const me=ls('tmg-me')||(()=>{const c=Math.random().toString(36).slice(2,8);ls('tmg-me',c);return c})();
 let src;try{src=JSON.parse(ls('tmg-src')||'null')}catch(e){src=null}
-const ww=clean(q.get('ww')),from=clean(q.get('from')),rp=/^([a-z0-9]{4,10})-(\d{1,2})-([a-z0-9-]{1,30})$/.exec(clean(q.get('r'))||'');
+const WW={jmc_linkedin:'li',jmc_facebook:'fb',li:'li',fb:'fb'},ww=WW[String(q.get('ww')||'').toLowerCase().trim()]||'',from=clean(q.get('from')),rp=/^([a-z0-9]{4,10})-(\d{1,2})-([a-z0-9-]{1,30})$/.exec(clean(q.get('r'))||'');
 const isNew=!src;
 if(!src){
   if(rp)src={root:rp[3],step:Math.min(+rp[2]+1,20),parent:rp[1],day:DAY};
