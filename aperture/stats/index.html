@@ -104,6 +104,11 @@ td.share{width:34%;padding-left:12px}
 .msgs .c{font-size:13px;color:var(--blue)}
 .msgs .w{font-size:11.5px;color:var(--faint);word-break:break-word}
 .msgs .del{margin-left:auto}
+.wrap>[hidden]{display:none!important}
+.rtabs{display:flex;gap:6px;margin:4px 0 -4px;flex-wrap:wrap}.rtabs button{font:inherit;font-size:14px;border:1.5px solid var(--frame);background:var(--sheet);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}.rtabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.rt{width:100%;border-collapse:collapse;font-size:13.5px}.rt th{text-align:left;color:var(--soft);font-weight:500;font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}.rt th.n,.rt td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}.rt td{padding:7px 8px;border-bottom:1px solid var(--bg)}
+.rchain{display:flex;align-items:flex-end;gap:10px;height:130px;padding-top:22px}.rchain div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;height:100%}.rchain i{display:block;background:var(--blue);border-radius:8px 8px 3px 3px;position:relative;min-height:3px}.rchain i b{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:13px}.rchain span{font-size:11.5px;color:var(--soft);text-align:center;margin-top:4px}
+.rbtn{font:inherit;font-size:12px;border:1.5px solid var(--frame);background:var(--sheet);border-radius:999px;padding:3px 11px;cursor:pointer;margin-left:4px;color:var(--ink)}tr.rhid td{opacity:.45}
 </style>
 </head>
 <body>
@@ -116,6 +121,7 @@ td.share{width:34%;padding-left:12px}
     <button id="refresh">Refresh</button>
   </header>
 
+  <nav class="rtabs" role="tablist"><button data-t="games" class="on">Games</button><button data-t="reach">Reach</button><button data-t="msgs">Messages</button></nav>
   <h2 class="fam">Aperture <small>both games together, then each game below</small></h2>
   <section class="card">
     <div class="h2row"><h2 id="nowTitle">This month so far</h2><small id="nowDays"></small></div>
@@ -144,8 +150,13 @@ td.share{width:34%;padding-left:12px}
   </section>
   <section class="card" id="nwDetail"></section>
 
-  <h2 class="fam">Messages <small>feedback and bug reports · private, only you can read them</small></h2>
-  <section class="card" id="msgCard"><div class="h2row"><h2>Inbox</h2><small id="msgWho"></small></div><div id="msgBody"><p class="msgnote">Loading…</p></div></section>
+  <h2 class="fam" data-tab="reach">Reach <small>where visitors came from, how far your links spread, and who's on the map</small></h2>
+  <section class="card" data-tab="reach" id="rcSrc"><p class="msgnote">Loading…</p></section>
+  <section class="card" data-tab="reach" id="rcSpread"><div class="h2row"><h2>How far your links spread</h2><small>Patient Zero · anonymous codes, no names</small></div><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see this.</p></div></section>
+  <section class="card" data-tab="reach" id="rcWitw"><div class="h2row"><h2>Where in the World</h2><small>your LinkedIn and Facebook links, plus walk-ins by country</small></div><div id="rcWtiles" class="tiles"></div><svg id="rcMap" style="width:100%;height:auto;background:#f6f8ff;border-radius:14px"></svg><p class="msgnote" id="rcKey">● people who sent the form · shaded: countries with walk-ins</p><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see the names.</p></div></section>
+
+  <h2 class="fam" data-tab="msgs">Messages <small>feedback and bug reports · private, only you can read them</small></h2>
+  <section class="card" id="msgCard" data-tab="msgs"><div class="h2row"><h2>Inbox</h2><small id="msgWho"></small></div><div id="msgBody"><p class="msgnote">Loading…</p></div></section>
 
   <p class="note">Each month starts fresh on the 1st (UK time) and is kept for good, so nothing ever needs deleting. Each year runs 1 November to 31 October. “New players” are devices opening the game for the first time that month. “All time” is the same running total shown in the Aperture games. Natural Wonders counts a visit once per game per session, and a game when its results appear; games played inside Masterbrain count as Masterbrain. Visits include your VIP visits; Premier access visits are kept out of everything else. Country comes from each device's time zone, so treat it as a close guide. Opening this page does not count as a visit. Each day starts fresh at midnight UK time and feeds into the month; daily numbers begin on 3 November 2026. Times and devices are recorded from 1 November 2026, so earlier visits don't appear in them.</p>
 </div>
@@ -361,5 +372,66 @@ async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink"
 auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()!==OWNER){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();body.innerHTML='<p class="msgnote">This Google account can’t read messages. Sign out and use the owner account.</p>';return}load(u).catch(e=>{body.innerHTML=`<p class="msgnote">Something went wrong loading messages (${esc(e)}).</p>`})});
 })();
 </script>
+<script>
+// Tabs: Games (everything else), Reach, Messages
+(()=>{const wrap=document.querySelector('.wrap');const nav=document.querySelector('.rtabs');
+ const all=[...wrap.children].filter(e=>e!==nav&&e.tagName!=='HEADER'&&e.tagName!=='SCRIPT');
+ const show=t=>{all.forEach(e=>{const k=e.dataset.tab||'games';e.hidden=k!==t});nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));try{sessionStorage.setItem('tmg-tab',t)}catch(e){}};
+ nav.querySelectorAll('button').forEach(b=>b.onclick=()=>show(b.dataset.t));let t='games';try{t=sessionStorage.getItem('tmg-tab')||'games'}catch(e){}show(t)})();
+// Reach report
+(()=>{const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',B=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
+const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>v?+(v.integerValue||v.doubleValue||0):0;const map=v=>(v&&v.mapValue&&v.mapValue.fields)||{};
+const g=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());const MONTH=g.find(x=>x.type==='year').value+'-'+g.find(x=>x.type==='month').value;
+const LABEL=k=>k==='li'?'LinkedIn (?ww=li)':k==='fb'?'Facebook (?ww=fb)':k==='walkin'?'Walk-ins (no tag)':'?from='+k.replace(/^t_/,'').replace(/_/g,'-');
+const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'';
+let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
+let docs={},WM=null,entries=[],period='month';
+const getDoc=id=>fetch(B+'stats/'+id+'?key='+K).then(r=>r.ok?r.json():{fields:{}}).then(j=>j.fields||{}).catch(()=>({}));
+async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawWitw()}
+function cur(){return docs[period]||{}}
+function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur().src);
+  const rows=Object.entries(src).map(([k,v])=>{const f=map(v);return [k,num(f.visits),num(f.uniques),num(f.played),num(f.back)]}).sort((a,b)=>(a[0]==='walkin')-(b[0]==='walkin')||b[1]-a[1]);
+  el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
+  <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
+  ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawWitw()})}
+async function drawWitw(){const w=map(cur().witw),walk=map(cur().walkc);const t=k=>{const f=map(w[k]);return [num(f.shown),num(f.sent),num(f.closed)]};const li=t('li'),fb=t('fb');
+  const wsum=Object.values(walk).reduce((a,v)=>a+num(v),0);
+  document.getElementById('rcWtiles').innerHTML=`<div class="tile"><span>LinkedIn</span><b>${li[0]}</b><em>${li[1]} sent the form · ${li[2]} closed it</em></div><div class="tile"><span>Facebook</span><b>${fb[0]}</b><em>${fb[1]} sent · ${fb[2]} closed</em></div><div class="tile"><span>Walk-ins</span><b>${wsum}</b><em>new visitors, by country</em></div><div class="tile"><span>Countries</span><b>${new Set([...Object.keys(walk),...entries.map(e=>e.country)]).size}</b><em>on the map</em></div>`;
+  if(!WM)WM=await fetch('/shared/wmap.json').then(r=>r.json()).catch(()=>null);if(!WM)return;
+  const svg=document.getElementById('rcMap');svg.setAttribute('viewBox',`0 0 ${WM.W} ${WM.H}`);const a2=WM.a2;const shaded=new Set(Object.keys(walk).map(c=>a2[c]).filter(Boolean));
+  const vis=entries.filter(e=>!e.hidden);const pinned=new Set(vis.map(e=>a2[e.country]).filter(Boolean));
+  let h=`<path d="${WM.sphere}" fill="#f6f8ff"/>`+Object.entries(WM.c).map(([k,d])=>`<path d="${d}" fill="${shaded.has(k)?'#c9d5ff':pinned.has(k)?'#dfe6ff':'#e6e9ef'}" stroke="#fff" stroke-width=".6"><title>${esc(cn(Object.keys(a2).find(x=>a2[x]===k)||k))}${walk[Object.keys(a2).find(x=>a2[x]===k)]?' · '+num(walk[Object.keys(a2).find(x=>a2[x]===k)])+' walk-ins':''}</title></path>`).join('');
+  const per={};vis.forEach(e=>{(per[e.country]=per[e.country]||[]).push(e)});
+  Object.entries(per).forEach(([c,list])=>{const p=WM.cen[a2[c]];if(!p)return;list.forEach((e,i)=>{const ang=i*2.4,rad=i?7+i*3:0,x=p[0]+Math.cos(ang)*rad,y=p[1]+Math.sin(ang)*rad;const ini=((e.first||'')[0]||'')+((e.last||'')[0]||'')||'•';
+    h+=`<g><circle cx="${x}" cy="${y}" r="9" fill="#2b50e0" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y+3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="system-ui">${esc(ini.toUpperCase())}</text><title>${esc([e.first,e.last].filter(Boolean).join(' ')||'Someone')}${e.town?' · '+esc(e.town):''} · ${esc(cn(c))}</title></g>`})});
+  svg.innerHTML=h}
+function drawEntries(){const box=document.querySelector('#rcWitw .rbody');
+  if(!entries.length){box.innerHTML='<p class="msgnote">No one has sent the form yet. Post your LinkedIn and Facebook links to start the map.</p>';return}
+  box.innerHTML=`<table class="rt"><tr><th>Name</th><th>Town</th><th>Country</th><th>From</th><th>When</th><th></th></tr>${entries.map((e,i)=>`<tr class="${e.hidden?'rhid':''}"><td>${esc([e.first,e.last].filter(Boolean).join(' ')||'(no name)')}${e.test?' <small>(test)</small>':''}</td><td>${esc(e.town)}</td><td>${flag(e.country)} ${esc(cn(e.country))}</td><td>${e.src==='li'?'LinkedIn':'Facebook'}</td><td>${new Date(e.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</td><td style="text-align:right;white-space:nowrap"><button class="rbtn" data-h="${i}">${e.hidden?'Show':'Hide'}</button><button class="rbtn" data-d="${i}">Delete</button></td></tr>`).join('')}</table><p style="text-align:right;margin:8px 0 0"><button class="rbtn" id="rcCsv">Export CSV</button></p>`;
+  box.querySelectorAll('[data-h]').forEach(b=>b.onclick=async()=>{const e=entries[b.dataset.h];const nv=!e.hidden;const r=await fetch(`https://firestore.googleapis.com/v1/${e.name}?updateMask.fieldPaths=hidden`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({fields:{hidden:{booleanValue:nv}}})});if(r.ok){e.hidden=nv;drawEntries();drawWitw()}});
+  box.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again';setTimeout(()=>{b.dataset.arm='';b.textContent='Delete'},3000);return}const e=entries[b.dataset.d];const r=await fetch('https://firestore.googleapis.com/v1/'+e.name,{method:'DELETE',...{headers:H}});if(r.ok){entries.splice(b.dataset.d,1);drawEntries();drawWitw()}});
+  document.getElementById('rcCsv').onclick=()=>{const rows=[['first','last','town','country','from','date','hidden']].concat(entries.map(e=>[e.first,e.last,e.town,cn(e.country),e.src==='li'?'LinkedIn':'Facebook',e.at.slice(0,10),e.hidden?'yes':'']));
+    const csv=rows.map(r=>r.map(x=>'"'+String(x||'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='where-in-the-world.csv';a.click()}}
+function drawSpread(sp){const box=document.querySelector('#rcSpread .rbody');if(!sp.length){box.innerHTML='<p class="msgnote">No shared links followed yet. When someone arrives through a tagged link or a friend’s share, it shows here.</p>';return}
+  const roots={};sp.forEach(s=>{const r=roots[s.root]=roots[s.root]||{n:0,max:0,cc:new Set(),steps:{}};r.n++;r.max=Math.max(r.max,s.step);if(s.country)r.cc.add(s.country);r.steps[s.step]=(r.steps[s.step]||0)+1});
+  const steps={};sp.forEach(s=>steps[s.step]=(steps[s.step]||0)+1);const maxStep=Math.max(...Object.keys(steps).map(Number));const top=Math.max(...Object.values(steps));
+  const cc=new Set(sp.map(s=>s.country).filter(Boolean));const best=Object.entries(roots).sort((a,b)=>b[1].n-a[1].n)[0];
+  box.innerHTML=`<div class="tiles"><div class="tile"><span>People reached</span><b>${sp.length}</b><em>through tagged and shared links</em></div><div class="tile"><span>Furthest</span><b>${maxStep}</b><em>step${maxStep===1?'':'s'} away</em></div><div class="tile"><span>Countries</span><b>${cc.size}</b><em>reached</em></div><div class="tile"><span>Links</span><b>${Object.keys(roots).length}</b><em>that brought people</em></div></div>
+  <div class="rchain">${Array.from({length:maxStep+1},(_,i)=>i).filter(i=>i>0||steps[0]).map(i=>`<div><i style="height:${Math.round((steps[i]||0)/top*100)}%"><b>${steps[i]||0}</b></i><span>${i===0?'Walk-ins who shared':i===1?'Came from your link':'Step '+i}</span></div>`).join('')}</div>
+  <table class="rt"><tr><th>Link</th><th class="n">People</th><th class="n">Furthest</th><th class="n">Countries</th></tr>${Object.entries(roots).sort((a,b)=>b[1].n-a[1].n).map(([k,r])=>`<tr><td>${esc(LABEL(k.replace(/-/g,'_')))}</td><td class="n">${r.n}</td><td class="n">${r.max}</td><td class="n">${r.cc.size}</td></tr>`).join('')}</table>
+  <p class="msgnote">Best link: <b>${esc(LABEL(best[0].replace(/-/g,'_')))}</b> reached ${best[1].n} ${best[1].n===1?'person':'people'} in ${best[1].cc.size} ${best[1].cc.size===1?'country':'countries'}, up to ${best[1].max} step${best[1].max===1?'':'s'} away.</p>`}
+let H={};
+const val=f=>f==null?'':f.stringValue??f.timestampValue??(f.integerValue!=null?+f.integerValue:f.booleanValue);
+async function loadPrivate(u){const tok=await u.getIdToken();H={Authorization:'Bearer '+tok};
+  const list=async c=>{let out=[],pt='';do{const r=await fetch(B+c+'?pageSize=300'+(pt?'&pageToken='+pt:''),{headers:H});if(!r.ok)throw r.status;const j=await r.json();out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);return out};
+  try{const sp=(await list('spread')).map(d=>({root:val(d.fields.root),step:+val(d.fields.step)||0,country:val(d.fields.country)}));drawSpread(sp)}catch(e){document.querySelector('#rcSpread .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}
+  try{entries=(await list('witw')).map(d=>({name:d.name,src:val(d.fields.src),first:val(d.fields.first),last:val(d.fields.last),town:val(d.fields.town),country:val(d.fields.country),test:val(d.fields.test)===true,hidden:val(d.fields.hidden)===true,at:val(d.fields.at)||d.createTime})).sort((a,b)=>new Date(b.at)-new Date(a.at));drawEntries();drawWitw()}catch(e){document.querySelector('#rcWitw .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}}
+loadPublic();
+try{const OWNER='mybetterbrain109@gmail.com';firebase.app('msgs').auth().onAuthStateChanged(u=>{if(u&&(u.email||'').toLowerCase()===OWNER)loadPrivate(u).catch(()=>{});else{entries=[];H={};document.querySelector('#rcSpread .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see this.</p>';document.querySelector('#rcWitw .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see the names.</p>'}})}catch(e){}
+})();
+</script>
 </body>
+
 </html>
