@@ -397,7 +397,7 @@ function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur()
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
   ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawWitw()})}
-const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch']};
+const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch'],tr:['🇹🇷','Türkçe']};
 function drawLang(){const el=document.getElementById('rcLang');const L=map(cur().langs);
   const rows=Object.entries(L).map(([k,v])=>{const f=map(v),vis=num(f.visits),fin=num(f.finished);
     const via=['link','offer','switch'].map(x=>[x,num(f['via_'+x])]).filter(x=>x[1]);
@@ -406,8 +406,8 @@ function drawLang(){const el=document.getElementById('rcLang');const L=map(cur()
   const other=rows.filter(r=>r.k!=='en'&&r.cc.length);
   el.innerHTML=`<div class="h2row"><h2>Languages</h2><small>Where is Bigger? · ${period==='month'?'this month':'all time'} · finish rate shows whether the translation reads well</small></div>
   ${rows.length?`<table class="rt"><tr><th>Language</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Finished a game</th><th class="n">Finish rate</th><th>Arrived by</th></tr>${rows.map(r=>`<tr><td>${(LNAME[r.k]||['',r.k.toUpperCase()]).join(' ')}</td><td class="n">${r.vis}</td><td class="n">${r.uni}</td><td class="n">${r.fin}</td><td class="n">${r.rate}</td><td>${r.via.length?r.via.map(x=>x[0]+' '+x[1]).join(' · '):'—'}</td></tr>`).join('')}</table>
-  ${other.map(r=>`<p class="msgnote"><b>${esc({de:"German"}[r.k]||r.k.toUpperCase())} players by country:</b> ${r.cc.map(([c,n])=>flag(c)+' '+esc(c==='GB'?'UK':cn(c))+' '+n).join(' · ')}</p>`).join('')}
-  <p class="msgnote">German link to post: twominute.games/de/ · “link” = came through it, “offer” = said yes to the German offer on the English page, “switch” = used the EN | DE button.</p>`
+  ${other.map(r=>`<p class="msgnote"><b>${esc({de:"German",tr:"Turkish"}[r.k]||r.k.toUpperCase())} players by country:</b> ${r.cc.map(([c,n])=>flag(c)+' '+esc(c==='GB'?'UK':cn(c))+' '+n).join(' · ')}</p>`).join('')}
+  <p class="msgnote">Links to post: twominute.games/de/ (German), twominute.games/tr/ (Turkish) · “link” = came through it, “offer” = said yes to the German offer on the English page, “switch” = used the EN | DE | TR button.</p>`
   :'<p class="msgnote">Nothing yet. Counting starts once Firestore rules v10 are published.</p>'}`}
 async function drawWitw(){const w=map(cur().witw),walk=map(cur().walkc);const t=k=>{const f=map(w[k]);return [num(f.shown),num(f.sent),num(f.closed)]};const li=t('li'),fb=t('fb');
   const wsum=Object.values(walk).reduce((a,v)=>a+num(v),0);
