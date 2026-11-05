@@ -58,7 +58,7 @@ function welcome(cc){if(location.pathname!=='/'||!cc)return;const t=document.que
   const d=document.createElement('div');d.id='tmgHi';d.innerHTML=`<span><i>${flag(cc)}</i><span><b>${HI[cc]||'Hello'}, ${cname(cc).replace(/^the /,m=>m)}!</b> <em>Good to see you. Today’s puzzles are ready.</em></span></span>`;t.after(d)}
 // --- Where in the World form, for people arriving from Michael's LinkedIn and Facebook links ---
 const ICON='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#e6edff"/><ellipse cx="32" cy="32" rx="10" ry="23" fill="none" stroke="#2b50e0" stroke-width="2.6"/><line x1="10" y1="32" x2="54" y2="32" stroke="#2b50e0" stroke-width="2.6" stroke-linecap="round"/><circle cx="41" cy="20" r="6.5" fill="#e8662b"/></svg>';
-function witw(ch,cc){const done=ls('tmg-witw');if(done)return;const NAME=ch==='li'?'LinkedIn':'Facebook';
+function witw(ch,cc){const done=ls('tmg-witw2');if(done)return;const NAME=ch==='li'?'LinkedIn':'Facebook';
   const fl=document.createElement('link');fl.rel='stylesheet';fl.href='https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&display=swap';document.head.appendChild(fl);
   const st=document.createElement('style');st.textContent=`.ww-v{position:fixed;inset:0;z-index:2147483000;background:rgba(22,24,29,.4);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:14px;font-family:Inter,"DM Sans",system-ui,sans-serif;color:#1b2233}
 .ww-c{position:relative;background:#fff;border-radius:26px;padding:26px 26px 18px;width:100%;max-width:460px;max-height:calc(100% - 8px);overflow:auto;box-sizing:border-box;box-shadow:0 30px 70px -24px rgba(0,0,0,.45);text-align:left}
@@ -82,14 +82,14 @@ function witw(ch,cc){const done=ls('tmg-witw');if(done)return;const NAME=ch==='l
   <div class="ww-f"><a href="/" class="ww-back">← Back to twominute.games</a><span>Two-minute puzzles, free daily</span></div></form>`;
   document.body.appendChild(v);const f=v.querySelector('form'),err=v.querySelector('.ww-e'),go=v.querySelector('.ww-go');
   const count=k=>bump({[`witw.${ch}.${k}`]:1});count('shown');
-  const close=(why)=>{if(why){ls('tmg-witw',why);if(why==='closed')count('closed')}v.remove();try{const u=new URL(location.href);u.searchParams.delete('ww');history.replaceState(null,'',u)}catch(e){}};
+  const close=(why)=>{if(why){ls('tmg-witw2',why);if(why==='closed')count('closed')}v.remove();try{const u=new URL(location.href);u.searchParams.delete('ww');history.replaceState(null,'',u)}catch(e){}};
   v.querySelector('.ww-x').onclick=()=>close('closed');v.querySelector('.ww-back').onclick=e=>{e.preventDefault();close('closed')};
   f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));const country=d.country||'';
     if(!country){err.textContent='Please choose your country.';return}
     go.disabled=true;err.textContent='';const s=x=>({stringValue:String(x||'').trim()});
     const fields={src:s(ch),first:s(d.first),last:s(d.last),country:s(country),town:s(d.town),tz:s(tzName.slice(0,60)),test:{booleanValue:!LIVE||VIP},at:{timestampValue:new Date().toISOString()}};
     try{if(LIVE){const r=await fetch(`${BASE}/witw?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});if(!r.ok)throw 0}
-      ls('tmg-witw','sent');count('sent');
+      ls('tmg-witw2','sent');count('sent');
       const first=String(d.first||'').trim(),town=String(d.town||'').trim(),place=(town?town+', ':'')+(names[country]||country);
       f.innerHTML=`<button type="button" class="ww-x" aria-label="Close">✕</button><span class="ww-i">${ICON}</span><h2>You’re on the map!</h2><h3>${place.replace(/</g,'&lt;')} 📍</h3>
       <p>${first?`Thank you ${first.replace(/</g,'&lt;')}.`:'Thank you.'} Michael will be pleased to see you on the map.</p><p class="ww-s">Your pin is only on Michael’s private map, not shown publicly.</p><button type="button" class="ww-go">Close</button>`;
