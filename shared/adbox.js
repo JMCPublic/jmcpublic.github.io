@@ -37,7 +37,7 @@ const st=d.createElement('style');st.textContent=css;d.head.appendChild(st);
 const KOFI={href:'https://ko-fi.com/twominutegames',b:'Enjoying the games? Buy us a coffee ☕',pb:'Enjoying the games? ☕',s:'Two Minute Games is free, with no sign-up. Tips keep it going.',i:'Support us'};
 const CROSS=isNW?{href:'/aperture/',b:'Try Aperture: what can you see?',pb:'Try Aperture: what can you see?',s:'An everyday object, seen through a few small viewpoints. Two minutes a day.',i:'Play Aperture →'}
                 :{href:'/wonders/',b:'Try Natural Wonders',pb:'Try Natural Wonders',s:'Ten quick geography games: rivers, lakes, peaks, deserts and borders.',i:'Play →'};
-const DE=d.documentElement.lang==='de',TR=d.documentElement.lang==='tr',FR=d.documentElement.lang==='fr',ES=d.documentElement.lang==='es';
+const DE=d.documentElement.lang==='de',TR=d.documentElement.lang==='tr',FR=d.documentElement.lang==='fr',ES=d.documentElement.lang==='es',PT=d.documentElement.lang==='pt';
 const KOFI_DE={href:KOFI.href,b:'Gefallen dir die Spiele? Spendier uns einen Kaffee ☕',pb:'Gefallen dir die Spiele? ☕',s:'Two Minute Games ist kostenlos und ohne Anmeldung. Trinkgeld hält es am Laufen.',i:'Unterstützen'};
 const CROSS_DE={href:'/aperture/',b:'Probier Aperture: Was siehst du?',pb:'Probier Aperture: Was siehst du?',s:'Ein Alltagsgegenstand, durch ein paar kleine Fenster gesehen. Zwei Minuten am Tag (auf Englisch).',i:'Aperture spielen →'};
 const KOFI_TR={href:KOFI.href,b:'Oyunları sevdin mi? Bize bir kahve ısmarla ☕',pb:'Oyunları sevdin mi? ☕',s:'Two Minute Games ücretsiz ve üyelik gerektirmiyor. Bağışlar oyunları sürdürüyor.',i:'Destek ol'};
@@ -46,7 +46,9 @@ const KOFI_FR={href:KOFI.href,b:'Les jeux te plaisent ? Offre-nous un café ☕'
 const CROSS_FR={href:'/aperture/',b:'Essaie Aperture : que vois-tu ?',pb:'Essaie Aperture : que vois-tu ?',s:'Un objet du quotidien vu par quelques petites fenêtres. Deux minutes par jour (en anglais).',i:'Jouer à Aperture →'};
 const KOFI_ES={href:KOFI.href,b:'¿Te gustan los juegos? Invítanos a un café ☕',pb:'¿Te gustan los juegos? ☕',s:'Two Minute Games es gratis y sin registro. Las propinas lo mantienen en marcha.',i:'Apoyar'};
 const CROSS_ES={href:'/aperture/',b:'Prueba Aperture: ¿qué ves?',pb:'Prueba Aperture: ¿qué ves?',s:'Un objeto cotidiano visto a través de unas ventanitas. Dos minutos al día (en inglés).',i:'Jugar a Aperture →'};
-function house(wide){const h=Math.random()<.5?(DE?KOFI_DE:TR?KOFI_TR:FR?KOFI_FR:ES?KOFI_ES:KOFI):(DE?CROSS_DE:TR?CROSS_TR:FR?CROSS_FR:ES?CROSS_ES:CROSS);const ext=/^https?:/.test(h.href);
+const KOFI_PT={href:KOFI.href,b:'Curtiu os jogos? Pague um café para a gente ☕',pb:'Curtiu os jogos? ☕',s:'A Two Minute Games é grátis e sem cadastro. As gorjetas mantêm tudo funcionando.',i:'Apoiar'};
+const CROSS_PT={href:'/aperture/',b:'Experimente o Aperture: o que você vê?',pb:'Experimente o Aperture: o que você vê?',s:'Um objeto do dia a dia visto por algumas janelinhas. Dois minutos por dia (em inglês).',i:'Jogar Aperture →'};
+function house(wide){const h=Math.random()<.5?(DE?KOFI_DE:TR?KOFI_TR:FR?KOFI_FR:ES?KOFI_ES:PT?KOFI_PT:KOFI):(DE?CROSS_DE:TR?CROSS_TR:FR?CROSS_FR:ES?CROSS_ES:PT?CROSS_PT:CROSS);const ext=/^https?:/.test(h.href);
   return `<a class="tmgad-house" href="${h.href}"${ext?' target="_blank" rel="noopener"':''}><div><b>${wide?h.b:h.pb}</b><span>${h.s}</span></div><i>${h.i}</i></a>`}
 function fill(slot,wide){const id=wide?ADS.slotWide:ADS.slotPhone;
   if(!id){slot.innerHTML=house(wide);return}
@@ -60,8 +62,8 @@ function build(){
   mode=apDesk&&!narrow?'inline':'fixed';
   if(box&&box.dataset.k===mode+wide)return sync();
   if(box)box.remove();
-  box=d.createElement('aside');box.id='tmgAd';box.className=mode;box.dataset.k=mode+wide;box.setAttribute('aria-label',DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':'Advertisement');
-  box.innerHTML=`<div class="tmgad-in ${wide?'w':'p'}">${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}<span class="tmgad-l">${DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':'Advertisement'}</span><div class="tmgad-slot ${wide?'w':'p'}"></div>${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}</div>`;
+  box=d.createElement('aside');box.id='tmgAd';box.className=mode;box.dataset.k=mode+wide;box.setAttribute('aria-label',DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':PT?'Publicidade':'Advertisement');
+  box.innerHTML=`<div class="tmgad-in ${wide?'w':'p'}">${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}<span class="tmgad-l">${DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':PT?'Publicidade':'Advertisement'}</span><div class="tmgad-slot ${wide?'w':'p'}"></div>${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}</div>`;
   if(mode==='inline'){const m=d.querySelector('main.phones');m.after(box);root.classList.remove('tmgad-on')}
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
   fill(box.querySelector('.tmgad-slot'),wide);sync()}
