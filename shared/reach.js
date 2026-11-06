@@ -31,9 +31,9 @@ if(!src){
   else src={root:'walkin',step:0,day:DAY};
   ls('tmg-src',JSON.stringify(src))}
 // --- counters: stats/reach (all time), reach-YYYY-MM (month) ---
-async function commit(id,fields){if(!LIVE||VIP)return;try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
+async function commit(id,fields){if(!LIVE||VIP)return;try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
   body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
-const bump=async f=>{await commit('reach',f);if(MONTH>='2026-11')await commit('reach-'+MONTH,f)};
+const bump=async f=>{await Promise.all([commit('reach',f),MONTH>='2026-11'?commit('reach-'+MONTH,f):null])}; // both at once
 const R=fkey(src.root);
 const onceToday=k=>{if(ls(k)===DAY)return false;ls(k,DAY);return true};
 ccReady.then(cc=>{const f={};

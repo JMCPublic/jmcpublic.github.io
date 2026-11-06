@@ -1027,7 +1027,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v32';
+document.documentElement.dataset.version='landmarks desktop v33';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1090,9 +1090,9 @@ const DAY=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Lo
 const MONTH=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());return p.find(x=>x.type==='year').value+'-'+p.find(x=>x.type==='month').value}catch(e){const d=new Date();return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')}})();
 async function commit(id,fields){
   const doc=`projects/${P}/databases/(default)/documents/stats/${id}`;
-  try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},
+  try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
     body:JSON.stringify({writes:[{transform:{document:doc,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
-async function bump(fields,monthFields,dayFields){await commit(GAME,fields);if(MONTH>='2026-11'){await commit(GAME+'-'+MONTH,monthFields||fields);await commit(GAME+'-'+DAY,dayFields||monthFields||fields)}} // monthly records start 1 Nov 2026; earlier counts are the launch month
+async function bump(fields,monthFields,dayFields){const w=[commit(GAME,fields)];if(MONTH>='2026-11'){w.push(commit(GAME+'-'+MONTH,monthFields||fields),commit(GAME+'-'+DAY,dayFields||monthFields||fields))}await Promise.all(w)} /* all three sent at once (still as separate requests, so one can't block another) */ // monthly records start 1 Nov 2026; earlier counts are the launch month
 async function read(){try{const r=await fetch(`${BASE}/stats/${GAME}?key=${K}`);if(!r.ok)return null;const f=(await r.json()).fields||{};
   const num=x=>+((x&&(x.integerValue||x.doubleValue))||0);const c=(f.countries&&f.countries.mapValue&&f.countries.mapValue.fields)||{};
   return{visits:num(f.visits),uniques:num(f.uniques),vip:num(f.vip),tests:num(f.tests),games:num(f.games),top:Object.entries(c).map(([k,v])=>[k,num(v)]).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))).slice(0,3)}}catch(e){return null}}
