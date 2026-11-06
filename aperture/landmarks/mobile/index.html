@@ -180,6 +180,21 @@ body.waiting .viewer canvas{filter:blur(18px) saturate(.6)}
   .words{overflow:visible;flex:none}
   #feedback{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 }
+/* same as above when the words list would be squashed (big system text, in-app browsers) */
+html.short,html.short body{height:auto}
+html.short body{overflow:visible;min-height:100%;padding-top:0}
+html.short header{position:sticky;top:0;z-index:6;background:var(--bg);padding-top:max(8px,env(safe-area-inset-top,0px));padding-bottom:4px}
+html.short .viewer{width:100%}
+html.short .tray{position:sticky;top:var(--hh,84px);z-index:5;background:var(--bg);padding-block:4px;box-shadow:0 6px 8px -8px rgba(22,24,29,.25)}
+html.short .wordsbox{flex:none}
+html.short .words{overflow:visible;flex:none}
+html.short #feedback{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+/* no ad over the game while a round is running (it covered the words list in Messenger) */
+html.playing #tmgAd.fixed{display:none!important}
+html.playing.tmgad-on body{padding-bottom:0!important}
+html.tmgad-on:not(.playing) #feedback{bottom:calc(var(--tmgad-h,0px) + 14px)}
+.wordsbox.nudge{animation:nudge .9s ease 2}
+@keyframes nudge{50%{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-wash)}}
 @media (max-width:340px){
   h1{font-size:19px}
   #time{font-size:18px}
@@ -720,7 +735,7 @@ function buildSlots(obj){S.slots=obj.answer.map(w=>[...w].map(ch=>({ch,rev:false
 function renderSlots(){
   const el=$('slots');el.innerHTML='';
   S.slots.forEach((g,gi)=>{const d=document.createElement('div');d.className='grp'+(gi===S.cur&&S.running?' cur':'');
-    d.onclick=()=>{if(!S.running)return;S.cur=gi;renderSlots()};
+    d.onclick=()=>{if(!S.running)return;S.cur=gi;renderSlots();pointToWords()};
     g.forEach(c=>{const s=document.createElement('span');let cls='cell',t='';
       if(S.ended){t=c.ch;cls+=S.won?' ok':(c.rev?' rev':' miss')}
       else if(c.rev){t=c.ch;cls+=' rev'}
@@ -872,11 +887,11 @@ function newRound(){
   if(G.round===0)showQuote('open');
   updateHUD();
 }
-function startRound(){hideQuote();ac();setTimeout(musicStart,150);overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;last=performance.now();
+function startRound(){hideQuote();ac();setTimeout(musicStart,150);overlay.hidden=true;document.body.classList.remove('waiting');S.running=true;document.documentElement.classList.add('playing');setTimeout(()=>window.fitCheck&&fitCheck(),50);last=performance.now();
   tick('Clock running. A free viewpoint opens every 20 seconds.');renderSlots();updateHUD();raf=requestAnimationFrame(loop)}
 function endRound(win,skipped){
   musicStop(.6);
-  S.running=false;S.ended=true;S.won=win;cancelAnimationFrame(raf);
+  S.running=false;S.ended=true;document.documentElement.classList.remove('playing');setTimeout(()=>window.fitCheck&&fitCheck(),50);S.won=win;cancelAnimationFrame(raf);
   const pen=S.pen+(win?0:MISS), time=(win?S.elapsed:LIMIT)+pen;
   G.total+=time;G.totalPen+=pen;
   G.results.push({name:S.obj.name,answer:S.obj.title,time,pen,win,skip:!!skipped,helps:S.helps||0});
@@ -955,6 +970,12 @@ neg.onclick=()=>{neg.hidden=true};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.hidden=true;neg.hidden=true}});
 const setHH=()=>document.documentElement.style.setProperty('--hh',document.querySelector('header').offsetHeight+'px');
 setHH();addEventListener('resize',setHH);
+window.fitCheck=()=>{const r=document.documentElement,wb=document.querySelector('.wordsbox');if(!wb)return;r.classList.remove('short');
+  if(innerHeight>700&&wb.getBoundingClientRect().height<130)r.classList.add('short');setHH()};
+window.fitCheck();addEventListener('resize',window.fitCheck);addEventListener('load',fitCheck);if(document.fonts)document.fonts.ready.then(fitCheck);
+window.pointToWords=()=>{if(!matchMedia('(pointer:coarse)').matches)return;const wb=document.querySelector('.wordsbox');if(!wb)return;
+  {const f=document.getElementById('feedback');f.className='';f.textContent='Tap the words in C to fill the answer'}const b=wb.getBoundingClientRect();if(b.top>innerHeight-120||b.bottom<0)wb.scrollIntoView({behavior:'smooth',block:'center'});
+  wb.classList.remove('nudge');void wb.offsetWidth;wb.classList.add('nudge')};
 const fb=$('feedback');let ft;
 let lastMsg='';
 new MutationObserver(()=>{const t=fb.textContent;
@@ -968,7 +989,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks mobile v32';
+document.documentElement.dataset.version='landmarks mobile v33';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
