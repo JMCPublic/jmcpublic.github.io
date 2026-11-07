@@ -102,5 +102,7 @@ if(/^\/natural-wonders-where-is-bigger\//.test(location.pathname)){const L=(docu
   const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
   ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
   let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
-window.tmgReach={src,me,link:tag};
+window.tmgReach={src,me,link:tag,bump};
+/* first-play walkthrough, shared by every game */
+{const w=document.createElement('script');w.src='/shared/walk.js?v=1';w.defer=true;document.head.appendChild(w)}
 })();

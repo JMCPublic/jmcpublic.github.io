@@ -221,7 +221,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v17';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v18';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -398,6 +398,7 @@ const getDoc=id=>fetch(B+'stats/'+id+'?key='+K).then(r=>r.ok?r.json():{fields:{}
 async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawWitw();loadVisits()}
 function cur(){return docs[period]||{}}
 function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur().src);
+  ['li','fb'].forEach(k=>{if(!src[k])src[k]={mapValue:{fields:{}}}}); /* LinkedIn and Facebook always listed, even at 0 */
   const rows=Object.entries(src).map(([k,v])=>{const f=map(v);return [k,num(f.visits),num(f.uniques),num(f.played),num(f.back)]}).sort((a,b)=>(a[0]==='walkin')-(b[0]==='walkin')||b[1]-a[1]);
   el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
