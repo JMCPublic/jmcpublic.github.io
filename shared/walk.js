@@ -114,10 +114,11 @@ async function aperture(){
     {sels:['.viewer'],k:'A',t:'The picture',b:`${lm?'A landmark':'An everyday thing'} is hiding behind these slits. More of it opens up as the clock runs. ${coarse?'Pinch or tap + to zoom.':'Scroll or click + to zoom.'}`},
     {sels:['#negThumb','.negwrap'],k:'B',t:'The negative',b:`A second clue: the same picture as a colour-flipped negative, filling in square by square over time.${D.getElementById('negThumb')?` ${tap} it to see it big.`:' Before you start, today\'s quote sits here.'}`},
     {sels:['#tray','.wordsbox','#words'],k:'C',t:coarse?'Tap words to answer':'Click words to answer',b:`${coarse?'No typing. Tap':'Click'} words in the list and they drop into the boxes${coarse?'':' (or just type)'}. ${gtxt}`},
-    {sels:['#tray .row','.helpers','#skipBtn'],round:'22px',t:'Stuck?',b:'<b>Help</b> gives clues such as a first letter. <b>Skip</b> moves on to the next picture. Both add a few seconds. Five pictures; lowest total time wins.'}
+    {sels:['#tray .row','.helpers','#skipBtn'],round:'22px',t:'Stuck?',b:'<b>Help</b> gives clues such as a first letter. <b>Skip</b> moves on to the next picture. Both add a few seconds. Five pictures; lowest total time wins.'},
+    {sels:['#musicBtn','#soundBtn','[aria-label="Feedback or report a problem"]','#helpBtn'],round:'999px',t:'Your buttons',b:'<b>♫</b> turns the music on or off, the <b>speaker</b> does the same for sound effects. The <b>speech bubble</b> sends us a message or reports a problem. <b>How to play</b> brings these tips back.'}
   ];
   const hideOv=v=>{if(ov)ov.style.visibility=v?'hidden':''};
-  sheet('',`<span class="tw-eb">${L.first}</span><h3>Guess what's hiding, in two minutes</h3><p>Four quick tips over the real game. The clock waits until you're ready.</p><div class="tw-btns"><button class="tw-btn" data-a="show">Show me</button><button class="tw-lnk" data-a="play">I'll just play</button></div>`,(s,close)=>{
+  sheet('',`<span class="tw-eb">${L.first}</span><h3>Guess what's hiding, in two minutes</h3><p>Five quick tips over the real game. The clock waits until you're ready.</p><div class="tw-btns"><button class="tw-btn" data-a="show">Show me</button><button class="tw-lnk" data-a="play">I'll just play</button></div>`,(s,close)=>{
     s.querySelector('[data-a=play]').onclick=()=>{close();bump('justplay')};
     s.querySelector('[data-a=show]').onclick=()=>{close();bump('show');hideOv(true);scrollTo(0,0);
       tour(steps,{lastLabel:'Ready? Start the clock',onDone:()=>{hideOv(false);bump('done');scrollTo(0,0);const b=D.getElementById('startBtn');b&&b.click()},onSkip:()=>{hideOv(false);bump('skip')}})}});
