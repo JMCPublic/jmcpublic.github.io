@@ -159,6 +159,7 @@ td.share{width:34%;padding-left:12px}
   <h2 class="fam" data-tab="reach">Reach <small>where visitors came from, how far your links spread, and who's on the map</small></h2>
   <section class="card" data-tab="reach" id="rcSrc"><p class="msgnote">Loading…</p></section>
   <section class="card" data-tab="reach" id="rcLang"></section>
+  <section class="card" data-tab="reach" id="rcWalk"></section>
   <section class="card" data-tab="reach" id="rcSpread"><div class="h2row"><h2>How far your links spread</h2><small>Patient Zero · anonymous codes, no names</small></div><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see this.</p></div></section>
   <section class="card" data-tab="reach" id="rcWitw"><div class="h2row"><h2>Where in the World</h2><small>your LinkedIn and Facebook links, plus walk-ins by country</small></div><div id="rcWtiles" class="tiles"></div><div class="rcconts" id="rcConts"></div><svg id="rcMap" style="width:100%;height:auto;background:#f6f8ff;border-radius:14px"></svg><p class="msgnote" id="rcKey">● people who sent the form · shaded: countries with walk-ins</p><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see the names.</p></div></section>
 
@@ -221,7 +222,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v18';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v19';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -395,7 +396,7 @@ const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
 let docs={},WM=null,entries=[],period='month';
 const getDoc=id=>fetch(B+'stats/'+id+'?key='+K).then(r=>r.ok?r.json():{fields:{}}).then(j=>j.fields||{}).catch(()=>({}));
-async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawWitw();loadVisits()}
+async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawWalk();drawWitw();loadVisits()}
 function cur(){return docs[period]||{}}
 function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur().src);
   ['li','fb'].forEach(k=>{if(!src[k])src[k]={mapValue:{fields:{}}}}); /* LinkedIn and Facebook always listed, even at 0 */
@@ -403,8 +404,16 @@ function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur()
   el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
   ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
-  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawWitw()})}
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawWalk();drawWitw()})}
 const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch'],tr:['🇹🇷','Türkçe'],fr:['🇫🇷','Français'],es:['🌎','Español'],pt:['🌎','Português']};
+const WNAME={objects:'Aperture',landmarks:'Aperture Landmarks',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?',bodies_of_water:'Bodies of Water',river_cities:'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
+function drawWalk(){const el=document.getElementById('rcWalk');if(!el)return;const W=map(cur().walk);const g={};
+  Object.entries(W).forEach(([k,v])=>{const m=k.match(/^(.+)_([a-z]+)$/);if(!m)return;(g[m[1]]=g[m[1]]||{})[m[2]]=num(v)});
+  const rows=Object.entries(g).sort((a,b)=>(b[1].shown||0)-(a[1].shown||0));
+  const pc=(a,b)=>b?Math.round(100*(a||0)/b)+'%':'–';
+  el.innerHTML=`<div class="h2row"><h2>First-play walkthrough</h2></div><p class="msgnote">Started 7 Nov 2026. Shown once to each new visitor. "Started playing" is the share who went on to start a game straight from it; compare games played per visit before and after 7 Nov on the Games tab.</p>
+  ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Shown</th><th class="n">Took the tips</th><th class="n">Finished tips</th><th class="n">Skipped</th><th class="n">Started playing</th></tr>${rows.map(([k,r])=>{const ap=k==='objects'||k==='landmarks';const took=ap?r.show:r.playnow;const fin=ap?r.done:r.tip;const sk=ap?(r.skip||0)+(r.justplay||0):r.settings;const pl=ap?r.done:r.play;
+    return `<tr><td>${esc(WNAME[k]||k)}</td><td class="n">${r.shown||0}</td><td class="n">${took||0}</td><td class="n">${fin||0}</td><td class="n">${sk||0}</td><td class="n">${pc(pl,r.shown)}</td></tr>`}).join('')}</table>`:'<p class="msgnote">Nothing yet. Needs Firestore rules v11 published.</p>'}`}
 function drawLang(){const el=document.getElementById('rcLang');const L=map(cur().langs);
   const rows=Object.entries(L).map(([k,v])=>{const f=map(v),vis=num(f.visits),fin=num(f.finished);
     const via=['link','offer','switch'].map(x=>[x,num(f['via_'+x])]).filter(x=>x[1]);
