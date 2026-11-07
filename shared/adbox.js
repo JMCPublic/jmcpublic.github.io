@@ -14,7 +14,7 @@ const css=`
 .tmgad-house{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;height:100%;box-sizing:border-box;padding:0 22px;border-radius:12px;text-decoration:none;color:#16181d;background:linear-gradient(100deg,#e6edff,#f4f1ea);border:1px solid rgba(22,24,29,.08)}
 .tmgad-house b{display:block;font-size:19px;line-height:1.15;letter-spacing:-.01em}
 .tmgad-house span{display:block;font-size:13px;color:#5b606b;margin-top:3px}
-.tmgad-house i{font-style:normal;flex:none;background:#16181d;color:#fff;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.tmgad-house i{font-style:normal;flex:none;background:transparent;color:#16181d;border:1.5px solid rgba(22,24,29,.45);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:600;white-space:nowrap}
 .p .tmgad-house{flex-direction:column;justify-content:center;align-items:flex-start;gap:7px;padding:0 16px}
 .p .tmgad-house b{font-size:16px}.p .tmgad-house span{display:none}.p .tmgad-house i{padding:6px 12px;font-size:12.5px}
 /* phones and Natural Wonders: a strip fixed to the bottom of the screen */
@@ -22,6 +22,7 @@ const css=`
 #tmgAd.fixed .tmgad-in{border-radius:16px;padding:16px 10px 8px;position:relative}
 #tmgAd.fixed .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
 #tmgAd.fixed .tmgad-in.w{padding:12px 16px}
+html.tmgad-play #tmgAd{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
 html.tmgad-on body{padding-bottom:var(--tmgad-h,0px)}
 html.tmgad-on .tbar{bottom:var(--tmgad-h,0px)!important}
 html.tmgad-on .tmgfb-pill{bottom:calc(var(--tmgad-h,0px) + 12px)}
@@ -68,7 +69,9 @@ function build(){
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
   fill(box.querySelector('.tmgad-slot'),wide);sync()}
 function sync(){if(!box)return;
-  if(mode==='fixed'){root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
+  if(mode==='fixed'){const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
+    if(!wide&&inn&&sl&&lb){const t=hs&&hs.querySelector('b');lb.style.left=(sl.offsetLeft+(t?t.offsetLeft:0))+'px'}
+    if(!root.classList.contains('tmgad-play'))root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
   // inline: as wide as boxes A to C, banner centred, label just left of it at its top edge
   const ph=[...d.querySelectorAll('main.phones>.phone')];if(ph.length){const a=ph[0].getBoundingClientRect(),c=ph[ph.length-1].getBoundingClientRect();box.style.width=Math.round(c.right-a.left)+'px'}
   const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l');
@@ -84,7 +87,10 @@ function mirror(){const m=d.querySelector('main.phones'),side=m&&m.querySelector
   copy();new MutationObserver(copy).observe(sc,{childList:true,subtree:true,characterData:true,attributes:true});
   new MutationObserver(copy).observe(pr,{childList:true,subtree:true,characterData:true,attributes:true});
   p2.addEventListener('click',e=>{e.preventDefault();pr.click()})}
-function start(){mirror();build();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
+// Natural Wonders on phones: no ad strip while a game is running, so it can never cover the answers
+function playWatch(){if(!isNW)return;let was=null;const chk=()=>{const on=mode==='fixed'&&!wide&&!!d.querySelector('.play');if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
+  new MutationObserver(chk).observe(d.body,{childList:true,subtree:true});chk()}
+function start(){mirror();build();playWatch();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
 window.tmgAd={ADS,rebuild:build};
 if(d.body)start();else addEventListener('DOMContentLoaded',start);
 })();
