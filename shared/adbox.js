@@ -22,6 +22,10 @@ const css=`
 #tmgAd.fixed .tmgad-in{border-radius:16px;padding:16px 10px 8px;position:relative}
 #tmgAd.fixed .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
 #tmgAd.fixed .tmgad-in.w{padding:12px 16px}
+/* Aperture phones: in the page, below the game */
+#tmgAd.flow{flex:none;display:flex;justify-content:center;padding:2px 0 calc(4px + env(safe-area-inset-bottom))}
+#tmgAd.flow .tmgad-in{border-radius:16px;padding:16px 10px 8px;position:relative}
+#tmgAd.flow .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
 html.tmgad-play #tmgAd{display:none!important}html.tmg-playing .tmgfb-pill{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
 html.tmgad-on body{padding-bottom:var(--tmgad-h,0px)}
 html.tmgad-on .tbar{bottom:var(--tmgad-h,0px)!important}
@@ -60,18 +64,20 @@ let box,mode,wide;
 function build(){
   const apDesk=isAp&&d.querySelector('main.phones')&&!/\/mobile\//.test(path);
   const narrow=innerWidth<780;wide=!narrow;
-  mode=apDesk&&!narrow?'inline':'fixed';
+  /* Aperture phone pages: the ad gets its own space at the bottom of the page instead of floating over the game */
+  mode=apDesk&&!narrow?'inline':(isAp&&/\/mobile\//.test(path)?'flow':'fixed');
   if(box&&box.dataset.k===mode+wide)return sync();
   if(box)box.remove();
   box=d.createElement('aside');box.id='tmgAd';box.className=mode;box.dataset.k=mode+wide;box.setAttribute('aria-label',DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':PT?'Publicidade':'Advertisement');
   box.innerHTML=`<div class="tmgad-in ${wide?'w':'p'}">${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}<span class="tmgad-l">${DE?'Anzeige':TR?'Reklam':FR?'Publicité':ES?'Publicidad':PT?'Publicidade':'Advertisement'}</span><div class="tmgad-slot ${wide?'w':'p'}"></div>${wide&&mode==='inline'?'<span class="tmgad-sp"></span>':''}</div>`;
   if(mode==='inline'){const m=d.querySelector('main.phones');m.after(box);root.classList.remove('tmgad-on')}
+  else if(mode==='flow'){d.body.appendChild(box);root.classList.remove('tmgad-on')}
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
-  fill(box.querySelector('.tmgad-slot'),wide);sync()}
+  fill(box.querySelector('.tmgad-slot'),wide);sync();if(mode==='flow')setTimeout(()=>dispatchEvent(new Event('resize')),60)}
 function sync(){if(!box)return;
-  if(mode==='fixed'){const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
+  if(mode==='fixed'||mode==='flow'){const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
     if(!wide&&inn&&sl&&lb){const t=hs&&hs.querySelector('b');lb.style.left=(sl.offsetLeft+(t?t.offsetLeft:0))+'px'}
-    if(!root.classList.contains('tmgad-play'))root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
+    if(mode==='fixed'&&!root.classList.contains('tmgad-play'))root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
   // inline: as wide as boxes A to C, banner centred, label just left of it at its top edge
   const ph=[...d.querySelectorAll('main.phones>.phone')];if(ph.length){const a=ph[0].getBoundingClientRect(),c=ph[ph.length-1].getBoundingClientRect();box.style.width=Math.round(c.right-a.left)+'px'}
   const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l');

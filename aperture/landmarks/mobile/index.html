@@ -190,7 +190,7 @@ html.short .wordsbox{flex:none}
 html.short .words{overflow:visible;flex:none}
 html.short #feedback{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 /* no ad over the game while a round is running (it covered the words list in Messenger) */
-html.playing #tmgAd.fixed{display:none!important}
+html.playing #tmgAd,html.tw-on #tmgAd{display:none!important}
 html.playing.tmgad-on body{padding-bottom:0!important}
 html.tmgad-on:not(.playing) #feedback{bottom:calc(var(--tmgad-h,0px) + 14px)}
 .wordsbox.nudge{animation:nudge .9s ease 2}
@@ -1167,7 +1167,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 })();
 </script>
 <!-- /tmg-feedback -->
-<script src="/shared/adbox.js" defer></script>
+<script src="/shared/adbox.js?v=2" defer></script>
 <script src="/shared/fitquote.js" defer></script>
 <script src="/shared/reach.js?v=2" defer></script>
 <script src="/shared/walk.js?v=3" defer></script>
