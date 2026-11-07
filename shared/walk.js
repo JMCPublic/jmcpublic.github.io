@@ -120,7 +120,7 @@ async function aperture(){
   sheet('',`<span class="tw-eb">${L.first}</span><h3>Guess what's hiding, in two minutes</h3><p>Four quick tips over the real game. The clock waits until you're ready.</p><div class="tw-btns"><button class="tw-btn" data-a="show">Show me</button><button class="tw-lnk" data-a="play">I'll just play</button></div>`,(s,close)=>{
     s.querySelector('[data-a=play]').onclick=()=>{close();bump('justplay')};
     s.querySelector('[data-a=show]').onclick=()=>{close();bump('show');hideOv(true);scrollTo(0,0);
-      tour(steps,{lastLabel:'Start the clock',onDone:()=>{hideOv(false);bump('done');scrollTo(0,0);const b=D.getElementById('startBtn');b&&b.click()},onSkip:()=>{hideOv(false);bump('skip')}})}});
+      tour(steps,{lastLabel:'Ready? Start the clock',onDone:()=>{hideOv(false);bump('done');scrollTo(0,0);const b=D.getElementById('startBtn');b&&b.click()},onSkip:()=>{hideOv(false);bump('skip')}})}});
 }
 function apertureReplayLink(){const hc=D.querySelector('.helpcard');if(!hc||hc.querySelector('.tw-replay'))return;const b=D.createElement('button');b.className='tw-lnk tw-replay';b.textContent='Show me the quick tips';b.style.marginTop='6px';
   b.onclick=()=>{const h=D.getElementById('help');if(h)h.hidden=true;try{localStorage.removeItem(KEY)}catch(e){}aperture()};hc.appendChild(b)}
