@@ -95,6 +95,16 @@ td.share{width:34%;padding-left:12px}
 .dcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dcs span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--ink)}.dcs span b{font-family:var(--mono);font-weight:500;color:var(--blue);margin-left:4px}.dcs .none{border:0;padding:0;color:var(--faint)}
 .msgbtn{font:inherit;font-weight:600;font-size:14px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:10px 18px;cursor:pointer;align-self:flex-start}
 .msglink{font:inherit;font-size:12.5px;background:none;border:0;color:var(--blue);cursor:pointer;padding:0}
+.wc{border-color:var(--blue)}
+.wc h2 .wcago{font-weight:400;font-size:.7em;color:var(--soft)}
+.wcl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.wci{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--sheet);font-size:14.5px;font-weight:400;color:var(--ink)}
+.wci:hover{border-color:var(--blue);color:var(--ink)}
+.wci.big{font-size:16px;background:var(--blue-wash);border-color:var(--blue-wash)}
+.wci.dim{color:var(--soft)}
+.wct{flex:1;min-width:0}.wct small{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
+.wcs{flex:none;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:999px;padding:3px 8px}
+.wcg{flex:none;color:var(--faint)}
 .msgnote{margin:0;color:var(--soft);font-size:14px}
 .msgs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .msgs li{border:1.5px solid var(--frame);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
@@ -104,6 +114,10 @@ td.share{width:34%;padding-left:12px}
 .msgs .c{font-size:13px;color:var(--blue)}
 .msgs .w{font-size:11.5px;color:var(--faint);word-break:break-word}
 .msgs .del{margin-left:auto}
+.msgfil{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+.msgfil button{font:inherit;font-size:13px;border:1.5px solid var(--frame);background:#fff;color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.msgfil button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.msgs .ph{font-size:13px;background:#fff7e8;border-radius:8px;padding:4px 8px;align-self:flex-start}
 .wrap>[hidden]{display:none!important}
 .rtabs{display:flex;gap:6px;margin:4px 0 -4px;flex-wrap:wrap}.rtabs button{font:inherit;font-size:14px;border:1.5px solid var(--frame);background:var(--sheet);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}.rtabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .rt{width:100%;border-collapse:collapse;font-size:13.5px}.rt th{text-align:left;color:var(--soft);font-weight:500;font-size:12px;border-bottom:1px solid var(--line);padding:6px 8px}.rt th.n,.rt td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}.rt td{padding:7px 8px;border-bottom:1px solid var(--bg)}
@@ -126,6 +140,8 @@ td.share{width:34%;padding-left:12px}
     </div>
     <button id="refresh">Refresh</button>
   </header>
+
+  <section class="card wc" id="wcCard"><div class="h2row"><h2 id="wcTitle">What’s changed since you last looked</h2><small><button class="rbtn" id="wcRead">Mark as read</button></small></div><div id="wcBody"><p class="msgnote">Checking…</p></div></section>
 
   <nav class="rtabs" role="tablist"><button data-t="games" class="on">Games</button><button data-t="reach">Reach</button><button data-t="msgs">Messages</button></nav>
   <h2 class="fam">Aperture <small>both games together, then each game below</small></h2>
@@ -222,7 +238,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v19';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v20';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -361,7 +377,11 @@ firebase.initializeApp({apiKey:K,authDomain:P+'.firebaseapp.com',projectId:P},'m
 const auth=firebase.app('msgs').auth();
 const signIn=()=>{body.innerHTML='<p class="msgnote">Sign in with your Google account to read messages from players.</p><button class="msgbtn" id="msgIn">Sign in with Google</button>';who.textContent='';
   document.getElementById('msgIn').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{body.insertAdjacentHTML('beforeend',`<p class="msgnote">Sign-in didn’t work (${esc(e.code||e.message)}).</p>`)})};
-const KIND={idea:'💡 Idea',like:'👍 Like it',wrong:'🐞 Something’s wrong'};
+const KIND={idea:'💡 Idea',like:'👍 Like it',wrong:'🐞 Something’s wrong',translation:'🌐 Translation'};
+const LNAME={de:'German',tr:'Turkish',fr:'French',es:'Spanish',pt:'Portuguese'};
+// translation reports: kind 'translation', or (if the rules ever refuse that kind) kind 'wrong' with a [Translation XX] prefix
+const tr=d=>{const k=val(d.fields.kind),m=val(d.fields.message),w=val(d.fields.where);if(k==='translation')return{k:'translation',m,w};const x=/^\[Translation ([A-Z]{2})\] /.exec(m);return x?{k:'translation',m:m.slice(x[0].length),w}:{k,m,w}};
+const phr=w=>{const x=/^translation · (\w+) · (\w+) · phrase: (.*)$/.exec(w||'');return x?{lang:x[1],scr:x[2],ph:x[3]}:null};
 const val=f=>f==null?'':f.stringValue??f.timestampValue??f.integerValue??(f.mapValue?JSON.stringify(f.mapValue):'');
 const when=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Europe/London',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();
@@ -370,13 +390,17 @@ async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink"
   const get=async c=>{let out=[],pt='';do{const r=await fetch(base+c+'?pageSize=300'+(pt?'&pageToken='+pt:''),H);if(!r.ok)throw r.status;const j=await r.json();out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);return out};
   let fb=[],bugs=[],err='';try{fb=await get('feedback')}catch(e){err=e}try{bugs=await get('aperture_bugs')}catch(e){}
   if(err&&!fb.length&&!bugs.length){body.innerHTML=`<p class="msgnote">Couldn’t read messages (error ${esc(err)}). If this is new, check the Firebase rules are v8.</p>`;return}
-  const rows=fb.map(d=>({d,t:val(d.fields.at)||d.createTime,k:KIND[val(d.fields.kind)]||'Message',m:val(d.fields.message),c:val(d.fields.contact),g:val(d.fields.game),dv:val(d.fields.device),w:[val(d.fields.page),val(d.fields.where)].filter(Boolean).join(' · ')}))
-    .concat(bugs.map(d=>({d,t:d.createTime,k:'🐞 Bug report (old form)',m:val(d.fields.message),c:'',g:'Aperture',dv:'',w:[val(d.fields.page),val(d.fields.version),val(d.fields.screen)].filter(Boolean).join(' · ')})))
+  const rows=fb.map(d=>{const x=tr(d),P=x.k==='translation'?phr(x.w):null;return{d,t:val(d.fields.at)||d.createTime,kk:x.k,k:(KIND[x.k]||'Message')+(P&&LNAME[P.lang]?' · '+LNAME[P.lang]:''),m:x.m,ph:P?P.ph:'',c:val(d.fields.contact),g:val(d.fields.game),dv:val(d.fields.device),w:P?val(d.fields.page)+' · '+P.scr+' screen':[val(d.fields.page),x.w].filter(Boolean).join(' · ')}})
+    .concat(bugs.map(d=>({d,t:d.createTime,kk:'wrong',k:'🐞 Bug report (old form)',m:val(d.fields.message),c:'',g:'Aperture',dv:'',w:[val(d.fields.page),val(d.fields.version),val(d.fields.screen)].filter(Boolean).join(' · ')})))
     .sort((a,b)=>new Date(b.t)-new Date(a.t));
   if(!rows.length){body.innerHTML='<p class="msgnote">No messages yet. When players send feedback from any game, it appears here.</p>';return}
-  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><ul class="msgs">${rows.map((r,i)=>`<li><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div><div class="t">${esc(r.m)}</div>${r.c?`<div class="c">Reply to: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
+  try{window.tmgMsgs=rows.map(r=>({t:r.t,k:r.kk}));dispatchEvent(new Event('tmg-msgs'))}catch(e){}
+  const FIL=[['all','All'],['idea','💡 Ideas'],['like','👍 Likes'],['wrong','🐞 Problems'],['translation','🌐 Translations']];let fil='all';
+  const draw=()=>{const vis=rows.map((r,i)=>[r,i]).filter(([r])=>fil==='all'||r.kk===fil);
+  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><div class="msgfil">${FIL.map(([k,l])=>{const n=k==='all'?rows.length:rows.filter(r=>r.kk===k).length;return `<button data-f="${k}" class="${k===fil?'on':''}">${l} ${n}</button>`}).join('')}</div>${vis.length?'':'<p class="msgnote">None of this kind yet.</p>'}<ul class="msgs">${vis.map(([r,i])=>`<li><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div>${r.ph?`<div class="ph">Phrase: ${esc(r.ph)}</div>`:''}<div class="t">${esc(r.m)}</div>${r.c?`<div class="c">${r.kk==='translation'?'From':'Reply to'}: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
+  body.querySelectorAll('.msgfil button').forEach(b=>b.onclick=()=>{fil=b.dataset.f;draw()});
   body.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{const r=rows[b.dataset.i];if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to delete';setTimeout(()=>{b.dataset.arm='';b.textContent='Delete'},3000);return}
-    const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok)b.closest('li').remove();else b.textContent='Couldn’t delete'})}
+    const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok){rows.splice(+b.dataset.i,1);draw()}else b.textContent='Couldn’t delete'})};draw()}
 auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()!==OWNER){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();body.innerHTML='<p class="msgnote">This Google account can’t read messages. Sign out and use the owner account.</p>';return}load(u).catch(e=>{body.innerHTML=`<p class="msgnote">Something went wrong loading messages (${esc(e)}).</p>`})});
 })();
 </script>
@@ -486,6 +510,81 @@ async function loadPrivate(u){const tok=await u.getIdToken();H={Authorization:'B
   try{entries=(await list('witw')).map(d=>({name:d.name,src:val(d.fields.src),first:val(d.fields.first),last:val(d.fields.last),town:val(d.fields.town),country:val(d.fields.country),test:val(d.fields.test)===true,hidden:val(d.fields.hidden)===true,at:val(d.fields.at)||d.createTime})).sort((a,b)=>new Date(b.at)-new Date(a.at));drawEntries();drawWitw()}catch(e){document.querySelector('#rcWitw .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}}
 loadPublic();
 try{const OWNER='mybetterbrain109@gmail.com';firebase.app('msgs').auth().onAuthStateChanged(u=>{if(u&&(u.email||'').toLowerCase()===OWNER)loadPrivate(u).catch(()=>{});else{entries=[];H={};document.querySelector('#rcSpread .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see this.</p>';document.querySelector('#rcWitw .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see the names.</p>'}})}catch(e){}
+})();
+</script>
+<script>
+// What's changed since you last looked: a snapshot of the all-time counters is kept on this computer each time you open the page,
+// and the card lists what grew since then. Refresh keeps the same starting point; "Mark as read" starts counting from now.
+(()=>{const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',B=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/stats/`;
+const KEY='tmg-seen-v1',SKEY='tmg-seen-base';
+const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>v?+(v.integerValue||v.doubleValue||0):0;const map=v=>(v&&v.mapValue&&v.mapValue.fields)||{};
+const fmt=n=>n.toLocaleString('en-GB');const pl=(n,w)=>fmt(n)+' '+w+(n===1?'':'s');
+const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0)))+' ':'';
+let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(()=>{try{return dn.of(c)}catch(e){return c}})();
+const FAMN={objects:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders'};
+const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',forests:'Forests',masterbrain:'Masterbrain'};
+const SRCN=k=>k==='li'?'LinkedIn link':k==='fb'?'Facebook link':k==='walkin'?'Walk-ins (no link)':'Link ?from='+k.replace(/^t_/,'').replace(/_/g,'-');
+const LANGN={en:'English',de:'German',tr:'Turkish',fr:'French',es:'Spanish',pt:'Portuguese'};
+const ls=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+const ss=(k,v)=>{try{if(v===undefined)return JSON.parse(sessionStorage.getItem(k)||'null');sessionStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+const get=id=>fetch(B+id+'?key='+K,{cache:'no-store'}).then(r=>r.ok?r.json():{fields:{}}).then(j=>j.fields||{});
+async function snap(){const [o,l,w,r]=await Promise.all(['objects','landmarks','wonders','reach'].map(get));const S={at:Date.now(),fam:{},c:{},pl:{},src:{},lang:{},walk:{shown:0,play:0}};
+  [['objects',o],['landmarks',l],['wonders',w]].forEach(([k,f])=>{S.fam[k]={visits:num(f.visits),uniques:num(f.uniques),games:num(f.games)};Object.entries(map(f.countries)).forEach(([c,v])=>S.c[c]=(S.c[c]||0)+num(v))});
+  Object.entries(map(w.played)).forEach(([g,v])=>S.pl[g]=num(v));
+  Object.entries(map(r.src)).forEach(([k,v])=>{const f=map(v);S.src[k]={visits:num(f.visits),uniques:num(f.uniques),played:num(f.played)}});
+  Object.entries(map(r.langs)).forEach(([k,v])=>{const f=map(v);S.lang[k]={visits:num(f.visits),finished:num(f.finished)}});
+  Object.entries(map(r.walk)).forEach(([k,v])=>{if(/_shown$/.test(k))S.walk.shown+=num(v);if(/_(play|done)$/.test(k))S.walk.play+=num(v)});
+  return S}
+const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<60?pl(Math.max(1,m),'minute')+' ago':m<60*36?pl(Math.round(m/60),'hour')+' ago':pl(Math.round(m/1440),'day')+' ago'};
+const since=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Europe/London',weekday:'long',hour:'numeric',minute:'2-digit'}).replace(':00','').replace(/ (\d)/,' $1');
+let base=null,now=null,msgs=null;
+const go=(tab,id)=>{const b=document.querySelector(`.rtabs button[data-t="${tab}"]`);if(b)b.click();const el=document.getElementById(id);if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),60)};
+function draw(){const body=document.getElementById('wcBody'),title=document.getElementById('wcTitle');
+  if(!now){body.innerHTML='<p class="msgnote">Couldn’t load the numbers just now. Press Refresh.</p>';return}
+  if(!base){title.textContent='What’s changed since you last looked';body.innerHTML='<p class="msgnote">Counting starts now. Next time you open this page, this card lists what’s new since today.</p>';return}
+  title.innerHTML=`What’s changed since ${esc(since(base.at))} <span class="wcago">(${esc(ago(base.at))})</span>`;
+  const L=[];const d=(a,b)=>Math.max(0,(a||0)-(b||0));
+  // 1. visits, new players and games
+  const T={visits:0,uniques:0,games:0},per=[];
+  Object.keys(FAMN).forEach(k=>{const a=now.fam[k]||{},b=base.fam[k]||{};const x={visits:d(a.visits,b.visits),uniques:d(a.uniques,b.uniques),games:d(a.games,b.games)};Object.keys(T).forEach(q=>T[q]+=x[q]);if(x.visits||x.games)per.push(`${FAMN[k]} ${fmt(x.visits)}`)});
+  const days=Math.max(1/24,(now.at-base.at)/864e5),prev=base.prevRate;
+  let cmp='';if(prev&&prev.days>=1/24&&T.visits+prev.visits>0){const r1=T.visits/days,r0=prev.visits/prev.days;cmp=r0?(r1>r0*1.15?' · ▲ busier than the time before':r1<r0*0.85?' · ▼ quieter than the time before':' · about the same pace as the time before'):''}
+  L.push({tab:'games',id:'tiles',big:true,h:T.visits?`<b>${pl(T.visits,'visit')}</b>, ${pl(T.uniques,'new player')}, ${pl(T.games,'game')} played${cmp}`:'No new visits yet',s:per.join(' · ')});
+  // 2. countries
+  const newC=Object.keys(now.c).filter(c=>now.c[c]>0&&!(base.c[c]>0)&&c!=='XX');
+  newC.forEach(c=>L.push({tab:'games',id:'games',star:true,h:`${flag(c)}<b>${esc(cn(c))}</b>: first visit ever`,s:pl(now.c[c],'visit')+' so far'}));
+  const grew=Object.keys(now.c).filter(c=>base.c[c]>0&&d(now.c[c],base.c[c])>0).sort((a,b)=>d(now.c[b],base.c[b])-d(now.c[a],base.c[a]));
+  if(grew.length)L.push({tab:'games',id:'games',h:'Countries: '+grew.slice(0,5).map(c=>`${flag(c)}${esc(cn(c))} +${fmt(d(now.c[c],base.c[c]))}`).join(' · ')+(grew.length>5?` · and ${grew.length-5} more`:'')});
+  // 3. Natural Wonders games played for the first time
+  Object.keys(now.pl).filter(g=>now.pl[g]>0&&!(base.pl[g]>0)).forEach(g=>L.push({tab:'games',id:'nwTiles',star:true,h:`<b>${esc(NWN[g]||g)}</b>: played for the first time`}));
+  // 4. links
+  Object.keys(now.src).forEach(k=>{const a=now.src[k],b=base.src[k]||{};const v=d(a.visits,b.visits);if(!v)return;const u=d(a.uniques,b.uniques),p=d(a.played,b.played);
+    L.push({tab:'reach',id:'rcSrc',star:!base.src[k]&&k!=='walkin',h:`${esc(SRCN(k))}: <b>${pl(v,'visit')}</b>${u?', '+pl(u,'new player'):''}${p?', '+fmt(p)+' opened a game':''}`,s:!base.src[k]&&k!=='walkin'?'first time this link brought anyone in':''})});
+  // 5. languages
+  const lg=Object.keys(now.lang).filter(k=>k!=='en'&&d(now.lang[k].visits,(base.lang[k]||{}).visits));
+  if(lg.length)L.push({tab:'reach',id:'rcLang',h:'Translated games: '+lg.map(k=>`${LANGN[k]||k} ${fmt(d(now.lang[k].visits,(base.lang[k]||{}).visits))}`).join(' · '),s:'visits to each language version'});
+  // 6. walkthrough
+  const ws=d(now.walk.shown,base.walk.shown),wp=d(now.walk.play,base.walk.play);
+  if(ws)L.push({tab:'reach',id:'rcWalk',h:`Walkthrough shown ${pl(ws,'time')}, then <b>${fmt(wp)}</b> started playing`});
+  // 7. messages (only when signed in on the Messages tab)
+  if(msgs){const nm=msgs.filter(m=>new Date(m.t).getTime()>base.at),tr=nm.filter(m=>m.k==='translation').length;
+    L.push({tab:'msgs',id:'msgCard',star:nm.length>0,h:nm.length?`<b>${pl(nm.length,'new message')}</b>${tr?` (${fmt(tr)} about translations)`:''}`:'No new messages'})}
+  else L.push({tab:'msgs',id:'msgCard',h:'Messages: sign in on the Messages tab to include them here',dim:true});
+  body.innerHTML=`<ul class="wcl">${L.map((x,i)=>`<li><button class="wci${x.big?' big':''}${x.dim?' dim':''}" data-i="${i}">${x.star?'<span class="wcs">New</span>':''}<span class="wct">${x.h}${x.s?`<small>${x.s}</small>`:''}</span><span class="wcg" aria-hidden="true">→</span></button></li>`).join('')}</ul>`;
+  body.querySelectorAll('.wci').forEach(b=>b.onclick=()=>{const x=L[b.dataset.i];go(x.tab,x.id)})}
+async function load(){try{now=await snap()}catch(e){now=null;draw();return}
+  let b=ss(SKEY);
+  if(b===null){const stored=ls(KEY);ss(SKEY,stored||'none');b=stored||'none';
+    // remember this look for next time, with how busy the stretch since the last look was
+    const T=stored?Object.keys(now.fam).reduce((s,k)=>s+Math.max(0,now.fam[k].visits-((stored.fam[k]||{}).visits||0)),0):0;
+    ls(KEY,Object.assign({},now,{prevRate:stored?{visits:T,days:(now.at-stored.at)/864e5}:null}))}
+  base=b==='none'?null:b;draw()}
+document.getElementById('wcRead').onclick=()=>{if(!now)return;const cur=Object.assign({},now,{prevRate:(ls(KEY)||{}).prevRate||null});ls(KEY,cur);ss(SKEY,cur);base=cur;draw();const b=document.getElementById('wcRead');b.textContent='Marked ✓';setTimeout(()=>b.textContent='Mark as read',1500)};
+document.getElementById('refresh').addEventListener('click',()=>load());
+addEventListener('tmg-msgs',()=>{msgs=window.tmgMsgs||[];draw()});
+if(window.tmgMsgs)msgs=window.tmgMsgs;
+load();
 })();
 </script>
 </body>
