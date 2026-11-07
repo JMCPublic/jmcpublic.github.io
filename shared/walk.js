@@ -3,6 +3,7 @@
    Natural Wonders: a "Play now" card instead of the settings wall, then one tip on the first question with the clock paused.
    ?walk=1 shows it again. Counts go to the reach docs under walk.<game>_<event>. */
 (()=>{
+if(window.tmgWalk)return; /* loaded twice (page tag and reach.js) */
 const D=document,H=D.documentElement,P=location.pathname;
 if(/\/(duggen|aperture\/stats|where|about)(\/|$)/.test(P))return;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
