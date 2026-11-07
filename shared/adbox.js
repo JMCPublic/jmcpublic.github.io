@@ -22,7 +22,7 @@ const css=`
 #tmgAd.fixed .tmgad-in{border-radius:16px;padding:16px 10px 8px;position:relative}
 #tmgAd.fixed .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
 #tmgAd.fixed .tmgad-in.w{padding:12px 16px}
-html.tmgad-play #tmgAd{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
+html.tmgad-play #tmgAd{display:none!important}html.tmg-playing .tmgfb-pill{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
 html.tmgad-on body{padding-bottom:var(--tmgad-h,0px)}
 html.tmgad-on .tbar{bottom:var(--tmgad-h,0px)!important}
 html.tmgad-on .tmgfb-pill{bottom:calc(var(--tmgad-h,0px) + 12px)}
@@ -88,8 +88,11 @@ function mirror(){const m=d.querySelector('main.phones'),side=m&&m.querySelector
   new MutationObserver(copy).observe(pr,{childList:true,subtree:true,characterData:true,attributes:true});
   p2.addEventListener('click',e=>{e.preventDefault();pr.click()})}
 // Natural Wonders on phones: no ad strip while a game is running, so it can never cover the answers
-function playWatch(){if(!isNW)return;let was=null;const chk=()=>{const on=mode==='fixed'&&!wide&&!!d.querySelector('.play');if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
-  new MutationObserver(chk).observe(d.body,{childList:true,subtree:true});chk()}
+// Masterbrain plays each round in a frame (#stage) while its menu (#app) is hidden
+const playing=()=>{if(d.querySelector('.play'))return true;const st=d.getElementById('stage'),ap=d.getElementById('app');return !!(st&&st.querySelector('iframe')&&st.offsetParent!==null&&ap&&getComputedStyle(ap).display==='none')};
+function playWatch(){if(!isNW)return;let was=null,wasP=null;const chk=()=>{const p=playing();if(p!==wasP){wasP=p;root.classList.toggle('tmg-playing',p)}
+    const on=mode==='fixed'&&!wide&&p;if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
+  new MutationObserver(chk).observe(d.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
 function start(){mirror();build();playWatch();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
 window.tmgAd={ADS,rebuild:build};
 if(d.body)start();else addEventListener('DOMContentLoaded',start);
