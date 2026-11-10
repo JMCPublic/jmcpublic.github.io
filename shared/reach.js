@@ -102,6 +102,25 @@ if(/^\/natural-wonders-where-is-bigger\//.test(location.pathname)){const L=(docu
   const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
   ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
   let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
+
+/* --- player alerts (10 Nov 2026): a phone notification via ntfy the first time someone starts a game on their device. Game, country and link tag only; no names, no IP --- */
+{const TOPIC='tmg-pnz2n1a4wqw9';
+ const P2=location.pathname,nw=P2.match(/natural-wonders-([a-z-]+)/);
+ const GAME=/\/aperture\/landmarks/.test(P2)?'landmarks':/\/aperture(\/|$)/.test(P2)&&!/stats/.test(P2)?'objects':nw?nw[1]:/\/duggen/.test(P2)?'duggen':null;
+ const NAMES={objects:'Aperture',landmarks:'Aperture Landmarks',duggen:"Duggen's Outback Maze",'where-is-bigger':'Where is Bigger?','which-of-five':'Which of Five?','how-many-borders':'How Many Borders?','bodies-of-water':'Bodies of Water','river-cities':'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
+ const lang=(document.documentElement.lang||'en').slice(0,2);
+ const ping=()=>{const k='tmg-ping-'+GAME;if(ls(k))return;ls(k,'1');
+   if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return;
+   ccReady.then(cc=>{const via=src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':'');
+     const where=cc?flag(cc)+' '+cname(cc).replace(/^the /,''):'🌍 Unknown country';
+     fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:TOPIC,title:'🎮 New player · '+(NAMES[GAME]||GAME)+(lang!=='en'?' ('+lang.toUpperCase()+')':''),message:where+' · '+via,click:'https://twominute.games/aperture/stats/',tags:['video_game']})}).catch(()=>{})})};
+ if(GAME){
+   if(GAME==='duggen')ping();
+   else if(GAME==='objects'||GAME==='landmarks'){ /* a round starts when the page drops its 'waiting' class */
+     const go=()=>{if(!document.body.classList.contains('waiting'))return;const ob=new MutationObserver(()=>{if(!document.body.classList.contains('waiting')){ping();ob.disconnect()}});ob.observe(document.body,{attributes:true,attributeFilter:['class']})};
+     if(document.body)go();else addEventListener('DOMContentLoaded',go)}
+   else document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button');if(b&&/start(Game)?\(\)/.test(b.getAttribute('onclick')||''))ping()},true)}
+}
 window.tmgReach={src,me,link:tag,bump};
 /* first-play walkthrough, shared by every game */
 {const w=document.createElement('script');w.src='/shared/walk.js?v=4';w.defer=true;document.head.appendChild(w)}
