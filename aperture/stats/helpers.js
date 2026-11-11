@@ -1,7 +1,7 @@
-/* Contacts tab (collection 'helpers'): your contacts by country, with their local time against the UK.
-   Private: only the owner's Google account can read or add (Firestore collection 'helpers', rules v11). */
+/* Contacts tab (collection 'contacts'): your contacts by country, with their local time against the UK.
+   Private: only the owner's Google account can read or add (Firestore collection 'contacts', rules v11). */
 (()=>{const OWNER='mybetterbrain109@gmail.com',P='aperture-c0961';
-const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/helpers`;
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/contacts`;
 const card=document.getElementById('hpCard');if(!card)return;
 const $=s=>card.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -100,5 +100,5 @@ setInterval(()=>{if(!card.offsetParent)return;const u=$('#hpUk');if(u)u.textCont
 
 Promise.all([fetch('/shared/wmap.json').then(r=>r.json()),fetch('/shared/places.json?v=1').then(r=>r.json())]).then(([w,p])=>{WM=w;PL=p;draw()}).catch(()=>{$('#hpList').innerHTML='<p class="msgnote">The map didn’t load.</p>'});
 try{firebase.app('msgs').auth().onAuthStateChanged(async u=>{if(!u||(u.email||'').toLowerCase()!==OWNER){user=null;H=[];draw();$('#hpList').innerHTML='<p class="msgnote">Sign in on the Messages tab to see and add contacts.</p>';return}
-  user=u;try{await load();draw()}catch(e){draw();$('#hpList').innerHTML=`<p class="msgnote">Couldn’t read contacts (error ${esc(e)}). Publish the Firebase rules v11 (adds the helpers collection).</p>`}})}catch(e){}
+  user=u;try{await load();draw()}catch(e){draw();$('#hpList').innerHTML=`<p class="msgnote">Couldn’t read contacts (error ${esc(e)}). Publish the Firebase rules v11 (adds the contacts collection).</p>`}})}catch(e){}
 })();
