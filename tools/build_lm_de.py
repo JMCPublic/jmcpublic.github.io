@@ -52,6 +52,7 @@ UI_FIRST = [
 ]
 # (English, German). Longer, more specific strings first.
 UI = [
+ ('https://twominute.games/og-landmarks.png', 'https://twominute.games/de/landmarks/card-v1.png'),
  # leftovers found by the string scan
  ('<p>Ideas, likes, gripes or something broken. It goes privately to Two Minute Games; nobody else can read it.</p>', '<p>Ideen, Lob, Ärger oder etwas kaputt? Es geht vertraulich an Two Minute Games, sonst liest es niemand.</p>'),
  ('aria-label="Your message"', 'aria-label="Deine Nachricht"'),

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* someone who chose German before goes straight to it */try{if(localStorage.getItem('tmg-lang')==='de'&&!/\/landmarks\/de\//.test(location.pathname)&&!/[?&](via|lang)=/.test(location.search))location.replace(location.pathname.replace('/aperture/landmarks/','/aperture/landmarks/de/')+location.search+location.hash)}catch(e){}</script>
 <script src="/shared/spotlight.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aperture Landmarks · Two Minute Games</title>
@@ -278,6 +279,7 @@ body.waiting .phones canvas{filter:blur(18px) saturate(.6)}
 #setLabel .dot{display:inline-block;margin:0 .15em}
 .ovwrap{position:absolute;top:10px;left:10px;max-width:calc(100% - 20px);display:flex;flex-direction:column;align-items:stretch;gap:7px;z-index:3}
 .ovwrap .overlay{position:relative;top:auto;left:auto;max-width:100%}
+.ovwrap:has(#copyBtn){bottom:10px}.ovwrap:has(#copyBtn) .overlay{min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 #ticker{width:0;min-width:100%;box-sizing:border-box;white-space:normal;overflow:visible;text-overflow:clip;text-align:center;font-size:10.5px;line-height:1.35;color:var(--soft);
   background:rgba(255,255,255,.72);border-radius:8px;padding:3px 6px;text-wrap:balance}
 #overlay[hidden]+#ticker{display:none}
@@ -1262,6 +1264,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <!-- /tmg-feedback -->
 <script src="/shared/adbox.js" defer></script>
 <script src="/shared/fitquote.js" defer></script>
+<script src="/shared/lmlang.js?v=1" defer></script>
 <script src="/shared/reach.js?v=5" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 </body>
