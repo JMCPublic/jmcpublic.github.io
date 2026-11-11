@@ -22,7 +22,7 @@ const T={
 };
 T['which-of-five']=T['how-many-borders']=T['where-is-bigger'];
 const tr=T[GAME];
-const READY=['lakes','deserts','masterbrain']; /* recordings uploaded so far; the rest are added as they arrive */
+const READY=['lakes','deserts','masterbrain','rivers','river-cities','bodies-of-water','forests','world','mountains']; /* recordings uploaded so far; the rest are added as they arrive */
 if(!tr||!READY.includes(tr.f))return;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const lang=(D.documentElement.lang||'en').slice(0,2);
