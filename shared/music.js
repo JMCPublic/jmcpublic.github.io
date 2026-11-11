@@ -34,8 +34,15 @@ const L={en:['Now playing','For more like this, try','Listen','Music on','Music 
  pt:['Tocando agora','Para ouvir mais, experimente','Ouvir','Música ligada','Música desligada','desligar','ligar','Fechar','toque para saber mais']}[lang]||null;
 const W=L||['Now playing','For more like this, try','Listen','Music on','Music off','turn off','turn on','Close','tap for more'];
 /* station by country (from the time zone, via reach.js) */
-const ST={def:['Classic FM','https://www.classicfm.com/'],DE:['Klassik Radio','https://www.klassikradio.de/'],AT:['Klassik Radio','https://www.klassikradio.de/'],CH:['Klassik Radio','https://www.klassikradio.de/'],
- FR:['Radio Classique','https://www.radioclassique.fr/'],BE:['Radio Classique','https://www.radioclassique.fr/'],ES:['Radio Clásica','https://www.rtve.es/radio/radioclasica/'],PT:['Antena 2','https://antena2.rtp.pt/']};
+const ST={def:['Classic FM','https://www.classicfm.com/'],
+ DE:['Klassik Radio','https://www.klassikradio.de/'],AT:['Klassik Radio','https://www.klassikradio.de/'],CH:['Klassik Radio','https://www.klassikradio.de/'],
+ FR:['Radio Classique','https://www.radioclassique.fr/'],BE:['Radio Classique','https://www.radioclassique.fr/'],LU:['Radio Classique','https://www.radioclassique.fr/'],
+ ES:['Radio Clásica','https://www.rtve.es/radio/radioclasica/'],PT:['Antena 2','https://antena2.rtp.pt/'],BR:['Cultura FM','https://cultura.uol.com.br/radio/'],
+ TR:['TRT Radyo 3','https://www.trtdinle.com/channel/radyo-3-klasik-caz-rock-pop-ve-dunya-muzigi'],IT:['Rai Radio 3','https://www.raiplaysound.it/radio3'],
+ NL:['NPO Klassiek','https://www.npoklassiek.nl/'],SE:['Sveriges Radio P2','https://www.sverigesradio.se/kanaler/p2'],NO:['NRK Klassisk','https://radio.nrk.no/direkte/klassisk'],
+ DK:['DR P2','https://www.dr.dk/lyd/p2'],PL:['Dwójka (Polskie Radio)','https://www.polskieradio.pl/8,dwojka'],RO:['Radio România Muzical','https://www.romania-muzical.ro/'],
+ IE:['RTÉ lyric fm','https://www.rte.ie/radio/lyricfm/'],US:['WQXR','https://www.wqxr.org/'],AU:['ABC Classic','https://www.abc.net.au/listen/classic'],
+ NZ:['RNZ Concert','https://www.rnz.co.nz/concert'],MX:['Opus 94','https://www.imer.mx/opus/']};
 const cc=()=>{try{return (window.tmgReach&&tmgReach.cc&&tmgReach.cc())||''}catch(e){return ''}};
 const bump=ev=>{try{window.tmgReach&&tmgReach.bump&&tmgReach.bump({[`walk.music_${ev}`]:1})}catch(e){}};
 const css=`.tmgmus{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18);background:rgba(255,255,255,.7);display:inline-grid;place-items:center;font-size:15px;line-height:1;color:#b4552a;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;flex:none}
