@@ -1,4 +1,4 @@
-/* Helpers tab: people who've helped, by country, with their local time against the UK.
+/* Contacts tab (collection 'helpers'): your contacts by country, with their local time against the UK.
    Private: only the owner's Google account can read or add (Firestore collection 'helpers', rules v11). */
 (()=>{const OWNER='mybetterbrain109@gmail.com',P='aperture-c0961';
 const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/helpers`;
@@ -39,7 +39,7 @@ document.head.appendChild(css);
 
 card.innerHTML=`<div class="hptop"><div class="hpuk"><span>UK now</span><b id="hpUk">--:--</b></div><div class="tiles" id="hpTiles"></div></div>
 <div class="hpmap" id="hpMap"><svg viewBox="0 0 1000 540" id="hpSvg"></svg><div class="hptip" id="hpTip" hidden></div></div>
-<div class="hpkey">Point at a country or a city dot to see its name · click it to add a helper · <span style="color:#2fae6a">■</span> has helpers · dots = cities in countries with more than one time zone · numbers along the bottom = hours ahead of or behind the UK</div>
+<div class="hpkey">Point at a country or a city dot to see its name · click it to add a contact · <span style="color:#2fae6a">■</span> has contacts · dots = cities in countries with more than one time zone · numbers along the bottom = hours ahead of or behind the UK</div>
 <div class="rbody" id="hpList"><p class="msgnote">Loading…</p></div>`;
 
 const api=async(path,opt={})=>{tok=await user.getIdToken();const r=await fetch(BASE+path,{...opt,headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'}});if(!r.ok)throw r.status;return r.status===204?null:r.json()};
@@ -65,10 +65,10 @@ function draw(){if(!WM||!PL)return;const a3={};Object.entries(WM.a2).forEach(([k
     g.onmouseleave=()=>{tip.hidden=true;svg.querySelectorAll('.ct.hov').forEach(x=>x.classList.remove('hov'))};
     g.onclick=e=>{e.stopPropagation();tip.hidden=true;pop(c,city,e)}});
   const zones=new Set(H.map(h=>{const p=place(h.c,h.city);return p?off(p.tz):0}));
-  $('#hpTiles').innerHTML=`<div class="tile"><span>Helpers</span><b>${H.length}</b></div><div class="tile"><span>Countries</span><b>${hc.size}</b></div><div class="tile"><span>Time zones</span><b>${zones.size}</b></div>`;
+  $('#hpTiles').innerHTML=`<div class="tile"><span>Contacts</span><b>${H.length}</b></div><div class="tile"><span>Countries</span><b>${hc.size}</b></div><div class="tile"><span>Time zones</span><b>${zones.size}</b></div>`;
   $('#hpList').innerHTML=H.length?`<table class="rt"><tr><th>Name</th><th>Where</th><th>Contact</th><th class="n">Their time</th><th class="n">vs UK</th><th></th></tr>${H.map(h=>{const p=place(h.c,h.city)||{tz:'UTC',cn:h.c,city:''};
     return `<tr><td>${esc(h.n)}</td><td>${esc(p.cn)}${h.city?' · '+esc(h.city):''}</td><td>${esc(h.k||'–')}</td><td class="n">${tstr(p.tz)}</td><td class="n">${offs(off(p.tz))}</td><td><button class="hpdel" data-id="${h.id}" aria-label="Remove ${esc(h.n)}">Remove</button></td></tr>`}).join('')}</table>`
-    :'<p class="msgnote">No helpers yet. Click a country on the map to add the first one.</p>';
+    :'<p class="msgnote">No contacts yet. Click a country on the map to add the first one.</p>';
   $('#hpList').querySelectorAll('.hpdel').forEach(b=>b.onclick=async()=>{const h=H.find(x=>x.id===b.dataset.id);if(!h||!confirmDel(b,h))return;try{await del(h.id);draw()}catch(e){b.textContent='Failed'}});
   $('#hpUk').textContent=tstr('Europe/London')}
 // two taps to remove, no browser dialog
@@ -99,6 +99,6 @@ addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 setInterval(()=>{if(!card.offsetParent)return;const u=$('#hpUk');if(u)u.textContent=tstr('Europe/London')},20000);
 
 Promise.all([fetch('/shared/wmap.json').then(r=>r.json()),fetch('/shared/places.json?v=1').then(r=>r.json())]).then(([w,p])=>{WM=w;PL=p;draw()}).catch(()=>{$('#hpList').innerHTML='<p class="msgnote">The map didn’t load.</p>'});
-try{firebase.app('msgs').auth().onAuthStateChanged(async u=>{if(!u||(u.email||'').toLowerCase()!==OWNER){user=null;H=[];draw();$('#hpList').innerHTML='<p class="msgnote">Sign in on the Messages tab to see and add helpers.</p>';return}
-  user=u;try{await load();draw()}catch(e){draw();$('#hpList').innerHTML=`<p class="msgnote">Couldn’t read helpers (error ${esc(e)}). Publish the Firebase rules v11 (adds the helpers collection).</p>`}})}catch(e){}
+try{firebase.app('msgs').auth().onAuthStateChanged(async u=>{if(!u||(u.email||'').toLowerCase()!==OWNER){user=null;H=[];draw();$('#hpList').innerHTML='<p class="msgnote">Sign in on the Messages tab to see and add contacts.</p>';return}
+  user=u;try{await load();draw()}catch(e){draw();$('#hpList').innerHTML=`<p class="msgnote">Couldn’t read contacts (error ${esc(e)}). Publish the Firebase rules v11 (adds the helpers collection).</p>`}})}catch(e){}
 })();

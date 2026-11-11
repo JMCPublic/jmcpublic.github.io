@@ -144,7 +144,7 @@ td.share{width:34%;padding-left:12px}
 
   <section class="card wc" id="wcCard"><div class="h2row"><h2 id="wcTitle">What’s changed since you last looked</h2><small><button class="rbtn" id="wcRead">Mark as read</button></small></div><div id="wcBody"><p class="msgnote">Checking…</p></div></section>
 
-  <nav class="rtabs" role="tablist"><button data-t="games" class="on">Games</button><button data-t="reach">Reach</button><button data-t="helpers">Helpers</button><button data-t="msgs">Messages</button></nav>
+  <nav class="rtabs" role="tablist"><button data-t="games" class="on">Games</button><button data-t="reach">Reach</button><button data-t="helpers">Contacts</button><button data-t="msgs">Messages</button></nav>
   <h2 class="fam">Aperture <small>both games together, then each game below</small></h2>
   <section class="card">
     <div class="h2row"><h2 id="nowTitle">This month so far</h2><small id="nowDays"></small></div>
@@ -180,7 +180,7 @@ td.share{width:34%;padding-left:12px}
   <section class="card" data-tab="reach" id="rcSpread"><div class="h2row"><h2>How far your links spread</h2><small>Patient Zero · anonymous codes, no names</small></div><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see this.</p></div></section>
   <section class="card" data-tab="reach" id="rcWitw"><div class="h2row"><h2>Where in the World</h2><small>your LinkedIn and Facebook links, plus walk-ins by country</small></div><div id="rcWtiles" class="tiles"></div><div class="rcconts" id="rcConts"></div><svg id="rcMap" style="width:100%;height:auto;background:#f6f8ff;border-radius:14px"></svg><p class="msgnote" id="rcKey">● people who sent the form · shaded: countries with walk-ins</p><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see the names.</p></div></section>
 
-  <h2 class="fam" data-tab="helpers">Helpers <small>people who've helped, by country, with their time against the UK · private, only you can see it</small></h2>
+  <h2 class="fam" data-tab="helpers">Contacts <small>your contacts by country, with their time against the UK · private, only you can see it</small></h2>
   <section class="card" data-tab="helpers" id="hpCard"></section>
   <h2 class="fam" data-tab="msgs">Messages <small>feedback and bug reports · private, only you can read them</small></h2>
   <section class="card" id="msgCard" data-tab="msgs"><div class="h2row"><h2>Inbox</h2><small id="msgWho"></small></div><div id="msgBody"><p class="msgnote">Loading…</p></div></section>
@@ -241,7 +241,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v22';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v23';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -408,7 +408,7 @@ auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()
 })();
 </script>
 <script>
-// Tabs: Games (everything else), Reach, Helpers, Messages
+// Tabs: Games (everything else), Reach, Contacts, Messages
 (()=>{const wrap=document.querySelector('.wrap');const nav=document.querySelector('.rtabs');
  const all=[...wrap.children].filter(e=>e!==nav&&e.tagName!=='HEADER'&&e.tagName!=='SCRIPT');
  const show=t=>{all.forEach(e=>{const k=e.dataset.tab||'games';e.hidden=k!==t});nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));try{sessionStorage.setItem('tmg-tab',t)}catch(e){}};
@@ -591,7 +591,7 @@ if(window.tmgMsgs)msgs=window.tmgMsgs;
 load();
 })();
 </script>
-<script src="/aperture/stats/helpers.js?v=1" defer></script>
+<script src="/aperture/stats/helpers.js?v=2" defer></script>
 </body>
 
 </html>
