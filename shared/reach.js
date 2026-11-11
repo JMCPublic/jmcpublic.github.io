@@ -131,5 +131,5 @@ window.tmgReach={src,me,link:tag,bump,cc:()=>CC};
 /* background music for the Natural Wonders games */
 if(/natural-wonders-/.test(location.pathname)){const mu=document.createElement('script');mu.src='/shared/music.js?v=3';mu.defer=true;document.head.appendChild(mu)}
 /* first-play walkthrough, shared by every game */
-{const w=document.createElement('script');w.src='/shared/walk.js?v=4';w.defer=true;document.head.appendChild(w)}
+{const w=document.createElement('script');w.src='/shared/walk.js?v=5';w.defer=true;document.head.appendChild(w)}
 })();

@@ -102,15 +102,23 @@ function tour(steps,{onDone,onSkip,lastLabel}){
 
 /* ---------------- Aperture and Aperture Landmarks ---------------- */
 async function aperture(){
-  const btn=await waitFor(()=>{const b=D.getElementById('startBtn');return b&&b.offsetParent&&/Round 1 of/.test((D.getElementById('overlay')||{}).textContent||'')?b:null});
+  const btn=await waitFor(()=>{const b=D.getElementById('startBtn');return b&&b.offsetParent&&/Round 1 of|Runde 1 von/.test((D.getElementById('overlay')||{}).textContent||'')?b:null});
   if(!btn)return;
   await new Promise(r=>setTimeout(r,500));
   ls(KEY,'1');bump('shown');
   const lm=game==='landmarks';const tap=coarse?'Tap':'Click';
   const guide=(D.querySelector('#slots .guide')||{}).textContent||'';const parts=(guide.match(/\d+/g)||[]);
-  const gtxt=parts.length>1?`<b>${esc(guide)}</b> means ${parts.length} words: ${parts.join(', then ')} letters.`:parts.length?`<b>${esc(guide)}</b> means one word of ${parts[0]} letters.`:'';
+  const de=lang==='de';
+  const gtxt=de?(parts.length>1?`<b>${esc(guide)}</b> heißt ${parts.length} Wörter: ${parts.join(', dann ')} Buchstaben.`:parts.length?`<b>${esc(guide)}</b> heißt ein Wort mit ${parts[0]} Buchstaben.`:'')
+   :(parts.length>1?`<b>${esc(guide)}</b> means ${parts.length} words: ${parts.join(', then ')} letters.`:parts.length?`<b>${esc(guide)}</b> means one word of ${parts[0]} letters.`:'');
   const ov=D.getElementById('overlay');
-  const steps=[
+  const steps=de?[
+    {sels:['.viewer'],k:'A',t:'Das Bild',b:`Hinter diesen Schlitzen versteckt sich ${lm?'ein Wahrzeichen':'ein Alltagsding'}. Je länger die Uhr läuft, desto mehr wird sichtbar. ${coarse?'Zum Zoomen Finger spreizen oder + tippen.':'Zum Zoomen scrollen oder + klicken.'}`},
+    {sels:['#negThumb','.negwrap'],k:'B',t:'Das Negativ',b:`Ein zweiter Hinweis: dasselbe Bild als Farbnegativ, das sich nach und nach Feld für Feld füllt.${D.getElementById('negThumb')?` ${coarse?'Tipp':'Klick'} darauf, um es groß zu sehen.`:' Vor dem Start steht hier das Zitat des Tages.'}`},
+    {sels:['#tray','.wordsbox','#words'],k:'C',t:coarse?'Wörter antippen':'Wörter anklicken',b:`${coarse?'Kein Tippen nötig. Tipp':'Klick'} Wörter in der Liste an, dann landen sie in den Feldern${coarse?'':' (oder schreib einfach)'}. ${gtxt}`},
+    {sels:['#tray .row','.helpers','#skipBtn'],round:'22px',t:'Festgefahren?',b:'<b>Hilfe</b> gibt Hinweise, zum Beispiel einen Anfangsbuchstaben. <b>Weiter</b> springt zum nächsten Bild. Beides kostet ein paar Sekunden. Fünf Bilder; die niedrigste Gesamtzeit gewinnt.'},
+    {sels:['#musicBtn','#soundBtn','[aria-label="Feedback oder Problem melden"]','[aria-label="Feedback or report a problem"]','#helpBtn'],round:'999px',t:'Deine Knöpfe',b:'<b>♫</b> schaltet die Musik an oder aus, der <b>Lautsprecher</b> die Soundeffekte. Mit der <b>Sprechblase</b> schickst du uns eine Nachricht oder meldest ein Problem. <b>Anleitung</b> zeigt diese Tipps noch einmal.'}
+  ]:[
     {sels:['.viewer'],k:'A',t:'The picture',b:`${lm?'A landmark':'An everyday thing'} is hiding behind these slits. More of it opens up as the clock runs. ${coarse?'Pinch or tap + to zoom.':'Scroll or click + to zoom.'}`},
     {sels:['#negThumb','.negwrap'],k:'B',t:'The negative',b:`A second clue: the same picture as a colour-flipped negative, filling in square by square over time.${D.getElementById('negThumb')?` ${tap} it to see it big.`:' Before you start, today\'s quote sits here.'}`},
     {sels:['#tray','.wordsbox','#words'],k:'C',t:coarse?'Tap words to answer':'Click words to answer',b:`${coarse?'No typing. Tap':'Click'} words in the list and they drop into the boxes${coarse?'':' (or just type)'}. ${gtxt}`},
@@ -118,12 +126,12 @@ async function aperture(){
     {sels:['#musicBtn','#soundBtn','[aria-label="Feedback or report a problem"]','#helpBtn'],round:'999px',t:'Your buttons',b:'<b>♫</b> turns the music on or off, the <b>speaker</b> does the same for sound effects. The <b>speech bubble</b> sends us a message or reports a problem. <b>How to play</b> brings these tips back.'}
   ];
   const hideOv=v=>{if(ov)ov.style.visibility=v?'hidden':''};
-  sheet('',`<span class="tw-eb">${L.first}</span><h3>Guess what's hiding, in two minutes</h3><p>Five quick tips over the real game. The clock waits until you're ready.</p><div class="tw-btns"><button class="tw-btn" data-a="show">Show me</button><button class="tw-lnk" data-a="play">I'll just play</button></div>`,(s,close)=>{
+  sheet('',`<span class="tw-eb">${L.first}</span><h3>${de?'Errate, was sich versteckt – in zwei Minuten':'Guess what\'s hiding, in two minutes'}</h3><p>${de?'Fünf kurze Tipps direkt im Spiel. Die Uhr wartet, bis du bereit bist.':'Five quick tips over the real game. The clock waits until you\'re ready.'}</p><div class="tw-btns"><button class="tw-btn" data-a="show">${de?'Zeig’s mir':'Show me'}</button><button class="tw-lnk" data-a="play">${de?'Ich spiel einfach':'I\'ll just play'}</button></div>`,(s,close)=>{
     s.querySelector('[data-a=play]').onclick=()=>{close();bump('justplay')};
     s.querySelector('[data-a=show]').onclick=()=>{close();bump('show');hideOv(true);scrollTo(0,0);
-      tour(steps,{lastLabel:'Ready? Start the clock',onDone:()=>{hideOv(false);bump('done');scrollTo(0,0);const b=D.getElementById('startBtn');b&&b.click()},onSkip:()=>{hideOv(false);bump('skip')}})}});
+      tour(steps,{lastLabel:de?'Bereit? Uhr starten':'Ready? Start the clock',onDone:()=>{hideOv(false);bump('done');scrollTo(0,0);const b=D.getElementById('startBtn');b&&b.click()},onSkip:()=>{hideOv(false);bump('skip')}})}});
 }
-function apertureReplayLink(){const hc=D.querySelector('.helpcard');if(!hc||hc.querySelector('.tw-replay'))return;const b=D.createElement('button');b.className='tw-lnk tw-replay';b.textContent='Show me the quick tips';b.style.marginTop='6px';
+function apertureReplayLink(){const hc=D.querySelector('.helpcard');if(!hc||hc.querySelector('.tw-replay'))return;const b=D.createElement('button');b.className='tw-lnk tw-replay';b.textContent=lang==='de'?'Zeig mir die kurzen Tipps':'Show me the quick tips';b.style.marginTop='6px';
   b.onclick=()=>{const h=D.getElementById('help');if(h)h.hidden=true;try{localStorage.removeItem(KEY)}catch(e){}aperture()};hc.appendChild(b)}
 
 /* ---------------- Natural Wonders ---------------- */

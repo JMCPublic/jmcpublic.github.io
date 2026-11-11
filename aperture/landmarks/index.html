@@ -375,7 +375,10 @@ body:not(.waiting) .quizhead{display:none}
   .side .statcard{min-height:0;box-sizing:border-box}
 }
 @media (max-width:760px){.promo,.pbig,.pveil{display:none!important}}
-.asks{grid-template-columns:1fr 1fr 1.25fr}.ask{white-space:nowrap}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--blue,#2b50e0);margin-left:4px}.trayrow{display:flex;gap:10px;justify-content:center;align-items:center}#skipBtn{color:var(--ink,#16181d);padding:6px 14px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}#skipBtn small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--faint,#9aa0ab);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}#skipBtn:disabled{opacity:.45}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}</style>
+.asks{grid-template-columns:1fr 1fr 1.25fr}.ask{white-space:nowrap}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--blue,#2b50e0);margin-left:4px}.trayrow{display:flex;gap:10px;justify-content:center;align-items:center}#skipBtn{color:var(--ink,#16181d);padding:6px 14px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}#skipBtn small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--faint,#9aa0ab);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}#skipBtn:disabled{opacity:.45}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}/* long words (e.g. German compounds): wider tiles, smaller answer boxes (11 Nov) */
+.chip.xl span{font-size:clamp(7.5px,min(2.2cqh,3.6cqw),11px);letter-spacing:-.02em;text-overflow:clip}.chip.xl{padding:0 1px}
+.grp:has(.cell:nth-child(12)) .cell{width:15px;font-size:15px}
+</style>
 </head>
 <body>
 
@@ -776,11 +779,14 @@ function buildWords(obj){
   S.words=shuffle([...ans,...decoys]).map(w=>({w,code:CODES[w]}));
   S.gone=new Set();
   const grid=$('words');grid.innerHTML='';
-  S.words.forEach(o=>{const b=document.createElement('button');b.className=o.w.length>7?'chip long':'chip';
+  S.words.forEach(o=>{const b=document.createElement('button');b.className=o.w.length>9?'chip long xl':o.w.length>6?'chip long':'chip';
     b.title=`${o.code} ${o.w}`;
     b.innerHTML=`<b>${o.code}</b><span>${o.w}</span>`;b.onclick=()=>placeWord(o.w);o.el=b;grid.appendChild(b)});
-  layoutWords();
+  layoutWords();requestAnimationFrame(fitChips);
 }
+function fitChips(){document.querySelectorAll('#words .chip span').forEach(s=>{s.style.fontSize='';let f=parseFloat(getComputedStyle(s).fontSize);while(s.scrollWidth>s.clientWidth&&f>6){f-=.5;s.style.fontSize=f+'px'}})}
+addEventListener('resize',fitChips);if(document.fonts)document.fonts.ready.then(fitChips);
+
 function layoutWords(){
   const grid=$('words');if(!S.words)return;
   let list=[...S.words];
@@ -1036,7 +1042,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v35';
+document.documentElement.dataset.version='landmarks desktop v37';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
