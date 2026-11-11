@@ -67,7 +67,7 @@ function mkBtn(cls){const b=D.createElement('button');b.type='button';b.classNam
 /* put ♫ in the game header (it is redrawn every question, so keep re-adding it) */
 function place(){const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
   btns.forEach(b=>{if(!b.isConnected)btns.delete(b)});
-  if(!row&&GAME==='masterbrain'&&!D.querySelector('.tmgmus.float')&&D.querySelector('.q,.question,#q,.board,.qbox'))D.body.appendChild(mkBtn('float'))}
+  if(!row&&GAME==='masterbrain'&&!D.querySelector('.tmgmus.float')&&D.querySelector('iframe'))D.body.appendChild(mkBtn('float'))}
 new MutationObserver(place).observe(D.body,{childList:true,subtree:true});place();
 /* the grey line under ♫ */
 let line;
