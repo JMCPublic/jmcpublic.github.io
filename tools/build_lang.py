@@ -78,6 +78,7 @@ def build(game, lang, src, dst, av):
         s = s[:j] + f"/* {L} names and answers (tools/build_lang.py) */\nconst TR_AP=" + js(ap) + \
             ";\nOBJECTS.forEach(o=>{const d=TR_AP[o.name];if(d){o.answer=d.a;o.name=d.n}});\n" + s[j:]
         pool, Q, otd = T.AP_POOL, T.AP_Q, T.AP_OTD
+    pool = list(dict.fromkeys(pool))
     i = s.index('const POOL=('); j = s.index(';\n', i)
     s = s[:i] + "const POOL=(" + js(' '.join(pool)) + ").split(/\\s+/).filter(Boolean)" + s[j:]
     for name, key in (('Q_OPEN', 'open'), ('Q_CLOSE', 'close'), ('Q_STAR', 'star')):
