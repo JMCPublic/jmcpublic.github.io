@@ -7,8 +7,10 @@
 (()=>{
 if(window.tmgMusic)return;
 const D=document,P=location.pathname,m=P.match(/natural-wonders-([a-z-]+)/);
-if(!m)return;
-const GAME=m[1];
+/* Aperture and Landmarks play their own music (in the page) under their own ♫ button; here they only get the Now playing line and card */
+const AP=/^\/aperture\//.test(P)&&!/\/stats\//.test(P);
+if(!m&&!AP)return;
+const GAME=AP?(/\/landmarks\//.test(P)?'landmarks':'aperture'):m[1];
 const T={
  'lakes':{f:'lakes',t:'Swan Lake',c:'Pyotr Ilyich Tchaikovsky, 1876',p:'Act II scene',fact:'🦢 The ballet’s heroine is a princess turned into a swan, who can only be human at night by the lake.'},
  'deserts':{f:'deserts',t:'In the Steppes of Central Asia',c:'Alexander Borodin, 1880',p:'Musopen Symphony Orchestra',fact:'🐫 A caravan crosses the empty steppe, guarded by soldiers, and fades into the distance.'},
@@ -20,9 +22,11 @@ const T={
  'forests':{f:'forests',t:'Pastoral Symphony, Scene by the brook',c:'Ludwig van Beethoven, 1808',p:'Musopen',fact:'🐦 Near the end, the woodwinds imitate a nightingale, a quail and a cuckoo.'},
  'where-is-bigger':{f:'world',t:'New World Symphony, Largo',c:'Antonín Dvořák, 1893',p:'Musopen',fact:'🌎 Written in America by a Czech composer, missing home. Its tune later became the song “Goin’ Home”.'}
 };
+T.aperture={f:'aperture',t:'Gymnopédie No. 1',c:'Erik Satie, 1888',p:'Michael Laucke, guitar',fact:'🎹 Satie wrote his three Gymnopédies at 22, while playing piano in a Montmartre cabaret.'};
+T.landmarks={f:'landmarks',t:'Clair de lune',c:'Claude Debussy, 1905',p:'Laurens Goedhart, piano',fact:'🌙 Its name means “moonlight”, after a poem by Paul Verlaine.',fact_de:'🌙 Der Name bedeutet „Mondschein“, nach einem Gedicht von Paul Verlaine.',p_de:'Laurens Goedhart, Klavier'};
 T['which-of-five']=T['how-many-borders']=T['where-is-bigger'];
 const tr=T[GAME];
-const READY=['lakes','deserts','masterbrain','rivers','river-cities','bodies-of-water','forests','world','mountains']; /* recordings uploaded so far; the rest are added as they arrive */
+const READY=['aperture','landmarks','lakes','deserts','masterbrain','rivers','river-cities','bodies-of-water','forests','world','mountains']; /* recordings uploaded so far; the rest are added as they arrive */
 if(!tr||!READY.includes(tr.f))return;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const lang=(D.documentElement.lang||'en').slice(0,2);
@@ -64,15 +68,16 @@ const css=`.tmgmus{width:32px;height:32px;border-radius:50%;border:1.5px solid r
 .tmgnpc .ft button{background:none;border:0;padding:0;font:inherit;color:#16181d;text-decoration:underline;cursor:pointer}`;
 const st=D.createElement('style');st.textContent=css;D.head.appendChild(st);
 
-const audio=new Audio(`https://twominute.games/shared/music/${tr.f}.mp3`);audio.loop=true;audio.volume=0.35;audio.preload='none';
+const audio=AP?null:new Audio(`https://twominute.games/shared/music/${tr.f}.mp3`);if(audio){audio.loop=true;audio.volume=0.35;audio.preload='none'}
 let on=ls('tmg-music')!=='off',started=false,shown=false;
 const btns=new Set();
-function paint(){btns.forEach(b=>{b.textContent='♫';b.classList.toggle('off',!on);b.title=on?W[3]:W[4];b.setAttribute('aria-label',on?W[3]:W[4])})}
+const isOn=()=>AP?((D.getElementById('musicBtn')||{getAttribute:()=>'true'}).getAttribute('aria-pressed')!=='false'):on;
+function paint(){if(AP)return;btns.forEach(b=>{b.textContent='♫';b.classList.toggle('off',!on);b.title=on?W[3]:W[4];b.setAttribute('aria-label',on?W[3]:W[4])})}
 function play(){if(!on)return;audio.play().then(()=>{started=true;if(!shown){shown=true;showLine()}}).catch(()=>{})}
-function toggle(e){e&&e.stopPropagation();on=!on;ls('tmg-music',on?'on':'off');bump(on?'on':'off');if(on)play();else audio.pause();paint()}
+function toggle(e){e&&e.stopPropagation();if(AP){const b=D.getElementById('musicBtn');if(b)b.click();bump(isOn()?'on':'off');return}on=!on;ls('tmg-music',on?'on':'off');bump(on?'on':'off');if(on)play();else audio.pause();paint()}
 function mkBtn(cls){const b=D.createElement('button');b.type='button';b.className='tmgmus '+(cls||'');b.onclick=toggle;btns.add(b);paint();return b}
 /* put ♫ in the game header (it is redrawn every question, so keep re-adding it) */
-function place(){const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
+function place(){if(AP){const b=D.getElementById('musicBtn');if(b)btns.add(b);return}const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
   btns.forEach(b=>{if(!b.isConnected)btns.delete(b)});
   if(!row&&GAME==='masterbrain'&&!D.querySelector('.tmgmus.float')&&D.querySelector('iframe'))D.body.appendChild(mkBtn('float'))}
 new MutationObserver(place).observe(D.body,{childList:true,subtree:true});place();
@@ -84,19 +89,19 @@ function showLine(){const b=[...btns].find(x=>x.isConnected);line=D.createElemen
   requestAnimationFrame(()=>line.classList.add('on'));line.onclick=()=>{hideLine();card()};setTimeout(hideLine,5000)}
 function hideLine(){if(!line)return;const l=line;line=null;l.classList.remove('on');setTimeout(()=>l.remove(),350)}
 /* the Now playing card */
-function pauseClock(){try{if(typeof TM==='undefined'||!TM.iv)return null;const el=performance.now()-TM.t0;TM.stop();
+function pauseClock(){if(AP){window.tmgHold=true;return()=>{window.tmgHold=false}}try{if(typeof TM==='undefined'||!TM.iv)return null;const el=performance.now()-TM.t0;TM.stop();
   return()=>{TM.t0=performance.now()-el;TM.iv=setInterval(()=>{const l=TM.secs-(performance.now()-TM.t0)/1000;TM.draw(l);if(l<=0){TM.stop();const f=TM.onUp;TM.onUp=null;if(f)f()}},100)}}catch(e){return null}}
 function card(){bump('card');const c=cc(),s=ST[c]||ST.def;const resume=pauseClock(); /* the clock waits while the card is open */
   const bg=D.createElement('div');bg.className='tmgnpbg';const k=D.createElement('div');k.className='tmgnpc';k.setAttribute('role','dialog');
-  k.innerHTML=`<div class="eb"><span class="eq"><b></b><b></b><b></b><b></b></span>${W[0]}</div><h3>${tr.t}</h3><div class="by">${tr.c} · ${tr.p}</div><div class="fact">${tr.fact}</div>
+  k.innerHTML=`<div class="eb"><span class="eq"><b></b><b></b><b></b><b></b></span>${W[0]}</div><h3>${tr.t}</h3><div class="by">${tr.c} · ${tr['p_'+lang]||tr.p}</div><div class="fact">${tr['fact_'+lang]||tr.fact}</div>
   <div class="more"><span>${W[1]} <b>${s[0]}</b></span><a class="go" href="${s[1]}" target="_blank" rel="noopener">${W[2]} ↗</a></div>
-  <div class="ft"><span>♫ ${on?W[3]:W[4]} · <button data-a="t">${on?W[5]:W[6]}</button></span><button data-a="x">${W[7]}</button></div>`;
+  <div class="ft"><span>♫ ${isOn()?W[3]:W[4]} · <button data-a="t">${isOn()?W[5]:W[6]}</button></span><button data-a="x">${W[7]}</button></div>`;
   const close=()=>{bg.remove();k.remove();resume&&resume()};bg.onclick=close;k.querySelector('[data-a=x]').onclick=close;
   k.querySelector('[data-a=t]').onclick=()=>{toggle();close()};k.querySelector('.go').onclick=()=>bump('listen_'+(c||'xx').toLowerCase());
   D.body.append(bg,k)}
 /* start on the first tap anywhere (Play now counts); pause when the tab is hidden */
-const first=()=>{D.removeEventListener('pointerdown',first,true);D.removeEventListener('keydown',first,true);play()};
+if(!AP){const first=()=>{D.removeEventListener('pointerdown',first,true);D.removeEventListener('keydown',first,true);play()};
 D.addEventListener('pointerdown',first,true);D.addEventListener('keydown',first,true);
-D.addEventListener('visibilitychange',()=>{if(D.hidden)audio.pause();else if(on&&started)audio.play().catch(()=>{})});
-window.tmgMusic={card,toggle};
+D.addEventListener('visibilitychange',()=>{if(D.hidden)audio.pause();else if(on&&started)audio.play().catch(()=>{})})}
+window.tmgMusic={card,toggle,line:()=>{if(AP&&!shown){shown=true;place();showLine()}}};
 })();

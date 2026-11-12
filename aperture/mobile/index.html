@@ -601,12 +601,16 @@ function lofiStep(out,st,t,l,spb){
   if(l>=1&&st%2===0)mnoise(out,t,.018,.03,7000,16000);
   if(l>=2&&st%4===2)mvoice(out,t,[72,74,76,79,81][(st/4|0)%5],'triangle',.3,.03,4000)}
 function musicLevel(){const st=Math.floor((S.elapsed||0)/STAGE);return st<2?0:st<4?1:2}
-function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;const out=a.createGain();out.gain.setValueAtTime(.0001,a.currentTime);out.gain.exponentialRampToValueAtTime(MUSIC_VOL,a.currentTime+1.2);out.connect(a.destination);
-  mus={out,step:0,next:a.currentTime+.1};
-  mus.timer=setInterval(()=>{if(!mus)return;const l=musicLevel(),spb=60/[78,84,90][l]/4;while(mus.next<AC.currentTime+.15){lofiStep(mus.out,mus.step,mus.next,l,spb);mus.next+=spb;mus.step++}},25)}
-function musicStop(fade){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);fade=fade||.8;
-  try{m.out.gain.cancelScheduledValues(AC.currentTime);m.out.gain.setValueAtTime(Math.max(.0001,m.out.gain.value),AC.currentTime);m.out.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}catch(e){}
-  setTimeout(()=>{try{m.out.disconnect()}catch(e){}},fade*1000+300)}
+/* recorded music (12 Nov 2026): a classical loop in place of the lo-fi beat; it fades in each round, fades out for the
+   last 10 seconds and carries on where it left off. Routed through Web Audio so the fades work on iPhones too. */
+const MUS_FILE=/landmarks/.test(location.pathname)?'landmarks':'aperture',MUS_REC=.35;let APM=null,APG=null;
+function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;
+  if(!APM){APM=new Audio('/shared/music/'+MUS_FILE+'.mp3');APM.loop=true;try{APG=a.createGain();APG.gain.value=.0001;a.createMediaElementSource(APM).connect(APG);APG.connect(a.destination)}catch(e){APG=null;APM.volume=MUS_REC}}
+  mus={rec:1};if(APG){APG.gain.cancelScheduledValues(a.currentTime);APG.gain.setValueAtTime(Math.max(.0001,APG.gain.value),a.currentTime);APG.gain.exponentialRampToValueAtTime(MUS_REC,a.currentTime+1.5)}
+  APM.play().then(()=>{try{window.tmgMusic&&tmgMusic.line&&tmgMusic.line()}catch(e){}}).catch(()=>{})}
+function musicStop(fade){if(!mus)return;mus=null;fade=fade||.8;if(!APM)return;
+  try{if(APG){APG.gain.cancelScheduledValues(AC.currentTime);APG.gain.setValueAtTime(Math.max(.0001,APG.gain.value),AC.currentTime);APG.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}}catch(e){}
+  setTimeout(()=>{if(!mus)APM.pause()},fade*1000+100)}
 function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music-v2',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Music on':'Music off');b.dataset.tip=on?'Music on · click to turn off':'Music off · click to turn on'}
   try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
 setMusic(musicOn);
@@ -904,6 +908,7 @@ function updateHUD(){
 let last=0,raf=0;
 function loop(now){
   if(!S.running)return;
+  if(window.tmgHold){last=now;raf=requestAnimationFrame(loop);return} /* clock waits while the Now playing card is open */
   S.elapsed+=Math.min(.25,(now-last)/1000);last=now;
   const stage=Math.floor(S.elapsed/STAGE);
   while(S.stages<stage&&S.stages<STAGES-1){S.stages++;addViewpoint();revealTiles(8);tick(`${S.stages*STAGE} seconds gone. A free viewpoint is open and the negative filled in.`)}
