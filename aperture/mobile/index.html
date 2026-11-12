@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* languages this game has; anyone who chose one before goes straight to it (tools/build_lang.py keeps the list) */window.TMG_AV={"landmarks": ["de"], "aperture": ["de"]};try{(()=>{const L=localStorage.getItem('tmg-lang'),P=location.pathname,m=P.match(/^\/aperture\/(landmarks\/)?/);if(!m||/[?&](via|lang)=/.test(location.search))return;const rest=P.slice(m[0].length);if(/^(de|tr|fr|es|pt)\//.test(rest))return;if((TMG_AV[m[1]?'landmarks':'aperture']||[]).includes(L))location.replace(m[0]+L+'/'+rest+location.search+location.hash)})()}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aperture · Two Minute Games</title>
 <meta name="description" content="An everyday object, seen through a few small viewpoints. What is it? Your 2 minute daily quiz, the same for everyone.">
@@ -286,7 +287,7 @@ body:not(.waiting) #ticker{display:none}
 .overlay .next b{font-family:var(--mono);font-weight:500;color:var(--blue)}
 /* end of game: the result card gets the whole picture to itself */
 body.done .zoombtns,body.done .negthumb,body.done #feedback{display:none}
-body.done .ovwrap{top:8px}
+body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 .homelink{color:inherit;text-decoration:none;display:flex;align-items:center}
 .overlay .kofi{font-size:11.5px;color:var(--soft);text-decoration:none;margin-top:2px}
 .overlay .kofi u{text-decoration-color:rgba(91,96,107,.4);text-underline-offset:3px}
@@ -313,7 +314,8 @@ body.done .ovwrap{top:8px}
 .msheet .prow{display:flex;gap:10px;align-items:center;justify-content:flex-start;margin-top:4px}
 .msheet .go{background:var(--ink);color:#fff;border-radius:999px;padding:11px 20px;font-size:15px;font-weight:500;text-decoration:none}
 .msheet .later{color:var(--soft);font-size:14px;padding:8px}
-.asks #askFirst{grid-column:1/-1}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:var(--blue,#2b50e0);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}</style>
+.asks #askFirst{grid-column:1/-1}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:var(--blue,#2b50e0);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}.chip.xl{grid-column:span 2}.chip.xl span{font-size:14px;letter-spacing:0}.words{grid-auto-flow:row dense}.grp:has(.cell:nth-child(12)) .cell{width:15px;font-size:15px}
+</style>
 </head>
 <body>
 
@@ -794,11 +796,14 @@ function buildWords(obj){
   S.words=shuffle([...ans,...decoys]).map(w=>({w,code:CODES[w]}));
   S.gone=new Set();
   const grid=$('words');grid.innerHTML='';
-  S.words.forEach(o=>{const b=document.createElement('button');b.className=o.w.length>7?'chip long':'chip';
+  S.words.forEach(o=>{const b=document.createElement('button');b.className=o.w.length>8?'chip long xl':o.w.length>6?'chip long':'chip';
     b.title=`${o.code} ${o.w}`;
     b.innerHTML=`<b>${o.code}</b><span>${o.w}</span>`;b.onclick=()=>placeWord(o.w);o.el=b;grid.appendChild(b)});
-  layoutWords();
+  layoutWords();requestAnimationFrame(fitChips);
 }
+function fitChips(){document.querySelectorAll('#words .chip span').forEach(s=>{s.style.fontSize='';let f=parseFloat(getComputedStyle(s).fontSize);while(s.scrollWidth>s.clientWidth&&f>6){f-=.5;s.style.fontSize=f+'px'}})}
+addEventListener('resize',fitChips);if(document.fonts)document.fonts.ready.then(fitChips);
+
 function layoutWords(){
   const grid=$('words');if(!S.words)return;
   let list=[...S.words];
@@ -1251,6 +1256,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <!-- /tmg-feedback -->
 <script src="/shared/adbox.js?v=2" defer></script>
 <script src="/shared/fitquote.js" defer></script>
+<script src="/shared/lmlang.js?v=2" defer></script>
 <script src="/shared/reach.js?v=5" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 </body>

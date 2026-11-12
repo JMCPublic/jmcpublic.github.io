@@ -241,7 +241,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v26';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v27';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -449,9 +449,9 @@ function drawLang(){const el=document.getElementById('rcLang');const ALL=map(cur
     const other=rows.filter(r=>r.k!=='en'&&r.cc.length);
     return `<h3 class="langgame">${game}</h3>${rows.length?`<table class="rt"><tr><th>Language</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Finished a game</th><th class="n">Finish rate</th><th>Arrived by</th></tr>${rows.map(r=>`<tr><td>${(LNAME[r.k]||['',r.k.toUpperCase()]).join(' ')}</td><td class="n">${r.vis}</td><td class="n">${r.uni}</td><td class="n">${r.fin}</td><td class="n">${r.rate}</td><td>${r.via.length?r.via.map(x=>x[0]+' '+x[1]).join(' · '):'—'}</td></tr>`).join('')}</table>
     ${other.map(r=>`<p class="msgnote"><b>${esc({de:"German",tr:"Turkish",fr:"French",es:"Spanish",pt:"Portuguese"}[r.k]||r.k.toUpperCase())} players by country:</b> ${r.cc.map(([c,n])=>flag(c)+' '+esc(c==='GB'?'UK':cn(c))+' '+n).join(' · ')}</p>`).join('')}`:'<p class="msgnote">Nothing yet.</p>'}`};
-  const wib={},lm={};Object.entries(ALL).forEach(([k,v])=>{if(k.startsWith('lm_'))lm[k.slice(3)]=v;else wib[k]=v});
+  const wib={},lm={},ap={};Object.entries(ALL).forEach(([k,v])=>{if(k.startsWith('lm_'))lm[k.slice(3)]=v;else if(k.startsWith('ap_'))ap[k.slice(3)]=v;else wib[k]=v});
   el.innerHTML=`<div class="h2row"><h2>Languages</h2><small>${period==='month'?'this month':'all time'} · finish rate shows whether the translation reads well</small></div>
-  ${Object.keys(ALL).length?table(wib,'Where is Bigger?')+table(lm,'Aperture Landmarks')+`<p class="msgnote">Links to post: Where is Bigger? twominute.games/de/ (German), /tr/ (Turkish), /fr/ (French), /es/ (Spanish), /pt/ (Portuguese) · Landmarks twominute.games/de/landmarks/ (German) · “link” = came through it, “offer” = said yes to the language offer on the English page, “switch” = used the language switch.</p>`
+  ${Object.keys(ALL).length?table(wib,'Where is Bigger?')+table(ap,'Aperture')+table(lm,'Aperture Landmarks')+`<p class="msgnote">Links to post: Where is Bigger? twominute.games/de/ (German), /tr/ (Turkish), /fr/ (French), /es/ (Spanish), /pt/ (Portuguese) · Landmarks twominute.games/de/landmarks/ (German) · “link” = came through it, “offer” = said yes to the language offer on the English page, “switch” = used the language switch.</p>`
   :'<p class="msgnote">Nothing yet. Counting starts once Firestore rules v10 are published.</p>'}`}
 // map data: walk-ins (reach), countries reached through tagged links (spread, owner only), form senders (witw) and game visits (each game's own counters)
 let SP=[],GV={all:{},month:{}};
@@ -567,7 +567,7 @@ function draw(){const body=document.getElementById('wcBody'),title=document.getE
     L.push({tab:'reach',id:'rcSrc',star:!base.src[k]&&k!=='walkin',h:`${esc(SRCN(k))}: <b>${pl(v,'visit')}</b>${u?', '+pl(u,'new player'):''}${p?', '+fmt(p)+' opened a game':''}`,s:!base.src[k]&&k!=='walkin'?'first time this link brought anyone in':''})});
   // 5. languages
   const lg=Object.keys(now.lang).filter(k=>k!=='en'&&d(now.lang[k].visits,(base.lang[k]||{}).visits));
-  if(lg.length)L.push({tab:'reach',id:'rcLang',h:'Translated games: '+lg.map(k=>`${/^lm_/.test(k)?'Landmarks · '+(LANGN[k.slice(3)]||k.slice(3).toUpperCase()):'Where is Bigger? · '+(LANGN[k]||k)} ${fmt(d(now.lang[k].visits,(base.lang[k]||{}).visits))}`).join(' · '),s:'visits to each language version'});
+  if(lg.length)L.push({tab:'reach',id:'rcLang',h:'Translated games: '+lg.map(k=>`${/^lm_/.test(k)?'Landmarks · '+(LANGN[k.slice(3)]||k.slice(3).toUpperCase()):/^ap_/.test(k)?'Aperture · '+(LANGN[k.slice(3)]||k.slice(3).toUpperCase()):'Where is Bigger? · '+(LANGN[k]||k)} ${fmt(d(now.lang[k].visits,(base.lang[k]||{}).visits))}`).join(' · '),s:'visits to each language version'});
   // 6. walkthrough
   const ws=d(now.walk.shown,base.walk.shown),wp=d(now.walk.play,base.walk.play);
   if(ws)L.push({tab:'reach',id:'rcWalk',h:`Walkthrough shown ${pl(ws,'time')}, then <b>${fmt(wp)}</b> started playing`});
