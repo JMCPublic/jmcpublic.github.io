@@ -241,7 +241,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v28';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v29';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -472,6 +472,8 @@ function mapSvg(D,vb){const [,,vw]=vb.split(' ').map(Number);const s=vw/1000;con
   const fill=c=>D.walk[c]?'#7d93ff':D.links[c]?'#9fdcb3':(D.pins[c]||D.games[c])?'#d5ddfb':'#e6e9ef';
   const tip=c=>[esc(cn(c)),D.games[c]?D.games[c]+' game visit'+(D.games[c]>1?'s':''):'',D.walk[c]?D.walk[c]+' walk-in'+(D.walk[c]>1?'s':''):'',D.links[c]?D.links[c]+' through your links':'',D.pins[c]?D.pins[c]+' sent the form':''].filter(Boolean).join(' · ');
   let h=`<path d="${WM.sphere}" fill="#f6f8ff"/>`+Object.entries(WM.c).map(([k,d])=>{const c=a3[k];return `<path d="${d}" fill="${c?fill(c):'#e6e9ef'}" stroke="#fff" stroke-width="${(.6*Math.max(s,.45)).toFixed(2)}"><title>${c?tip(c):k}</title></path>`}).join('');
+  // islands too small to see (Réunion, Mayotte, Guadeloupe, Martinique and the like): a dot on them once they have visitors
+  Object.entries(WM.c).forEach(([k,d])=>{const c=a3[k];if(!c||d.length>400||fill(c)==='#e6e9ef')return;const p=WM.cen[k];if(!p)return;h+=`<circle cx="${p[0]}" cy="${p[1]}" r="${(4*Math.max(s,.4)).toFixed(1)}" fill="${fill(c)}" stroke="#4a5568" stroke-width="${(.5*Math.max(s,.4)).toFixed(2)}"><title>${tip(c)}</title></circle>`});
   const per={};entries.filter(e=>!e.hidden).forEach(e=>{(per[e.country]=per[e.country]||[]).push(e)});
   Object.entries(per).forEach(([c,list])=>{const p=WM.cen[WM.a2[c]];if(!p)return;const r=9*Math.max(s,.3);list.forEach((e,i)=>{const ang=i*2.4,rad=i?(7+i*3)*Math.max(s,.3):0,x=p[0]+Math.cos(ang)*rad,y=p[1]+Math.sin(ang)*rad;const ini=((e.first||'')[0]||'')+((e.last||'')[0]||'')||'•';
     h+=`<g><circle cx="${x}" cy="${y}" r="${r}" fill="#2b50e0" stroke="#fff" stroke-width="${r/4.5}"/><text x="${x}" y="${y+r*.39}" text-anchor="middle" font-size="${r}" font-weight="700" fill="#fff" font-family="system-ui">${esc(ini.toUpperCase())}</text><title>${esc([e.first,e.last].filter(Boolean).join(' ')||'Someone')}${e.town?' · '+esc(e.town):''} · ${esc(cn(c))}</title></g>`})});
@@ -597,7 +599,7 @@ if(window.tmgMsgs)msgs=window.tmgMsgs;
 load();
 })();
 </script>
-<script src="/aperture/stats/helpers.js?v=4" defer></script>
+<script src="/aperture/stats/helpers.js?v=5" defer></script>
 </body>
 
 </html>

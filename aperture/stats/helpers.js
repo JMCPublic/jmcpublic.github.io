@@ -116,7 +116,7 @@ if(bc)bc.onmessage=async()=>{if(user){try{await load();draw()}catch(e){}}};
 if(ZOOM){document.body.classList.add('hpz');document.title='Contacts · '+Z;const t=document.querySelector('.rtabs button[data-t="helpers"]');if(t)t.click()}
 setInterval(()=>{if(!card.offsetParent)return;const u=$('#hpUk');if(u)u.textContent=tstr('Europe/London')},20000);
 
-Promise.all([fetch('/shared/wmap.json').then(r=>r.json()),fetch('/shared/places.json?v=1').then(r=>r.json())]).then(([w,p])=>{WM=w;PL=p;draw()}).catch(()=>{$('#hpList').innerHTML='<p class="msgnote">The map didn’t load.</p>'});
+Promise.all([fetch('/shared/wmap.json').then(r=>r.json()),fetch('/shared/places.json?v=2').then(r=>r.json())]).then(([w,p])=>{WM=w;PL=p;draw()}).catch(()=>{$('#hpList').innerHTML='<p class="msgnote">The map didn’t load.</p>'});
 try{firebase.app('msgs').auth().onAuthStateChanged(async u=>{if(!u||(u.email||'').toLowerCase()!==OWNER){user=null;H=[];draw();$('#hpList').innerHTML='<p class="msgnote">Sign in on the Messages tab to see and add contacts.</p>';return}
   user=u;try{await load();draw()}catch(e){draw();$('#hpList').innerHTML=`<p class="msgnote">Couldn’t read contacts (error ${esc(e)}). Publish the Firebase rules v11 (adds the contacts collection).</p>`}})}catch(e){}
 })();
