@@ -703,6 +703,7 @@ function otdLoad(){
   const [y,m,d]=(G.key||'').split('-');const mm=m,dd=d,k=mm+dd;
   const page=`https://en.wikipedia.org/wiki/${MONTHS[+mm-1]}_${+dd}`;
   if(OTD[k])return otdP=Promise.resolve({year:OTD[k][0],text:OTD[k][1],page});
+  if(document.documentElement.lang!=='en')return otdP=Promise.resolve(null); /* Wikipedia's feed is in English: on a translated page show no fact rather than an English one */
   const ck='ap-otd-objects-'+k;
   try{const c=sessionStorage.getItem(ck);if(c)return otdP=Promise.resolve(JSON.parse(c))}catch(e){}
   return otdP=fetch(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/events/${mm}/${dd}`).then(r=>r.ok?r.json():null).then(j=>{
@@ -1116,7 +1117,7 @@ h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v48';
+document.documentElement.dataset.version='desktop v49';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
