@@ -241,7 +241,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v27';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v28';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -418,6 +418,8 @@ auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()
 const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>v?+(v.integerValue||v.doubleValue||0):0;const map=v=>(v&&v.mapValue&&v.mapValue.fields)||{};
 const g=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());const MONTH=g.find(x=>x.type==='year').value+'-'+g.find(x=>x.type==='month').value;
+let TAGCC=null;function tagCountry(k){if(!TAGCC){TAGCC={};try{const AZ='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const all=[];for(const x of AZ)for(const y of AZ)all.push(x+y);all.filter(c=>{const n=cn(c);return n&&n!==c&&!/Unknown/i.test(n)}).forEach(c=>{const n=cn(c).toLowerCase();TAGCC[n.replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'')]=c;TAGCC[n.replace(/[^a-z]/g,'')]=c})}catch(e){}TAGCC.uk='GB';TAGCC.usa='US';TAGCC.us='US'}
+  const t=String(k).replace(/^t_/,'').replace(/_/g,'-').toLowerCase();return TAGCC[t]||TAGCC[t.replace(/-/g,'')]||null}
 const LABEL=k=>k==='li'?'LinkedIn (?ww=jmc_linkedin)':k==='fb'?'Facebook (?ww=jmc_facebook)':k==='walkin'?'Walk-ins (no tag)':'?from='+k.replace(/^t_/,'').replace(/_/g,'-');
 const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'';
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
@@ -430,7 +432,7 @@ function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur()
   const rows=Object.entries(src).map(([k,v])=>{const f=map(v);return [k,num(f.visits),num(f.uniques),num(f.played),num(f.back)]}).sort((a,b)=>(a[0]==='walkin')-(b[0]==='walkin')||b[1]-a[1]);
   el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
-  ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
+  ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${tagCountry(r[0])?flag(tagCountry(r[0]))+' ':''}${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}`;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawWalk();drawWitw()})}
 const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch'],tr:['🇹🇷','Türkçe'],fr:['🇫🇷','Français'],es:['🌎','Español'],pt:['🌎','Português']};
 const WNAME={objects:'Aperture',landmarks:'Aperture Landmarks',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?',bodies_of_water:'Bodies of Water',river_cities:'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
@@ -461,6 +463,8 @@ async function loadVisits(){const add=(o,f)=>{Object.entries(map(f.countries)).f
 const CONT={europe:['Europe','438 12 215 155'],asia:['Asia','565 18 400 290'],africa:['Africa','438 148 225 245'],namerica:['North America','95 0 355 255'],samerica:['South America','248 218 185 212'],oceania:['Oceania','790 238 212 205']};
 function mapData(){const walk={};Object.entries(map(cur().walkc)).forEach(([c,v])=>{if(num(v))walk[c]=num(v)});
   const links={};SP.filter(x=>x.country&&(period==='all'||String(x.at||'').startsWith(MONTH))).forEach(x=>{links[x.country]=(links[x.country]||0)+1});
+  // a link tagged with a country's name (?from=jamaica) counts for that country, whatever the visitor's phone says
+  Object.entries(map(cur().src)).forEach(([k,v])=>{const c=tagCountry(k);const n=num(map(v).visits);if(c&&n)links[c]=Math.max(links[c]||0,n)});
   const pins={};entries.filter(e=>!e.hidden).forEach(e=>{pins[e.country]=(pins[e.country]||0)+1});
   const games={...(GV[period]||{})};const all=[...new Set([...Object.keys(walk),...Object.keys(links),...Object.keys(pins),...Object.keys(games)])].filter(c=>/^[A-Z]{2}$/.test(c));
   return {walk,links,pins,games,all}}
@@ -510,7 +514,9 @@ let H={};
 const val=f=>f==null?'':f.stringValue??f.timestampValue??(f.integerValue!=null?+f.integerValue:f.booleanValue);
 async function loadPrivate(u){const tok=await u.getIdToken();H={Authorization:'Bearer '+tok};
   const list=async c=>{let out=[],pt='';do{const r=await fetch(B+c+'?pageSize=300'+(pt?'&pageToken='+pt:''),{headers:H});if(!r.ok)throw r.status;const j=await r.json();out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);return out};
-  try{const sp=(await list('spread')).map(d=>({root:val(d.fields.root),step:+val(d.fields.step)||0,country:val(d.fields.country),at:val(d.fields.at)||d.createTime}));SP=sp;drawSpread(sp);drawWitw()}catch(e){document.querySelector('#rcSpread .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}
+  try{const sp=(await list('spread')).map(d=>({root:val(d.fields.root),step:+val(d.fields.step)||0,country:val(d.fields.country),at:val(d.fields.at)||d.createTime}));
+  // straight from a country-named link (?from=jamaica): count it for that country, not the phone's guess (13 Nov)
+  sp.forEach(x=>{const c=x.step<=1&&tagCountry(x.root);if(c){if(x.country&&x.country!==c)x.phone=x.country;x.country=c}});SP=sp;drawSpread(sp);drawWitw()}catch(e){document.querySelector('#rcSpread .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}
   try{entries=(await list('witw')).map(d=>({name:d.name,src:val(d.fields.src),first:val(d.fields.first),last:val(d.fields.last),town:val(d.fields.town),country:val(d.fields.country),test:val(d.fields.test)===true,hidden:val(d.fields.hidden)===true,at:val(d.fields.at)||d.createTime})).sort((a,b)=>new Date(b.at)-new Date(a.at));drawEntries();drawWitw()}catch(e){document.querySelector('#rcWitw .rbody').innerHTML=`<p class="msgnote">Couldn’t read this (error ${esc(e)}). Check the Firebase rules are v9.</p>`}}
 loadPublic();
 try{const OWNER='mybetterbrain109@gmail.com';firebase.app('msgs').auth().onAuthStateChanged(u=>{if(u&&(u.email||'').toLowerCase()===OWNER)loadPrivate(u).catch(()=>{});else{entries=[];H={};document.querySelector('#rcSpread .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see this.</p>';document.querySelector('#rcWitw .rbody').innerHTML='<p class="msgnote">Sign in on the Messages tab to see the names.</p>'}})}catch(e){}
