@@ -77,7 +77,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-al
 .bar.none{color:#b9b2a5}.bar.none em{color:#b9b2a5}
 .verdict{margin-top:10px;font-size:13.5px;color:var(--ink);background:var(--bg);border-radius:12px;padding:10px 12px;line-height:1.45}
 .recempty{background:#fff;border:1.5px dashed var(--line);border-radius:16px;padding:12px 16px;margin:0 0 16px;font-size:14px;color:var(--muted)}
-.g .badge{position:absolute;bottom:14px;right:14px;font:600 11px Inter,sans-serif;background:#e7f1ea;color:#2f7a4a;border-radius:999px;padding:3px 8px}
+.g .prow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.prow .play{align-self:auto}.badge{display:inline-block;font:600 11px Inter,sans-serif;background:#e7f1ea;color:#2f7a4a;border-radius:999px;padding:3px 8px;white-space:nowrap}a.g.done{background:#f1f7f2;border-color:#bcdcc5}.ghead{grid-column:1/-1;font:600 12px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#b8663a;margin:6px 2px -4px}
 @media (max-width:700px){.rec{grid-template-columns:1fr}.bar{grid-template-columns:110px 1fr 48px}}
 </style>
 </head>
@@ -135,7 +135,11 @@ box.innerHTML=`<div class="rec"><div><h2>Your Natural Wonders</h2><p class="rsub
 <div class="verdict">🌍 ${verdict}</div></div>
 <div class="bars"><div class="lbl">Best score in each game</div>${GAMES.filter(g=>rec.games[g.slug]).concat(GAMES.filter(g=>!rec.games[g.slug])).map((g,i,arr)=>{const split=i===played.length&&i>0&&i<arr.length?`<div class="lbl" style="margin-top:12px">Still to play · ${arr.length-i}</div>`:'';return split+(()=>{const r=rec.games[g.slug];return r?`<div class="bar ${r===rec.games[best.slug]&&played.length>1?'top':''} ${r===rec.games[worst.slug]&&played.length>1?'low':''}"><span>${g.n}</span><span class="t"><i style="width:${Math.max(3,r.best)}%"></i></span><em>${r.bestTxt||r.best+'%'}</em></div>`:`<div class="bar none"><span>${g.n}</span><span class="t"></span><em>–</em></div>`})()}).join('')}</div></div>`;
 document.querySelectorAll('#grid a.g').forEach(a=>{const slug=(a.getAttribute('href').match(/natural-wonders-([a-z-]+)/)||[])[1];const r=rec.games[slug];if(!r)return;
-  a.insertAdjacentHTML('beforeend',`<span class="badge">Best ${r.bestTxt||r.best+'%'}</span>`);const pl=a.querySelector('.play');if(pl)pl.textContent='Play again →'});
+  a.classList.add('done');const pl=a.querySelector('.play');if(pl){pl.textContent='Play again →';const w=document.createElement('div');w.className='prow';pl.replaceWith(w);w.append(pl);w.insertAdjacentHTML('beforeend',`<span class="badge">Best ${r.bestTxt||r.best+'%'}</span>`)}});
+/* same order as the record panel: games you've played first (soft green), then the ones still to play */
+{const grid=document.getElementById('grid'),tiles=[...grid.querySelectorAll('a.g')],done=tiles.filter(a=>a.classList.contains('done')),todo=[...grid.children].filter(e=>!e.classList.contains('done'));
+ if(done.length&&todo.some(e=>e.matches('a.g'))){const h=t=>{const d=document.createElement('div');d.className='ghead';d.textContent=t;return d};
+  grid.prepend(h('Played · '+done.length),...done);const firstTodo=todo.find(e=>e.matches('a.g'));grid.insertBefore(h('Still to play · '+todo.filter(e=>e.matches('a.g')).length),firstTodo)}}
 if(location.hash==='#record')box.scrollIntoView();
 })();
 </script>
