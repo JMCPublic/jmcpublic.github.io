@@ -142,6 +142,8 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
 window.tmgReach={src,me,link:tag,bump,cc:()=>CC};
 /* background music for the Natural Wonders games */
 if(/natural-wonders-|^\/aperture\/(?!stats)/.test(location.pathname)){const mu=document.createElement('script');mu.src='/shared/music.js?v=7';mu.defer=true;document.head.appendChild(mu)}
+/* place names: never split mid-word, at most two lines, smaller text if needed */
+if(/natural-wonders-/.test(location.pathname)){const fn=document.createElement('script');fn.src='/shared/fitnames.js?v=1';fn.defer=true;document.head.appendChild(fn)}
 /* first-play walkthrough, shared by every game */
 {const w=document.createElement('script');w.src='/shared/walk.js?v=5';w.defer=true;document.head.appendChild(w)}
 })();
