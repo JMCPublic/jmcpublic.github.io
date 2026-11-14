@@ -51,7 +51,7 @@ const cc=()=>{try{return (window.tmgReach&&tmgReach.cc&&tmgReach.cc())||''}catch
 const bump=ev=>{try{window.tmgReach&&tmgReach.bump&&tmgReach.bump({[`walk.music_${ev}`]:1})}catch(e){}};
 const css=`.tmgmus{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18);background:rgba(255,255,255,.7);display:inline-grid;place-items:center;font-size:15px;line-height:1;color:#b4552a;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;flex:none}
 .tmgmus.off{color:#9aa0a6;text-decoration:line-through}
-.tmgmus.float{position:fixed;top:10px;right:12px;z-index:60}
+.tmgmus.float{position:fixed;top:10px;right:12px;z-index:60}#bar .tmgmus.inbar{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#ffb38a;text-decoration:none;padding:0;margin:0;font-size:15px}
 .tmgnp{position:fixed;z-index:61;background:#6b7078;color:#fff;font:12px/1.2 system-ui,sans-serif;border-radius:999px;padding:6px 12px;box-shadow:0 6px 16px -8px rgba(0,0,0,.45);white-space:nowrap;cursor:pointer;opacity:0;transition:opacity .3s;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis}
 .tmgnp.on{opacity:1}.tmgnp i{opacity:.8;font-style:normal}
 .tmgnpbg{position:fixed;inset:0;z-index:9980;background:rgba(14,16,22,.45)}
@@ -79,7 +79,8 @@ function mkBtn(cls){const b=D.createElement('button');b.type='button';b.classNam
 /* put ♫ in the game header (it is redrawn every question, so keep re-adding it) */
 function place(){if(AP){const b=D.getElementById('musicBtn');if(b)btns.add(b);return}const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
   btns.forEach(b=>{if(!b.isConnected)btns.delete(b)});
-  if(!row&&GAME==='masterbrain'&&!D.querySelector('.tmgmus.float')&&D.querySelector('iframe'))D.body.appendChild(mkBtn('float'))}
+  /* Masterbrain: ♫ sits in its dark top bar, just before Quit (it used to float on top of Quit) */
+  if(GAME==='masterbrain'){const bar=D.querySelector('#bar .in');if(bar&&!bar.querySelector('.tmgmus')){const q=[...bar.querySelectorAll('button')].pop();bar.insertBefore(mkBtn('inbar'),q||null)}}}
 new MutationObserver(place).observe(D.body,{childList:true,subtree:true});place();
 /* the grey line under ♫ */
 let line;
