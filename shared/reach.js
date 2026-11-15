@@ -7,6 +7,16 @@
    No IP address is used or stored. The owner's own devices (VIP) are not counted. */
 /* place names: never split mid-word, at most two lines, smaller text if needed. Loaded before the line below so it also runs inside Masterbrain */
 if(/natural-wonders-/.test(location.pathname)&&!window.__tmgFit){window.__tmgFit=1;for(const f of ['fitnames.js?v=3','endcard.js?v=3','howler-en.js?v=1','autofill.js?v=1','rating.js?v=1','bestline.js?v=1']){const fn=document.createElement('script');fn.src='/shared/'+f;fn.defer=true;document.head.appendChild(fn)}}
+/* home-screen icons (15 Nov): each game adds to the phone's home screen with its own icon and short name, and opens full screen */
+(()=>{if(window.top!==window)return;const m=location.pathname.match(/^\/(?:natural-wonders-([a-z-]+)|aperture\/(landmarks\/)?)/);if(!m)return;const k=m[1]||(m[2]?'landmarks':'aperture');
+  const KEYS=['rivers','lakes','mountains','deserts','forests','bodies-of-water','river-cities','how-many-borders','where-is-bigger','which-of-five','masterbrain','aperture','landmarks'];if(!KEYS.includes(k))return;
+  let l=(document.documentElement.lang||'en').slice(0,2);if(!['en','de','tr','fr','es','pt'].includes(l))l='en';const h=document.head;
+  const link=(rel,href)=>{let e=h.querySelector(`link[rel="${rel}"]`);if(!e){e=document.createElement('link');e.rel=rel;h.appendChild(e)}e.href=href};
+  const meta=(n,c)=>{let e=h.querySelector(`meta[name="${n}"]`);if(!e){e=document.createElement('meta');e.name=n;h.appendChild(e)}e.content=c};
+  link('apple-touch-icon',`/icons/${k}-180.png`);link('manifest',`/icons/m/${k}-${l}.webmanifest`);
+  fetch(`/icons/m/${k}-${l}.webmanifest`).then(r=>r.json()).then(j=>meta('apple-mobile-web-app-title',j.short_name)).catch(()=>{});
+  meta('apple-mobile-web-app-capable','yes');meta('mobile-web-app-capable','yes');
+  if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)document.documentElement.classList.add('tmg-app')})();
 (()=>{if(window.tmgReach||window.top!==window)return;
 const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
 const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
