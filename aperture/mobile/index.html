@@ -325,6 +325,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 .overlay .btns>*{flex:1 1 100%}
 #sheetBtn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}#sheetBtn .cluesub{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:2px;white-space:nowrap}#sheetBtn #helpCount{display:block;margin:2px 0 0!important;font-size:10.5px}#sheetBtn #helpCount::before{content:'('}#sheetBtn #helpCount::after{content:')'}#tray .row:has(>#sheetBtn){justify-content:flex-start;flex:1 1 100%}#sheetBtn:not(.used) #helpCount,#sheetBtn.used .cluesub{display:none}
 </style>
+<script src="/shared/bestline.js?v=1"></script>
 </head>
 <body>
 
@@ -1017,6 +1018,7 @@ function finish(){
   showQuote('close');
   try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
   const bestKey='aperture2-best-'+(G.mode==='daily'?G.key:'random');
+  let BL=null;try{let sd=null;for(let i=0;i<localStorage.length;i++){const kk=localStorage.key(i);if(kk&&kk.startsWith('aperture2-best-')){const v=+localStorage.getItem(kk);if(v&&(!sd||v<sd.v))sd={v,txt:fmt(v)}}}BL=window.tmgBest?tmgBest('ap-objects',Math.round(G.total),fmt(G.total),true,sd):null}catch(e){}
   let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
   const isBest=!best||G.total<best;
   const streak=G.mode==='daily'?bumpStreak():0;
@@ -1030,7 +1032,7 @@ function finish(){
     <ol>${G.results.map(r=>`<li>${r.win?'':r.skip?'⏭ ':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
     <div class="sq" aria-label="${won} of ${ROUNDS} solved">${squares}</div>
     ${streak?`<p class="streak">${streak>1?`🔥 ${streak} days in a row`:'🔥 Day 1 of your streak. Come back tomorrow.'}</p>`:''}
-    <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
+    ${BL?`<p class="bestln k${BL.kind}">${BL.text}</p>`:`<p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>`}
     <p class="next">Next quiz in <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Challenge a friend</button>
     ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Today\'s set</button>'}<button class="go ghost sub" id="randBtn">Play a new round<small>You can do better, I know you can</small></button><a class="go ghost sub" id="diffBtn" href="/">Play something different<small>I know, I’m just too good</small></a></div>
@@ -1088,7 +1090,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v47';
+document.documentElement.dataset.version='mobile v48';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

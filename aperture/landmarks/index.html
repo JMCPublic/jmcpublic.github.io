@@ -386,6 +386,7 @@ body:not(.waiting) .quizhead{display:none}
 .btns .sub small{display:block;font-size:11.5px;font-weight:500;opacity:.8;margin-top:3px;white-space:normal}
 .btns .sub small::before{content:'('}.btns .sub small::after{content:')'}
 </style>
+<script src="/shared/bestline.js?v=1"></script>
 </head>
 <body>
 
@@ -1009,6 +1010,7 @@ function finish(){
   showQuote('close');
   try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
   const bestKey='apL-best-'+(G.mode==='daily'?G.key:'random');
+  let BL=null;try{let sd=null;for(let i=0;i<localStorage.length;i++){const kk=localStorage.key(i);if(kk&&kk.startsWith('apL-best-')){const v=+localStorage.getItem(kk);if(v&&(!sd||v<sd.v))sd={v,txt:fmt(v)}}}BL=window.tmgBest?tmgBest('ap-landmarks',Math.round(G.total),fmt(G.total),true,sd):null}catch(e){}
   let best=null;try{best=+localStorage.getItem(bestKey)||null;if(!best||G.total<best)localStorage.setItem(bestKey,String(Math.round(G.total)))}catch(e){}
   const isBest=!best||G.total<best;
   const streak=G.mode==='daily'?bumpStreak():0;
@@ -1020,7 +1022,7 @@ function finish(){
     <ol>${G.results.map(r=>`<li>${r.win?'':r.skip?'⏭ ':'✗ '}${r.answer} · ${fmt(r.time)} (${fmtPen(r.pen)})</li>`).join('')}</ol>
     <div class="sq" aria-label="${won} of ${ROUNDS} solved">${squares}</div>${window.tmgSpot?tmgSpot.result(G):''}
     ${streak?`<p class="streak">${streak>1?`🔥 ${streak} days in a row`:'🔥 Day 1 of your streak. Come back tomorrow.'}</p>`:''}
-    <p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>
+    ${BL?`<p class="bestln k${BL.kind}">${BL.text}</p>`:`<p>${isBest?(best?'A new best on this device.':''):`Your best here is ${fmt(best)}.`}</p>`}
     <p class="next">Next quiz in <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Copy result</button>
     ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Today\'s set</button>'}<button class="go ghost sub" id="randBtn">Play a new round<small>You can do better, I know you can</small></button><a class="go ghost sub" id="diffBtn" href="/">Play something different<small>I know, I’m just too good</small></a></div>
@@ -1057,7 +1059,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v42';
+document.documentElement.dataset.version='landmarks desktop v43';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
