@@ -37,6 +37,9 @@ html.phone.tmgad-on body.timed .rank .btn:not([disabled]){bottom:calc(64px + var
 .phones>.side.tmgad-left{justify-content:space-between}
 .phones>.side.tmgad-left>*{width:100%;max-width:100%;box-sizing:border-box;min-width:0;overflow:hidden}
 html.tmgad-mirror .phone,html.tmgad-mirror .phones>.side{--w:min(calc((100cqw - 4 * var(--gap) - 2 * var(--mini)) / 3),calc(100cqh * .58))!important}
+/* Aperture phones (15 Nov): the ad floats at the foot of the screen while waiting to start a round, like Natural Wonders; it is never over a running round, and at the end it sits under the score card */
+html.tmgap-float #tmgAd.flow{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:6px 8px calc(8px + env(safe-area-inset-bottom));background:var(--bg,#f1f3f7);border-top:1px solid var(--line,#d7dbe5)}
+html.tmgap-float body{padding-bottom:var(--tmgap-h,0px)}
 `;
 const st=d.createElement('style');st.textContent=css;d.head.appendChild(st);
 const KOFI={href:'https://ko-fi.com/twominutegames',b:'Enjoying the games? Buy us a coffee ☕',pb:'Enjoying the games? ☕',s:'Two Minute Games is free, with no sign-up. Tips keep it going.',i:'Support us'};
@@ -107,7 +110,10 @@ const playing=()=>{if(d.querySelector('.play'))return true;const st=d.getElement
 function playWatch(){if(!isNW)return;let was=null,wasP=null;const chk=()=>{const p=playing();if(p!==wasP){wasP=p;root.classList.toggle('tmg-playing',p)}
     const on=mode==='fixed'&&!wide&&p;if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
   new MutationObserver(chk).observe(d.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
-function start(){mirror();build();playWatch();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
+function apFloat(){if(!isAp||!/\/mobile\//.test(path))return;const chk=()=>{const b=d.body,on=!!box&&mode==='flow'&&b.classList.contains('waiting')&&!b.classList.contains('done')&&!root.classList.contains('tw-on')&&!box.classList.contains('endmv');
+    if(on!==root.classList.contains('tmgap-float'))root.classList.toggle('tmgap-float',on);if(on)root.style.setProperty('--tmgap-h',box.offsetHeight+'px')};
+  new MutationObserver(chk).observe(d.body,{attributes:true,attributeFilter:['class']});new MutationObserver(chk).observe(root,{attributes:true,attributeFilter:['class']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
+function start(){mirror();build();playWatch();apFloat();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
 window.tmgAd={ADS,rebuild:build};
 if(d.body)start();else addEventListener('DOMContentLoaded',start);
 })();
