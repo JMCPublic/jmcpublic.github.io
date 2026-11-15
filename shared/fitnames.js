@@ -6,7 +6,7 @@
 const SEL='.fill b,.choice b,.tile,.cc .nm,.pr .nm,.oc .nm,.tn';
 const st=document.createElement('style');
 st.textContent=`.fill b,.choice b,.tile,.cc .nm,.pr .nm,.oc .nm,.tn{overflow-wrap:normal!important;word-break:normal!important;hyphens:manual!important;text-wrap:balance}
-.fill{flex-wrap:wrap;row-gap:2px}.fill b{flex:1 1 auto;min-width:0}`;
+.fill{flex-wrap:wrap;row-gap:2px}.fill b{flex:1 1 0;min-width:0}.fill .given{margin-left:auto}`;
 document.head.appendChild(st);
 
 // keep phrases together with no-break spaces: words in brackets, "and X", and a closing place word with the word before it
