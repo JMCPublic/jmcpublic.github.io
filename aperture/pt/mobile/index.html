@@ -1215,7 +1215,7 @@ let v,kind='idea';
 const dev=()=>{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c?(m>=600?'tablet':'phone'):'desktop'};
 function build(){v=document.createElement('div');v.className='tmgfb-v';v.hidden=true;
   v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="Comentários ou relatar um problema"><h2>Conte o que você achou</h2>
-  <p>Ideias, elogios, reclamações ou algo quebrado. Vai direto para a Two Minute Games; ninguém mais pode ler.</p>
+  <p>Escolha Ideia, Curti ou Algo errado e conte para a gente. Vai em particular só para a equipe da Two Minute Games. Não é uma mensagem pública, e ninguém mais pode ler.</p>
   <div class="tmgfb-chips">${KINDS.map(k=>`<button type="button" class="tmgfb-chip" data-k="${k[0]}" aria-pressed="${k[0]===kind}">${k[1]}</button>`).join('')}</div>
   <textarea maxlength="1500" required aria-label="Sua mensagem"></textarea>
   <input maxlength="150" autocomplete="email" placeholder="Nome ou e-mail, só se quiser resposta (opcional)" aria-label="Nome ou e-mail (opcional)">

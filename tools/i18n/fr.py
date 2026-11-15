@@ -45,7 +45,7 @@ T = [
  '"cta": "Jouer à Lequel est le plus grand ?"',
  '"cta": "Jouer à Natural Wonders"',
  '"cta": "Jouer à Aperture"',
- '<p>Idées, coups de cœur, coups de gueule ou quelque chose de cassé. Ça va directement à Two Minute Games ; personne d’autre ne peut le lire.</p>',
+ '<p>Choisis Idée, J’aime ou Un problème et dis-le-nous. Ton message va en privé uniquement à l’équipe de Two Minute Games. Il n’est pas public, et personne d’autre ne peut le lire.</p>',
  'aria-label="Ton message"',
  'placeholder="Nom ou e-mail, seulement si tu veux une réponse (facultatif)" aria-label="Nom ou e-mail (facultatif)"',
  "innerHTML='Sûr ?'",

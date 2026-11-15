@@ -45,7 +45,7 @@ T = [
  '"cta": "Hangisi Daha Büyük? oyna"',
  '"cta": "Natural Wonders oyna"',
  '"cta": "Aperture oyna"',
- '<p>Fikirler, beğeniler, şikâyetler ya da bozuk bir şey. Doğrudan Two Minute Games’e gider; başka kimse okuyamaz.</p>',
+ '<p>Fikir, Beğendim ya da Bir sorun var seçeneğini seç ve bize yaz. Mesajın yalnızca Two Minute Games ekibine gider. Herkese açık değildir, başka kimse okuyamaz.</p>',
  'aria-label="Mesajın"',
  'placeholder="Ad ya da e-posta, sadece cevap istersen (isteğe bağlı)" aria-label="Ad ya da e-posta (isteğe bağlı)"',
  "innerHTML='Emin misin?'",

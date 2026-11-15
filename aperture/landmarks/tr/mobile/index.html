@@ -1166,7 +1166,7 @@ let v,kind='idea';
 const dev=()=>{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c?(m>=600?'tablet':'phone'):'desktop'};
 function build(){v=document.createElement('div');v.className='tmgfb-v';v.hidden=true;
   v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="Geri bildirim ya da sorun bildir"><h2>Ne düşündüğünü bize söyle</h2>
-  <p>Fikirler, beğeniler, şikâyetler ya da bozuk bir şey. Doğrudan Two Minute Games’e gider; başka kimse okuyamaz.</p>
+  <p>Fikir, Beğendim ya da Bir sorun var seçeneğini seç ve bize yaz. Mesajın yalnızca Two Minute Games ekibine gider. Herkese açık değildir, başka kimse okuyamaz.</p>
   <div class="tmgfb-chips">${KINDS.map(k=>`<button type="button" class="tmgfb-chip" data-k="${k[0]}" aria-pressed="${k[0]===kind}">${k[1]}</button>`).join('')}</div>
   <textarea maxlength="1500" required aria-label="Mesajın"></textarea>
   <input maxlength="150" autocomplete="email" placeholder="Ad ya da e-posta, sadece cevap istersen (isteğe bağlı)" aria-label="Ad ya da e-posta (isteğe bağlı)">
