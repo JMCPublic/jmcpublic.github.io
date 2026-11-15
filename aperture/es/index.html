@@ -413,7 +413,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Restablecer vista" title="Restablecer vista">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Ayuda · cada una +15 s</span><span class="label" id="helpCount">0 usadas</span></div>
+      <div class="helphead"><span class="label">💡 Pistas · +15 s cada una</span><span class="label" id="helpCount">0 usadas</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Punto de vista</button>
         <button class="ask" id="askWords">Menos palabras</button>
@@ -478,7 +478,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>Gana el tiempo más rápido</b>Cinco objetos. Todos reciben los mismos cinco cada día, así podéis comparar tiempos.</div>
       <div><b>Seis etapas de 20 segundos</b>Cada 20 segundos se abre un nuevo punto de vista en A y B se llena un poco más. Cada objeto tiene 2 minutos.</div>
-      <div><b>La ayuda suma 15 segundos</b>Un nuevo punto de vista, menos palabras (se va una quinta parte de las incorrectas) o una vocal, que se coloca en toda tu respuesta.</div>
+      <div><b>Una pista añade 15 segundos</b>Un nuevo punto de vista, menos palabras (se va una quinta parte de las incorrectas) o una vocal, que se coloca en toda tu respuesta.</div>
       <div><b>Las iniciales suman 30 segundos</b>Cada pulsación muestra la inicial de la siguiente palabra: una vez para la primera, dos veces para la segunda, y así sucesivamente.</div>
       <div><b>¿Atascado? Salta</b>Pulsa Saltar y luego otra vez para seguir. Un objeto saltado cuenta como no resuelto: 2:00 más 30 segundos.</div>
       <div><b>Las palabras</b>La respuesta está en algún lugar de las 56 palabras de C. Cada palabra tiene siempre el mismo número de tres cifras, salga en la ronda o el día que salga.</div>
@@ -1113,7 +1113,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v52';
+document.documentElement.dataset.version='desktop v53';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

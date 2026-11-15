@@ -418,7 +418,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Redefinir visão" title="Redefinir visão">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Ajuda · cada uma +15 s</span><span class="label" id="helpCount">0 usadas</span></div>
+      <div class="helphead"><span class="label">💡 Dicas · +15 s cada</span><span class="label" id="helpCount">0 usadas</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Ponto de vista</button>
         <button class="ask" id="askWords">Menos palavras</button>
@@ -483,7 +483,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>Vence o tempo mais rápido</b>Cinco monumentos. Todo mundo recebe os mesmos cinco por dia, para vocês compararem os tempos.</div>
       <div><b>Seis etapas de 20 segundos</b>A cada 20 segundos abre um novo ponto de vista em A e B enche um pouco mais. Cada monumento tem 2 minutos.</div>
-      <div><b>A ajuda soma 15 segundos</b>Um novo ponto de vista, menos palavras (um quinto das erradas some) ou uma vogal, colocada em toda a sua resposta.</div>
+      <div><b>Uma dica acrescenta 15 segundos</b>Um novo ponto de vista, menos palavras (um quinto das erradas some) ou uma vogal, colocada em toda a sua resposta.</div>
       <div><b>As iniciais somam 30 segundos</b>Cada toque mostra a inicial da próxima palavra: uma vez para a primeira, duas para a segunda, e assim por diante.</div>
       <div><b>Travou? Pule</b>Toque em Pular e depois mais uma vez para seguir. Um monumento pulado conta como não resolvido: 2:00 mais 30 segundos.</div>
       <div><b>As fotos</b>Fotos reais do Wikimedia Commons. O fotógrafo e a licença aparecem depois de cada rodada.</div>
@@ -1061,7 +1061,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v41';
+document.documentElement.dataset.version='landmarks desktop v42';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

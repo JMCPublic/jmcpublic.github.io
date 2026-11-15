@@ -418,7 +418,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Ansicht zurücksetzen" title="Ansicht zurücksetzen">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Hilfe · jeweils +15 s</span><span class="label" id="helpCount">0 genutzt</span></div>
+      <div class="helphead"><span class="label">💡 Tipps · jeweils +15 s</span><span class="label" id="helpCount">0 genutzt</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Blickwinkel</button>
         <button class="ask" id="askWords">Weniger Wörter</button>
@@ -483,7 +483,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>Die schnellste Zeit gewinnt</b>Fünf Wahrzeichen. Alle bekommen jeden Tag dieselben fünf, so könnt ihr eure Zeiten vergleichen.</div>
       <div><b>Sechs Stufen à 20 Sekunden</b>Alle 20 Sekunden öffnet sich in A ein neuer Blickwinkel und B füllt sich weiter. Jedes Wahrzeichen hat 2 Minuten.</div>
-      <div><b>Hilfe kostet 15 Sekunden</b>Ein neuer Blickwinkel, weniger Wörter (ein Fünftel der falschen verschwindet) oder ein Vokal, der überall in deiner Antwort eingesetzt wird.</div>
+      <div><b>Ein Tipp kostet 15 Sekunden</b>Ein neuer Blickwinkel, weniger Wörter (ein Fünftel der falschen verschwindet) oder ein Vokal, der überall in deiner Antwort eingesetzt wird.</div>
       <div><b>Anfangsbuchstaben kosten 30 Sekunden</b>Jeder Druck zeigt den Anfangsbuchstaben des nächsten Wortes: einmal für das erste Wort, zweimal für das zweite und so weiter.</div>
       <div><b>Festgefahren? Weiter</b>Drück auf Weiter und dann noch einmal. Ein übersprungenes Wahrzeichen zählt als nicht gelöst: 2:00 plus 30 Sekunden.</div>
       <div><b>Die Fotos</b>Echte Fotos von Wikimedia Commons. Fotograf und Lizenz stehen nach jeder Runde da.</div>
@@ -1061,7 +1061,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v41';
+document.documentElement.dataset.version='landmarks desktop v42';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

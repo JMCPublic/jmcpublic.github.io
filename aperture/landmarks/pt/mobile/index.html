@@ -331,6 +331,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 .btns .sub small{display:block;font-size:11.5px;font-weight:500;opacity:.8;margin-top:3px;white-space:normal}
 .btns .sub small::before{content:'('}.btns .sub small::after{content:')'}
 .overlay .btns>*{flex:1 1 100%}
+#sheetBtn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}#sheetBtn .cluesub{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:2px;white-space:nowrap}#sheetBtn #helpCount{display:block;margin:2px 0 0!important;font-size:10.5px}#sheetBtn #helpCount::before{content:'('}#sheetBtn #helpCount::after{content:')'}#tray .row:has(>#sheetBtn){justify-content:flex-start;flex:1 1 100%}#sheetBtn:not(.used) #helpCount,#sheetBtn.used .cluesub{display:none}
 </style>
 </head>
 <body>
@@ -367,9 +368,9 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 <div class="tray" id="tray">
   <div id="slots" aria-live="polite"></div>
   <div class="row">
+    <button class="pill" id="sheetBtn">💡 Dica<small class="cluesub">(Toca para uma dica)</small><span id="helpCount">0 usadas</span></button>
     <button class="pill" id="clear">Apagar</button>
     <button class="pill" id="skipBtn">Pular ›</button>
-    <button class="pill" id="sheetBtn">Ajuda<span id="helpCount">0 usadas</span></button>
   </div>
 </div>
 
@@ -382,7 +383,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 
 <div class="scrim" id="sheet" hidden>
   <div class="sheet" role="dialog" aria-label="Ajuda">
-    <div class="sheethead"><h2>Ajuda</h2><span class="label">cada uma +15 s</span></div>
+    <div class="sheethead"><h2>Dicas</h2><span class="label">cada uma +15 s</span></div>
     <div class="asks">
       <button class="ask" id="askViewpoint">Novo ponto de vista</button>
       <button class="ask" id="askWords">Menos palavras</button>
@@ -421,7 +422,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
       <div><b>As fotos</b>Fotos reais do Wikimedia Commons. O fotógrafo e a licença aparecem depois de cada rodada.</div>
       <div><b>A cada 20 segundos</b>Abre um novo ponto de vista e o negativo enche um pouco mais. Toque na imagem pequena para ver o negativo grande. Cada monumento tem 2 minutos.</div>
       <div><b>Olhar de perto</b>Faça pinça ou use + e − para dar zoom, arraste para olhar em volta.</div>
-      <div><b>A ajuda soma 15 segundos</b>Um novo ponto de vista, menos palavras (um quinto das erradas some) ou uma vogal na sua resposta.</div>
+      <div><b>Uma dica acrescenta 15 segundos</b>Um novo ponto de vista, menos palavras (um quinto das erradas some) ou uma vogal na sua resposta.</div>
       <div><b>As iniciais somam 30 segundos</b>Cada toque mostra a inicial da próxima palavra: uma vez para a primeira, duas para a segunda, e assim por diante.</div>
       <div><b>Travou? Pule</b>Toque em Pular e depois mais uma vez para seguir. Um monumento pulado conta como não resolvido: 2:00 mais 30 segundos.</div>
       <div><b>Resposta</b>Toque na palavra certa da lista. Uma resposta errada soma 15 segundos. Não resolvido em 2 minutos conta como 2:00 mais 30 segundos.</div>
@@ -845,7 +846,7 @@ function updateHUD(){
   $('roundNum').textContent=`${G.round+1}/${ROUNDS}`;
   $('roundTime').innerHTML=S.ended?'—':`${fmt(S.elapsed+S.pen)}<small> (${fmtPen(S.pen)})</small>`;
   $('totalTime').innerHTML=`${fmt(G.total)}<small> (${fmtPen(G.totalPen)})</small>`;
-  $('helpCount').textContent=`${S.helps} usadas`;
+  $('helpCount').textContent=`${S.helps} usadas`;$('sheetBtn').classList.toggle('used',S.helps>0);
   const off=!S.running;
   $('askViewpoint').disabled=off;$('askFirst').disabled=off||nextFirst()<0;$('skipBtn').disabled=off;if(off&&skipArm)disarmSkip();$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
   document.querySelectorAll('.vowel').forEach(b=>b.disabled=off||S.vowels.has(b.dataset.v));
@@ -1026,7 +1027,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks mobile v40';
+document.documentElement.dataset.version='landmarks mobile v41';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

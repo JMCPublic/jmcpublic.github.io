@@ -178,7 +178,11 @@ T = [
  "<h3>Cevap: ${S.obj.name.replace(S.obj.answer.join(' ')",
  '<small>Daha iyisini yapabilirsin, biliyorum</small>',
  '<small>Biliyorum, fazla iyiyim</small>',
- '>Başka bir şey oyna<'
+ '>Başka bir şey oyna<',
+ '>💡 İpucu<small class="cluesub">(İpucu için dokun)</small>',
+ '<h2>İpuçları</h2>',
+ '<b>Her ipucu 15 saniye ekler</b>',
+ '💡 İpuçları · her biri +15 sn'
 ]
 UI = list(zip(_K, T))
 

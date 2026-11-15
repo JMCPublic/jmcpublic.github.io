@@ -413,7 +413,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Görünümü sıfırla" title="Görünümü sıfırla">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Yardım · her biri +15 sn</span><span class="label" id="helpCount">0 kullanıldı</span></div>
+      <div class="helphead"><span class="label">💡 İpuçları · her biri +15 sn</span><span class="label" id="helpCount">0 kullanıldı</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Bakış açısı</button>
         <button class="ask" id="askWords">Daha az kelime</button>
@@ -478,7 +478,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>En hızlı süre kazanır</b>Beş nesne. Herkes her gün aynı beşini alır, böylece sürelerinizi karşılaştırabilirsiniz.</div>
       <div><b>20 saniyelik altı aşama</b>Her 20 saniyede A’da yeni bir bakış açısı açılır ve B biraz daha dolar. Her nesne için 2 dakika var.</div>
-      <div><b>Yardım 15 saniye ekler</b>Yeni bir bakış açısı, daha az kelime (yanlışların beşte biri gider) ya da bir sesli harf; o harf cevabın her yerine yerleşir.</div>
+      <div><b>Her ipucu 15 saniye ekler</b>Yeni bir bakış açısı, daha az kelime (yanlışların beşte biri gider) ya da bir sesli harf; o harf cevabın her yerine yerleşir.</div>
       <div><b>İlk harfler 30 saniye ekler</b>Her basış bir sonraki kelimenin ilk harfini gösterir: birinci kelime için bir kez, ikinci kelime için iki kez, böyle devam eder.</div>
       <div><b>Takıldın mı? Geç</b>Geç’e bas, sonra devam etmek için bir kez daha bas. Geçilen nesne çözülmemiş sayılır: 2:00 artı 30 saniye.</div>
       <div><b>Kelimeler</b>Cevap C’deki 56 kelimenin içinde bir yerde. Her kelimenin hangi turda ya da günde çıkarsa çıksın hep aynı üç haneli numarası vardır.</div>
@@ -1113,7 +1113,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v52';
+document.documentElement.dataset.version='desktop v53';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

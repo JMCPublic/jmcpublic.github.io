@@ -650,3 +650,9 @@ UI += [("<h3>It was ${S.obj.name.replace(S.obj.answer.join(' ')", "<h3>Es war ${
 UI += [('<small>You can do better, I know you can</small>', '<small>Du kannst es besser, ich weiß es</small>'),
  ('<small>I know, I’m just too good</small>', '<small>Ich weiß, ich bin einfach zu gut</small>'),
  ('>Play something different<', '>Etwas anderes spielen<')]
+
+# Clue button (15 Nov): Help becomes Clue, first in the row, with a line underneath
+UI += [('>💡 Clue<small class="cluesub">(Press for a clue)</small>', '>💡 Tipp<small class="cluesub">(Drücken für einen Tipp)</small>'),
+ ('<h2>Clues</h2>', '<h2>Tipps</h2>'),
+ ('<b>A clue adds 15 seconds</b>', '<b>Ein Tipp kostet 15 Sekunden</b>'),
+ ('💡 Clues · each adds 15 s', '💡 Tipps · jeweils +15 s')]

@@ -417,7 +417,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Reset view" title="Reset view">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Help · each adds 15 s</span><span class="label" id="helpCount">0 used</span></div>
+      <div class="helphead"><span class="label">💡 Clues · each adds 15 s</span><span class="label" id="helpCount">0 used</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Viewpoint</button>
         <button class="ask" id="askWords">Fewer words</button>
@@ -482,7 +482,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>Fastest time wins</b>Five landmarks. Everyone gets the same five each day, so you can compare times.</div>
       <div><b>Six 20-second stages</b>Every 20 seconds a free viewpoint opens in A and more of B fills in. Each landmark has 2 minutes.</div>
-      <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel, which drops every copy of that vowel into your answer.</div>
+      <div><b>A clue adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel, which drops every copy of that vowel into your answer.</div>
       <div><b>First letters add 30 seconds</b>Each press shows the first letter of the next word: once for word one, twice for word two, and so on.</div>
       <div><b>Stuck? Skip</b>Press Skip this one, then press again to move on. A skipped landmark counts as not solved: 2:00 plus 30 seconds.</div>
       <div><b>The photos</b>Real photos from Wikimedia Commons. The photographer and licence show after each round.</div>
@@ -1057,7 +1057,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='landmarks desktop v41';
+document.documentElement.dataset.version='landmarks desktop v42';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

@@ -323,6 +323,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 .btns .sub small{display:block;font-size:11.5px;font-weight:500;opacity:.8;margin-top:3px;white-space:normal}
 .btns .sub small::before{content:'('}.btns .sub small::after{content:')'}
 .overlay .btns>*{flex:1 1 100%}
+#sheetBtn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}#sheetBtn .cluesub{display:block;font-size:10.5px;font-weight:500;opacity:.75;margin-top:2px;white-space:nowrap}#sheetBtn #helpCount{display:block;margin:2px 0 0!important;font-size:10.5px}#sheetBtn #helpCount::before{content:'('}#sheetBtn #helpCount::after{content:')'}#tray .row:has(>#sheetBtn){justify-content:flex-start;flex:1 1 100%}#sheetBtn:not(.used) #helpCount,#sheetBtn.used .cluesub{display:none}
 </style>
 </head>
 <body>
@@ -359,9 +360,9 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 <div class="tray" id="tray">
   <div id="slots" aria-live="polite"></div>
   <div class="row">
+    <button class="pill" id="sheetBtn">💡 Clue<small class="cluesub">(Press for a clue)</small><span id="helpCount">0 used</span></button>
     <button class="pill" id="clear">Clear</button>
     <button class="pill" id="skipBtn">Skip ›</button>
-    <button class="pill" id="sheetBtn">Help<span id="helpCount">0 used</span></button>
   </div>
 </div>
 
@@ -374,7 +375,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 
 <div class="scrim" id="sheet" hidden>
   <div class="sheet" role="dialog" aria-label="Help">
-    <div class="sheethead"><h2>Help</h2><span class="label">each one adds 15 s</span></div>
+    <div class="sheethead"><h2>Clues</h2><span class="label">each one adds 15 s</span></div>
     <div class="asks">
       <button class="ask" id="askViewpoint">New viewpoint</button>
       <button class="ask" id="askWords">Fewer words</button>
@@ -412,7 +413,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
       <div><b>Fastest time wins</b>Five objects a day, the same five for everyone.</div>
       <div><b>Every 20 seconds</b>A free viewpoint opens and more of the negative fills in. Tap the small picture to see the negative full size. Each object has 2 minutes.</div>
       <div><b>Look closer</b>Pinch or use + and − to zoom, drag to look around.</div>
-      <div><b>Help adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel dropped into your answer.</div>
+      <div><b>A clue adds 15 seconds</b>A new viewpoint, fewer words (a fifth of the wrong ones go), or a vowel dropped into your answer.</div>
       <div><b>First letters add 30 seconds</b>Each press shows the first letter of the next word: once for word one, twice for word two, and so on.</div>
       <div><b>Stuck? Skip</b>Tap Skip, then tap again to move on. A skipped object counts as not solved: 2:00 plus 30 seconds.</div>
       <div><b>Answer</b>Tap the right word in the list. A wrong answer adds 15 seconds. Not solved in 2 minutes counts as 2:00 plus 30 seconds.</div>
@@ -914,7 +915,7 @@ function updateHUD(){
   $('roundNum').textContent=`${G.round+1}/${ROUNDS}`;
   $('roundTime').innerHTML=S.ended?'—':`${fmt(S.elapsed+S.pen)}<small> (${fmtPen(S.pen)})</small>`;
   $('totalTime').innerHTML=`${fmt(G.total)}<small> (${fmtPen(G.totalPen)})</small>`;
-  $('helpCount').textContent=`${S.helps} used`;
+  $('helpCount').textContent=`${S.helps} used`;$('sheetBtn').classList.toggle('used',S.helps>0);
   const off=!S.running;
   $('askViewpoint').disabled=off;$('askFirst').disabled=off||nextFirst()<0;$('skipBtn').disabled=off;if(off&&skipArm)disarmSkip();$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
   document.querySelectorAll('.vowel').forEach(b=>b.disabled=off||S.vowels.has(b.dataset.v));
@@ -1087,7 +1088,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v46';
+document.documentElement.dataset.version='mobile v47';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

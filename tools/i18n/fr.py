@@ -16,8 +16,8 @@ T = [
  '<h2><span>A</span>Points de vue</h2>',
  '<span class="hint">glisser · défiler</span>',
  'id="askViewpoint">Point de vue<',
- '<span id="helpCount">0 utilisée</span>',
- '`${S.helps} utilisée(s)`',
+ '<span id="helpCount">0 utilisé</span>',
+ '`${S.helps} utilisé(s)`',
  '>Aide<span id="helpCount">',
  'aria-label="Photo masquée du monument"',
  'aria-label="Trier les mots"',
@@ -84,7 +84,7 @@ T = [
  'aria-label="${won} sur ${ROUNDS} trouvés"',
  '>Mots<', '>Mélangés<',
  '${56-S.gone.size} mots', '56 mots',
- '>Effacer<', '>Passer ›<', '>Aide<', ' utilisée(s)<', '0 utilisée',
+ '>Effacer<', '>Passer ›<', '>Aide<', ' utilisé(s)<', '0 utilisé',
  '>Voyelle<', '>Initiale<', '>Moins de mots<', '>Nouveau point de vue<',
  '>Regarder de près<', '>Réponse<',
  'Bloqué ? Passe',
@@ -122,7 +122,7 @@ T = [
  'De vraies photos de Wikimedia Commons. Le photographe et la licence s’affichent après chaque manche.',
  'Le meilleur temps gagne', 'Toutes les 20 secondes',
  'Une aide ajoute 15 secondes', 'Les initiales ajoutent 30 secondes',
- '+15 s chacune', '>Les photos<', '>Quotidien<',
+ '+15 s chacun', '>Les photos<', '>Quotidien<',
  'Sur ordinateur ? Utilise la version bureau',
  'Sur téléphone ? Utilise la version mobile',
  '>Photo :', 'Photo :',
@@ -178,7 +178,11 @@ T = [
  "<h3>C’était ${S.obj.name.replace(S.obj.answer.join(' ')",
  '<small>Tu peux faire mieux, je le sais</small>',
  '<small>Je sais, je suis juste trop fort</small>',
- '>Jouer à autre chose<'
+ '>Jouer à autre chose<',
+ '>💡 Indice<small class="cluesub">(Appuie pour un indice)</small>',
+ '<h2>Indices</h2>',
+ '<b>Un indice ajoute 15 secondes</b>',
+ '💡 Indices · +15 s chacun'
 ]
 UI = list(zip(_K, T))
 

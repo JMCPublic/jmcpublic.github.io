@@ -413,7 +413,7 @@ body:not(.waiting) .quizhead{display:none}
       <button class="zb" id="zReset" aria-label="Réinitialiser la vue" title="Réinitialiser la vue">↺</button>
     </div>
     <div class="helpers">
-      <div class="helphead"><span class="label">Aide · +15 s chacune</span><span class="label" id="helpCount">0 utilisée(s)</span></div>
+      <div class="helphead"><span class="label">💡 Indices · +15 s chacun</span><span class="label" id="helpCount">0 utilisé(s)</span></div>
       <div class="asks">
         <button class="ask" id="askViewpoint">Point de vue</button>
         <button class="ask" id="askWords">Moins de mots</button>
@@ -478,7 +478,7 @@ body:not(.waiting) .quizhead{display:none}
     <div class="rules">
       <div><b>Le meilleur temps gagne</b>Cinq objets. Tout le monde a les mêmes cinq chaque jour, pour comparer vos temps.</div>
       <div><b>Six étapes de 20 secondes</b>Toutes les 20 secondes, un nouveau point de vue s’ouvre dans A et B se remplit un peu plus. Chaque objet a 2 minutes.</div>
-      <div><b>Une aide ajoute 15 secondes</b>Un nouveau point de vue, moins de mots (un cinquième des mauvais disparaît) ou une voyelle, placée partout dans ta réponse.</div>
+      <div><b>Un indice ajoute 15 secondes</b>Un nouveau point de vue, moins de mots (un cinquième des mauvais disparaît) ou une voyelle, placée partout dans ta réponse.</div>
       <div><b>Les initiales ajoutent 30 secondes</b>Chaque appui montre l’initiale du mot suivant : une fois pour le premier mot, deux fois pour le deuxième, et ainsi de suite.</div>
       <div><b>Bloqué ? Passe</b>Appuie sur Passer, puis encore une fois pour continuer. Un objet passé compte comme non trouvé : 2:00 plus 30 secondes.</div>
       <div><b>Les mots</b>La réponse se cache dans les 56 mots de C. Chaque mot a toujours le même numéro à trois chiffres, quels que soient la manche ou le jour.</div>
@@ -964,7 +964,7 @@ function updateHUD(){
   $('roundNum').textContent=`${G.round+1}/${ROUNDS}`;
   $('roundTime').innerHTML=S.ended?'—':`${fmt(S.elapsed+S.pen)}<small> (${fmtPen(S.pen)})</small>`;
   $('totalTime').innerHTML=`${fmt(G.total)}<small> (${fmtPen(G.totalPen)})</small>`;
-  $('helpCount').textContent=`${S.helps} utilisée(s)`;
+  $('helpCount').textContent=`${S.helps} utilisé(s)`;
   const off=!S.running;
   $('askViewpoint').disabled=off;$('askFirst').disabled=off||nextFirst()<0;$('skipBtn').disabled=off;if(off&&skipArm)disarmSkip();$('askWords').disabled=off||S.thins>=MAX_THINS;$('clear').disabled=off;
   document.querySelectorAll('.vowel').forEach(b=>b.disabled=off||S.vowels.has(b.dataset.v));
@@ -1113,7 +1113,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v52';
+document.documentElement.dataset.version='desktop v53';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
