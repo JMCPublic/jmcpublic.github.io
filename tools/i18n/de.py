@@ -645,3 +645,8 @@ UI += [
 ]
 UI += [("'A new viewpoint is open'", "'Ein neuer Blickwinkel ist offen'")]
 UI += [("<h3>It was ${S.obj.name.replace(S.obj.answer.join(' ')", "<h3>Es war ${S.obj.name.replace(S.obj.answer.join(' ')")]
+
+# end card (15 Nov): playful lines under the buttons, and Play something different
+UI += [('<small>You can do better, I know you can</small>', '<small>Du kannst es besser, ich weiß es</small>'),
+ ('<small>I know, I’m just too good</small>', '<small>Ich weiß, ich bin einfach zu gut</small>'),
+ ('>Play something different<', '>Etwas anderes spielen<')]

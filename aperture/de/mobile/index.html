@@ -317,6 +317,12 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 .asks #askFirst{grid-column:1/-1}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:12px;color:var(--blue,#2b50e0);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}.chip.xl{grid-column:span 2}.chip.xl span{font-size:14px;letter-spacing:0}.words{grid-auto-flow:row dense}.grp:has(.cell:nth-child(12)) .cell{width:15px;font-size:15px}
 .whead h2>span{display:none}
 .helpcard .deskl{display:block;font-size:13px;margin:-4px 0 10px}
+
+/* end card (15 Nov): every option at once, with a playful line under each */
+.btns .sub{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;text-decoration:none}
+.btns .sub small{display:block;font-size:11.5px;font-weight:500;opacity:.8;margin-top:3px;white-space:normal}
+.btns .sub small::before{content:'('}.btns .sub small::after{content:')'}
+.overlay .btns>*{flex:1 1 100%}
 </style>
 </head>
 <body>
@@ -1014,7 +1020,7 @@ function finish(){
     <p>${isBest?(best?'Neue Bestzeit auf diesem Gerät.':''):`Deine Bestzeit hier: ${fmt(best)}.`}</p>
     <p class="next">Nächstes Quiz in <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Herausfordern</button>
-    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Neue Runde spielen</button>':'<button class="go ghost" id="dailyBtn">Heutiges Quiz</button><button class="go ghost" id="randBtn">Neue Runde spielen</button>'}</div>
+    ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Heutiges Quiz</button>'}<button class="go ghost sub" id="randBtn">Neue Runde spielen<small>Du kannst es besser, ich weiß es</small></button><a class="go ghost sub" id="diffBtn" href="/">Etwas anderes spielen<small>Ich weiß, ich bin einfach zu gut</small></a></div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Hat’s gefallen? <u>Spendier mir einen Kaffee</u></a>`;
   $('copyBtn').onclick=async e=>{const b=e.currentTarget;
     if(navigator.share){try{await navigator.share({text:challenge});b.textContent='Gesendet';return}catch(err){if(err&&err.name==='AbortError')return}}
@@ -1069,7 +1075,7 @@ const _fbClass=Object.getOwnPropertyDescriptor(Element.prototype,'className');
 Object.defineProperty(fb,'className',{get(){return _fbClass.get.call(this)},set(v){const on=this.classList.contains('show')&&this.textContent;_fbClass.set.call(this,v);if(on&&this.textContent)this.classList.add('show')}});})();
 </script>
 <script>
-document.documentElement.dataset.version='mobile v44';
+document.documentElement.dataset.version='mobile v45';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};
@@ -1252,5 +1258,30 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <script src="/shared/lmlang.js?v=3" defer></script>
 <script src="/shared/reach.js?v=5" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
+<!-- end pointer (15 Nov): after the last round the score card is above the word grid; a dark pointer says so (tap to jump up), and the ad box moves up under the score card so it is in view at the end of the game -->
+<style>
+.endptr{position:fixed;left:12px;right:12px;bottom:calc(var(--endad,0px) + 12px + env(safe-area-inset-bottom));z-index:45;background:#16181d;color:#fff;border:0;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;font:600 15px/1.25 system-ui,sans-serif;text-align:left;box-shadow:0 10px 26px -10px rgba(0,0,0,.55);cursor:pointer;animation:endptr .35s ease-out}
+.endptr .ar{font-size:24px;line-height:1}.endptr small{display:block;font-weight:500;opacity:.8;font-size:13px;margin-top:2px}
+@keyframes endptr{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+body.done #tmgAd.endmv{margin:10px 0 4px}
+@media (prefers-reduced-motion:reduce){.endptr{animation:none}}
+</style>
+<script>
+(()=>{const L=(document.documentElement.lang||'en').slice(0,2);
+const W={en:['Genius at this? 🤔 Maybe.','Tap to see your score'],de:['Ein Genie? 🤔 Vielleicht.','Tippe für dein Ergebnis'],tr:['Dahi misin? 🤔 Belki.','Skorunu görmek için dokun'],
+  fr:['Un génie ? 🤔 Peut-être.','Touche pour voir ton score'],es:['¿Un genio? 🤔 Quizá.','Toca para ver tu puntuación'],pt:['Um gênio? 🤔 Talvez.','Toque para ver sua pontuação']}[L]||['Genius at this? 🤔 Maybe.','Tap to see your score'];
+let shown=false;
+/* the ad box moves up to sit straight under the picture and score card, so it is on screen with the score without covering any buttons */
+function adToBottom(){const ad=document.getElementById('tmgAd'),o=document.getElementById('overlay');if(!ad||!o||ad.classList.contains('endmv'))return;ad.classList.add('endmv');(document.getElementById('viewer')||o).after(ad)}
+function scoreInView(){const o=document.getElementById('overlay');if(!o)return true;const r=o.getBoundingClientRect();return r.top<innerHeight*.6&&r.bottom>60}
+function check(){if(!document.body.classList.contains('done')||!document.querySelector('#overlay #copyBtn'))return;adToBottom();
+  if(shown)return;shown=true;if(scoreInView())return;
+  const b=document.createElement('button');b.type='button';b.className='endptr';b.innerHTML=`<span class="ar">↑</span><span>${W[0]}<small>${W[1]}</small></span>`;
+  const go=()=>{const o=document.getElementById('overlay');(o.closest('.ovwrap')||o).scrollIntoView({behavior:'smooth',block:'start'});b.remove()};
+  b.onclick=go;document.body.appendChild(b);
+  const off=()=>{if(scoreInView()){b.remove();removeEventListener('scroll',off)}};addEventListener('scroll',off,{passive:true})}
+new MutationObserver(check).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+})();
+</script>
 </body>
 </html>

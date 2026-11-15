@@ -176,6 +176,9 @@ T = [
  'aria-label="Foto oculta del objeto"',
  "'Hay un nuevo punto de vista abierto'",
  "<h3>Era ${S.obj.name.replace(S.obj.answer.join(' ')",
+ '<small>Puedes hacerlo mejor, lo sé</small>',
+ '<small>Lo sé, soy demasiado bueno</small>',
+ '>Jugar a otra cosa<'
 ]
 UI = list(zip(_K, T))
 

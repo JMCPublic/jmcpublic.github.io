@@ -375,6 +375,11 @@ body:not(.waiting) .quizhead{display:none}
 @media (max-width:760px){.promo,.pbig,.pveil{display:none!important}}
 .asks{grid-template-columns:1fr 1fr 1.25fr}.ask{white-space:nowrap}.ask small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--blue,#2b50e0);margin-left:4px}.trayrow{display:flex;gap:10px;justify-content:center;align-items:center}#skipBtn{color:var(--ink,#16181d);padding:6px 14px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:var(--tile)}#skipBtn small{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--faint,#9aa0ab);margin-left:6px}#skipBtn.arm{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}#skipBtn:disabled{opacity:.45}.fbbtn{border-color:var(--blue,#2b50e0);color:var(--blue,#2b50e0)}.fbbtn:hover{background:#eef1fd}.chip.xl span{font-size:clamp(7.5px,min(2.2cqh,3.6cqw),11px);letter-spacing:-.02em;text-overflow:clip}.chip.xl{padding:0 1px}.grp:has(.cell:nth-child(12)) .cell{width:15px;font-size:15px}
 .ovwrap:has(#copyBtn){bottom:10px}.ovwrap:has(#copyBtn) .overlay{min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+
+/* end card (15 Nov): every option at once, with a playful line under each */
+.btns .sub{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;text-decoration:none}
+.btns .sub small{display:block;font-size:11.5px;font-weight:500;opacity:.8;margin-top:3px;white-space:normal}
+.btns .sub small::before{content:'('}.btns .sub small::after{content:')'}
 .asks{grid-template-columns:auto auto auto}.ask{font-size:12px;padding:8px 6px}.ask small{margin-left:3px}
 </style>
 </head>
@@ -1074,7 +1079,7 @@ function finish(){
     <p>${isBest?(best?'Bu cihazda yeni rekor.':''):`Buradaki en iyi süren: ${fmt(best)}.`}</p>
     <p class="next">Sonraki test <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Kopyala</button>
-    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Yeni bir tur oyna</button>':'<button class="go ghost" id="dailyBtn">Bugünün testi</button><button class="go ghost" id="randBtn">Yeni bir tur oyna</button>'}</div>
+    ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Bugünün testi</button>'}<button class="go ghost sub" id="randBtn">Yeni bir tur oyna<small>Daha iyisini yapabilirsin, biliyorum</small></button><a class="go ghost sub" id="diffBtn" href="/">Başka bir şey oyna<small>Biliyorum, fazla iyiyim</small></a></div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Beğendin mi? <u>Bana bir kahve ısmarla</u></a>`;
   $('copyBtn').onclick=e=>{const b=e.currentTarget;
     try{navigator.clipboard.writeText(result).then(()=>{b.textContent='Kopyalandı'},()=>{b.textContent='Kopyalanamadı';tick(result.replace(/\n/g,' · '))})}
@@ -1108,7 +1113,7 @@ h.addEventListener('click',e=>{if(e.target===h)shut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
-document.documentElement.dataset.version='desktop v50';
+document.documentElement.dataset.version='desktop v51';
 /* Bug reports: saved to Firebase (Firestore) through its web address, no extra library needed.
    Fill in your project's details below. Until then the form offers to copy the report instead. */
 const BUG_CFG={projectId:'aperture-c0961',apiKey:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',collection:'aperture_bugs'};

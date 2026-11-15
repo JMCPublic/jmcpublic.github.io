@@ -176,6 +176,9 @@ T = [
  'aria-label="Nesnenin gizlenmiş fotoğrafı"',
  "'Yeni bir bakış açısı açık'",
  "<h3>Cevap: ${S.obj.name.replace(S.obj.answer.join(' ')",
+ '<small>Daha iyisini yapabilirsin, biliyorum</small>',
+ '<small>Biliyorum, fazla iyiyim</small>',
+ '>Başka bir şey oyna<'
 ]
 UI = list(zip(_K, T))
 
