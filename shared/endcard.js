@@ -12,7 +12,7 @@ const st=document.createElement('style');
 st.textContent=`.btn[data-sub]{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
 .btn[data-sub]::after{content:'(' attr(data-sub) ')';display:block;font-size:12px;font-weight:500;opacity:.8;margin-top:2px;white-space:nowrap}
 .endsrc{margin:10px 0 0;text-align:center}.endsrc .srclink{background:none;border:0;padding:4px;font:500 14px Inter,system-ui,sans-serif;color:var(--muted,#6f685d);text-decoration:underline;cursor:pointer}
-.rbrh{font:inherit}.rbrh small{font-size:.85em;font-weight:500;opacity:.75;margin-left:4px}`;
+.label:has(.rbrh){text-transform:none!important;letter-spacing:0!important;color:var(--ink,#16130f)!important}.rbrh{font:600 21px Fraunces,Georgia,serif}.rbrh small{font:500 14px Inter,system-ui,sans-serif;color:var(--muted,#6f685d);margin-left:6px}`;
 document.head.appendChild(st);
 function run(){
   document.querySelectorAll('.row').forEach(row=>{
