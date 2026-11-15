@@ -6,7 +6,7 @@
    - Local welcome on the home page, from the device's time zone.
    No IP address is used or stored. The owner's own devices (VIP) are not counted. */
 /* place names: never split mid-word, at most two lines, smaller text if needed. Loaded before the line below so it also runs inside Masterbrain */
-if(/natural-wonders-/.test(location.pathname)&&!window.__tmgFit){window.__tmgFit=1;for(const f of ['fitnames.js?v=3','endcard.js?v=2','howler-en.js?v=1']){const fn=document.createElement('script');fn.src='/shared/'+f;fn.defer=true;document.head.appendChild(fn)}}
+if(/natural-wonders-/.test(location.pathname)&&!window.__tmgFit){window.__tmgFit=1;for(const f of ['fitnames.js?v=3','endcard.js?v=2','howler-en.js?v=1','autofill.js?v=1','rating.js?v=1']){const fn=document.createElement('script');fn.src='/shared/'+f;fn.defer=true;document.head.appendChild(fn)}}
 (()=>{if(window.tmgReach||window.top!==window)return;
 const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
 const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
