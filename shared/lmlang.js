@@ -107,6 +107,32 @@ function howler(){if(!isDone())return; /* English pages get it too, for spelling
   const k=o.querySelector('.kofi');if(k)k.insertAdjacentElement('beforebegin',b);else o.appendChild(b)}
 window.tmgHowler={open,close,phrases};
 
+
+/* ---- leave a game (approved 15 Nov): a small "✕ Leave" while a game is on, with a playful check; the clock waits while it's open ---- */
+{const LV={en:['✕ Leave','Are you sure you want to leave the good stuff?','No','I’m staying. I was about to make a poor life choice.','Yes','I am leaving. I’ll live with the consequences.'],
+ de:['✕ Verlassen','Willst du wirklich die guten Sachen verlassen?','Nein','Ich bleibe. Fast hätte ich eine schlechte Lebensentscheidung getroffen.','Ja','Ich gehe. Ich lebe mit den Folgen.'],
+ tr:['✕ Çık','Bu güzel şeyleri gerçekten bırakıp gidecek misin?','Hayır','Kalıyorum. Neredeyse kötü bir karar veriyordum.','Evet','Gidiyorum. Sonuçlarına katlanırım.'],
+ fr:['✕ Quitter','Tu es sûr de vouloir quitter le meilleur ?','Non','Je reste. J’allais faire un mauvais choix de vie.','Oui','Je pars. J’en assumerai les conséquences.'],
+ es:['✕ Salir','¿Seguro que quieres dejar lo bueno?','No','Me quedo. Estaba a punto de tomar una mala decisión.','Sí','Me voy. Asumiré las consecuencias.'],
+ pt:['✕ Sair','Tem certeza de que quer largar a parte boa?','Não','Vou ficar. Eu ia tomar uma péssima decisão.','Sim','Vou embora. Assumo as consequências.']}[LANG]||null;
+ const LW=LV||['✕ Leave','Are you sure you want to leave the good stuff?','No','I’m staying. I was about to make a poor life choice.','Yes','I am leaving. I’ll live with the consequences.'];
+ const st=document.createElement('style');st.textContent=`.aplv{background:none;border:0;padding:4px 2px;margin-left:auto;font:600 12.5px system-ui,sans-serif;color:var(--muted,#6b7078);cursor:pointer;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
+.meta:has(>.aplv){flex-wrap:wrap;row-gap:2px}.meta>.aplv{flex:0 0 auto}
+.aplvbg{position:fixed;inset:0;z-index:9990;background:rgba(14,16,22,.5)}
+.aplvc{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9991;max-width:420px;margin:0 auto;background:#fff;color:#16181d;border-radius:22px;padding:20px 18px 16px;box-shadow:0 -8px 30px -10px rgba(0,0,0,.5);font:14px/1.4 system-ui,sans-serif}
+.aplvc h3{font:600 20px/1.25 Georgia,serif;margin:0 0 14px}
+.aplvc button{display:block;width:100%;border-radius:999px;padding:12px 14px;font:700 16px system-ui,sans-serif;cursor:pointer;margin-top:8px;line-height:1.2}
+.aplvc button small{display:block;font-weight:500;font-size:12.5px;opacity:.85;margin-top:3px}
+.aplvc .no{background:#16181d;color:#fff;border:0}.aplvc .yes{background:#fff;color:#16181d;border:1.5px solid #16181d}`;document.head.appendChild(st);
+ const on=()=>!document.body.classList.contains('waiting')&&!isDone();
+ function sheet(){window.tmgHold=true;const bg=document.createElement('div');bg.className='aplvbg';const k=document.createElement('div');k.className='aplvc';k.setAttribute('role','dialog');k.setAttribute('aria-label',LW[1]);
+   k.innerHTML=`<h3>${esc(LW[1])}</h3><button type="button" class="no">${esc(LW[2])}<small>${esc(LW[3])}</small></button><button type="button" class="yes">${esc(LW[4])}<small>${esc(LW[5])}</small></button>`;
+   const close=()=>{bg.remove();k.remove();window.tmgHold=false};bg.onclick=close;k.querySelector('.no').onclick=close;
+   k.querySelector('.yes').onclick=()=>{location.href='/'};document.body.append(bg,k);k.querySelector('.no').focus()}
+ function place(){const rn=document.getElementById('roundNum');if(!rn)return;const row=rn.closest('.meta')||rn.closest('.stats,.stat')?.parentElement;let b=document.querySelector('.aplv');
+   if(on()){if(!b&&row){b=document.createElement('button');b.type='button';b.className='aplv';b.textContent=LW[0];b.onclick=sheet;row.appendChild(b)}}else if(b)b.remove()}
+ new MutationObserver(place).observe(document.body,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});place()}
+
 function wire(){sw();offer();howler();
   new MutationObserver(()=>{sw();howler()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden']})}
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',wire);else wire();
