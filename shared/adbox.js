@@ -32,6 +32,9 @@ html.tmgad-on .tbar{bottom:var(--tmgad-h,0px)!important}
 html.tmgad-on .tmgfb-pill{bottom:calc(var(--tmgad-h,0px) + 12px)}
 html.tmgad-on .toast{bottom:calc(var(--tmgad-h,0px) + 22px)}
 html.phone.tmgad-on body.timed .rank .btn:not([disabled]){bottom:calc(64px + var(--tmgad-h,0px) + env(safe-area-inset-bottom))!important}
+/* phones (15 Nov): the ad box lines up exactly with the game's own panels, left and right edges */
+#tmgAd.lined{padding-left:var(--tmgad-l,8px)!important;padding-right:var(--tmgad-r,8px)!important;justify-content:stretch}
+#tmgAd.lined .tmgad-in{flex:1 1 auto;width:auto;min-width:0}#tmgAd.lined .tmgad-slot.p{width:100%;flex:1 1 auto;min-width:0}
 /* Aperture on laptops: the box sits under boxes A-C, and the side columns are mirrored so A-C are centred */
 #tmgAd.inline{flex:none;margin:12px auto 0;display:block}
 .phones>.side.tmgad-left{justify-content:space-between}
@@ -68,7 +71,7 @@ function house(wide){const h=Math.random()<.5?(DE?KOFI_DE:TR?KOFI_TR:FR?KOFI_FR:
   return `<a class="tmgad-house" href="${h.href}"${ext?' target="_blank" rel="noopener"':''}><div><b>${wide?h.b:h.pb}</b><span>${h.s}</span></div><i>${h.i}</i></a>`}
 function fill(slot,wide){const id=wide?ADS.slotWide:ADS.slotPhone;
   if(!id){slot.innerHTML=house(wide);return}
-  slot.innerHTML=`<ins class="adsbygoogle" style="display:inline-block;width:${wide?728:320}px;height:${wide?90:100}px" data-ad-client="${ADS.client}" data-ad-slot="${id}"></ins>`;
+  slot.innerHTML=`<ins class="adsbygoogle" style="display:inline-block;width:${wide?'728px':'100%'};height:${wide?90:100}px" data-ad-client="${ADS.client}" data-ad-slot="${id}"></ins>`;
   if(!d.querySelector('script[src*="adsbygoogle.js"]')){const s=d.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+ADS.client;d.head.appendChild(s)}
   (window.adsbygoogle=window.adsbygoogle||[]).push({})}
 let box,mode,wide;
@@ -85,8 +88,14 @@ function build(){
   else if(mode==='flow'){d.body.appendChild(box);root.classList.remove('tmgad-on')}
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
   fill(box.querySelector('.tmgad-slot'),wide);sync();if(mode==='flow')setTimeout(()=>dispatchEvent(new Event('resize')),60)}
+// the game's own panel on phones, so the ad box can share its edges
+const REF=['.viewer','.play .panel','.panel','.menuhead','main .card','.card'];
+function line(){if(wide){box.classList.remove('lined');return}let ref=null;
+  for(const q of REF){ref=[...d.querySelectorAll(q)].find(e=>e.offsetParent&&!box.contains(e)&&e.getBoundingClientRect().width>200);if(ref)break}
+  if(!ref){box.classList.remove('lined');return}const g=ref.getBoundingClientRect(),b=box.getBoundingClientRect();
+  box.style.setProperty('--tmgad-l',Math.max(0,Math.round(g.left-b.left))+'px');box.style.setProperty('--tmgad-r',Math.max(0,Math.round(b.right-g.right))+'px');box.classList.add('lined')}
 function sync(){if(!box)return;
-  if(mode==='fixed'||mode==='flow'){const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
+  if(mode==='fixed'||mode==='flow'){line();const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
     if(!wide&&inn&&sl&&lb){const t=hs&&hs.querySelector('b');lb.style.left=(sl.offsetLeft+(t?t.offsetLeft:0))+'px'}
     if(mode==='fixed'&&!root.classList.contains('tmgad-play'))root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
   // inline: as wide as boxes A to C, banner centred, label just left of it at its top edge
@@ -111,9 +120,9 @@ function playWatch(){if(!isNW)return;let was=null,wasP=null;const chk=()=>{const
     const on=mode==='fixed'&&!wide&&p;if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
   new MutationObserver(chk).observe(d.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
 function apFloat(){if(!isAp||!/\/mobile\//.test(path))return;const chk=()=>{const b=d.body,on=!!box&&mode==='flow'&&b.classList.contains('waiting')&&!b.classList.contains('done')&&!root.classList.contains('tw-on')&&!box.classList.contains('endmv');
-    if(on!==root.classList.contains('tmgap-float'))root.classList.toggle('tmgap-float',on);if(on)root.style.setProperty('--tmgap-h',box.offsetHeight+'px')};
+    if(on!==root.classList.contains('tmgap-float'))root.classList.toggle('tmgap-float',on);if(on)root.style.setProperty('--tmgap-h',box.offsetHeight+'px');sync()};
   new MutationObserver(chk).observe(d.body,{attributes:true,attributeFilter:['class']});new MutationObserver(chk).observe(root,{attributes:true,attributeFilter:['class']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
-function start(){mirror();build();playWatch();apFloat();addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
+function start(){mirror();build();playWatch();apFloat();{let q=0;new MutationObserver(()=>{if(!q&&!wide)q=requestAnimationFrame(()=>{q=0;sync()})}).observe(d.body,{childList:true,subtree:true})}addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
 window.tmgAd={ADS,rebuild:build};
 if(d.body)start();else addEventListener('DOMContentLoaded',start);
 })();
