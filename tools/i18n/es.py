@@ -337,6 +337,14 @@ LM_OTD = {
  '1229': [1845, 'Texas se une a Estados Unidos como su estado número 28.'],
  '1230': [1902, 'La expedición Discovery de Robert Falcon Scott alcanza un récord de latitud sur en la Antártida.'],
  '1231': [2004, 'Se inaugura oficialmente Taipei 101, el rascacielos más alto del mundo.'],
+ '1116': [1945, 'Se funda la UNESCO en Londres. Hoy lleva la Lista del Patrimonio Mundial con los grandes monumentos del planeta.'],
+ '1119': [1863, 'Abraham Lincoln pronuncia el discurso de Gettysburg en el nuevo Cementerio Nacional de Soldados, en Pensilvania.'],
+ '1120': [1992, 'Se declara un incendio en el castillo de Windsor. Restaurar las salas dañadas lleva cinco años.'],
+ '1122': [1497, 'Vasco da Gama dobla el cabo de Buena Esperanza camino de la India.'],
+ '1123': [1955, 'Las islas Cocos (Keeling), en el océano Índico, pasan del Reino Unido a Australia.'],
+ '1124': [1642, 'Abel Tasman es el primer europeo en avistar la isla que hoy se llama Tasmania.'],
+ '1127': [1932, 'Se inaugura el puente de Bixby Creek en la costa de Big Sur, California, hoy uno de los puentes más fotografiados del mundo.'],
+ '1130': [1936, 'El Crystal Palace de Londres, el enorme palacio de cristal de la Gran Exposición de 1851, es destruido por un incendio.'],
 }
 
 # ---------------- Aperture (everyday objects) ----------------
@@ -462,4 +470,5 @@ AP_OTD = {
  '1229': [1913, 'Cecil B. DeMille empieza a rodar «The Squaw Man», el primer largometraje de Hollywood.'],
  '1230': [1927, 'Abre en Tokio la línea Ginza, el primer metro de Asia.'],
  '1231': [1879, 'Thomas Edison muestra por primera vez al público su bombilla eléctrica.'],
+ '1125': [1952, 'La ratonera, de Agatha Christie, se estrena en Londres. Se convertirá en la obra de teatro con más tiempo en cartel del mundo.'],
 }

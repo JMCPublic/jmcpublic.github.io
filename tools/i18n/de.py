@@ -492,7 +492,15 @@ LM_OTD = {'1029': [1964, 'Juwelendiebe um „Murph the Surf“ stehlen den Saphi
  '1228': [1836, 'South Australia und seine Hauptstadt Adelaide werden gegründet.'],
  '1229': [1845, 'Texas wird als 28. Bundesstaat in die USA aufgenommen.'],
  '1230': [1902, 'Robert Falcon Scotts Discovery-Expedition erreicht in der Antarktis einen neuen Südrekord.'],
- '1231': [2004, 'Taipei 101 wird als höchster Wolkenkratzer der Welt eröffnet.']}
+ '1231': [2004, 'Taipei 101 wird als höchster Wolkenkratzer der Welt eröffnet.'],
+ '1116': [1945, 'In London wird die UNESCO gegründet. Heute führt sie die Welterbeliste mit den größten Wahrzeichen der Erde.'],
+ '1119': [1863, 'Abraham Lincoln hält die Gettysburg Address auf dem neuen Soldatenfriedhof in Pennsylvania.'],
+ '1120': [1992, 'Auf Schloss Windsor bricht ein Feuer aus. Die Restaurierung der beschädigten Räume dauert fünf Jahre.'],
+ '1122': [1497, 'Vasco da Gama umsegelt auf dem Weg nach Indien das Kap der Guten Hoffnung.'],
+ '1123': [1955, 'Die Kokosinseln (Keelinginseln) im Indischen Ozean gehen von Großbritannien an Australien über.'],
+ '1124': [1642, 'Abel Tasman sichtet als erster Europäer die Insel, die heute Tasmanien heißt.'],
+ '1127': [1932, 'An der Küste von Big Sur in Kalifornien wird die Bixby Creek Bridge eröffnet, heute eine der meistfotografierten Brücken der Welt.'],
+ '1130': [1936, 'Der Crystal Palace in London, die riesige Glashalle der Weltausstellung von 1851, brennt nieder.'],}
 
 # ---------------- Aperture (everyday objects) ----------------
 # English name in the game -> (German name with article, answer words)
@@ -618,6 +626,7 @@ AP_OTD = {
  '1229': [1913, 'Cecil B. DeMille beginnt mit den Dreharbeiten zu „The Squaw Man“, dem ersten Spielfilm aus Hollywood.'],
  '1230': [1927, 'In Tokio eröffnet die Ginza-Linie, die erste U-Bahn Asiens.'],
  '1231': [1879, 'Thomas Edison zeigt der Öffentlichkeit zum ersten Mal seine elektrische Glühbirne.'],
+ '1125': [1952, 'Agatha Christies „Die Mausefalle“ hat in London Premiere und wird das am längsten gespielte Theaterstück der Welt.'],
 }
 # Aperture-only screen text (the Landmarks text above covers the rest)
 UI += [

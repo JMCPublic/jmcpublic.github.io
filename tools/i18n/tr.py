@@ -338,6 +338,14 @@ LM_OTD = {
  '1229': [1845, 'Teksas, ABD’nin 28. eyaleti olur.'],
  '1230': [1902, 'Robert Falcon Scott’ın seferi Antarktika’da o güne kadar ulaşılan en güney noktaya varır.'],
  '1231': [2004, 'Taipei 101, dünyanın en yüksek gökdeleni olarak resmen açılır.'],
+ '1116': [1945, 'UNESCO Londra’da kurulur. Bugün dünyanın en önemli simge yapılarının yer aldığı Dünya Mirası Listesi’ni tutar.'],
+ '1119': [1863, 'Abraham Lincoln, Pensilvanya’daki yeni Ulusal Asker Mezarlığı’nda Gettysburg Konuşması’nı yapar.'],
+ '1120': [1992, 'Windsor Şatosu’nda yangın çıkar. Hasar gören salonların onarımı beş yıl sürer.'],
+ '1122': [1497, 'Vasco da Gama, Hindistan yolunda Ümit Burnu’nu dolaşır.'],
+ '1123': [1955, 'Hint Okyanusu’ndaki Cocos (Keeling) Adaları, İngiltere’den Avustralya’ya geçer.'],
+ '1124': [1642, 'Abel Tasman, bugün Tazmanya denen adayı gören ilk Avrupalı olur.'],
+ '1127': [1932, 'Kaliforniya’nın Big Sur kıyısında Bixby Creek Köprüsü açılır; bugün dünyanın en çok fotoğraflanan köprülerinden biridir.'],
+ '1130': [1936, '1851 Büyük Sergisi’nin dev cam salonu Londra’daki Crystal Palace yanarak yok olur.'],
 }
 
 # ---------------- Aperture (everyday objects) ----------------
@@ -462,4 +470,5 @@ AP_OTD = {
  '1229': [1913, 'Cecil B. DeMille, Hollywood’un ilk uzun metrajlı filmi “The Squaw Man”in çekimlerine başlar.'],
  '1230': [1927, 'Tokyo’da Asya’nın ilk metro hattı Ginza Hattı açılır.'],
  '1231': [1879, 'Thomas Edison elektrikli ampulünü halka ilk kez gösterir.'],
+ '1125': [1952, 'Agatha Christie’nin Fare Kapanı oyunu Londra’da sahnelenmeye başlar ve dünyanın en uzun süre oynanan oyunu olur.'],
 }

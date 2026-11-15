@@ -337,6 +337,14 @@ LM_OTD = {
  '1229': [1845, 'Le Texas devient le 28e État des États-Unis.'],
  '1230': [1902, 'L’expédition Discovery de Robert Falcon Scott atteint un record de latitude sud en Antarctique.'],
  '1231': [2004, 'Taipei 101 ouvre officiellement, plus haut gratte-ciel du monde.'],
+ '1116': [1945, 'L’UNESCO est fondée à Londres. Elle tient aujourd’hui la Liste du patrimoine mondial des plus grands sites de la planète.'],
+ '1119': [1863, 'Abraham Lincoln prononce le discours de Gettysburg au nouveau cimetière militaire national, en Pennsylvanie.'],
+ '1120': [1992, 'Un incendie éclate au château de Windsor. Il faudra cinq ans pour restaurer les salles endommagées.'],
+ '1122': [1497, 'Vasco de Gama double le cap de Bonne-Espérance en route vers l’Inde.'],
+ '1123': [1955, 'Les îles Cocos (Keeling), dans l’océan Indien, passent du Royaume-Uni à l’Australie.'],
+ '1124': [1642, 'Abel Tasman devient le premier Européen à apercevoir l’île appelée aujourd’hui Tasmanie.'],
+ '1127': [1932, 'Le pont de Bixby Creek ouvre sur la côte de Big Sur, en Californie. C’est aujourd’hui l’un des ponts les plus photographiés au monde.'],
+ '1130': [1936, 'Le Crystal Palace de Londres, l’immense palais de verre de l’Exposition universelle de 1851, est détruit par un incendie.'],
 }
 
 # ---------------- Aperture (everyday objects) ----------------
@@ -462,4 +470,5 @@ AP_OTD = {
  '1229': [1913, 'Cecil B. DeMille commence le tournage de « The Squaw Man », premier long métrage d’Hollywood.'],
  '1230': [1927, 'La ligne Ginza ouvre à Tokyo, premier métro d’Asie.'],
  '1231': [1879, 'Thomas Edison montre pour la première fois au public son ampoule électrique.'],
+ '1125': [1952, 'La Souricière d’Agatha Christie est créée à Londres. Elle deviendra la pièce jouée le plus longtemps au monde.'],
 }

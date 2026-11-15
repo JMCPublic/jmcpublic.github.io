@@ -337,6 +337,14 @@ LM_OTD = {
  '1229': [1845, 'O Texas entra para os Estados Unidos como o 28º estado.'],
  '1230': [1902, 'A expedição Discovery, de Robert Falcon Scott, chega ao ponto mais ao sul já alcançado na Antártida.'],
  '1231': [2004, 'O Taipei 101 é inaugurado oficialmente como o arranha-céu mais alto do mundo.'],
+ '1116': [1945, 'A UNESCO é fundada em Londres. Hoje mantém a Lista do Património Mundial com os maiores monumentos do planeta.'],
+ '1119': [1863, 'Abraham Lincoln profere o discurso de Gettysburg no novo Cemitério Nacional dos Soldados, na Pensilvânia.'],
+ '1120': [1992, 'Um incêndio deflagra no Castelo de Windsor. O restauro das salas danificadas leva cinco anos.'],
+ '1122': [1497, 'Vasco da Gama dobra o Cabo da Boa Esperança a caminho da Índia.'],
+ '1123': [1955, 'As ilhas Cocos (Keeling), no oceano Índico, passam do Reino Unido para a Austrália.'],
+ '1124': [1642, 'Abel Tasman torna-se o primeiro europeu a avistar a ilha hoje chamada Tasmânia.'],
+ '1127': [1932, 'Abre a ponte de Bixby Creek na costa de Big Sur, na Califórnia, hoje uma das pontes mais fotografadas do mundo.'],
+ '1130': [1936, 'O Crystal Palace de Londres, o enorme palácio de vidro da Grande Exposição de 1851, é destruído por um incêndio.'],
 }
 
 # ---------------- Aperture (everyday objects) ----------------
@@ -461,4 +469,5 @@ AP_OTD = {
  '1229': [1913, 'Cecil B. DeMille começa a filmar “The Squaw Man”, o primeiro longa-metragem de Hollywood.'],
  '1230': [1927, 'Abre em Tóquio a linha Ginza, o primeiro metrô da Ásia.'],
  '1231': [1879, 'Thomas Edison mostra pela primeira vez ao público sua lâmpada elétrica.'],
+ '1125': [1952, 'A Ratoeira, de Agatha Christie, estreia em Londres. Torna-se a peça em cena há mais tempo no mundo.'],
 }
