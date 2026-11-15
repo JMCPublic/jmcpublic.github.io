@@ -58,6 +58,7 @@ function offer(){if(LANG!=='en')return;const qo=q.get('langoffer');const want=qo
 
 /* ---- translated pages: report a bad translation ---- */
 const HL={
+en:{l:'Spotted any spelling mistakes or typo howlers?',h:'Spotted a spelling mistake or typo howler?',s:'Thanks for helping make the game better.',ph:'Which text?',tap:'(tap to choose)',other:'Something else',w:'What’s wrong, and what should it say?',wp:'e.g. “seperate” should be “separate”',n:'Your name',opt:'(optional, so we can thank you)',meta:'We also send which game and screen you were on, nothing else.',c:'Cancel',go:'Send',ing:'Sending…',ty:'Thank you! It’s on its way.',tyb:'Every fix makes the game a little more polished.',back:'Back to the game',err:'Couldn’t send just now. Please try again in a moment.',lang:'English',sc:{start:'Start screen',play:'In the game',results:'Results'}},
 de:{l:'Fehlerteufel entdeckt? Sag’s uns',h:'Fehlerteufel entdeckt?',s:'Danke, dass du hilfst, das Spiel besser zu machen.',ph:'Welcher Text?',tap:'(antippen)',other:'Etwas anderes',w:'Was ist falsch, und wie sollte es heißen?',wp:'z. B. „Blickwinkel“ klingt hier komisch, besser wäre …',n:'Dein Name',opt:'(freiwillig, damit wir danken können)',meta:'Wir senden dazu nur Spiel, Bildschirm und Sprache.',c:'Abbrechen',go:'Senden',ing:'Wird gesendet …',ty:'Danke! Ist angekommen.',tyb:'Jede Korrektur macht das Spiel für Deutschsprachige natürlicher.',back:'Zurück zum Spiel',err:'Senden hat gerade nicht geklappt. Bitte gleich nochmal versuchen.',lang:'Deutsch',sc:{start:'Startseite',play:'Im Spiel',results:'Ergebnis'}},
 tr:{l:'Garip bir çeviri mi gördün? Bize söyle',h:'Garip bir çeviri mi gördün?',s:'Oyunu daha iyi yapmamıza yardım ettiğin için teşekkürler.',ph:'Hangi ifade?',tap:'(seçmek için dokun)',other:'Başka bir şey',w:'Ne yanlış, nasıl olmalı?',wp:'Örn. “Bakış açısı” burada tuhaf duruyor, şöyle olmalı …',n:'Adın',opt:'(isteğe bağlı, teşekkür edebilmemiz için)',meta:'Yanına sadece oyunu, ekranı ve dili ekliyoruz.',c:'Vazgeç',go:'Gönder',ing:'Gönderiliyor…',ty:'Teşekkürler! Aldık.',tyb:'Her düzeltme oyunu Türkçe konuşanlar için daha doğal yapıyor.',back:'Oyuna dön',err:'Şu an gönderilemedi. Birazdan tekrar dene.',lang:'Türkçe',sc:{start:'Başlangıç',play:'Oyunda',results:'Sonuç'}},
 fr:{l:'Une traduction ratée ? Dites-le-nous',h:'Une traduction ratée ?',s:'Merci de nous aider à améliorer le jeu.',ph:'Quel texte ?',tap:'(touchez pour choisir)',other:'Autre chose',w:'Qu’est-ce qui cloche, et que faudrait-il dire ?',wp:'Ex. « Point de vue » sonne bizarre ici, on dirait plutôt …',n:'Votre nom',opt:'(facultatif, pour vous remercier)',meta:'Nous envoyons seulement le jeu, l’écran et la langue.',c:'Annuler',go:'Envoyer',ing:'Envoi…',ty:'Merci ! C’est reçu.',tyb:'Chaque correction rend le jeu plus naturel pour les francophones.',back:'Retour au jeu',err:'Envoi impossible pour l’instant. Réessayez dans un moment.',lang:'Français',sc:{start:'Accueil',play:'En jeu',results:'Résultat'}},
@@ -90,7 +91,7 @@ function form(){const ph=phrases();picked=ph[0]||'';
   f.querySelectorAll('.lmho-ph .tmgfb-chip').forEach(b=>b.onclick=()=>{picked=b.dataset.t===L.other?'':b.dataset.t;f.querySelectorAll('.lmho-ph .tmgfb-chip').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   f.querySelector('.tmgfb-b:not(.go)').onclick=close;
   f.onsubmit=async e=>{e.preventDefault();const msg=t.value.trim();if(!msg){t.focus();return}gb.disabled=true;m.textContent=L.ing;
-    const s=x=>({stringValue:String(x)});const where=`translation · ${LANG} · ${GAME} · ${scr} · phrase: ${picked?'“'+picked+'”':'(other)'}`.slice(0,400);
+    const s=x=>({stringValue:String(x)});const where=`${LANG==='en'?'typo · English':'translation · '+LANG} · ${GAME} · ${scr} · phrase: ${picked?'“'+picked+'”':'(other)'}`.slice(0,400);
     const doc=k=>({kind:s(k),message:s((k==='translation'?'':`[Translation ${LANG.toUpperCase()}] `)+msg.slice(0,1500)),contact:s(nm.value.trim().slice(0,150)),game:s(document.title.slice(0,120)),page:s(location.pathname.slice(0,200)),device:s(dev()),where:s(where),ua:s(navigator.userAgent.slice(0,300)),at:{timestampValue:new Date().toISOString()}});
     const post=k=>fetch(`https://firestore.googleapis.com/v1/projects/${CFG.p}/databases/(default)/documents/feedback?key=${CFG.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:doc(k)})}).then(r=>r.ok);
     let ok=false;try{ok=await post('translation');if(!ok)ok=await post('wrong')}catch(_){}
@@ -101,10 +102,10 @@ function open(){scr=scrNow();if(!v){v=document.createElement('div');v.className=
   v.addEventListener('click',e=>{if(e.target===v)close()});addEventListener('keydown',e=>{if(e.key==='Escape'&&v&&!v.hidden)close()})}
   form();v.hidden=false;setTimeout(()=>{const b=v.querySelector('.lmho-ph .tmgfb-chip');if(b)b.focus()},50)}
 function close(){if(v)v.hidden=true}
-function howler(){if(LANG==='en'||!isDone())return;const o=document.getElementById('overlay');if(!o||o.querySelector('.lmho'))return;
+function howler(){if(!isDone())return; /* English pages get it too, for spelling mistakes and typos (15 Nov) */const o=document.getElementById('overlay');if(!o||o.querySelector('.lmho'))return;
   const b=document.createElement('button');b.type='button';b.className='lmho';b.innerHTML=ICO+esc(L.l);b.onclick=open;
   const k=o.querySelector('.kofi');if(k)k.insertAdjacentElement('beforebegin',b);else o.appendChild(b)}
-if(LANG!=='en')window.tmgHowler={open,close,phrases};
+window.tmgHowler={open,close,phrases};
 
 function wire(){sw();offer();howler();
   new MutationObserver(()=>{sw();howler()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden']})}

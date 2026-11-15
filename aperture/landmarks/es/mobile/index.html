@@ -323,6 +323,8 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 .chip.xl span{font-size:14px;letter-spacing:0}
 .words{grid-auto-flow:row dense}
 .grp:has(.cell:nth-child(12)) .cell{width:15px;font-size:15px}
+.whead h2>span{display:none}
+.helpcard .deskl{display:block;font-size:13px;margin:-4px 0 10px}
 </style>
 </head>
 <body>
@@ -407,6 +409,7 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
 <div class="help" id="help" hidden>
   <div class="helpcard" role="dialog" aria-label="Cómo se juega">
     <h2>Cómo se juega</h2>
+    <a class="deskl" href="https://twominute.games/aperture/landmarks/es/?desktop=1">¿En el ordenador? Usa la versión de escritorio</a>
     <div class="rules">
       <div><b>Gana el tiempo más rápido</b>Cinco monumentos al día, los mismos para todos.</div>
       <div><b>Las fotos</b>Fotos reales de Wikimedia Commons. El fotógrafo y la licencia aparecen tras cada ronda.</div>
@@ -417,7 +420,6 @@ body.done .ovwrap{top:8px;bottom:8px}body.done .ovwrap .overlay{min-height:0;max
       <div><b>¿Atascado? Salta</b>Toca Saltar y luego otra vez para seguir. Un monumento saltado cuenta como no resuelto: 2:00 más 30 segundos.</div>
       <div><b>Respuesta</b>Toca la palabra correcta de la lista. Una respuesta incorrecta suma 15 segundos. No resuelto en 2 minutos cuenta como 2:00 más 30 segundos.</div>
     </div>
-    <a href="https://twominute.games/aperture/landmarks/es/?desktop=1">¿En el ordenador? Usa la versión de escritorio</a>
     <button class="go" id="helpClose">Entendido</button>
   </div>
 </div>
@@ -931,7 +933,7 @@ function endRound(win,skipped){
   overlay.innerHTML=`<span class="label">${win?'Resuelto':(skipped?`Saltado · +${MISS} s`:`Se acabó el tiempo · +${MISS} s`)}</span><h3>Era ${S.obj.name.replace(S.obj.tde||S.obj.title,`<span class="ans">${S.obj.tde||S.obj.title}</span>`)}.</h3>
     <div class="pts">${fmt(time)} (${fmtPen(pen)})</div>
     <p class="credit">Foto: <a href="${S.obj.page}" target="_blank" rel="noopener">${S.obj.artist}</a> · ${S.obj.lic}</p>
-    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Tiempo final':'Siguiente ronda'}</button>`;
+    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Ver tu puntuación':'Siguiente ronda'}</button>`;
   // after a short beat the next round starts by itself; tapping Next round skips the wait
   const goNext=()=>{clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];G.round++;newRound();startRound();SFX.go()};
   clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];
@@ -963,7 +965,7 @@ function finish(){
     <p>${isBest?(best?'Nuevo récord en este dispositivo.':''):`Tu mejor tiempo aquí: ${fmt(best)}.`}</p>
     <p class="next">Siguiente reto en <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Reta a alguien</button>
-    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Serie al azar</button>':'<button class="go ghost" id="dailyBtn">Reto de hoy</button><button class="go ghost" id="randBtn">Otra</button>'}</div>
+    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Jugar una ronda nueva</button>':'<button class="go ghost" id="dailyBtn">Reto de hoy</button><button class="go ghost" id="randBtn">Jugar una ronda nueva</button>'}</div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ ¿Te ha gustado? <u>Invítame a un café</u></a>`;
   $('copyBtn').onclick=async e=>{const b=e.currentTarget;
     if(navigator.share){try{await navigator.share({text:challenge});b.textContent='Enviado';return}catch(err){if(err&&err.name==='AbortError')return}}
@@ -981,10 +983,12 @@ window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elaps
 </script>
 <script>
 (()=>{const h=document.getElementById('help');
-document.getElementById('helpBtn').onclick=()=>{h.hidden=false};
-document.getElementById('helpClose').onclick=()=>{h.hidden=true};
-h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
+/* the clock waits while How to play is open, and the game carries on from the same point when it closes */
+const shut=()=>{h.hidden=true;window.tmgHold=false};
+document.getElementById('helpBtn').onclick=()=>{h.hidden=false;window.tmgHold=true};
+document.getElementById('helpClose').onclick=shut;
+h.addEventListener('click',e=>{if(e.target===h)shut()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
 (()=>{const $=id=>document.getElementById(id);
@@ -1196,7 +1200,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <!-- /tmg-feedback -->
 <script src="/shared/adbox.js?v=2" defer></script>
 <script src="/shared/fitquote.js" defer></script>
-<script src="/shared/lmlang.js?v=2" defer></script>
+<script src="/shared/lmlang.js?v=3" defer></script>
 <script src="/shared/reach.js?v=5" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 </body>

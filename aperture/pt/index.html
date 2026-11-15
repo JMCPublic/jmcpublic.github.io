@@ -1045,7 +1045,7 @@ function endRound(win,skipped){
   overlay.hidden=false;
   overlay.innerHTML=`<span class="label">${win?'Resolvido':(skipped?`Pulado · +${MISS} s`:`Acabou o tempo · +${MISS} s`)}</span><h3>Era ${S.obj.name.replace(S.obj.answer.join(' '),`<span class="ans">${S.obj.answer.join(' ')}</span>`)}.</h3>
     <div class="pts">${fmt(time)} (${fmtPen(pen)})</div>
-    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Tempo final':'Próxima rodada'}</button>`;
+    <button class="go${lastRound?'':' auto'}" id="nextBtn" style="--beat:${BEAT}ms">${lastRound?'Ver sua pontuação':'Próxima rodada'}</button>`;
   // after a short beat the next round starts by itself; tapping Next round skips the wait
   const goNext=()=>{clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];G.round++;newRound();startRound();SFX.go()};
   clearTimeout(autoNext);beeps.forEach(clearTimeout);beeps=[];
@@ -1074,7 +1074,7 @@ function finish(){
     <p>${isBest?(best?'Novo recorde neste aparelho.':''):`Seu melhor tempo aqui: ${fmt(best)}.`}</p>
     <p class="next">Próximo desafio em <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Copiar</button>
-    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Rodada aleatória</button>':'<button class="go ghost" id="dailyBtn">Desafio de hoje</button><button class="go ghost" id="randBtn">Outra</button>'}</div>
+    ${G.mode==='daily'?'<button class="go ghost" id="randBtn">Jogar uma nova rodada</button>':'<button class="go ghost" id="dailyBtn">Desafio de hoje</button><button class="go ghost" id="randBtn">Jogar uma nova rodada</button>'}</div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Curtiu? <u>Me pague um café</u></a>`;
   $('copyBtn').onclick=e=>{const b=e.currentTarget;
     try{navigator.clipboard.writeText(result).then(()=>{b.textContent='Copiado'},()=>{b.textContent='Não deu para copiar';tick(result.replace(/\n/g,' · '))})}
@@ -1100,10 +1100,12 @@ window.apertureInfo=()=>({set:G.label,round:G.round+1,elapsed:Math.round(S.elaps
 </script>
 <script>
 (()=>{const h=document.getElementById('help');
-document.getElementById('helpBtn').onclick=()=>{h.hidden=false};
-document.getElementById('helpClose').onclick=()=>{h.hidden=true};
-h.addEventListener('click',e=>{if(e.target===h)h.hidden=true});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')h.hidden=true});})();
+/* the clock waits while How to play is open, and the game carries on from the same point when it closes */
+const shut=()=>{h.hidden=true;window.tmgHold=false};
+document.getElementById('helpBtn').onclick=()=>{h.hidden=false;window.tmgHold=true};
+document.getElementById('helpClose').onclick=shut;
+h.addEventListener('click',e=>{if(e.target===h)shut()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!h.hidden)shut()});})();
 </script>
 <script>
 document.documentElement.dataset.version='desktop v49';
@@ -1326,7 +1328,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <!-- /tmg-feedback -->
 <script src="/shared/adbox.js" defer></script>
 <script src="/shared/fitquote.js" defer></script>
-<script src="/shared/lmlang.js?v=2" defer></script>
+<script src="/shared/lmlang.js?v=3" defer></script>
 <script src="/shared/reach.js?v=5" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 </body>
