@@ -25,7 +25,12 @@ function lines(el){let tops=new Set();const w=document.createTreeWalker(el,NodeF
 function fitOne(el){glueEl(el);el.style.fontSize='';const base=parseFloat(getComputedStyle(el).fontSize);let fs=base;
   const bad=()=>lines(el)>2||el.scrollWidth>el.clientWidth+1;
   while(bad()&&fs>11){fs-=1;el.style.fontSize=fs+'px'}}
-let t=0;function run(){t=0;document.querySelectorAll(SEL).forEach(el=>{if(el.offsetParent)fitOne(el)})}
+// the game title in the bar above a round stays on one line beside ♫ and Quit (long titles such as "Lequel est le plus grand ?")
+function fitTitle(top){const h=top.querySelector('h1');if(!h)return;h.style.fontSize='';h.style.whiteSpace='nowrap';let fs=parseFloat(getComputedStyle(h).fontSize);
+  const over=()=>top.scrollWidth>top.clientWidth+1||h.scrollWidth>h.clientWidth+1;
+  const wraps=()=>{const r=top.querySelector('.row');return r&&r.getBoundingClientRect().top>h.getBoundingClientRect().bottom-4};
+  while((over()||wraps())&&fs>15){fs-=1;h.style.fontSize=fs+'px'}}
+let t=0;function run(){t=0;document.querySelectorAll(SEL).forEach(el=>{if(el.offsetParent)fitOne(el)});document.querySelectorAll('.play .top').forEach(fitTitle)}
 function soon(){if(!t)t=requestAnimationFrame(run)}
 new MutationObserver(m=>{if(m.some(x=>x.type==='childList'))soon()}).observe(document.body,{childList:true,subtree:true});
 addEventListener('resize',soon);if(document.fonts)document.fonts.ready.then(soon);soon();
