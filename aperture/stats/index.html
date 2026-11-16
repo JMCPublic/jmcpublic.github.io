@@ -418,7 +418,7 @@ const tr=d=>{const k=val(d.fields.kind),m=val(d.fields.message),w=val(d.fields.w
 const phr=w=>{const x=/^translation · (\w+) · (\w+) · phrase: (.*)$/.exec(w||'');return x?{lang:x[1],scr:x[2],ph:x[3]}:null};
 const val=f=>f==null?'':f.stringValue??f.timestampValue??f.integerValue??(f.mapValue?JSON.stringify(f.mapValue):'');
 const when=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Europe/London',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();
+async function load(u){lastLoad=Date.now();who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();
   body.innerHTML='<p class="msgnote">Loading messages…</p>';const tok=await u.getIdToken();
   const H={headers:{Authorization:'Bearer '+tok}};const base=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
   const get=async c=>{let out=[],pt='';do{const r=await fetch(base+c+'?pageSize=300'+(pt?'&pageToken='+pt:''),H);if(!r.ok)throw r.status;const j=await r.json();out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);return out};
@@ -431,10 +431,11 @@ async function load(u){who.innerHTML=`${esc(u.email)} · <button class="msglink"
   try{window.tmgMsgs=rows.map(r=>({t:r.t,k:r.kk}));dispatchEvent(new Event('tmg-msgs'))}catch(e){}
   const FIL=[['all','All'],['idea','💡 Ideas'],['like','👍 Likes'],['wrong','🐞 Problems'],['translation','🌐 Translations']];let fil='all';
   const draw=()=>{const vis=rows.map((r,i)=>[r,i]).filter(([r])=>fil==='all'||r.kk===fil);
-  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><div class="msgfil">${FIL.map(([k,l])=>{const n=k==='all'?rows.length:rows.filter(r=>r.kk===k).length;return `<button data-f="${k}" class="${k===fil?'on':''}">${l} ${n}</button>`}).join('')}</div>${vis.length?'':'<p class="msgnote">None of this kind yet.</p>'}<ul class="msgs">${vis.map(([r,i])=>`<li><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div>${r.ph?`<div class="ph">Phrase: ${esc(r.ph)}</div>`:''}<div class="t">${esc(r.m)}</div>${r.c?`<div class="c">${r.kk==='translation'?'From':'Reply to'}: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
+  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><div class="msgfil">${FIL.map(([k,l])=>{const n=k==='all'?rows.length:rows.filter(r=>r.kk===k).length;return `<button data-f="${k}" class="${k===fil?'on':''}">${l} ${n}</button>`}).join('')}</div>${vis.length?'':'<p class="msgnote">None of this kind yet.</p>'}<ul class="msgs">${vis.map(([r,i])=>`<li class="${+new Date(r.t)>(+(()=>{try{return localStorage.getItem('tmg-msg-seen')}catch(e){return 0}})()||0)?'isnew':''}"><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div>${r.ph?`<div class="ph">Phrase: ${esc(r.ph)}</div>`:''}<div class="t">${esc(r.m)}</div>${r.c?`<div class="c">${r.kk==='translation'?'From':'Reply to'}: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
   body.querySelectorAll('.msgfil button').forEach(b=>b.onclick=()=>{fil=b.dataset.f;draw()});
   body.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{const r=rows[b.dataset.i];if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to delete';setTimeout(()=>{b.dataset.arm='';b.textContent='Delete'},3000);return}
     const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok){rows.splice(+b.dataset.i,1);draw()}else b.textContent='Couldn’t delete'})};draw()}
+let lastLoad=0;document.addEventListener('visibilitychange',()=>{const u=auth.currentUser;if(document.visibilityState==='visible'&&u&&(u.email||'').toLowerCase()===OWNER&&Date.now()-lastLoad>60000){lastLoad=Date.now();load(u).catch(()=>{})}});
 auth.onAuthStateChanged(u=>{if(!u)return signIn();if((u.email||'').toLowerCase()!==OWNER){who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();body.innerHTML='<p class="msgnote">This Google account can’t read messages. Sign out and use the owner account.</p>';return}load(u).catch(e=>{body.innerHTML=`<p class="msgnote">Something went wrong loading messages (${esc(e)}).</p>`})});
 })();
 </script>
@@ -650,6 +651,19 @@ load();
 })();
 </script>
 <script src="/aperture/stats/helpers.js?v=6" defer></script>
+<script>
+// Messages button turns green when something has come in since you last opened the Messages tab (16 Nov)
+(()=>{const btn=document.querySelector('.rtabs button[data-t="msgs"]');if(!btn)return;
+const st=document.createElement('style');st.textContent='.rtabs button.msgnew{background:#1f8a4c!important;border-color:#1f8a4c!important;color:#fff!important}.rtabs button.msgnew i{font-style:normal;background:#fff;color:#1f8a4c;border-radius:999px;padding:0 7px;margin-left:6px;font-size:12px;font-weight:700}.msgs li.isnew{border-left:4px solid #1f8a4c;padding-left:10px}';document.head.appendChild(st);
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+let newest=0,seen=+ls('tmg-msg-seen')||0;
+function mark(){const list=window.tmgMsgs||[];newest=Math.max(0,...list.map(m=>+new Date(m.t)||0));if(!ls('tmg-msg-seen')){seen=newest;ls('tmg-msg-seen',String(seen));document.querySelectorAll('.msgs li.isnew').forEach(li=>li.classList.remove('isnew'))}
+  const n=list.filter(m=>+new Date(m.t)>seen).length;btn.classList.toggle('msgnew',n>0);btn.innerHTML=n?`Messages <i>${n} new</i>`:'Messages';}
+addEventListener('tmg-msgs',()=>setTimeout(mark,0));
+// opening the Messages tab counts as reading them; the new ones keep a green edge until you next come back
+btn.addEventListener('click',()=>{if(newest>seen){ls('tmg-msg-seen',String(newest));setTimeout(()=>{btn.classList.remove('msgnew');btn.innerHTML='Messages'},300);setTimeout(()=>{seen=newest},1500)}});
+})();
+</script>
 </body>
 
 </html>
