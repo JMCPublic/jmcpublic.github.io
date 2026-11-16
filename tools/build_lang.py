@@ -52,6 +52,7 @@ def build(game, lang, src, dst, av):
     # 2. links and page head
     L = lang
     rep = [('<html lang="en">', f'<html lang="{L}">'),
+           ('-en.webmanifest">', f'-{L}.webmanifest">'),
            (f"location.replace('{B}mobile/'", f"location.replace('{B}{L}/mobile/'"),
            (f'https://twominute.games{B}?desktop=1', f'https://twominute.games{B}{L}/?desktop=1'),
            (f'https://twominute.games{B}mobile/', f'https://twominute.games{B}{L}/mobile/'),
