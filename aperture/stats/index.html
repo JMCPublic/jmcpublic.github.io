@@ -135,6 +135,34 @@ td.share{width:34%;padding-left:12px}
 </style>
 </head>
 <body>
+<!-- Password on the whole stats page (16 Nov 2026). Only a scrambled code of the password is in this file (PBKDF2-SHA256, 150,000 rounds);
+     the password itself is never stored anywhere. Wrong tries: a phone alert via ntfy (country and time only, no IP) and a count on the Reach tab. -->
+<div id="gate" hidden><form id="gateF"><div class="go"><span class="o"></span>twominute<span>.games</span></div><h1>Stats</h1><p>Enter the password to see the stats.</p>
+<input id="gateP" type="password" autocomplete="current-password" aria-label="Password" required><button type="submit">Open</button><p id="gateM" class="m" aria-live="polite"></p></form></div>
+<style>html.gated body>*:not(#gate){display:none!important}#gate{position:fixed;inset:0;z-index:9999;background:#f1f3f7;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}#gate[hidden]{display:none}
+#gateF{width:100%;max-width:360px;background:#fff;border:1.5px solid #e3e6eb;border-radius:20px;padding:24px;box-shadow:0 20px 40px -24px rgba(0,0,0,.3)}#gateF .go{font-weight:800;font-size:18px;display:flex;align-items:center}#gateF .go .o{width:10px;height:10px;border:3px solid #2b50e0;border-radius:50%;margin-right:6px}#gateF .go span:last-child{color:#2b50e0}
+#gateF h1{margin:14px 0 4px;font-size:24px}#gateF p{margin:0 0 12px;color:#5b606b;font-size:14.5px}#gateF input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;border:1.5px solid #b9c0cb;border-radius:12px;padding:11px 12px}
+#gateF button{margin-top:12px;width:100%;border:0;border-radius:999px;background:#16181d;color:#fff;font:600 15px system-ui;padding:12px;cursor:pointer}#gateF .m{margin:10px 0 0;color:#b3261e;min-height:1.2em}</style>
+<script>
+(()=>{const HASH='';if(!HASH)return; /* until a code is set, the page stays open as before */
+const R=document.documentElement,ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+if(ls('tmg-stats-ok')===HASH)return;
+R.classList.add('gated');const g=document.getElementById('gate');g.hidden=false;setTimeout(()=>document.getElementById('gateP').focus(),50);
+async function code(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('tmg-stats-2026'),iterations:150000},k,256);
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+let fails=0;
+async function report(){try{const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+  fetch(`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/reach`,fieldTransforms:[{fieldPath:'rate.gate_fail',increment:{integerValue:'1'}}]}}]})}).catch(()=>{});
+  const last=+ls('tmg-gate-alert')||0;if(Date.now()-last<60000)return;ls('tmg-gate-alert',String(Date.now()));
+  let cc='';try{const j=await fetch('/shared/tz.json').then(r=>r.json());cc=j[Intl.DateTimeFormat().resolvedOptions().timeZone]||''}catch(e){}
+  let where=cc;try{where=cc?new Intl.DisplayNames(['en'],{type:'region'}).of(cc):'unknown country'}catch(e){}
+  const dev=/Mobi|Android|iPhone/i.test(navigator.userAgent)?'phone':'computer';
+  fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:'tmg-pnz2n1a4wqw9',title:'🔒 Wrong stats password',message:`Someone in ${where} (${dev}) typed a wrong password on the stats page`+(fails>1?` · ${fails} tries`:''),tags:['lock'],click:'https://twominute.games/aperture/stats/'})}).catch(()=>{})}catch(e){}}
+document.getElementById('gateF').onsubmit=async e=>{e.preventDefault();const i=document.getElementById('gateP'),m=document.getElementById('gateM');m.textContent='Checking…';
+  const c=await code(i.value);if(c===HASH){ls('tmg-stats-ok',HASH);R.classList.remove('gated');g.remove();dispatchEvent(new Event('resize'));return}
+  fails++;i.value='';m.textContent='That’s not right. Please try again.';report()}})();
+</script>
 <div class="wrap">
   <header>
     <div>
@@ -451,7 +479,7 @@ function drawRate(){const el=document.getElementById('rcRate');if(!el)return;con
   const NM={rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',bodies_of_water:'Bodies of Water',river_cities:'River Cities',masterbrain:'Masterbrain',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?'};
   const rows=Object.entries(g).map(([k,r])=>[k,r,r.tough+r.easy+r.right]).sort((a,b)=>b[2]-a[2]);const pc=(a,t)=>t?Math.round(100*a/t)+'%':'–';
   el.innerHTML=`<div class="h2row"><h2>Goldilocks: how was that?</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 15 Nov 2026. Asked on the Natural Wonders results card, once per game per player per day. Lots of "too tough" or "too easy" means the levels need adjusting.</p>
-  ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Answers</th><th class="n">Too tough</th><th class="n">Just right</th><th class="n">Too easy</th></tr>${rows.map(([k,r,t])=>`<tr><td>${esc(NM[k]||k)}</td><td class="n">${t}</td><td class="n">${r.tough} (${pc(r.tough,t)})</td><td class="n">${r.right} (${pc(r.right,t)})</td><td class="n">${r.easy} (${pc(r.easy,t)})</td></tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet.</p>'}<p class="msgnote">Home-screen tip (from 15 Nov): shown ${num(R.a2hs_shown)} · Show me how ${num(R.a2hs_how)} · Not now ${num(R.a2hs_no)}</p>`}
+  ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Answers</th><th class="n">Too tough</th><th class="n">Just right</th><th class="n">Too easy</th></tr>${rows.map(([k,r,t])=>`<tr><td>${esc(NM[k]||k)}</td><td class="n">${t}</td><td class="n">${r.tough} (${pc(r.tough,t)})</td><td class="n">${r.right} (${pc(r.right,t)})</td><td class="n">${r.easy} (${pc(r.easy,t)})</td></tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet.</p>'}<p class="msgnote">Home-screen tip (from 15 Nov): shown ${num(R.a2hs_shown)} · Show me how ${num(R.a2hs_how)} · Not now ${num(R.a2hs_no)}</p><p class="msgnote">🔒 Wrong stats passwords (from 16 Nov): ${num(R.gate_fail)}</p>`}
 function drawLang(){const el=document.getElementById('rcLang');const ALL=map(cur().langs);
   const table=(L,game)=>{const rows=Object.entries(L).map(([k,v])=>{const f=map(v),vis=num(f.visits),fin=num(f.finished);
     const via=['link','offer','switch'].map(x=>[x,num(f['via_'+x])]).filter(x=>x[1]);
