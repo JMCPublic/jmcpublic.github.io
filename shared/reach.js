@@ -49,9 +49,16 @@ async function commit(id,fields){if(!LIVE||VIP||/\bClaude\//.test(navigator.user
   body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
 const bump=async f=>{await Promise.all([commit('reach',f),MONTH>='2026-11'?commit('reach-'+MONTH,f):null])}; // both at once
 const R=fkey(src.root);
+/* the site that sent a new visitor (16 Nov): only the site's name (google, facebook, a news site), from the browser's referrer; nothing about the person */
+const REFN=(()=>{try{const r=document.referrer||'';if(!r)return 'direct';if(/^android-app:\/\/com\.google\.android\.gm/.test(r))return 'gmail';
+  const h=new URL(r).hostname.toLowerCase().replace(/^(www|m|l|lm|mobile|out)\./,'');if(/(^|\.)twominute\.games$|github\.io$/.test(h))return null;
+  const M=[[/(^|\.)google\./,'google'],[/bing\.com$/,'bing'],[/duckduckgo/,'duckduckgo'],[/yahoo\./,'yahoo'],[/ecosia/,'ecosia'],[/facebook\.com$|^fb\.com$|messenger\.com$/,'facebook'],[/instagram\.com$/,'instagram'],[/linkedin\.com$|^lnkd\.in$/,'linkedin'],[/^t\.co$|twitter\.com$|^x\.com$/,'x'],[/reddit\.com$/,'reddit'],[/youtube\.com$|^youtu\.be$/,'youtube'],[/whatsapp/,'whatsapp'],[/tiktok\.com$/,'tiktok'],[/outlook\.|live\.com$/,'outlook'],[/mail\.google/,'gmail']];
+  for(const [re,n] of M)if(re.test(h))return n;return h.replace(/[^a-z0-9]+/g,'_').slice(0,40)}catch(e){return 'direct'}})();
+if(isNew&&REFN)ls('tmg-ref',REFN);
+const REF=ls('tmg-ref')||'';const fromTxt=REF&&REF!=='direct'?' · from '+REF.replace(/_/g,'.'):'';
 const onceToday=k=>{if(ls(k)===DAY)return false;ls(k,DAY);return true};
 ccReady.then(cc=>{const f={};
-  if(onceToday('tmg-rv')){f[`src.${R}.visits`]=1;if(isNew)f[`src.${R}.uniques`]=1;
+  if(onceToday('tmg-rv')){f[`src.${R}.visits`]=1;if(isNew){f[`src.${R}.uniques`]=1;if(REFN)f[`src.${R}.ref_${REFN}`]=1}
     if(!isNew&&src.day!==DAY&&ls('tmg-back')!=='1'){ls('tmg-back','1');f[`src.${R}.back`]=1}
     if(isNew&&src.root==='walkin'&&cc)f['walkc.'+cc]=1}
   if(/^\/(aperture|natural-wonders-|duggen)/.test(location.pathname)&&ls('tmg-rplayed')!=='1'){ls('tmg-rplayed','1');f[`src.${R}.played`]=1}
@@ -138,12 +145,12 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
  const lang=(document.documentElement.lang||'en').slice(0,2);
  const ping=()=>{const k='tmg-ping-'+GAME;if(ls(k))return;ls(k,'1');
    if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return;
-   ccReady.then(cc=>{const via=src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':'');
+   ccReady.then(cc=>{const via=(src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':''))+fromTxt;
      const where=cc?flag(cc)+' '+cname(cc).replace(/^the /,''):'🌍 Unknown country';
      fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:TOPIC,title:'🎮 New player · '+(NAMES[GAME]||GAME)+(lang!=='en'?' ('+lang.toUpperCase()+')':''),message:where+' · '+via,click:'https://twominute.games/aperture/stats/',tags:['video_game']})}).catch(()=>{})})};
  /* a quieter 'visitor' alert: the first time a new device opens any twominute.games page */
  if(isNew&&LIVE&&!VIP&&!/\bClaude\//.test(navigator.userAgent)&&!ls('tmg-visit-ping')){ls('tmg-visit-ping','1');
-   ccReady.then(cc=>{const via=src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':'');
+   ccReady.then(cc=>{const via=(src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':''))+fromTxt;
      const where=cc?flag(cc)+' '+cname(cc).replace(/^the /,''):'🌍 Unknown country';
      const page=GAME?(NAMES[GAME]||GAME):(/^\/(index\.html)?$/.test(P2)?'home page':P2.replace(/\/$/,'').split('/').pop()||'home page');
      fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:TOPIC,title:'👀 Visitor · '+where.replace(/^\S+ /,''),message:where+' · '+via+' · opened '+page,priority:2,click:'https://twominute.games/aperture/stats/',tags:['eyes']})}).catch(()=>{})})}
