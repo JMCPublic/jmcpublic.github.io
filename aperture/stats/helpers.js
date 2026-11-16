@@ -1,11 +1,11 @@
 /* Contacts tab (collection 'contacts'): your contacts by country, with their local time against the UK.
-   Private: only the owner's Google account can read or add (Firestore collection 'contacts', rules v11). */
+   Private: only the owner's Google account can read, add, edit (16 Nov) or remove (Firestore collection 'contacts', rules v11). */
 (()=>{const OWNER='mybetterbrain109@gmail.com',P='aperture-c0961';
 const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/contacts`;
 const card=document.getElementById('hpCard');if(!card)return;
 const $=s=>card.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let WM=null,PL=null,H=[],user=null,tok='';
+let WM=null,PL=null,H=[],user=null,tok='',editId=null;
 // continent windows: /aperture/stats/?contacts=Europe opens just that part of the map, big
 const ZB={'Europe':[435,39,182,113],'Africa':[445,143,207,232],'Asia':[559,88,354,207],'North America':[33,31,368,207],'South America':[266,219,153,222],'Oceania':[769,262,227,152]};
 const Z=new URLSearchParams(location.search).get('contacts'),ZOOM=Z&&ZB[Z]?ZB[Z]:null;
@@ -38,7 +38,8 @@ const css=document.createElement('style');css.textContent=`
 #hpCard .hprow{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:12px;flex-wrap:wrap}#hpCard .hprow .msg{margin-right:auto;font-size:12px;color:var(--soft)}
 #hpCard .hppop button,#hpCard .hpdel{font:inherit;font-size:14px;border-radius:999px;padding:7px 14px;border:1.5px solid var(--frame);background:#fff;cursor:pointer;color:var(--ink)}#hpCard .hppop button.go{background:var(--ink);color:#fff;border-color:var(--ink)}
 #hpCard .hppop .x{position:absolute;top:8px;right:10px;border:0;font-size:20px;padding:2px 6px;color:var(--soft)}
-#hpCard .hpdel{font-size:12px;padding:3px 10px}
+#hpCard .hpdel{font-size:12px;padding:3px 10px}#hpCard .hpedit{margin-right:6px}#hpCard .hpdel.go{background:var(--ink);color:#fff;border-color:var(--ink)}
+#hpCard tr.hped input,#hpCard tr.hped select{font:inherit;font-size:14px;border:1.5px solid var(--frame);border-radius:8px;padding:5px 7px;box-sizing:border-box;width:100%;min-width:90px;background:#fff}#hpCard tr.hped select+select{margin-top:4px}#hpCard tr.hped .acts,#hpCard tr.hped td.n{white-space:nowrap}#hpCard .hpemsg{font-size:12px;color:var(--soft);margin-left:6px}
 #hpCard .hpzoom{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}#hpCard .hpzoom>span{font-size:12px;color:var(--soft);margin-right:2px}
 #hpCard .hpzoom button,#hpCard .hpzh button{font:inherit;font-size:13px;border:1.5px solid var(--frame);background:#fff;color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}#hpCard .hpzoom button:hover{border-color:var(--blue);color:var(--blue)}#hpCard .hpzoom svg{width:12px;height:12px;display:inline}
 #hpCard .hpzh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}#hpCard .hpzh h2{margin:0;font-size:20px}
@@ -58,6 +59,7 @@ const val=f=>f?(f.stringValue??f.timestampValue??''):'';
 async function load(){let out=[],pt='';do{const j=await api('?pageSize=300'+(pt?'&pageToken='+pt:''));out=out.concat(j.documents||[]);pt=j.nextPageToken||''}while(pt);
   H=out.map(d=>({id:d.name.split('/').pop(),n:val(d.fields.name),k:val(d.fields.contact),c:val(d.fields.country),city:val(d.fields.city),at:val(d.fields.at)||d.createTime})).sort((a,b)=>a.n.localeCompare(b.n))}
 async function add(h){const s=x=>({stringValue:String(x)});const j=await api('',{method:'POST',body:JSON.stringify({fields:{name:s(h.n),contact:s(h.k),country:s(h.c),city:s(h.city||''),at:{timestampValue:new Date().toISOString()}}})});h.id=j.name.split('/').pop();H.push(h);H.sort((a,b)=>a.n.localeCompare(b.n))}
+async function upd(h,f){const x=v=>({stringValue:String(v||'')});await api('/'+h.id+'?updateMask.fieldPaths=name&updateMask.fieldPaths=contact&updateMask.fieldPaths=country&updateMask.fieldPaths=city',{method:'PATCH',body:JSON.stringify({fields:{name:x(f.n),contact:x(f.k),country:x(f.c),city:x(f.city)}})});Object.assign(h,f);H.sort((a,b)=>a.n.localeCompare(b.n))}
 async function del(id){await api('/'+id,{method:'DELETE'});H=H.filter(h=>h.id!==id)}
 
 function draw(){if(!WM||!PL)return;const a3={};Object.entries(WM.a2).forEach(([k,v])=>a3[v]=k);
@@ -80,10 +82,23 @@ function draw(){if(!WM||!PL)return;const a3={};Object.entries(WM.a2).forEach(([k
   const zones=new Set(H.map(h=>{const p=place(h.c,h.city);return p?off(p.tz):0}));
   $('#hpTiles').innerHTML=`<div class="tile"><span>Contacts</span><b>${H.length}</b></div><div class="tile"><span>Countries</span><b>${hc.size}</b></div><div class="tile"><span>Time zones</span><b>${zones.size}</b></div>`;
   $('#hpList').innerHTML=H.length?`<table class="rt"><tr><th>Name</th><th>Where</th><th>Contact</th><th class="n">Their time</th><th class="n">vs UK</th><th></th></tr>${H.map(h=>{const p=place(h.c,h.city)||{tz:'UTC',cn:h.c,city:''};
-    return `<tr><td>${esc(h.n)}</td><td>${esc(p.cn)}${h.city?' · '+esc(h.city):''}</td><td>${esc(h.k||'–')}</td><td class="n">${tstr(p.tz)}</td><td class="n">${offs(off(p.tz))}</td><td><button class="hpdel" data-id="${h.id}" aria-label="Remove ${esc(h.n)}">Remove</button></td></tr>`}).join('')}</table>`
+    if(h.id===editId){const cs=Object.entries(PL.caps).map(([c,v])=>[c,v[3]]).sort((a,b)=>a[1].localeCompare(b[1]));
+      return `<tr class="hped" data-id="${h.id}"><td><input class="en" maxlength="80" value="${esc(h.n)}" aria-label="Name"></td><td><select class="ec" aria-label="Country">${cs.map(([c,n])=>`<option value="${c}"${c===h.c?' selected':''}>${esc(n)}</option>`).join('')}</select>${citySel(h.c,h.city)}</td><td><input class="ek" maxlength="150" value="${esc(h.k)}" aria-label="Email or social media"></td><td class="n">${tstr(p.tz)}</td><td class="n">${offs(off(p.tz))}</td><td class="acts"><button class="hpdel go hpsave">Save</button> <button class="hpdel hpcancel">Cancel</button><span class="hpemsg" aria-live="polite"></span></td></tr>`}
+    return `<tr><td>${esc(h.n)}</td><td>${esc(p.cn)}${h.city?' · '+esc(h.city):''}</td><td>${esc(h.k||'–')}</td><td class="n">${tstr(p.tz)}</td><td class="n">${offs(off(p.tz))}</td><td class="acts"><button class="hpdel hpedit" data-eid="${h.id}" aria-label="Edit ${esc(h.n)}">Edit</button><button class="hpdel" data-id="${h.id}" aria-label="Remove ${esc(h.n)}">Remove</button></td></tr>`}).join('')}</table>`
     :'<p class="msgnote">No contacts yet. Click a country on the map to add the first one.</p>';
-  $('#hpList').querySelectorAll('.hpdel').forEach(b=>b.onclick=async()=>{const h=H.find(x=>x.id===b.dataset.id);if(!h||!confirmDel(b,h))return;try{await del(h.id);if(bc)bc.postMessage('changed');draw()}catch(e){b.textContent='Failed'}});
+  $('#hpList').querySelectorAll('.hpedit').forEach(b=>b.onclick=()=>{editId=b.dataset.eid;draw();const i=$('#hpList .en');if(i)i.focus()});
+  const er=$('#hpList tr.hped');if(er){const h=H.find(x=>x.id===er.dataset.id);
+    er.querySelector('.ec').onchange=ev=>{const old=er.querySelector('.ecity');if(old)old.remove();ev.target.insertAdjacentHTML('afterend',citySel(ev.target.value,''))};
+    const saveE=async()=>{const m=er.querySelector('.hpemsg'),n=er.querySelector('.en').value.trim();if(!n){er.querySelector('.en').focus();return}
+      const cy=er.querySelector('.ecity');er.querySelectorAll('button').forEach(b=>b.disabled=true);m.textContent='Saving…';
+      try{await upd(h,{n,k:er.querySelector('.ek').value.trim(),c:er.querySelector('.ec').value,city:cy?cy.value:''});editId=null;if(bc)bc.postMessage('changed');draw()}
+      catch(e){m.textContent=`Couldn’t save (error ${e}).`;er.querySelectorAll('button').forEach(b=>b.disabled=false)}};
+    er.querySelector('.hpsave').onclick=saveE;er.querySelector('.hpcancel').onclick=()=>{editId=null;draw()};
+    er.querySelectorAll('input').forEach(i=>i.onkeydown=ev=>{if(ev.key==='Enter')saveE();if(ev.key==='Escape'){editId=null;draw()}})}
+  $('#hpList').querySelectorAll('.hpdel[data-id]').forEach(b=>b.onclick=async()=>{const h=H.find(x=>x.id===b.dataset.id);if(!h||!confirmDel(b,h))return;try{await del(h.id);if(bc)bc.postMessage('changed');draw()}catch(e){b.textContent='Failed'}});
   $('#hpUk').textContent=tstr('Europe/London')}
+// city choice for countries with more than one time zone (blank = the capital's time)
+function citySel(c,cur){const cs=PL.cities.filter(k=>k[0]===c);if(!cs.length)return '';return `<select class="ecity" aria-label="City"><option value="">${esc(PL.caps[c]?PL.caps[c][2]:'Capital')} (capital)</option>${cs.map(k=>`<option${k[1]===cur?' selected':''}>${esc(k[1])}</option>`).join('')}</select>`}
 // two taps to remove, no browser dialog
 function confirmDel(b,h){if(b.dataset.sure)return true;b.dataset.sure='1';b.textContent='Sure?';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='Remove'}},3000);return false}
 
