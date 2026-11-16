@@ -147,7 +147,7 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
    if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return;
    ccReady.then(cc=>{const via=(src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':''))+fromTxt;
      const where=cc?flag(cc)+' '+cname(cc).replace(/^the /,''):'🌍 Unknown country';
-     fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:TOPIC,title:'🎮 New player · '+(NAMES[GAME]||GAME)+(lang!=='en'?' ('+lang.toUpperCase()+')':''),message:where+' · '+via,click:'https://twominute.games/aperture/stats/',tags:['video_game']})}).catch(()=>{})})};
+     fetch('https://ntfy.sh/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic:TOPIC,title:'🎮 New player · '+(NAMES[GAME]||GAME)+(lang!=='en'?' ('+lang.toUpperCase()+')':''),message:where+' · '+via,priority:4,click:'https://twominute.games/aperture/stats/',tags:['video_game']})}).catch(()=>{})})};
  /* a quieter 'visitor' alert: the first time a new device opens any twominute.games page */
  if(isNew&&LIVE&&!VIP&&!/\bClaude\//.test(navigator.userAgent)&&!ls('tmg-visit-ping')){ls('tmg-visit-ping','1');
    ccReady.then(cc=>{const via=(src.root==='walkin'?'walk-in':src.root==='li'?'LinkedIn':src.root==='fb'?'Facebook':'via ?from='+src.root+(src.step>1?' (passed on '+(src.step-1)+'×)':''))+fromTxt;
