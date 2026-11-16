@@ -182,7 +182,8 @@ T = [
  '>💡 Dica<small class="cluesub">(Toca para uma dica)</small>',
  '<h2>Dicas</h2>',
  '<b>Uma dica acrescenta 15 segundos</b>',
- '💡 Dicas · +15 s cada'
+ '💡 Dicas · +15 s cada',
+ '<button class="go" id="startBtn">Começar</button>'
 ]
 UI = list(zip(_K, T))
 

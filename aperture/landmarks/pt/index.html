@@ -976,7 +976,7 @@ function newRound(){
   feedback('');tick('Toque em Começar quando estiver pronto.');
   const n=obj.answer.length;
   overlay.hidden=false;
-  overlay.innerHTML=`<span class="label">Rodada ${G.round+1} de ${ROUNDS} · ${n} palavra${n>1?'s':''}${window.tmgSpot?tmgSpot.badge(G):''}</span><h3>Onde fica no mundo?</h3><button class="go" id="startBtn">Start</button>`;
+  overlay.innerHTML=`<span class="label">Rodada ${G.round+1} de ${ROUNDS} · ${n} palavra${n>1?'s':''}${window.tmgSpot?tmgSpot.badge(G):''}</span><h3>Onde fica no mundo?</h3><button class="go" id="startBtn">Começar</button>`;
   $('startBtn').onclick=startRound;
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');

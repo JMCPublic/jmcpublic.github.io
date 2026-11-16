@@ -1029,7 +1029,7 @@ function newRound(){
   feedback('');tick('Appuie sur Démarrer quand tu es prêt.');
   const n=obj.answer.length;
   overlay.hidden=false;
-  overlay.innerHTML=`<span class="label">Manche ${G.round+1} sur ${ROUNDS} · ${n} mot${n>1?'s':''}</span><h3>Que vois-tu ?</h3><button class="go" id="startBtn">Start</button>`;
+  overlay.innerHTML=`<span class="label">Manche ${G.round+1} sur ${ROUNDS} · ${n} mot${n>1?'s':''}</span><h3>Que vois-tu ?</h3><button class="go" id="startBtn">Démarrer</button>`;
   $('startBtn').onclick=startRound;
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');

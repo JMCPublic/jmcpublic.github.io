@@ -182,7 +182,8 @@ T = [
  '>💡 Pista<small class="cluesub">(Pulsa para una pista)</small>',
  '<h2>Pistas</h2>',
  '<b>Una pista añade 15 segundos</b>',
- '💡 Pistas · +15 s cada una'
+ '💡 Pistas · +15 s cada una',
+ '<button class="go" id="startBtn">Empezar</button>'
 ]
 UI = list(zip(_K, T))
 

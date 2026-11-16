@@ -1029,7 +1029,7 @@ function newRound(){
   feedback('');tick('Pulsa Empezar cuando estés listo.');
   const n=obj.answer.length;
   overlay.hidden=false;
-  overlay.innerHTML=`<span class="label">Ronda ${G.round+1} de ${ROUNDS} · ${n} palabra${n>1?'s':''}</span><h3>¿Qué ves?</h3><button class="go" id="startBtn">Start</button>`;
+  overlay.innerHTML=`<span class="label">Ronda ${G.round+1} de ${ROUNDS} · ${n} palabra${n>1?'s':''}</span><h3>¿Qué ves?</h3><button class="go" id="startBtn">Empezar</button>`;
   $('startBtn').onclick=startRound;
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');

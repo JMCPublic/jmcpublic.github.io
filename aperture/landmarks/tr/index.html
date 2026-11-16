@@ -976,7 +976,7 @@ function newRound(){
   feedback('');tick('Hazır olunca Başla’ya bas.');
   const n=obj.answer.length;
   overlay.hidden=false;
-  overlay.innerHTML=`<span class="label">Tur ${G.round+1} / ${ROUNDS} · ${n} kelime${window.tmgSpot?tmgSpot.badge(G):''}</span><h3>Dünyanın neresi?</h3><button class="go" id="startBtn">Start</button>`;
+  overlay.innerHTML=`<span class="label">Tur ${G.round+1} / ${ROUNDS} · ${n} kelime${window.tmgSpot?tmgSpot.badge(G):''}</span><h3>Dünyanın neresi?</h3><button class="go" id="startBtn">Başla</button>`;
   $('startBtn').onclick=startRound;
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');

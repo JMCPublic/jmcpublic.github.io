@@ -182,7 +182,8 @@ T = [
  '>💡 Indice<small class="cluesub">(Appuie pour un indice)</small>',
  '<h2>Indices</h2>',
  '<b>Un indice ajoute 15 secondes</b>',
- '💡 Indices · +15 s chacun'
+ '💡 Indices · +15 s chacun',
+ '<button class="go" id="startBtn">Démarrer</button>'
 ]
 UI = list(zip(_K, T))
 

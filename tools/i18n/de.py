@@ -665,3 +665,6 @@ UI += [('>💡 Clue<small class="cluesub">(Press for a clue)</small>', '>💡 Ti
  ('<h2>Clues</h2>', '<h2>Tipps</h2>'),
  ('<b>A clue adds 15 seconds</b>', '<b>Ein Tipp kostet 15 Sekunden</b>'),
  ('💡 Clues · each adds 15 s', '💡 Tipps · jeweils +15 s')]
+
+# Start button on each round (16 Nov, reported by Adam): was left in English
+UI += [('<button class="go" id="startBtn">Start</button>', '<button class="go" id="startBtn">Start</button>')]

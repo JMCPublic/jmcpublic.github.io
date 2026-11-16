@@ -182,7 +182,8 @@ T = [
  '>💡 İpucu<small class="cluesub">(İpucu için dokun)</small>',
  '<h2>İpuçları</h2>',
  '<b>Her ipucu 15 saniye ekler</b>',
- '💡 İpuçları · her biri +15 sn'
+ '💡 İpuçları · her biri +15 sn',
+ '<button class="go" id="startBtn">Başla</button>'
 ]
 UI = list(zip(_K, T))
 
