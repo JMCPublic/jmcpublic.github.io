@@ -3,7 +3,7 @@
 (()=>{if(window.tmgAd||window.top!==window)return;
 const ADS={client:'ca-pub-9558088049243609',slotWide:'',slotPhone:''};   // slotWide: 728x90 unit, slotPhone: 320x100 unit
 const d=document,root=d.documentElement,path=location.pathname;
-const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path),isHome=path==='/';
+const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path),isHome=path==='/'||/^\/wonders\/?$/.test(path);
 const css=`
 #tmgAd{box-sizing:border-box;font-family:inherit;color:var(--ink,#16181d)}
 #tmgAd .tmgad-in{display:flex;align-items:center;justify-content:center;gap:12px;background:var(--sheet,var(--card,#fff));border:1.5px solid var(--frame,var(--line,#b9c0cb));border-radius:22px;padding:14px 16px;box-sizing:border-box}
@@ -67,7 +67,7 @@ const WIB={DE:['Probier Wo ist es größer?','Zwei Länder nebeneinander, maßst
  PT:['Experimente Qual é maior?','Dois países lado a lado, em escala real. Você nunca mais vai ver um mapa-múndi do mesmo jeito.','Jogar →']};
 if(isAp){const lg=(d.documentElement.lang||'').toUpperCase(),w=WIB[lg];if(w){const c={href:'/natural-wonders-where-is-bigger/'+lg.toLowerCase()+'/',b:w[0],pb:w[0],s:w[1],i:w[2]};
   if(lg==='DE')CROSS_DE=c;if(lg==='TR')CROSS_TR=c;if(lg==='FR')CROSS_FR=c;if(lg==='ES')CROSS_ES=c;if(lg==='PT')CROSS_PT=c}}
-function house(wide){const h=(!isHome&&Math.random()<.5)?(DE?KOFI_DE:TR?KOFI_TR:FR?KOFI_FR:ES?KOFI_ES:PT?KOFI_PT:KOFI):(DE?CROSS_DE:TR?CROSS_TR:FR?CROSS_FR:ES?CROSS_ES:PT?CROSS_PT:CROSS);const ext=/^https?:/.test(h.href);
+function house(wide){const h=(isHome||Math.random()<.5)?(DE?KOFI_DE:TR?KOFI_TR:FR?KOFI_FR:ES?KOFI_ES:PT?KOFI_PT:KOFI):(DE?CROSS_DE:TR?CROSS_TR:FR?CROSS_FR:ES?CROSS_ES:PT?CROSS_PT:CROSS);const ext=/^https?:/.test(h.href);
   return `<a class="tmgad-house" href="${h.href}"${ext?' target="_blank" rel="noopener"':''}><div><b>${wide?h.b:h.pb}</b><span>${h.s}</span></div><i>${h.i}</i></a>`}
 function fill(slot,wide){const id=wide?ADS.slotWide:ADS.slotPhone;
   if(!id){slot.innerHTML=house(wide);return}
@@ -89,7 +89,7 @@ function build(){
   else{d.body.appendChild(box);root.classList.add('tmgad-on')}
   fill(box.querySelector('.tmgad-slot'),wide);sync();if(mode==='flow')setTimeout(()=>dispatchEvent(new Event('resize')),60)}
 // the game's own panel on phones, so the ad box can share its edges
-const REF=['main.games','.viewer','.play .panel','.panel','.menuhead','main .card','.card'];
+const REF=['main.games','main#grid','.viewer','.play .panel','.panel','.menuhead','main .card','.card'];
 function line(){if(wide&&!isHome){box.classList.remove('lined');return}let ref=null;
   for(const q of REF){ref=[...d.querySelectorAll(q)].find(e=>e.offsetParent&&!box.contains(e)&&e.getBoundingClientRect().width>200);if(ref)break}
   if(!ref){box.classList.remove('lined');return}const g=ref.getBoundingClientRect(),b=box.getBoundingClientRect();
