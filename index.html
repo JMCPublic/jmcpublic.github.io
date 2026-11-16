@@ -6,7 +6,7 @@
      crossorigin="anonymous"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Two Minute Games · daily puzzles in two minutes</title>
-<meta name="description" content="Quick daily games: spot the everyday object, find the landmark, rank the world's natural wonders, and guide Duggen the kangaroo through the outback maze.">
+<meta name="description" content="Quick daily games: spot the everyday object, find the landmark, and rank the world's natural wonders. Two minutes a day, free, no sign-up.">
 <link rel="canonical" href="https://twominute.games/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Two Minute Games">
@@ -15,147 +15,168 @@
 <meta property="og:url" content="https://twominute.games/">
 <meta property="og:image" content="https://twominute.games/og-v2.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#f1f3f7">
+<meta name="theme-color" content="#212121">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
-/* Home page for twominute.games: the brand, today's date, one card per game family. Same light look as Aperture. */
-:root{
-  --bg:#f1f3f7; --sheet:#ffffff; --line:#e3e6eb; --frame:#b9c0cb; --edge:#7d8592;
-  --ink:#16181d; --soft:#5b606b; --faint:#9aa0ab; --blue:#2b50e0; --blue-wash:#e6edff;
-  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
-  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
-  color-scheme:light;
-}
+/* Home page v2 (design A3, approved 16 Nov 2026): the Firebase look. Deep charcoal, one big orange-to-red glow,
+   a bold white headline, one grey line, the games as dark cards with orange-outline Play pills,
+   and the ad framed in white on its own glow at the foot of the screen, lined up with the cards.
+   The greeting pill carries the language chooser (six languages, chosen once, remembered by every game). */
+:root{--bg:#212121;--card:#2b2b2b;--cardline:#3a3a3a;--ink:#fff;--soft:#9AA0A6;--faint:#80868b;--hot:#FF9100;--deep:#DD2C00;--blue:#217BFE;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--ink)}
-body{margin:0;font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
-  padding:max(28px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(36px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
-a{color:inherit}
-.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
-header{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding-top:12px}
-.brand{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,44px);letter-spacing:-.035em;margin:0;line-height:1;display:flex;align-items:center}
-.brand .o{display:inline-block;width:.6em;height:.6em;border:.14em solid var(--blue);border-radius:50%;margin-right:.3em}
-.brand .tld{color:var(--blue);font-weight:500}
-.tag{margin:0;color:var(--soft);font-size:16px;max-width:36ch}
-.today{color:var(--blue)}
-.today b{font-family:var(--mono);font-weight:500;letter-spacing:0;text-transform:none;font-size:12.5px;margin-left:6px}
-.games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:900px;margin-left:auto;margin-right:auto}
-@media (max-width:1060px){.games{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.chip{display:inline-block;align-self:flex-start;font-size:11.5px;font-weight:500;color:#8a4b12;background:#fbe9dc;border:1px solid #f0c9a8;border-radius:999px;padding:2px 9px}
-@media (max-width:480px){.chip{grid-column:2}}
-.game{position:relative;display:flex;flex-direction:column;gap:12px;background:var(--sheet);border:1.5px solid var(--frame);border-radius:22px;padding:18px 18px 18px;text-decoration:none;
-  box-shadow:0 1px 2px rgba(22,24,29,.04),0 18px 36px -24px rgba(22,24,29,.25);transition:transform .15s,border-color .15s}
-.game:hover,.game:focus-visible{border-color:var(--blue);transform:translateY(-2px);outline:none}
-.pic{aspect-ratio:16/10;border-radius:14px;overflow:hidden;position:relative;background:#e9ecf1}
-.pic svg{width:100%;height:100%;display:block}
-.game h2{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;margin:0;line-height:1.1}
-.game h2 small{font-family:var(--mono);font-weight:400;font-size:12px;color:var(--blue);margin-left:4px;vertical-align:super}
-.game p{margin:0;color:var(--soft);font-size:14px;line-height:1.45;flex:1}
-.foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.play{background:var(--ink);color:#fff;border-radius:999px;padding:8px 18px;font-weight:500;font-size:14px}
-.game:hover .play{background:var(--blue)}
-.status{font-size:12.5px;color:var(--soft);white-space:nowrap}
-.status.done{color:#1f8a4c}
-footer{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--faint);font-size:13px;text-align:center}
-footer a{color:var(--soft);text-decoration:none}footer a:hover{color:var(--blue)}
-@media (max-width:860px){.games{grid-template-columns:minmax(0,1fr);max-width:520px;margin:0 auto;width:100%}}
-@media (max-width:480px){
-  .game{display:grid;grid-template-columns:96px minmax(0,1fr);column-gap:14px;row-gap:6px;padding:12px;border-radius:18px}
-  .pic{grid-row:1/4;aspect-ratio:1;border-radius:12px;align-self:start}
-  .game h2{font-size:18px}.game p{font-size:13.5px}
-  .play{padding:6px 14px;font-size:13px}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.bg{position:absolute;left:0;right:0;top:0;height:720px;overflow:hidden;pointer-events:none}
+.glow{position:absolute;pointer-events:none;width:min(1100px,150vw);height:620px;left:-14vw;top:-330px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.85;filter:blur(30px)}
+.wrap{position:relative;max-width:1100px;margin:0 auto;padding:max(26px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) 28px max(22px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0;display:flex;align-items:center;line-height:1}
+.brand .o{width:12px;height:12px;border-radius:50%;border:3.5px solid #fff;margin-right:7px;flex:none}.brand .tld{color:#ffd2b0}
+h1{font-weight:800;font-size:44px;line-height:1.02;letter-spacing:-.03em;margin:44px 0 10px}
+h1 .br{display:block}
+.sub{color:#e7e2dd;font-size:15px;margin:0}
+/* greeting pill + language chooser */
+.pillw{position:relative;margin:22px 0 18px}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#e8eaed;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 4px 4px 12px;background:rgba(0,0,0,.3);max-width:100%}
+.pill .hi{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.lg{flex:none;display:inline-flex;align-items:center;gap:4px;background:#fff;color:#212121;border:0;border-radius:999px;padding:6px 11px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer}
+.lg::after{content:"";border:4px solid transparent;border-top:5px solid currentColor;border-bottom:0;margin-top:2px}
+.menu{position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:250px;background:#fff;color:#16130f;border-radius:16px;box-shadow:0 18px 40px -10px rgba(0,0,0,.6);padding:6px;margin:0;list-style:none}
+.menu[hidden]{display:none}
+.menu button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;font:500 15px Inter,system-ui,sans-serif;background:none;border:0;cursor:pointer;color:#16130f;text-align:left}
+.menu button:hover{background:#f6f3ec}.menu button[aria-current="true"]{background:#fff3e8;font-weight:700}.menu small{color:#8a8377;font-size:12.5px;font-weight:400}
+.offer{background:var(--card);border:1px solid var(--cardline);border-radius:16px;padding:12px 14px;font-size:14px;color:#e8eaed;margin:0 0 14px}.offer[hidden]{display:none}
+.offer b{color:#fff}.offer .acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.offer button{border-radius:999px;padding:8px 14px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer}.offer .y{background:#fff;color:#212121;border:0}.offer .n{background:none;color:#fff;border:1.5px solid rgba(255,255,255,.35)}
+/* game cards */
+.games{display:grid;gap:12px}
+.game{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--cardline);border-radius:20px;padding:12px;transition:border-color .15s,transform .15s}
+.game:hover,.game:focus-visible{border-color:#5a4a40;transform:translateY(-1px);outline:none}
+.game img{width:58px;height:58px;border-radius:14px;flex:none}
+.game .t{min-width:0;flex:1}
+.game h2{font-size:17px;font-weight:700;margin:0;line-height:1.2;letter-spacing:-.01em}
+.game p{margin:2px 0 0;font-size:12.5px;color:var(--soft);line-height:1.3}
+.game .status{display:block;font-size:12.5px;font-weight:600;color:#7fd29b;margin-top:3px}.game .status:empty{display:none}
+.play{flex:none;border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;border:2px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;white-space:nowrap}
+.game:hover .play{background:linear-gradient(90deg,var(--hot),var(--deep)) border-box}
+footer{color:var(--faint);font-size:12.5px;text-align:center;margin-top:22px;display:flex;flex-direction:column;gap:4px}
+footer a{color:#b5bac0}footer a:hover{color:#fff}
+/* the ad: framed in white, on its own glow at the foot of the screen (the box itself comes from /shared/adbox.js) */
+html.home #tmgAd.fixed{background:#1a1a1a;border-top:0;overflow:hidden}
+html.home #tmgAd.fixed::before{content:"";position:absolute;pointer-events:none;width:max(520px,130%);height:300px;left:-15%;bottom:-110px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.85;filter:blur(16px)}
+html.home #tmgAd .tmgad-in{position:relative;z-index:1;background:rgba(33,33,33,.92)!important;border:2px solid #fff!important;box-shadow:0 0 0 4px rgba(255,255,255,.08),0 10px 30px -10px rgba(0,0,0,.6)}
+html.home #tmgAd .tmgad-l{color:#cfd3d8!important}
+html.home #tmgAd .tmgad-house{background:linear-gradient(100deg,#3a2a22,#2b2b2b);color:#fff;border-color:rgba(255,255,255,.08)}
+html.home #tmgAd .tmgad-house span{color:#c9ccd0}html.home #tmgAd .tmgad-house i{color:#fff;border-color:var(--hot)}
+html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
+@media (max-width:370px){h1{font-size:36px;margin-top:30px}.pillw{margin:16px 0 14px}.pill{font-size:13px}}
+@media (max-height:600px) and (max-width:859px){h1{margin-top:24px}}
+@media (min-width:860px){
+  .wrap{padding-top:30px;padding-left:40px;padding-right:40px}
+  .brand{font-size:26px}.brand .o{width:14px;height:14px;border-width:4px;margin-right:8px}
+  h1{font-size:72px;line-height:1;letter-spacing:-.035em;margin:70px 0 14px}h1 .br{display:inline}
+  .sub{font-size:19px;margin-bottom:44px}
+  .pillw{position:absolute;right:40px;top:26px;margin:0}.menu{left:auto;right:0}
+  .offer{max-width:520px;margin:-28px 0 26px}
+  .games{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+  .game{display:grid;grid-template-columns:78px minmax(0,1fr);grid-template-rows:1fr auto;column-gap:16px;row-gap:14px;align-items:start;padding:18px;border-radius:22px}
+  .game img{width:78px;height:78px;border-radius:18px;grid-row:1/3}
+  .game h2{font-size:20px}.game p{font-size:14px;margin:4px 0 0;line-height:1.4}
+  .game .play{grid-column:2;justify-self:start;align-self:end}
+  footer{flex-direction:row;justify-content:center;gap:10px;font-size:13px;margin-top:26px}
 }
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"><div class="glow"></div></div>
 <div class="wrap">
-  <header>
-    <h1 class="brand"><span class="o" aria-hidden="true"></span>twominute<span class="tld">.games</span></h1>
-    <p class="tag">Quick daily puzzles. The same for everyone, two minutes a day.</p>
-    <span class="label today">Today<b id="today"></b></span>
-  </header>
-
+  <div class="top"><p class="brand"><span class="o" aria-hidden="true"></span>twominute<span class="tld">.games</span></p></div>
+  <h1 id="hHead"><span class="br">Two minutes.</span> <span class="br">Every day.</span></h1>
+  <p class="sub" id="hSub">Quick daily puzzles, the same for everyone.</p>
+  <div class="pillw" id="hiPill">
+    <div class="pill"><span class="hi" id="hiText"><span id="hiFlag"></span><span id="hiWord">Hello</span><span id="hiDate"></span></span>
+      <button class="lg" id="lgBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language">EN</button></div>
+    <ul class="menu" id="lgMenu" hidden></ul>
+  </div>
+  <div class="offer" id="lgOffer" hidden></div>
   <main class="games">
-    <a class="game" href="/aperture/" data-best="aperture2-best-" data-streak="aperture2-streak">
-      <div class="pic" aria-hidden="true">
-        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#5a3a22"/><g opacity=".25" stroke="#2c1a0d" stroke-width="3"><path d="M0 40C80 30 160 55 320 38M0 95C90 85 200 110 320 92M0 150C110 140 210 165 320 148"/></g>
-          <g filter="url(#b)"><ellipse cx="160" cy="110" rx="70" ry="48" fill="#f2c94c"/><circle cx="208" cy="78" r="30" fill="#f2c94c"/><path d="M234 78l22 6-22 8z" fill="#e8892c"/></g>
-          <defs><filter id="b"><feGaussianBlur stdDeviation="9"/></filter><mask id="m"><rect width="320" height="200" fill="#fff"/><rect x="70" y="40" width="22" height="130" rx="4" fill="#000" transform="rotate(-8 81 105)"/><rect x="150" y="62" width="120" height="20" rx="4" fill="#000"/><rect x="200" y="100" width="18" height="80" rx="4" fill="#000"/></mask></defs>
-          <rect width="320" height="200" fill="#eef1f5" mask="url(#m)"/></svg>
-      </div>
-      <h2>Aperture</h2>
-      <p>An everyday object, seen through a few small viewpoints. What is it?</p>
-      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    <a class="game card" href="/aperture/" data-best="aperture2-best-" data-streak="aperture2-streak" data-k="ap">
+      <img src="/icons/aperture-180.png" alt="" width="58" height="58">
+      <div class="t"><h2>Aperture</h2><p data-t="ap">An everyday object, seen through a few small viewpoints. What is it?</p><span class="status"></span></div>
+      <span class="play" data-t="play">Play</span>
     </a>
-
-    <a class="game" href="/aperture/landmarks/" data-best="apL-best-" data-streak="apL-streak">
-      <div class="pic" aria-hidden="true">
-        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6aa6e8"/><stop offset="1" stop-color="#c8def5"/></linearGradient>
-          <mask id="m2"><rect width="320" height="200" fill="#fff"/><rect x="128" y="20" width="26" height="170" rx="4" fill="#000"/><rect x="40" y="120" width="120" height="22" rx="4" fill="#000"/><rect x="190" y="70" width="90" height="20" rx="4" fill="#000"/></mask></defs>
-          <rect width="320" height="200" fill="url(#sky)"/><path d="M118 200V70l8-18h28l8 18v130z" fill="#c9a46a"/><path d="M126 52l14-34 14 34z" fill="#8a6a3c"/><circle cx="140" cy="86" r="11" fill="#f4ecd8" stroke="#6b5230" stroke-width="2"/>
-          <path d="M0 200v-36h70v-14h40v50z" fill="#b8925a"/><rect width="320" height="200" fill="#eef1f5" mask="url(#m2)"/></svg>
-      </div>
-      <h2>Aperture <small>landmarks</small></h2>
-      <p>A famous place, revealed bit by bit in a real photo. Where in the world?</p>
-      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    <a class="game card" href="/aperture/landmarks/" data-best="apL-best-" data-streak="apL-streak" data-k="lm">
+      <img src="/icons/landmarks-180.png" alt="" width="58" height="58">
+      <div class="t"><h2>Landmarks</h2><p data-t="lm">A famous place, revealed bit by bit in a real photo. Where in the world?</p><span class="status"></span></div>
+      <span class="play" data-t="play">Play</span>
     </a>
-
-    <a class="game" href="/wonders/">
-      <div class="pic" aria-hidden="true">
-        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#f6f3ec"/><path d="M0 150l60-70 40 40 50-80 60 90 40-40 70 60v50H0z" fill="#b8663a" opacity=".85"/><path d="M150 40l18 26h-36z" fill="#fff" opacity=".8"/>
-          <path d="M0 176c50-14 80 8 130-4s90-22 190 2v26H0z" fill="#4f8fd6"/></svg>
-      </div>
-      <h2>Natural Wonders</h2>
-      <p>Ten quick geography games: rivers, lakes, peaks, deserts, borders and the true size of countries.</p>
-      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
+    <a class="game card" href="/wonders/" data-k="nw">
+      <img src="/icons/masterbrain-180.png" alt="" width="58" height="58">
+      <div class="t"><h2>Natural Wonders</h2><p data-t="nw">Ten quick geography games: rivers, lakes, peaks, deserts, borders and the true size of countries.</p><span class="status"></span></div>
+      <span class="play" data-t="play">Play</span>
     </a>
-
-    <!-- Duggen's Outback Maze: off the home page until the phone version is ready (15 Nov 2026). /duggen/ still works by direct link.
-    <a class="game" href="/duggen/">
-      <div class="pic" aria-hidden="true">
-        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#34401d"/>
-          <g fill="#a24c29"><rect x="20" y="20" width="280" height="22"/><rect x="20" y="20" width="22" height="160"/><rect x="20" y="158" width="200" height="22"/><rect x="100" y="60" width="22" height="98"/><rect x="100" y="60" width="140" height="22"/><rect x="218" y="60" width="22" height="120"/><rect x="160" y="100" width="58" height="22"/><rect x="278" y="20" width="22" height="160"/></g>
-          <rect x="160" y="100" width="22" height="22" fill="#3e8ea3"/>
-          <g transform="translate(58 142)"><path d="M-6 10q-16 4-18-8" stroke="#8f5225" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="4" rx="9" ry="13" fill="#c98244" transform="rotate(-12)"/><ellipse cx="7" cy="-10" rx="7" ry="5" fill="#c98244"/><ellipse cx="1" cy="-17" rx="2" ry="5" fill="#c98244"/><ellipse cx="5" cy="-18" rx="2" ry="5" fill="#c98244"/></g>
-          <g transform="translate(250 70)"><path d="M-6-8h12l-6 22z" fill="#e2742f"/><path d="M0-8l-6-9M0-8v-10M0-8l6-9" stroke="#4f8a2e" stroke-width="2.5"/></g>
-          <g transform="translate(130 31)" fill="#f2d14b"><circle r="7"/><circle r="3" fill="#e58a2a"/></g>
-          <g transform="translate(228 168)"><circle r="12" fill="#f6f1e4"/><circle cx="-8" cy="-6" r="7" fill="#f6f1e4"/><circle cx="8" cy="-6" r="7" fill="#f6f1e4"/></g></svg>
-      </div>
-      <h2>Duggen's Outback Maze <small>new</small></h2>
-      <p>Guide Digger Duggen the kangaroo through a giant maze to gather bush tucker for Chef Colin, while Truck Stop Pete and his mates try to stop him.</p>
-      <span class="chip">In development · best on a computer · mobile game coming soon</span>
-      <div class="foot"><span class="play">Play</span><span class="status"></span></div>
-    </a>
-    -->
   </main>
-
   <footer>
-    <span>New puzzles every day at midnight, your time.</span>
-    <span><a href="/about/">About, credits and privacy</a> · <a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Buy me a coffee</a></span>
-    <span><a href="/about/#ownership">© 2026 Two Minute Games. All rights reserved.</a></span>
+    <span data-t="f1">New puzzles every day at midnight, your time.</span>
+    <span><a href="/about/" data-t="about">About, credits and privacy</a> · <a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ <span data-t="coffee">Buy me a coffee</span></a></span>
+    <span><a href="/about/#ownership" data-t="rights">© 2026 Two Minute Games. All rights reserved.</a></span>
   </footer>
 </div>
+<script src="/shared/reach.js?v=6" defer></script>
+<script src="/shared/adbox.js?v=5" defer></script>
 <script>
 (()=>{
-const d=new Date(),key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-document.getElementById('today').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-// show "Done today" or a streak on each game card, from what this device already knows
-document.querySelectorAll('.game[data-best]').forEach(a=>{
-  const st=a.querySelector('.status');let done=false,streak=0;
-  try{done=!!localStorage.getItem(a.dataset.best+key);const s=JSON.parse(localStorage.getItem(a.dataset.streak)||'null');if(s)streak=s.n||0;
-    if(s&&s.last!==key){const y=new Date(d);y.setDate(y.getDate()-1);const yk=`${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;if(s.last!==yk)streak=0}}catch(e){}
-  if(done){st.textContent=streak>1?`✓ Done · 🔥 ${streak}`:'✓ Done today';st.classList.add('done');a.querySelector('.play').textContent='Play again'}
-  else if(streak>0){st.textContent=`🔥 ${streak} · keep it going`}
-});
+document.documentElement.classList.add('home');
+const LANGS=[['en','English','EN'],['de','Deutsch','German'],['tr','Türkçe','Turkish'],['fr','Français','French'],['es','Español','Spanish'],['pt','Português','Portuguese']];
+const T={
+ en:{h:['Two minutes.','Every day.'],sub:'Quick daily puzzles, the same for everyone.',hello:'Hello',ap:'An everyday object, seen through a few small viewpoints. What is it?',lm:'A famous place, revealed bit by bit in a real photo. Where in the world?',nw:'Ten quick geography games: rivers, lakes, peaks, deserts, borders and the true size of countries.',play:'Play',again:'Play again',done:'✓ Done today',streak:n=>`🔥 ${n} days`,keep:n=>`🔥 ${n} · keep it going`,f1:'New puzzles every day at midnight, your time.',about:'About, credits and privacy',coffee:'Buy me a coffee',rights:'© 2026 Two Minute Games. All rights reserved.',lang:'Language',q:'Play in English?',qs:'The games are in your language too.',yes:'Yes, in English',loc:'en-GB'},
+ de:{h:['Zwei Minuten.','Jeden Tag.'],sub:'Schnelle tägliche Rätsel, für alle gleich.',hello:'Hallo',ap:'Ein Alltagsgegenstand, durch ein paar kleine Fenster gesehen. Was ist es?',lm:'Ein berühmter Ort, Stück für Stück in einem echten Foto enthüllt. Wo auf der Welt?',nw:'Zehn schnelle Geografiespiele: Flüsse, Seen, Gipfel, Wüsten, Grenzen und die wahre Größe der Länder.',play:'Spielen',again:'Nochmal spielen',done:'✓ Heute erledigt',streak:n=>`🔥 ${n} Tage`,keep:n=>`🔥 ${n} · bleib dran`,f1:'Neue Rätsel jeden Tag um Mitternacht, deine Zeit.',about:'Über uns, Quellen und Datenschutz',coffee:'Spendier mir einen Kaffee',rights:'© 2026 Two Minute Games. Alle Rechte vorbehalten.',lang:'Sprache',q:'Auf Deutsch spielen?',qs:'Die Spiele gibt es auch in deiner Sprache.',yes:'Ja, auf Deutsch',loc:'de-DE'},
+ tr:{h:['İki dakika.','Her gün.'],sub:'Hızlı günlük bulmacalar, herkes için aynı.',hello:'Merhaba',ap:'Gündelik bir nesne, birkaç küçük pencereden. Nedir?',lm:'Ünlü bir yer, gerçek bir fotoğrafta parça parça ortaya çıkıyor. Dünyanın neresi?',nw:'On hızlı coğrafya oyunu: nehirler, göller, zirveler, çöller, sınırlar ve ülkelerin gerçek büyüklüğü.',play:'Oyna',again:'Tekrar oyna',done:'✓ Bugün tamam',streak:n=>`🔥 ${n} gün`,keep:n=>`🔥 ${n} · devam et`,f1:'Her gün gece yarısı yeni bulmacalar, senin saatinle.',about:'Hakkında, kaynaklar ve gizlilik',coffee:'Bana bir kahve ısmarla',rights:'© 2026 Two Minute Games. Tüm hakları saklıdır.',lang:'Dil',q:'Türkçe oynamak ister misin?',qs:'Oyunlar senin dilinde de var.',yes:'Evet, Türkçe',loc:'tr-TR'},
+ fr:{h:['Deux minutes.','Chaque jour.'],sub:'Des petits jeux quotidiens, les mêmes pour tous.',hello:'Bonjour',ap:'Un objet du quotidien, vu par quelques petites fenêtres. Qu’est-ce que c’est ?',lm:'Un lieu célèbre, révélé petit à petit sur une vraie photo. Où dans le monde ?',nw:'Dix petits jeux de géographie : fleuves, lacs, sommets, déserts, frontières et la vraie taille des pays.',play:'Jouer',again:'Rejouer',done:'✓ Fait aujourd’hui',streak:n=>`🔥 ${n} jours`,keep:n=>`🔥 ${n} · continue`,f1:'De nouveaux jeux chaque jour à minuit, à ton heure.',about:'À propos, sources et confidentialité',coffee:'Offre-moi un café',rights:'© 2026 Two Minute Games. Tous droits réservés.',lang:'Langue',q:'Jouer en français ?',qs:'Les jeux existent aussi dans ta langue.',yes:'Oui, en français',loc:'fr-FR'},
+ es:{h:['Dos minutos.','Cada día.'],sub:'Pasatiempos diarios rápidos, los mismos para todos.',hello:'Hola',ap:'Un objeto cotidiano, visto a través de unas ventanitas. ¿Qué es?',lm:'Un lugar famoso, revelado poco a poco en una foto real. ¿Dónde está?',nw:'Diez juegos rápidos de geografía: ríos, lagos, cumbres, desiertos, fronteras y el tamaño real de los países.',play:'Jugar',again:'Jugar otra vez',done:'✓ Hecho hoy',streak:n=>`🔥 ${n} días`,keep:n=>`🔥 ${n} · sigue así`,f1:'Nuevos juegos cada día a medianoche, en tu hora.',about:'Acerca de, fuentes y privacidad',coffee:'Invítame a un café',rights:'© 2026 Two Minute Games. Todos los derechos reservados.',lang:'Idioma',q:'¿Jugar en español?',qs:'Los juegos también están en tu idioma.',yes:'Sí, en español',loc:'es-ES'},
+ pt:{h:['Dois minutos.','Todos os dias.'],sub:'Desafios diários rápidos, iguais para todos.',hello:'Olá',ap:'Um objeto do dia a dia, visto por algumas janelinhas. O que é?',lm:'Um lugar famoso, revelado aos poucos numa foto real. Onde fica?',nw:'Dez jogos rápidos de geografia: rios, lagos, picos, desertos, fronteiras e o tamanho real dos países.',play:'Jogar',again:'Jogar de novo',done:'✓ Feito hoje',streak:n=>`🔥 ${n} dias`,keep:n=>`🔥 ${n} · continue`,f1:'Novos desafios todos os dias à meia-noite, na sua hora.',about:'Sobre, fontes e privacidade',coffee:'Pague-me um café',rights:'© 2026 Two Minute Games. Todos os direitos reservados.',lang:'Idioma',q:'Jogar em português?',qs:'Os jogos também estão na sua língua.',yes:'Sim, em português',loc:'pt-PT'}};
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const $=id=>document.getElementById(id);
+const d=new Date(),dk=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`,key=dk(d);
+const browser=(navigator.language||'en').slice(0,2).toLowerCase();
+let L=ls('tmg-lang');if(!T[L])L='en';
+let CC='';
+const flag=c=>c&&/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(ch=>127397+ch.charCodeAt(0))):'';
+function cname(c){if(L==='en'){if(c==='GB')return 'UK';if(c==='US')return 'USA'}try{return new Intl.DisplayNames([T[L].loc],{type:'region'}).of(c)}catch(e){return c}}
+function greet(){const t=T[L];const w=CC?((L==='en'&&window.tmgHI&&tmgHI[CC])||t.hello)+' '+cname(CC):t.hello;
+  $('hiFlag').textContent=CC?flag(CC)+' ':'';$('hiWord').textContent=w;$('hiDate').textContent=' · '+d.toLocaleDateString(t.loc,{weekday:'short',day:'numeric',month:'short'})}
+function cards(){const t=T[L];
+  document.querySelectorAll('.game').forEach(a=>{const st=a.querySelector('.status'),pl=a.querySelector('.play');st.textContent='';pl.textContent=t.play;if(!a.dataset.best)return;let done=false,streak=0;
+    try{done=!!localStorage.getItem(a.dataset.best+key);const s=JSON.parse(localStorage.getItem(a.dataset.streak)||'null');if(s)streak=s.n||0;
+      if(s&&s.last!==key){const y=new Date(d);y.setDate(y.getDate()-1);if(s.last!==dk(y))streak=0}}catch(e){}
+    if(done){st.textContent=streak>1?t.done+' · '+t.streak(streak):t.done;pl.textContent=t.again}else if(streak>0)st.textContent=t.keep(streak)})}
+function apply(){const t=T[L];document.documentElement.lang=L;
+  $('hHead').innerHTML=`<span class="br">${t.h[0]}</span> <span class="br">${t.h[1]}</span>`;$('hSub').textContent=t.sub;
+  document.querySelectorAll('[data-t]').forEach(e=>{const v=t[e.dataset.t];if(typeof v==='string')e.textContent=v});
+  $('lgBtn').textContent=L.toUpperCase();$('lgBtn').setAttribute('aria-label',t.lang);
+  $('lgMenu').innerHTML=LANGS.map(([c,n,en])=>`<li><button type="button" data-l="${c}" aria-current="${c===L}">${n} <small>${c===L?'✓':(c==='en'?'':en)}</small></button></li>`).join('');
+  greet();cards();try{window.tmgAd&&tmgAd.rebuild&&tmgAd.rebuild()}catch(e){}}
+function choose(c){L=c;ls('tmg-lang',c);ls('tmg-lang-offer-home','1');$('lgMenu').hidden=true;$('lgBtn').setAttribute('aria-expanded','false');$('lgOffer').hidden=true;apply()}
+$('lgBtn').onclick=e=>{e.stopPropagation();const m=$('lgMenu');m.hidden=!m.hidden;$('lgBtn').setAttribute('aria-expanded',String(!m.hidden))};
+$('lgMenu').onclick=e=>{const b=e.target.closest('[data-l]');if(b)choose(b.dataset.l)};
+document.addEventListener('click',e=>{if(!e.target.closest('#hiPill')){$('lgMenu').hidden=true;$('lgBtn').setAttribute('aria-expanded','false')}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){$('lgMenu').hidden=true;$('lgBtn').setAttribute('aria-expanded','false')}});
+// one-time offer: the phone or browser is set to one of our languages, and nothing has been chosen yet
+if(!ls('tmg-lang')&&!ls('tmg-lang-offer-home')&&T[browser]&&browser!=='en'){const b=T[browser],o=$('lgOffer');
+  o.innerHTML=`<b>${b.q}</b> ${b.qs}<div class="acts"><button class="y" type="button">${b.yes}</button><button class="n" type="button">Stay in English</button></div>`;o.hidden=false;
+  o.querySelector('.y').onclick=()=>choose(browser);o.querySelector('.n').onclick=()=>{ls('tmg-lang-offer-home','1');ls('tmg-lang','en');o.hidden=true}}
+apply();
+// the visitor's country, from the device's time zone (never the IP address), same as the rest of the site
+fetch('/shared/tz.json').then(r=>r.json()).then(j=>{CC=j[Intl.DateTimeFormat().resolvedOptions().timeZone]||'';if(!CC){const m=/-([A-Z]{2})$/i.exec(navigator.language||'');CC=m?m[1].toUpperCase():''}greet()}).catch(()=>{});
+// greetings in the visitor's own language come from reach.js once it has loaded
+addEventListener('load',()=>setTimeout(greet,50));
 })();
 </script>
-<script src="/shared/reach.js?v=5" defer></script>
 </body>
 </html>
