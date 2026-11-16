@@ -13,6 +13,7 @@ label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
 input{width:100%;box-sizing:border-box;font:inherit;border:1.5px solid #b9c0cb;border-radius:12px;padding:10px 12px}
 button{margin-top:16px;width:100%;border:0;border-radius:999px;background:#16181d;color:#fff;font:600 15px system-ui;padding:12px;cursor:pointer}
 .out{margin-top:16px;background:#eef7f0;border-radius:12px;padding:12px;font-size:14px;word-break:break-all}.out code{font:600 14px ui-monospace,Menlo,monospace}
+.sh{display:flex;align-items:center;gap:8px;font-weight:500;margin-top:10px}.sh input{width:auto}
 .err{color:#b3261e;font-size:14px;margin-top:10px}
 </style>
 </head>
@@ -22,6 +23,7 @@ button{margin-top:16px;width:100%;border:0;border-radius:999px;background:#16181
   <p>Type the password you want for the stats page. This page turns it into a scrambled code on this device; nothing is sent anywhere. Send Claude only the code, never the password.</p>
   <label for="a">New password</label><input id="a" type="password" autocomplete="new-password">
   <label for="b">Type it again</label><input id="b" type="password" autocomplete="new-password">
+  <label class="sh"><input type="checkbox" id="sh"> Show what I typed</label>
   <button id="go" type="button">Make the code</button>
   <div id="msg"></div>
 </div>
@@ -30,6 +32,7 @@ button{margin-top:16px;width:100%;border:0;border-radius:999px;background:#16181
 async function code(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
   const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('tmg-stats-2026'),iterations:150000},k,256);
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+document.getElementById('sh').onchange=e=>{['a','b'].forEach(id=>document.getElementById(id).type=e.target.checked?'text':'password')};
 document.getElementById('go').onclick=async()=>{const a=document.getElementById('a').value,b=document.getElementById('b').value,m=document.getElementById('msg');
   if(a.length<8){m.innerHTML='<p class="err">Please use at least 8 characters.</p>';return}
   if(a!==b){m.innerHTML='<p class="err">The two passwords don’t match.</p>';return}
