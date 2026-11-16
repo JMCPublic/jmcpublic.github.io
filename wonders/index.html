@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#212121">
 <title>Natural Wonders · Geography Games</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
@@ -13,85 +14,101 @@
 
 <meta name="description" content="Ten quick geography games: rivers, lakes, seas, mountains, deserts, borders and country sizes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f3ec;--card:#fff;--ink:#16130f;--muted:#6f685d;--line:#e6e0d4;--accent:#e2552d;--cu:#b8663a;--hl:#d6eaf6}
+/* Natural Wonders page v2 (16 Nov 2026): the same A3 look as the home page. Deep charcoal, an orange-to-red glow,
+   bold white headline, dark game cards with each game's own icon, orange-outline Play pills, played games in soft green,
+   and the framed ad on its own glow at the foot of the screen. Copper number plates kept from v1. */
+:root{--bg:#212121;--card:#2b2b2b;--line:#3a3a3a;--ink:#fff;--muted:#9AA0A6;--soft:#c9ccd0;--hot:#FF9100;--deep:#DD2C00;--cu:#e0a77f;--good:#7fd29b;color-scheme:dark}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 24px}
-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:22px}
-.kick{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--cu);margin:0 0 6px}
-h1{font-family:Fraunces,Georgia,serif;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1;font-size:clamp(36px,6vw,56px)}
-.lead{max-width:470px;margin:0;color:var(--muted);font-size:15px;line-height:1.5}
-.hr{display:flex;flex-direction:column;gap:10px;width:min(100%,460px)}
-.mbb{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;background:var(--ink);color:#fff;text-decoration:none;border-radius:14px;padding:10px 14px}
-.mbb .mbk{grid-column:1;grid-row:1/3;font:700 10px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e0a77f;writing-mode:vertical-rl;transform:rotate(180deg)}
-.mbb b{font:800 19px Fraunces,Georgia,serif;grid-column:2}
-.mbb .mbs{grid-column:2;font-size:12.5px;color:#d9d3c8}
-.mbb .mba{grid-column:3;grid-row:1/3;background:var(--accent);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px}
-.mbb:hover{background:#2a251f}
-.lead b{color:var(--ink);font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.g{position:relative;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px 16px 14px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s,box-shadow .15s}
-a.g:hover,a.g:focus-visible{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 6px 18px rgba(22,19,15,.08);outline:none}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.plate{width:34px;height:34px;border-radius:7px;display:grid;place-items:center;flex:none;
- font-family:Cinzel,Copperplate,'Copperplate Gothic Bold',Georgia,serif;font-weight:700;font-size:16px;line-height:1;color:#fff4ea;
- background:radial-gradient(circle at 5px 5px,#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at calc(100% - 5px) 5px,#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at 5px calc(100% - 5px),#6e3517 1.2px,transparent 1.8px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#6e3517 1.2px,transparent 1.8px),linear-gradient(135deg,#eab48a 0%,#c47746 30%,#97502a 58%,#d08f60 82%,#a85d33 100%);
- border:1px solid #7a3c1c;box-shadow:inset 0 1px 0 rgba(255,236,215,.6),inset 0 -1px 0 rgba(60,25,8,.35),0 1px 3px rgba(60,30,10,.25);text-shadow:0 -1px 0 rgba(70,30,10,.55)}
-.ic{width:84px;height:44px}
-.g h2{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:22px;letter-spacing:-.01em;margin:0 0 6px}
-.g p{margin:0 0 14px;font-size:14px;line-height:1.45;color:var(--muted);flex:1}
-.play{align-self:flex-start;font-weight:700;font-size:14px;color:#fff;background:var(--accent);border-radius:999px;padding:8px 16px}
-.soon{opacity:.75;border-style:dashed}
-.soon .play{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
-.soon .plate{filter:grayscale(.7)}
-footer{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.5;text-align:center}
-@media (max-width:600px){
- .wrap{padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
- header{margin-bottom:16px;gap:10px}
- .grid{grid-template-columns:1fr;gap:10px}
- .g{display:grid;grid-template-columns:auto 1fr;column-gap:12px;padding:14px}
- .top{grid-row:1/4;flex-direction:column;justify-content:flex-start;gap:8px;margin:0}
- .ic{width:56px;height:30px}
- .g h2{font-size:19px;margin:2px 0 4px}
- .g p{margin:0 0 10px;font-size:13.5px}
-}
-@media (min-width:1000px){.grid{grid-template-columns:repeat(5,1fr);gap:12px}.g{padding:14px 14px 12px}.g h2{font-size:18px;margin-bottom:4px}.g p{font-size:13px;margin-bottom:10px;line-height:1.4}.ic{width:64px;height:34px}.top{margin-bottom:6px}.play{padding:6px 14px;font-size:13px}h1{font-size:46px}header{margin-bottom:14px}.wrap{padding-top:16px}.lead{font-size:14px}}
-
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg{position:absolute;left:0;right:0;top:0;height:720px;overflow:hidden;pointer-events:none}
+.glow{position:absolute;width:min(1100px,150vw);height:620px;left:-14vw;top:-330px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.85;filter:blur(30px)}
+.wrap{position:relative;max-width:1100px;margin:0 auto;padding:max(24px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) 28px max(22px,env(safe-area-inset-left))}
+.brand{display:inline-flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.02em;color:#fff;text-decoration:none;margin-bottom:26px}
+.brand .o{width:10px;height:10px;border-radius:50%;border:3px solid #fff;margin-right:6px}.brand span{color:#ffd2b0}.brand em{font-style:normal;font-weight:500;font-size:13px;color:#e7e2dd;margin-left:10px;opacity:.85}
+header{margin-bottom:20px}
+.kick{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffd2b0;margin:0 0 8px}
+h1{font-weight:800;letter-spacing:-.03em;margin:0 0 10px;line-height:1;font-size:44px}
+.lead{margin:0 0 18px;color:#e7e2dd;font-size:15px;line-height:1.5;max-width:560px}
+.hr{max-width:520px}
+.mbb{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;color:#fff;text-decoration:none;border-radius:20px;padding:12px}
+.mbb img{width:58px;height:58px;border-radius:14px;flex:none}
+.mbb .mt{flex:1;min-width:0}.mbb .mbk{display:block;font:700 10.5px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ffd2b0}
+.mbb b{display:block;font-size:18px;margin:1px 0}.mbb .mbs{display:block;font-size:12.5px;color:var(--muted);line-height:1.3}
+.mbb .mba{flex:none;background:linear-gradient(90deg,var(--hot),var(--deep));border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.ghead{font:600 12px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ffd2b0;margin:10px 0 0}
+.g{position:relative;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+a.g:hover,a.g:focus-visible{border-color:#5a4a40;transform:translateY(-1px);outline:none}
+.g .top{position:relative;flex:none;width:58px;height:58px}
+.ic{width:58px;height:58px;border-radius:14px;display:block}
+.plate{position:absolute;left:-6px;top:-6px;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+ font-family:Cinzel,Copperplate,Georgia,serif;font-weight:700;font-size:11px;line-height:1;color:#fff4ea;
+ background:linear-gradient(145deg,#d9935f,#a8582c 55%,#7a3c1c);border:1px solid #7a3c1c;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.g .tx{flex:1;min-width:0}
+.g h2{font-weight:700;font-size:17px;letter-spacing:-.01em;margin:0;line-height:1.2}
+.g p{margin:2px 0 0;font-size:12.5px;line-height:1.3;color:var(--muted)}
+.play{flex:none;align-self:center;font-weight:700;font-size:14px;color:#fff;border-radius:999px;padding:8px 16px;border:2px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;white-space:nowrap}
+a.g:hover .play{background:linear-gradient(90deg,var(--hot),var(--deep)) border-box}
+.g .prow{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+.badge{display:inline-block;font:600 11px Inter,sans-serif;background:rgba(127,210,155,.14);color:var(--good);border-radius:999px;padding:3px 8px;white-space:nowrap}
+a.g.done{border-color:rgba(127,210,155,.45);background:#26302a}
+a.g.done .play{background:linear-gradient(#26302a,#26302a) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box}
+footer{margin-top:22px;color:#80868b;font-size:12.5px;line-height:1.5;text-align:center}footer a{color:#b5bac0}
 /* your record, kept on this device */
-.rec{background:#fff;border:1.5px solid var(--ink);border-radius:20px;padding:18px;margin:0 0 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;scroll-margin-top:16px}
-.rec h2{font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 4px}
+.rec{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin:6px 0 16px;display:grid;grid-template-columns:1fr;gap:18px;scroll-margin-top:16px}
+.rec h2{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0 0 4px}
 .rec .rsub{color:var(--muted);font-size:13.5px;margin:0 0 12px}
 .plates{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
-.plates .plate{width:30px;height:30px;font-size:13px;filter:grayscale(1) opacity(.35)}
+.plates .plate{position:static;width:26px;height:26px;font-size:12px;filter:grayscale(1) opacity(.3)}
 .plates .plate.y{filter:none}
 .nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.nums div{background:var(--bg);border-radius:12px;padding:8px 10px}
-.nums b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px}
+.nums div{background:#232323;border:1px solid var(--line);border-radius:14px;padding:9px 10px}
+.nums b{display:block;font-size:21px;font-weight:800}
 .nums span{font-size:11.5px;color:var(--muted)}
 .bars{display:flex;flex-direction:column;gap:6px}
-.bars .lbl{font:600 11px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--cu);margin-bottom:2px}
-.bar{display:grid;grid-template-columns:130px 1fr 52px;gap:8px;align-items:center;font-size:13px}
-.bar .t{height:10px;border-radius:5px;background:#ece6da;overflow:hidden}.bar .t i{display:block;height:100%;border-radius:5px;background:var(--ink)}
-.bar.top .t i{background:#2f7a4a}.bar.low .t i{background:var(--accent)}
+.bars .lbl{font:600 11px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#ffd2b0;margin-bottom:2px}
+.bar{display:grid;grid-template-columns:120px 1fr 48px;gap:8px;align-items:center;font-size:13px;color:#e8eaed}
+.bar .t{height:10px;border-radius:5px;background:#3a3a3a;overflow:hidden}.bar .t i{display:block;height:100%;border-radius:5px;background:#e8eaed}
+.bar.top .t i{background:#3fb56b}.bar.low .t i{background:linear-gradient(90deg,var(--hot),var(--deep))}
 .bar em{font-style:normal;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
-.bar.none{color:#b9b2a5}.bar.none em{color:#b9b2a5}
-.verdict{margin-top:10px;font-size:13.5px;color:var(--ink);background:var(--bg);border-radius:12px;padding:10px 12px;line-height:1.45}
-.recempty{background:#fff;border:1.5px dashed var(--line);border-radius:16px;padding:12px 16px;margin:0 0 16px;font-size:14px;color:var(--muted)}
-.g .prow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.prow .play{align-self:auto}.badge{display:inline-block;font:600 11px Inter,sans-serif;background:#e7f1ea;color:#2f7a4a;border-radius:999px;padding:3px 8px;white-space:nowrap}a.g.done{background:#f1f7f2;border-color:#bcdcc5}.ghead{grid-column:1/-1;font:600 12px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#b8663a;margin:6px 2px -4px}
-@media (max-width:700px){.rec{grid-template-columns:1fr}.bar{grid-template-columns:110px 1fr 48px}}
+.bar.none{color:#6b7078}.bar.none em{color:#6b7078}
+.verdict{margin-top:10px;font-size:13.5px;color:#e8eaed;background:#232323;border:1px solid var(--line);border-radius:14px;padding:10px 12px;line-height:1.45}.verdict b{color:#fff}
+.recempty{background:var(--card);border:1px dashed var(--line);border-radius:18px;padding:12px 16px;margin:6px 0 16px;font-size:14px;color:var(--muted)}.recempty b{color:#fff!important}
+/* the ad: framed in white, on its own glow at the foot of the screen (same as the home page) */
+html.home #tmgAd.fixed{background:#1a1a1a;border-top:0;overflow:hidden}
+html.home #tmgAd.fixed::before{content:"";position:absolute;pointer-events:none;width:max(520px,130%);height:300px;left:-15%;bottom:-110px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.85;filter:blur(16px)}
+html.home #tmgAd .tmgad-in{position:relative;z-index:1;background:rgba(33,33,33,.92)!important;border:2px solid #fff!important;box-shadow:0 0 0 4px rgba(255,255,255,.08),0 10px 30px -10px rgba(0,0,0,.6)}
+html.home #tmgAd .tmgad-l{color:#cfd3d8!important}
+html.home #tmgAd .tmgad-house{background:linear-gradient(100deg,#3a2a22,#2b2b2b);color:#fff;border-color:rgba(255,255,255,.08)}
+html.home #tmgAd .tmgad-house span{color:#c9ccd0}html.home #tmgAd .tmgad-house i{color:#fff;border-color:var(--hot)}
+html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
+@media (max-width:370px){h1{font-size:38px}.g p{display:none}}
+@media (min-width:860px){
+ .wrap{padding:30px 40px 30px}
+ .brand{font-size:22px;margin-bottom:40px}.brand .o{width:12px;height:12px;border-width:3.5px}
+ header{display:grid;grid-template-columns:1fr 460px;gap:30px;align-items:end;margin-bottom:28px}
+ h1{font-size:72px;letter-spacing:-.035em}.lead{font-size:18px;margin:0}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.ghead{grid-column:1/-1}
+ .g{display:grid;grid-template-columns:58px minmax(0,1fr);grid-template-rows:1fr auto;column-gap:14px;row-gap:12px;align-items:start;padding:16px}
+ .g .top{grid-row:1/3}.g .tx{grid-column:2}.g p{font-size:13px;margin-top:4px;line-height:1.4}
+ .g>.play,.g .prow{grid-column:2;justify-self:start;align-self:end}.g .prow{flex-direction:row;align-items:center}
+ .rec{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:26px;padding:22px}.bar{grid-template-columns:140px 1fr 52px}
+}
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"><div class="glow"></div></div>
 <div class="wrap">
+<a class="brand" href="/"><span class="o" aria-hidden="true"></span>twominute<span>.games</span><em>← all games</em></a>
 <header>
- <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1></div>
- <div class="hr"><a class="mbb" href="/natural-wonders-masterbrain/"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">All ten games in one, then see your strengths</span><span class="mba">Play →</span></a></div>
+ <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1><p class="lead">Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. A few minutes each, free, no sign-up.</p></div>
+ <div class="hr"><a class="mbb" href="/natural-wonders-masterbrain/"><img src="/icons/masterbrain-180.png" alt="" width="58" height="58"><span class="mt"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">All ten games in one, then see your strengths</span></span><span class="mba">Play →</span></a></div>
 </header>
 <section id="record"></section>
 <main class="grid" id="grid"></main>
-<footer>Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. Each game takes a few minutes and works on phone or computer.<br>Figures in every game come from named public sources, listed on each game's Sources page. Free to play. No sign-up.</footer>
+<footer>Figures in every game come from named public sources, listed on each game’s Sources page.<br><a href="/">← All games</a> · <a href="/about/">About, credits and privacy</a> · <a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Buy me a coffee</a></footer>
 </div>
 <script>
 const B='/natural-wonders-';
@@ -120,7 +137,7 @@ const GAMES=[
 {n:'Which of Five?',slug:'which-of-five',ic:'five',t:'One country to beat and five challengers. Tick every one that’s bigger, then see them all to scale.'},
 {n:'Forests',slug:'forests',ic:'forests',t:'From the Amazon to Sherwood. Rank the world’s forests by area, or name the one marked on the map.'}];
 document.getElementById('grid').innerHTML=GAMES.map((g,i)=>{
- const inner=`<div class="top"><span class="plate">${i+1}</span><svg class="ic" viewBox="0 0 84 44" aria-hidden="true">${I[g.ic]}</svg></div><h2>${g.n}</h2><p>${g.t}</p><span class="play">${g.soon?'Coming soon':'Play →'}</span>`;
+ const inner=`<div class="top"><img class="ic" src="/icons/${g.slug}-180.png" alt="" width="58" height="58"><span class="plate">${i+1}</span></div><div class="tx"><h2>${g.n}</h2><p>${g.t}</p></div><span class="play">${g.soon?'Coming soon':'Play'}</span>`;
  return g.soon?`<div class="g soon">${inner}</div>`:`<a class="g" href="${B+g.slug}/">${inner}</a>`}).join('');
 
 // ---------- Your Natural Wonders: built from what this device has played ----------
@@ -137,7 +154,7 @@ box.innerHTML=`<div class="rec"><div><h2>Your Natural Wonders</h2><p class="rsub
 <div class="verdict">🌍 ${verdict}</div></div>
 <div class="bars"><div class="lbl">Best score in each game</div>${GAMES.filter(g=>rec.games[g.slug]).concat(GAMES.filter(g=>!rec.games[g.slug])).map((g,i,arr)=>{const split=i===played.length&&i>0&&i<arr.length?`<div class="lbl" style="margin-top:12px">Still to play · ${arr.length-i}</div>`:'';return split+(()=>{const r=rec.games[g.slug];return r?`<div class="bar ${r===rec.games[best.slug]&&played.length>1?'top':''} ${r===rec.games[worst.slug]&&played.length>1?'low':''}"><span>${g.n}</span><span class="t"><i style="width:${Math.max(3,r.best)}%"></i></span><em>${r.bestTxt||r.best+'%'}</em></div>`:`<div class="bar none"><span>${g.n}</span><span class="t"></span><em>–</em></div>`})()}).join('')}</div></div>`;
 document.querySelectorAll('#grid a.g').forEach(a=>{const slug=(a.getAttribute('href').match(/natural-wonders-([a-z-]+)/)||[])[1];const r=rec.games[slug];if(!r)return;
-  a.classList.add('done');const pl=a.querySelector('.play');if(pl){pl.textContent='Play again →';const w=document.createElement('div');w.className='prow';pl.replaceWith(w);w.append(pl);w.insertAdjacentHTML('beforeend',`<span class="badge">Best ${r.bestTxt||r.best+'%'}</span>`)}});
+  a.classList.add('done');const pl=a.querySelector('.play');if(pl){pl.textContent='Play again';const w=document.createElement('div');w.className='prow';pl.replaceWith(w);w.append(pl);w.insertAdjacentHTML('beforeend',`<span class="badge">Best ${r.bestTxt||r.best+'%'}</span>`)}});
 /* same order as the record panel: games you've played first (soft green), then the ones still to play */
 {const grid=document.getElementById('grid'),tiles=[...grid.querySelectorAll('a.g')],done=tiles.filter(a=>a.classList.contains('done')),todo=[...grid.children].filter(e=>!e.classList.contains('done'));
  if(done.length&&todo.some(e=>e.matches('a.g'))){const h=t=>{const d=document.createElement('div');d.className='ghead';d.textContent=t;return d};
@@ -145,6 +162,8 @@ document.querySelectorAll('#grid a.g').forEach(a=>{const slug=(a.getAttribute('h
 if(location.hash==='#record')box.scrollIntoView();
 })();
 </script>
-<script src="/shared/reach.js" defer></script>
+<script>document.documentElement.classList.add('home')</script>
+<script src="/shared/reach.js?v=8" defer></script>
+<script src="/shared/adbox.js?v=6" defer></script>
 </body>
 </html>
