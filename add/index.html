@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Add the games to your home screen · Two Minute Games</title>
+<meta name="description" content="Put Two Minute Games on your phone's home screen. Each game gets its own icon and opens full screen, like an app. iPhone and Android steps.">
+<link rel="canonical" href="https://twominute.games/add/">
+<meta property="og:title" content="Put Two Minute Games on your home screen">
+<meta property="og:description" content="One tap and you're playing, full screen. Steps for iPhone and Android.">
+<meta property="og:url" content="https://twominute.games/add/">
+<meta property="og:image" content="https://twominute.games/og-v2.png">
+<meta name="theme-color" content="#212121">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/icons/tmg-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* "Add to your home screen" help page (17 Nov 2026), in the home page's A3 style */
+:root{--bg:#212121;--card:#2b2b2b;--cardline:#3a3a3a;--soft:#9AA0A6;--hot:#FF9100;--deep:#DD2C00;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:#fff}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.bg{position:absolute;left:0;right:0;top:0;height:620px;overflow:hidden;pointer-events:none}
+.glow{position:absolute;width:min(1100px,150vw);height:560px;left:-14vw;top:-320px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.85;filter:blur(30px)}
+.wrap{position:relative;max-width:720px;margin:0 auto;padding:max(26px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.02em;display:inline-flex;align-items:center;line-height:1}
+.brand .o{width:12px;height:12px;border-radius:50%;border:3.5px solid #fff;margin-right:7px}.brand .tld{color:#ffd2b0}
+h1{font-weight:800;font-size:38px;line-height:1.05;letter-spacing:-.03em;margin:36px 0 10px}
+.sub{color:#e7e2dd;margin:0 0 22px;font-size:15.5px}
+.tabs{display:inline-flex;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px;gap:4px;margin-bottom:14px}
+.tabs button{border:0;background:none;color:#fff;font:700 14.5px Inter,system-ui,sans-serif;padding:8px 18px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:#fff;color:#212121}
+.card{background:var(--card);border:1px solid var(--cardline);border-radius:20px;padding:18px 18px 16px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:10px 0;font-size:16px;line-height:1.4}
+.steps li+li{border-top:1px solid var(--cardline)}
+.steps li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;background:linear-gradient(135deg,var(--hot),var(--deep))}
+.steps b{color:#fff}.steps small{display:block;color:var(--soft);font-size:13.5px;margin-top:2px}
+.k{display:inline-block;border:1.5px solid #8ab4ff;color:#8ab4ff;border-radius:6px;padding:0 6px;font-weight:700;line-height:1.35}
+.pane[hidden]{display:none}
+.note{color:var(--soft);font-size:13.5px;margin:12px 2px 0}
+h2{font-size:20px;font-weight:800;letter-spacing:-.01em;margin:30px 0 4px}
+.h2s{color:var(--soft);font-size:14px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:14px 10px}
+.ic{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;font-size:13px;font-weight:600;color:#e8eaed;padding:6px 2px;border-radius:14px}
+.ic:hover,.ic:focus-visible{background:#2b2b2b;outline:none}
+.ic img{width:64px;height:64px;border-radius:15px;box-shadow:0 6px 14px -8px rgba(0,0,0,.7)}
+.ic span{color:var(--soft);font-weight:500;font-size:11.5px;margin-top:-5px}
+.back{display:inline-block;margin-top:30px;color:#b5bac0;font-size:14px}.back:hover{color:#fff}
+@media (max-width:370px){h1{font-size:31px;margin-top:26px}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow"></div></div>
+<div class="wrap">
+<a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
+<h1>Put the games on your home screen</h1>
+<p class="sub">Each game gets its own icon and opens full screen, like an app. One tap and you're playing. Nothing to download.</p>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="t-ios" aria-selected="true" aria-controls="ios">iPhone</button>
+  <button role="tab" id="t-and" aria-selected="false" aria-controls="and">Android</button>
+</div>
+
+<div class="card">
+  <div class="pane" id="ios" role="tabpanel">
+    <ol class="steps">
+      <li><div><b>Open the game</b> you want an icon for. Tap one below.</div></li>
+      <li><div>Tap <b>Share</b> <span class="k">⬆</span><small>At the bottom of Safari. In Chrome it's at the top right.</small></div></li>
+      <li><div>Scroll down and tap <b>Add to Home Screen</b></div></li>
+      <li><div>Tap <b>Add</b>. That's it.</div></li>
+    </ol>
+  </div>
+  <div class="pane" id="and" role="tabpanel" hidden>
+    <ol class="steps">
+      <li><div><b>Open the game</b> you want an icon for. Tap one below.</div></li>
+      <li><div>Tap the menu <span class="k">⋮</span><small>At the top right of Chrome.</small></div></li>
+      <li><div>Tap <b>Add to Home screen</b><small>Some phones say <b>Install app</b> instead.</small></div></li>
+      <li><div>Tap <b>Add</b> (or <b>Install</b>). That's it.</div></li>
+    </ol>
+  </div>
+</div>
+<p class="note">Do it once for each game you want. Already added one and it shows an old picture? Remove it, refresh the page and add it again.</p>
+
+<h2>Choose a game</h2>
+<p class="h2s">Tap an icon to open it, then follow the steps above.</p>
+<div class="grid" id="grid"></div>
+
+<a class="back" href="/">← Back to twominute.games</a>
+</div>
+<script>
+const G=[['/','tmg','Two Minute Games','All the games'],['/aperture/','aperture','Aperture'],['/aperture/landmarks/','landmarks','Landmarks'],['/wonders/','natural-wonders','Natural Wonders','All 11 games'],
+ ['/natural-wonders-masterbrain/','masterbrain','Masterbrain'],['/natural-wonders-rivers/','rivers','Rivers'],['/natural-wonders-lakes/','lakes','Lakes'],['/natural-wonders-mountains/','mountains','Mountains'],
+ ['/natural-wonders-deserts/','deserts','Deserts'],['/natural-wonders-forests/','forests','Forests'],['/natural-wonders-bodies-of-water/','bodies-of-water','Waters'],['/natural-wonders-river-cities/','river-cities','River Cities'],
+ ['/natural-wonders-how-many-borders/','how-many-borders','Borders'],['/natural-wonders-where-is-bigger/','where-is-bigger','Bigger?'],['/natural-wonders-which-of-five/','which-of-five','Which of Five?']];
+document.getElementById('grid').innerHTML=G.map(([u,k,n,s])=>`<a class="ic" href="${u}"><img src="/icons/${k}-180.png" alt="" width="64" height="64">${n}${s?`<span>${s}</span>`:''}</a>`).join('');
+const tabs=[...document.querySelectorAll('.tabs button')];
+const pick=id=>{tabs.forEach(b=>{const on=b.getAttribute('aria-controls')===id;b.setAttribute('aria-selected',on);document.getElementById(b.getAttribute('aria-controls')).hidden=!on})};
+tabs.forEach(b=>b.onclick=()=>pick(b.getAttribute('aria-controls')));
+if(/Android/i.test(navigator.userAgent))pick('and');
+</script>
+<script src="/shared/reach.js?v=8" defer></script>
+</body>
+</html>
