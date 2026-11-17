@@ -1,5 +1,5 @@
 /* twominute.games background music (v1, 11 Nov 2026; v2 15 Nov: ♫ on every screen; v3 17 Nov: one tap on ♫ turns music off or on; the ⓘ beside it, or the Now playing line, opens the card)
-   Natural Wonders games: a quiet classical loop, ON by default, starting on the player's first tap
+   Natural Wonders games: a quiet classical loop, OFF until the player chooses it (17 Nov, Jonathan; was on by default), starting on the player's first tap
    (browsers don't allow sound before that). A ♫ button in the game header turns it off/on (remembered on the device).
    When the music starts, a grey "Now playing" line shows under ♫ for 5 seconds; tapping it opens the Now playing card
    with the piece, performer, a fact and a link to a classical station for the player's country.
@@ -30,13 +30,13 @@ const READY=['aperture','landmarks','lakes','deserts','masterbrain','rivers','ri
 if(!tr||!READY.includes(tr.f))return;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const lang=(D.documentElement.lang||'en').slice(0,2);
-const L={en:['Now playing','For more like this, try','Listen','Music on','Music off','Turn music off','Turn music on','Close','tap for more'],
- de:['Jetzt läuft','Mehr davon gibt es bei','Anhören','Musik an','Musik aus','Musik ausschalten','Musik einschalten','Schließen','für mehr tippen'],
- tr:['Şimdi çalıyor','Benzerleri için:','Dinle','Müzik açık','Müzik kapalı','Müziği kapat','Müziği aç','Kapat','daha fazlası için dokun'],
- fr:['En ce moment','Pour en écouter davantage :','Écouter','Musique activée','Musique coupée','Couper la musique','Activer la musique','Fermer','touchez pour en savoir plus'],
- es:['Suena ahora','Para escuchar más, prueba','Escuchar','Música activada','Música desactivada','Apagar la música','Encender la música','Cerrar','toca para saber más'],
- pt:['Tocando agora','Para ouvir mais, experimente','Ouvir','Música ligada','Música desligada','Desligar a música','Ligar a música','Fechar','toque para saber mais']}[lang]||null;
-const W=L||['Now playing','For more like this, try','Listen','Music on','Music off','Turn music off','Turn music on','Close','tap for more'];
+const L={en:['Now playing','For more like this, try','Listen','Music on','Music off','Turn music off','Turn music on','Close','tap for more','Music? Tap here to turn it on'],
+ de:['Jetzt läuft','Mehr davon gibt es bei','Anhören','Musik an','Musik aus','Musik ausschalten','Musik einschalten','Schließen','für mehr tippen','Musik? Hier tippen zum Einschalten'],
+ tr:['Şimdi çalıyor','Benzerleri için:','Dinle','Müzik açık','Müzik kapalı','Müziği kapat','Müziği aç','Kapat','daha fazlası için dokun','Müzik? Açmak için buraya dokun'],
+ fr:['En ce moment','Pour en écouter davantage :','Écouter','Musique activée','Musique coupée','Couper la musique','Activer la musique','Fermer','touchez pour en savoir plus','De la musique ? Touchez ici pour l’activer'],
+ es:['Suena ahora','Para escuchar más, prueba','Escuchar','Música activada','Música desactivada','Apagar la música','Encender la música','Cerrar','toca para saber más','¿Música? Toca aquí para encenderla'],
+ pt:['Tocando agora','Para ouvir mais, experimente','Ouvir','Música ligada','Música desligada','Desligar a música','Ligar a música','Fechar','toque para saber mais','Música? Toque aqui para ligar']}[lang]||null;
+const W=L||['Now playing','For more like this, try','Listen','Music on','Music off','Turn music off','Turn music on','Close','tap for more','Music? Tap here to turn it on'];
 /* station by country (from the time zone, via reach.js) */
 const ST={def:['Classic FM','https://www.classicfm.com/'],
  DE:['Klassik Radio','https://www.klassikradio.de/'],AT:['Klassik Radio','https://www.klassikradio.de/'],CH:['Klassik Radio','https://www.klassikradio.de/'],
@@ -76,11 +76,15 @@ const css=`.tmgmus{width:32px;height:32px;border-radius:50%;border:1.5px solid r
 .tmgnpc .cl{border:1.5px solid #d7cfc2;background:#fff;border-radius:999px;padding:13px 18px;font:600 15px system-ui,sans-serif;cursor:pointer;color:#16181d}
 .tmgmus.float{box-shadow:0 2px 8px rgba(0,0,0,.12);background:#fff}
 h1:has(>.tmgmus.h1b){display:flex;align-items:center;justify-content:space-between;gap:10px}
+@keyframes tmgask{0%,100%{box-shadow:0 0 0 0 rgba(224,106,46,.55)}50%{box-shadow:0 0 0 7px rgba(224,106,46,0)}}
+.tmgmus.ask,#musicBtn.ask{animation:tmgask 1.8s ease-in-out infinite;color:#e06a2e;text-decoration:none;border-color:#e06a2e}
+.tmgask{position:fixed;z-index:61;background:#e06a2e;color:#fff;font:600 13px/1.2 system-ui,sans-serif;border-radius:999px;padding:8px 13px;box-shadow:0 8px 18px -8px rgba(0,0,0,.45);white-space:nowrap;cursor:pointer;opacity:0;transition:opacity .3s}.tmgask.on{opacity:1}
+.tmgask::before{content:'';position:absolute;top:-5px;right:var(--ar,18px);border:6px solid transparent;border-top:0;border-bottom-color:#e06a2e}
 .tmgmus.h1b{width:36px;height:36px;font-size:17px;margin:0;background:#fff;border-color:#b4552a55;flex:none}`;
 const st=D.createElement('style');st.textContent=css;D.head.appendChild(st);
 
 const audio=AP?null:new Audio(`https://twominute.games/shared/music/${tr.f}.mp3`);if(audio){audio.loop=true;audio.volume=0.35;audio.preload='none'}
-let on=ls('tmg-music')!=='off',started=false,shown=false;
+let on=ls('tmg-music')==='on',started=false,shown=false;
 const btns=new Set();
 const isOn=()=>AP?((D.getElementById('musicBtn')||{getAttribute:()=>'true'}).getAttribute('aria-pressed')!=='false'):on;
 function paint(){if(AP)return;btns.forEach(b=>{b.textContent='♫';b.classList.toggle('off',!on);b.title=on?W[3]:W[4];b.setAttribute('aria-label',on?W[3]:W[4])})}
@@ -123,5 +127,23 @@ D.addEventListener('pointerdown',first,true);D.addEventListener('keydown',first,
 D.addEventListener('visibilitychange',()=>{if(D.hidden)audio.pause();else if(on&&started)audio.play().catch(()=>{})})}
 /* Aperture and Landmarks: their own ♫ now opens the music card too (one tap), and the card's button does the switching */
 if(AP)D.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#musicBtn');if(!b||window.__tmgMusBy)return;e.stopImmediatePropagation();e.preventDefault();hideLine();card()},true);
+/* 17 Nov: music is off until chosen, so while no choice has been made ♫ pulses gently, and once a day an orange bubble
+   under it invites the player to turn it on (tapping the bubble turns it on) */
+const CHOICE=AP?'aperture2-music-v3':'tmg-music';
+const chosen=()=>ls(CHOICE)!==null;
+function askPaint(){const b=AP?D.getElementById('musicBtn'):null;const all=AP?(b?[b]:[]):[...btns];all.forEach(x=>x.classList.toggle('ask',!chosen()&&!isOn()))}
+let ask=null;
+function hideAsk(){if(!ask)return;const a=ask;ask=null;a.classList.remove('on');setTimeout(()=>a.remove(),350)}
+const busy=()=>!![...D.querySelectorAll('.tw-sheetbg,.tw-sheet,.tmgnpbg,.lgm,[role=dialog]')].find(x=>x.offsetParent||getComputedStyle(x).position==='fixed'&&getComputedStyle(x).display!=='none');
+let askTries=0;
+function showAsk(){if(chosen()||isOn())return;if(busy()){if(++askTries<40)setTimeout(showAsk,1500);return} /* wait until the how-to-play sheet or a card is closed */const day=new Date().toISOString().slice(0,10);if(ls('tmg-music-ask-'+GAME)===day)return;
+  const b=AP?D.getElementById('musicBtn'):[...btns].find(x=>x.isConnected&&x.offsetParent);if(!b)return;ls('tmg-music-ask-'+GAME,day);
+  ask=D.createElement('div');ask.className='tmgask';ask.textContent='♫ '+W[9];D.body.appendChild(ask);
+  const r=b.getBoundingClientRect(),w=ask.offsetWidth;const left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w+24));
+  ask.style.top=(r.bottom+9)+'px';ask.style.left=left+'px';ask.style.setProperty('--ar',Math.max(10,Math.min(w-22,(left+w)-(r.left+r.width/2)-6))+'px');
+  requestAnimationFrame(()=>ask&&ask.classList.add('on'));ask.onclick=e=>{e.stopPropagation();hideAsk();if(!isOn()){toggle();if(!AP)showLine()}askPaint()};setTimeout(hideAsk,7000)}
+D.addEventListener('click',e=>{if(ask&&!(e.target.closest&&e.target.closest('.tmgask')))hideAsk();if(e.target.closest&&e.target.closest('.tmgmus,#musicBtn,.tmgnpc'))setTimeout(askPaint,50)},true);
+new MutationObserver(()=>askPaint()).observe(D.body,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']});
+setTimeout(()=>{askPaint();showAsk()},1300);
 window.tmgMusic={card,toggle,line:()=>{if(AP&&!shown){shown=true;place();showLine()}}};
 })();

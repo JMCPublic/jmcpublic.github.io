@@ -178,7 +178,7 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
 }
 window.tmgReach={src,me,link:tag,bump,cc:()=>CC};
 /* background music for the Natural Wonders games */
-if(/natural-wonders-|^\/aperture\/(?!stats)/.test(location.pathname)||window.TMG_GAME){const mu=document.createElement('script');mu.src='/shared/music.js?v=11';mu.defer=true;document.head.appendChild(mu)}
+if(/natural-wonders-|^\/aperture\/(?!stats)/.test(location.pathname)||window.TMG_GAME){const mu=document.createElement('script');mu.src='/shared/music.js?v=12';mu.defer=true;document.head.appendChild(mu)}
 /* first-play walkthrough, shared by every game */
 {const w=document.createElement('script');w.src='/shared/walk.js?v=6';w.defer=true;document.head.appendChild(w)}
 })();

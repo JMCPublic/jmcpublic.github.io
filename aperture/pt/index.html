@@ -648,7 +648,7 @@ const CODES=(()=>{const words=[...new Set([...POOL,...OBJECTS.flatMap(o=>o.answe
 
 /* ---------- sound ---------- */
 let soundOn=true;try{soundOn=localStorage.getItem('aperture2-sound-v2')!=='off'}catch(e){}
-let musicOn=true;try{musicOn=localStorage.getItem('aperture2-music-v2')!=='off'}catch(e){}
+let musicOn=false;try{musicOn=localStorage.getItem('aperture2-music-v3')==='on'}catch(e){}
 let AC=null;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
 function tone(f,dur,type,vol,when,slide){if(!soundOn)return;const a=ac();if(!a)return;const t=a.currentTime+(when||0);
@@ -694,9 +694,9 @@ function musicStart(){if(!musicOn||mus)return;const a=ac();if(!a)return;
 function musicStop(fade){if(!mus)return;mus=null;fade=fade||.8;if(!APM)return;
   try{if(APG){APG.gain.cancelScheduledValues(AC.currentTime);APG.gain.setValueAtTime(Math.max(.0001,APG.gain.value),AC.currentTime);APG.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+fade)}}catch(e){}
   setTimeout(()=>{if(!mus)APM.pause()},fade*1000+100)}
-function setMusic(on){musicOn=on;try{localStorage.setItem('aperture2-music-v2',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Música ligada':'Música desligada');b.dataset.tip=on?'Música ligada · clique para desligar':'Música desligada · clique para ligar'}
+function setMusic(on,init){musicOn=on;try{if(!init)localStorage.setItem('aperture2-music-v3',on?'on':'off')}catch(e){}const b=$('musicBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Música ligada':'Música desligada');b.dataset.tip=on?'Música ligada · clique para desligar':'Música desligada · clique para ligar'}
   try{if(!on)musicStop(.3);else if(S.running&&LIMIT-S.elapsed>10)musicStart()}catch(e){}}
-setMusic(musicOn);
+setMusic(musicOn,1);
 $('musicBtn').onclick=()=>setMusic(!musicOn);
 function setSound(on){soundOn=on;try{localStorage.setItem('aperture2-sound-v2',on?'on':'off')}catch(e){}
   const b=$('soundBtn');if(b){b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',on?'Efeitos sonoros ligados':'Efeitos sonoros desligados');b.dataset.tip=on?'Sons ligados · clique para desligar':'Sons desligados · clique para ligar'}if(on)SFX.place()}

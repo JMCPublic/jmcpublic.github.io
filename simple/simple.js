@@ -17,7 +17,8 @@ const LOC=(()=>{const n=navigator.language||'';return n.toLowerCase().startsWith
 const dateTxt=()=>{try{return new Date().toLocaleDateString(LOC,{weekday:'short',day:'numeric',month:'short'})}catch(e){return U.today}};
 const gameUrl=k=>(CFG.base||'/natural-wonders-')+k+'/';
 const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
-const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain']];
+const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain'],['aperture','Aperture'],['landmarks','Landmarks']];  /* Aperture and Landmarks too (17 Nov), so every daily game links to the others */
+const APK={aperture:'ap2-day-',landmarks:'apL-day-'},APDIR=['de','tr','fr','es','pt'].includes(L)?L+'/':'';
 const dayRec=k=>{const raw=ls('s'+k+'-day')||'';try{const o=JSON.parse(raw);if(o&&o.d)return o}catch(e){}const p=raw.split(':');return p[0]?{d:p[0],n:+p[1]}:null};
 const playedToday=k=>{const r=dayRec(k);return r&&r.d===today()?r:null};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -87,7 +88,17 @@ function label(q){return q.k==='borders'?cname(q.c)+' · '+q.a:q.k==='target'?nm
 
 /* ---------- the game ---------- */
 let S;
-const back=`<a class="back" href="${CFG.home||'/wonders/'}">${esc(U.back)}</a><span class="row"></span>`;
+const back=`<a class="back" href="${CFG.home||'/wonders/'}">${esc(U.back)}</a><span class="row"><button type="button" class="lgb" aria-haspopup="true" aria-label="Language">${L.toUpperCase()} ▾</button></span>`;
+/* 17 Nov (mock-up approved): the language button beside ♫ and ⓘ. Picks one of six, saves it as tmg-lang (like the home page menu) and reloads */
+const LANGS=[['en','English'],['de','Deutsch'],['tr','Türkçe'],['fr','Français'],['es','Español'],['pt','Português']];
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.lgb'),m=document.querySelector('.lgm');
+  const it=e.target.closest&&e.target.closest('.lgm button');
+  if(it){ls('tmg-lang',it.dataset.l);const u=new URL(location.href);u.searchParams.delete('lang');location.replace(u.pathname+u.search+u.hash);return}
+  if(m){m.remove();if(!b)return}
+  if(!b||m)return;e.stopPropagation();
+  const menu=document.createElement('div');menu.className='lgm';menu.setAttribute('role','menu');
+  menu.innerHTML=LANGS.map(([k,n])=>`<button type="button" role="menuitem" data-l="${k}"${k===L?' aria-current="true"':''}><b>${k.toUpperCase()}</b>${n}${k===L?' ✓':''}</button>`).join('');
+  document.body.appendChild(menu);const r=b.getBoundingClientRect();menu.style.top=(r.bottom+6)+'px';menu.style.right=Math.max(12,innerWidth-r.right)+'px'},true);
 const qtext=q=>{if(q.qq){const t=I.QQ(q.qq);if(t!==q.qq||L==='en')return t}return CFG.q};
 function start(seed,practice){S={seed,practice,qs:pick(seed),i:0,res:[],answered:false};playQ()}
 function prog(){return `<div class="prog">${S.qs.map((_,k)=>`<i class="${k<S.res.length?(S.res[k]?'ok':'no'):k===S.i?'now':''}"></i>`).join('')}</div>`}
@@ -107,9 +118,12 @@ function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o==
   $('#after').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${factHTML(q)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
   $('#after .next').onclick=()=>{if(last)end();else{S.i++;playQ()}};
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
-function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{const r=playedToday(k);
+const apDone=k=>{try{return JSON.parse(ls(APK[k]+today())||'null')}catch(e){return null}};
+function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{
+    if(APK[k]){const r=apDone(k);return `<a class="mg${r?' done':''}" href="/aperture/${k==='landmarks'?'landmarks/':''}${APDIR}"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(n)}</b><span>${r?'✓ '+esc(r.t||''):esc(U.play)}</span></a>`}
+    const r=playedToday(k);
     return `<a class="mg${r?' done':''}" href="${gameUrl(k)}"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(gname(k))}</b><span>${r?'✓ '+r.n+' / 10':esc(U.play)}</span></a>`}).join('');
-  const left=GAMES.filter(g=>g[0]!==CFG.key&&!playedToday(g[0])).length;
+  const left=GAMES.filter(g=>g[0]!==CFG.key&&!APK[g[0]]&&!playedToday(g[0])).length;  /* the message counts the Natural Wonders games */
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
 function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),no=g.filter((_,k)=>!S.res[k]);return U.mbs(listJoin(ok.slice(0,3)),listJoin(no.slice(0,2)))}
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}
