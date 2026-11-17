@@ -10,9 +10,15 @@ Run from the repo root after changing index.html or wonders/index.html:  python3
 import re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-READY = {'rivers'}            # games that have a simple version so far
+READY = {'rivers', 'lakes', 'mountains', 'deserts', 'forests', 'bodies-of-water', 'river-cities'}  # games with a simple version
 SIMPLE_TEXT = {
     'rivers': 'A river lights up on the map. Which one is it? Pick from three.',
+    'lakes': 'A lake lights up on the map. Which one is it? Pick from three.',
+    'mountains': 'A peak is marked on the map. Which mountain is it? Pick from three.',
+    'deserts': 'A desert lights up on the map. Which one is it? Pick from three.',
+    'forests': 'A forest is marked on the map. Which one is it? Pick from three.',
+    'bodies-of-water': 'A sea, gulf or strait lights up on the map. What is it called? Pick from three.',
+    'river-cities': 'A city on a great river is marked on the map. Which one is it? Pick from three.',
 }
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
 BANNER = ('<div style="position:relative;z-index:5;background:#fff3e8;color:#16130f;font:600 13px Inter,system-ui,sans-serif;'
@@ -68,3 +74,53 @@ out = ROOT / 'shadow' / 'wonders' / 'index.html'
 out.parent.mkdir(exist_ok=True)
 out.write_text(w)
 print('shadow pages built; ready:', ', '.join(sorted(READY)))
+
+# ---------- simple game pages (17 Nov): one template, the engine in /shadow/simple.js ----------
+SIMPLE = {
+ 'rivers': dict(name='Rivers', q='Which river is this?', noun='rivers', icon='rivers', the=True, next='Next river →',
+                intro='A river lights up on the map. Which one is it? Pick from three.'),
+ 'lakes': dict(name='Lakes', q='Which lake is this?', noun='lakes', icon='lakes', theRe='Sea$', next='Next lake →',
+               intro='A lake lights up on the map. Which one is it? Pick from three.'),
+ 'mountains': dict(name='Mountains', q='Which mountain is this?', noun='mountains', icon='mountains', next='Next mountain →',
+                   intro='A peak is marked on the map. Which mountain is it? Pick from three.'),
+ 'deserts': dict(name='Deserts', q='Which desert is this?', noun='deserts', icon='deserts', the=True, next='Next desert →',
+                 intro='A desert lights up on the map. Which one is it? Pick from three.'),
+ 'forests': dict(name='Forests', q='Which forest is this?', noun='forests', icon='forests', next='Next forest →',
+                 theRe='^(Amazon|Congo|Black|New Forest|Sundarbans|Ardennes|Forest of|Borneo|Bwindi|Tongass|Hoh|Great|Gondwana|Lacandon|Landes|Hyrcanian|Daintree|Monteverde|El Yunque|Mau)',
+                 intro='A forest is marked on the map. Which one is it? Pick from three.'),
+ 'bodies-of-water': dict(name='Bodies of Water', q='What is this called?', noun='seas, gulfs and straits', icon='bodies-of-water', the=True, next='Next one →',
+                         intro='A sea, gulf or strait lights up on the map. What is it called? Pick from three.'),
+ 'river-cities': dict(name='River Cities', q='Which city is this?', noun='river cities', icon='river-cities', next='Next city →',
+                      intro='A city on a great river is marked on the map. Which one is it? Pick from three.'),
+}
+import json as _json
+TPL = '''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{name} (simple) · Shadow · Two Minute Games</title>
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/icons/{icon}-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
+<link rel="stylesheet" href="/shadow/simple.css?v=2">
+</head>
+<body>
+<div class="bar">🕶️ Shadow site · simple {name} · private test</div>
+<div class="wrap" id="app"></div>
+<script>const CFG={cfg};</script>
+<script src="data.js?v={ver}"></script>
+<script src="/shadow/simple.js?v=2"></script>
+</body>
+</html>
+'''
+for key, c in SIMPLE.items():
+    cfg = dict(c, key=key); cfg.pop('icon')
+    data = ROOT / 'shadow' / key / 'data.js'
+    ver = int(data.stat().st_mtime) if data.exists() else 1
+    (ROOT / 'shadow' / key).mkdir(exist_ok=True)
+    (ROOT / 'shadow' / key / 'index.html').write_text(TPL.format(name=c['name'], icon=c['icon'], cfg=_json.dumps(cfg, ensure_ascii=False), ver=ver))
+print('simple game pages:', ', '.join(SIMPLE))
