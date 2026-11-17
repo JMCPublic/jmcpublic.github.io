@@ -93,7 +93,20 @@ html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
   .game .play{grid-column:2;justify-self:start;align-self:end}
   footer{flex-direction:row;justify-content:center;gap:10px;font-size:13px;margin-top:26px}
 }
-@media (min-width:1180px){.games{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* six games (17 Nov, Jonathan: "all in a line"): on laptops the cards stand up (icon on top, then name, words and Play),
+   all six in one row on wide screens, three by two on smaller laptops; phones keep the list */
+@media (min-width:860px){
+  .games{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .game{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr auto;row-gap:12px;padding:18px 16px}
+  .game img{width:68px;height:68px;border-radius:16px;grid-row:auto}
+  .game .t{grid-row:2/4}.game .play{grid-column:1;grid-row:4}
+  .game h2{font-size:18px}.game p{font-size:13.5px}
+}
+@media (min-width:1180px){
+  .wrap{max-width:1340px}
+  .games{grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+  .game{padding:16px 14px}.game h2{font-size:17px}.game p{font-size:13px}
+}
 </style>
 </head>
 <body>
