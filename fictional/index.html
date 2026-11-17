@@ -61,6 +61,7 @@ a{color:inherit}
 .playbtn{width:200px;height:54px;font-size:17px;position:relative;top:-12px}
 .streak{display:flex;justify-content:center;gap:12px;font-size:13px;color:var(--soft);flex-wrap:wrap}
 .foot2{color:var(--faint);font-size:12.5px;text-align:center;margin-top:14px;display:flex;flex-direction:column;gap:4px}
+.mini2{margin-left:4px;background:none;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:2px 9px;font-size:12px;color:#fff}
 .foot2 a{color:#b5bac0;text-decoration:none}.foot2 a:hover{color:#fff}
 .partner{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--soft);margin-top:8px}
 .logo-slot{height:24px;padding:0 10px;border:1px dashed #6b6b6b;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.06em;color:#cfd3d8}
@@ -208,7 +209,7 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
   <div class="partner"><span>In partnership with</span><span class="logo-slot">AUDIBLE LOGO</span></div>
   <footer class="foot2">
     <span>New quizzes every day at midnight, your time.</span>
-    <span><a href="/add/">📱 Put Fictional on your home screen</a></span>
+    <span id="homeLine"><a href="/add/">📱 Put Fictional on your home screen</a></span>
     <span><a href="/about/">About, credits and privacy</a> · <a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Buy me a coffee</a></span>
     <span><a href="/about/#ownership">© 2026 Two Minute Games. All rights reserved.</a></span>
   </footer>
@@ -568,6 +569,9 @@ function share(T,r){
   (navigator.clipboard?navigator.clipboard.writeText(all):Promise.reject()).then(()=>toast('Copied: paste it to a friend'),()=>{prompt('Copy this to a friend:',all)});
 }
 
+/* opened from a home-screen icon (no Safari bar, no address): say so, and how to add Fictional by itself */
+if(navigator.standalone||matchMedia('(display-mode: standalone)').matches){$('homeLine').innerHTML='📱 You\'re in the home-screen app, so Safari\'s buttons are hidden. To give Fictional its own icon, open <b>twominute.games/fictional</b> in Safari and add it from there. <button class="mini2" id="copyLink">Copy the link</button>';
+  $('copyLink').onclick=()=>{const u='https://twominute.games/fictional/';(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link copied: paste it into Safari'),()=>prompt('Copy this link into Safari:',u))}}
 show('start');drawStart();
 })();
 </script>
