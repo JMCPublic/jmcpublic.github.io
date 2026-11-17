@@ -45,9 +45,9 @@ if(!src){
   else src={root:'walkin',step:0,day:DAY};
   ls('tmg-src',JSON.stringify(src))}
 // --- counters: stats/reach (all time), reach-YYYY-MM (month) ---
-async function commit(id,fields){if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return; /* Claude's test browser is never counted, same as the games */try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
-  body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
-const bump=async f=>{await Promise.all([commit('reach',f),MONTH>='2026-11'?commit('reach-'+MONTH,f):null])}; // both at once
+async function commit(id,fields){if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return; /* Claude's test browser is never counted, same as the games */try{const r=await fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})});return r.ok}catch(e){return false}}
+const bump=async f=>{const r=await Promise.all([commit('reach',f),MONTH>='2026-11'?commit('reach-'+MONTH,f):true]);return r.every(Boolean)}; // both at once
 const R=fkey(src.root);
 /* the site that sent a new visitor (16 Nov): only the site's name (google, facebook, a news site), from the browser's referrer; nothing about the person */
 const REFN=(()=>{try{const r=document.referrer||'';if(!r)return 'direct';if(/^android-app:\/\/com\.google\.android\.gm/.test(r))return 'gmail';
@@ -67,6 +67,21 @@ ccReady.then(cc=>{const f={};
   if(isNew&&src.root!=='walkin'&&LIVE&&!VIP){const s=x=>({stringValue:String(x)});
     fetch(`${BASE}/spread?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{root:s(src.root),step:{integerValue:String(src.step)},parent:s(src.parent||''),country:s(cc||''),at:{timestampValue:new Date().toISOString()}}})}).catch(()=>{})}
   welcome(cc);if(ww==='li'||ww==='fb')witw(ww,cc)});
+/* devices (17 Nov): once per device, the kind of device, its system and version, the browser and (Android only) the phone model,
+   all from what the browser itself reports. Nothing personal. Sent on its own so it can never hold up the other counts */
+(async()=>{if(ls('tmg-dev')==='1')return;try{const ua=navigator.userAgent,c=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,28)||'unknown';
+  let os='other',ver='',ty='desktop',br='other',model='';
+  const ipad=/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  if(/iPhone|iPod/.test(ua)||ipad){os=ipad?'ipados':'ios';ty=ipad?'tablet':'phone';model=ipad?'ipad':'iphone';
+    const sv=/Version\/(\d+)/.exec(ua),ov=/OS (\d+)_/.exec(ua);ver=(sv&&+sv[1]>=26)?sv[1]:(ov?ov[1]:(sv?sv[1]:''))}
+  else if(/Android/.test(ua)){os='android';ver=(/Android (\d+)/.exec(ua)||[])[1]||'';ty=/Mobile/.test(ua)?'phone':'tablet'}
+  else if(/CrOS/.test(ua))os='chromeos';else if(/Windows NT/.test(ua)){os='windows';ver='10'}else if(/Mac OS X/.test(ua))os='macos';else if(/Linux/.test(ua))os='linux';
+  try{const d=navigator.userAgentData;if(d&&d.getHighEntropyValues){const h=await d.getHighEntropyValues(['model','platformVersion']);
+    if(os==='android'){if(h.model)model=h.model;const v=parseInt(h.platformVersion);if(v)ver=String(v)}
+    if(os==='windows'){const v=parseInt(h.platformVersion);if(v)ver=v>=13?'11':'10'}}}catch(e){}
+  br=/SamsungBrowser/.test(ua)?'samsung':/EdgA?\/|EdgiOS/.test(ua)?'edge':/OPR\/|OPiOS/.test(ua)?'opera':/Firefox|FxiOS/.test(ua)?'firefox':/CriOS|Chrome\//.test(ua)?'chrome':/Safari\//.test(ua)?'safari':'other';
+  const f={[`dev.os_${c(os+(ver?'_'+ver:''))}`]:1,[`dev.ty_${ty}`]:1,[`dev.br_${br}`]:1};if(model)f[`dev.m_${c(model)}`]=1;
+  if(await bump(f))ls('tmg-dev','1') /* only marked as counted once the count is saved */}catch(e){}})();
 // --- every twominute.games link a player copies or shares carries their anonymous code ---
 const tag=u=>{try{const x=new URL(u);if(!/twominute\.games$/.test(x.hostname))return u;x.searchParams.delete('ww');x.searchParams.delete('from');x.searchParams.set('r',`${me}-${src.step}-${clean(src.root)}`);return x.toString()}catch(e){return u}};
 const tagText=t=>String(t).replace(/(?:https?:\/\/)?twominute\.games(?:\/[^\s]*)?/g,m=>{const u=tag(/^https?:/.test(m)?m:'https://'+m);return /^https?:/.test(m)?u:u.replace(/^https:\/\//,'')});

@@ -215,6 +215,7 @@ document.getElementById('gateF').onsubmit=async e=>{e.preventDefault();const i=d
   <section class="card" data-tab="reach" id="rcSrc"><p class="msgnote">Loading…</p></section>
   <section class="card" data-tab="reach" id="rcLang"></section>
   <section class="card" data-tab="reach" id="rcRate"></section>
+  <section class="card" data-tab="reach" id="rcDev"></section>
   <section class="card" data-tab="reach" id="rcWalk"></section>
   <section class="card" data-tab="reach" id="rcSpread"><div class="h2row"><h2>How far your links spread</h2><small>Patient Zero · anonymous codes, no names</small></div><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see this.</p></div></section>
 
@@ -464,7 +465,7 @@ const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>{try{return dn.of(c)}catch(e){return c}};
 let docs={},WM=null,entries=[],period='month';
 const getDoc=id=>fetch(B+'stats/'+id+'?key='+K).then(r=>r.ok?r.json():{fields:{}}).then(j=>j.fields||{}).catch(()=>({}));
-async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawRate();drawWalk();drawWitw();loadVisits()}
+async function loadPublic(){const [a,m]=await Promise.all([getDoc('reach'),getDoc('reach-'+MONTH)]);docs={all:a,month:m};drawSrc();drawLang();drawRate();drawDev();drawWalk();drawWitw();loadVisits()}
 function cur(){return docs[period]||{}}
 // which sites sent new visitors (from 16 Nov): google, facebook, a news site, or 'direct' (typed in, a bookmark, or an app that hides it)
 const REFL={direct:'Direct (typed, bookmark or app)',google:'Google',bing:'Bing',duckduckgo:'DuckDuckGo',yahoo:'Yahoo',ecosia:'Ecosia',facebook:'Facebook',instagram:'Instagram',linkedin:'LinkedIn',x:'X (Twitter)',reddit:'Reddit',youtube:'YouTube',whatsapp:'WhatsApp',tiktok:'TikTok',outlook:'Outlook',gmail:'Gmail'};
@@ -477,7 +478,7 @@ function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur()
   el.innerHTML=`<div class="h2row"><h2>Where visitors came from</h2><small><button class="rbtn" data-p="month"${period==='month'?' style="background:var(--ink);color:#fff"':''}>This month</button><button class="rbtn" data-p="all"${period==='all'?' style="background:var(--ink);color:#fff"':''}>All time</button></small></div>
   <p class="msgnote">Each link you post gets its own tag, e.g. twominute.games/?from=reddit-au. Visits count once per person per day.</p>
   ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${tagCountry(r[0])?flag(tagCountry(r[0]))+' ':''}${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}${refLine(src)}`;
-  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawRate();drawWalk();drawWitw()})}
+  el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawRate();drawDev();drawWalk();drawWitw()})}
 const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch'],tr:['🇹🇷','Türkçe'],fr:['🇫🇷','Français'],es:['🌎','Español'],pt:['🌎','Português']};
 const WNAME={objects:'Aperture',landmarks:'Aperture Landmarks',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?',bodies_of_water:'Bodies of Water',river_cities:'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
 function drawWalk(){const el=document.getElementById('rcWalk');if(!el)return;const W=map(cur().walk);const g={};
@@ -493,6 +494,16 @@ function drawRate(){const el=document.getElementById('rcRate');if(!el)return;con
   const rows=Object.entries(g).map(([k,r])=>[k,r,r.tough+r.easy+r.right]).sort((a,b)=>b[2]-a[2]);const pc=(a,t)=>t?Math.round(100*a/t)+'%':'–';
   el.innerHTML=`<div class="h2row"><h2>Goldilocks: how was that?</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 15 Nov 2026. Asked on the Natural Wonders results card, once per game per player per day. Lots of "too tough" or "too easy" means the levels need adjusting.</p>
   ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Answers</th><th class="n">Too tough</th><th class="n">Just right</th><th class="n">Too easy</th></tr>${rows.map(([k,r,t])=>`<tr><td>${esc(NM[k]||k)}</td><td class="n">${t}</td><td class="n">${r.tough} (${pc(r.tough,t)})</td><td class="n">${r.right} (${pc(r.right,t)})</td><td class="n">${r.easy} (${pc(r.easy,t)})</td></tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet.</p>'}<p class="msgnote">Home-screen tip (from 15 Nov): shown ${num(R.a2hs_shown)} · Show me how ${num(R.a2hs_how)} · Not now ${num(R.a2hs_no)}</p><p class="msgnote">🔒 Wrong stats passwords (from 16 Nov): ${num(R.gate_fail)}</p>`}
+function drawDev(){const el=document.getElementById('rcDev');if(!el)return;const D=map(cur().dev);const g={os:[],ty:[],br:[],m:[]};
+  Object.entries(D).forEach(([k,v])=>{const m=k.match(/^(os|ty|br|m)_(.+)$/);if(m)g[m[1]].push([m[2],num(v)])});Object.values(g).forEach(a=>a.sort((x,y)=>y[1]-x[1]));
+  const OS={ios:'iPhone (iOS)',ipados:'iPad (iPadOS)',android:'Android',windows:'Windows',macos:'Mac',chromeos:'Chromebook',linux:'Linux',other:'Other'};
+  const osName=k=>{const m=k.match(/^([a-z]+)(?:_(\d+))?$/);return m?(OS[m[1]]||m[1])+(m[2]?' '+m[2]:''):k};
+  const BR={safari:'Safari',chrome:'Chrome',samsung:'Samsung Internet',edge:'Edge',firefox:'Firefox',opera:'Opera',other:'Other'},TY={phone:'📱 Phone',tablet:'Tablet',desktop:'💻 Computer'};
+  const mName=k=>k==='iphone'?'iPhone (Apple doesn\'t say which)':k==='ipad'?'iPad':/^(sm|gt)_/.test(k)?k.toUpperCase().replace(/_/g,'-'):k.replace(/_/g,' ').replace(/\b[a-z]/g,c=>c.toUpperCase());
+  const tot=a=>a.reduce((t,x)=>t+x[1],0),T=tot(g.ty)||tot(g.os);const pc=n=>T?Math.round(100*n/T)+'%':'';
+  const tbl=(h,a,nm)=>a.length?`<table class="rt"><tr><th>${h}</th><th class="n">Devices</th><th class="n">Share</th></tr>${a.map(([k,n])=>`<tr><td>${esc(nm(k))}</td><td class="n">${n}</td><td class="n">${pc(n)}</td></tr>`).join('')}</table>`:'';
+  el.innerHTML=`<div class="h2row"><h2>Phones and systems</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 17 Nov 2026. Counted once per device, from what the browser reports: the kind of device, its system and version, the browser, and for Android the model. Nothing personal. iPhones don't say which model.</p>
+  ${T?`<p class="msgnote"><b>${g.ty.map(([k,n])=>`${TY[k]||k} ${n} (${pc(n)})`).join(' · ')}</b></p>${tbl('System and version',g.os,osName)}${tbl('Browser',g.br,k=>BR[k]||k)}${g.m.length?tbl('Model',g.m,mName)+'<p class="msgnote">Android model codes like SM-S918B can be looked up on Google (that one is a Samsung Galaxy S23 Ultra).</p>':''}`:'<p class="msgnote">Nothing yet. Devices are counted from today.</p>'}`}
 function drawLang(){const el=document.getElementById('rcLang');const ALL=map(cur().langs);
   const table=(L,game)=>{const rows=Object.entries(L).map(([k,v])=>{const f=map(v),vis=num(f.visits),fin=num(f.finished);
     const via=['link','offer','switch'].map(x=>[x,num(f['via_'+x])]).filter(x=>x[1]);
