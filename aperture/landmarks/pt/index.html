@@ -994,7 +994,7 @@ function newRound(){
   /* already played today: Admirar a minha pontuação, not a new game (17 Nov, Jonathan) */
   {let sv=null;try{if(G.round===0&&G.mode==='daily'&&localStorage.getItem('ap-vip')!=='1')sv=JSON.parse(localStorage.getItem((location.pathname.includes('/landmarks/')?'apL-day-':'ap2-day-')+G.key))}catch(e){}
    if(sv){overlay.innerHTML=`<span class="label">${G.label}</span><h3>${sv.t}</h3><p>Já jogaste a ronda de hoje. À meia-noite há outra.</p><button class="go" id="admireBtn">Admirar a minha pontuação</button>`;
-    $('admireBtn').onclick=()=>{overlay.innerHTML=sv.h;document.body.classList.add('done');document.body.classList.remove('waiting');hideQuote();
+    $('admireBtn').onclick=()=>{window.tmgAdmired=1;overlay.innerHTML=sv.h;document.body.classList.add('done');document.body.classList.remove('waiting');hideQuote();
       const cb=$('copyBtn');if(cb)cb.onclick=async()=>{if(navigator.share){try{await navigator.share({text:sv.c});cb.textContent='Enviado';return}catch(err){if(err&&err.name==='AbortError')return}}try{await navigator.clipboard.writeText(sv.c);cb.textContent='Copiado'}catch(err){}};
       const el=$('nextIn');if(el){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`}}}}
   document.body.classList.add('waiting');

@@ -150,7 +150,7 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
   const f={[`langs.${L}.visits`]:1},fresh=ls('tmg-lang-'+L)!=='1';if(fresh){ls('tmg-lang-'+L,'1');f[`langs.${L}.uniques`]=1}
   const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
   ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
-  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('#overlay #copyBtn')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
+  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&!window.tmgAdmired&&document.querySelector('#overlay #copyBtn')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
 
 /* --- player alerts (10 Nov 2026): a phone notification via ntfy the first time someone starts a game on their device. Game, country and link tag only; no names, no IP --- */
 {const TOPIC='tmg-pnz2n1a4wqw9';
