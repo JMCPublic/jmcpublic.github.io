@@ -22,22 +22,22 @@ const name=()=>{const t=document.querySelector('meta[name="apple-mobile-web-app-
 const ios=/iPhone|iPad|iPod/.test(ua),inChrome=/CriOS|FxiOS|EdgiOS/.test(ua);
 const T={
  en:{t:'Back again? 👋',p:n=>`Put ${n} on your home screen. One tap and you're playing, full screen.`,y:'Show me how',n:'Not now',h:n=>`Add ${n} to your home screen`,
-  ios:[`Tap <b>Share</b> <span class="sh">⬆</span> ${inChrome?'at the top right':'at the bottom of Safari'}`,'Scroll down and tap <b>Add to Home Screen</b>','Tap <b>Add</b>'],
+  ios:[inChrome?`Tap <b>Share</b> <span class="sh">⬆</span> at the top right`:`In Safari's bar at the bottom, tap <b>•••</b>, then <b>Share</b> <span class="sh">⬆</span> (older iPhones show Share straight away). Only see the web address? Scroll up a little first.`,'Scroll down and tap <b>Add to Home Screen</b>','Tap <b>Add</b>'],
   and:['Tap the menu <b>⋮</b> at the top right','Tap <b>Add to Home screen</b> or <b>Install app</b>','Tap <b>Add</b> or <b>Install</b>'],ok:'Got it'},
  de:{t:'Wieder da? 👋',p:n=>`Leg ${n} auf deinen Startbildschirm. Ein Tipp und du spielst, im Vollbild.`,y:'Zeig mir wie',n:'Jetzt nicht',h:n=>`${n} zum Startbildschirm hinzufügen`,
-  ios:[`Tippe auf <b>Teilen</b> <span class="sh">⬆</span> ${inChrome?'oben rechts':'unten in Safari'}`,'Scrolle nach unten und tippe auf <b>Zum Home-Bildschirm</b>','Tippe auf <b>Hinzufügen</b>'],
+  ios:[inChrome?`Tippe auf <b>Teilen</b> <span class="sh">⬆</span> oben rechts`:`Tippe in Safaris Leiste unten auf <b>•••</b> und dann auf <b>Teilen</b> <span class="sh">⬆</span> (ältere iPhones zeigen Teilen direkt). Siehst du nur die Adresse? Scrolle erst ein Stück nach oben.`,'Scrolle nach unten und tippe auf <b>Zum Home-Bildschirm</b>','Tippe auf <b>Hinzufügen</b>'],
   and:['Tippe oben rechts auf das Menü <b>⋮</b>','Tippe auf <b>Zum Startbildschirm hinzufügen</b> oder <b>App installieren</b>','Tippe auf <b>Hinzufügen</b> oder <b>Installieren</b>'],ok:'Alles klar'},
  tr:{t:'Yine mi buradasın? 👋',p:n=>`${n} oyununu ana ekranına ekle. Tek dokunuşla tam ekran oyna.`,y:'Nasıl yapılır',n:'Şimdi değil',h:n=>`${n} oyununu ana ekrana ekle`,
-  ios:[`<b>Paylaş</b> <span class="sh">⬆</span> düğmesine dokun (${inChrome?'sağ üstte':'Safari’nin altında'})`,'Aşağı kaydır ve <b>Ana Ekrana Ekle</b>’ye dokun','<b>Ekle</b>’ye dokun'],
+  ios:[inChrome?`<b>Paylaş</b> <span class="sh">⬆</span> düğmesine dokun (sağ üstte)`:`Safari’nin alttaki çubuğunda <b>•••</b> simgesine, sonra <b>Paylaş</b> <span class="sh">⬆</span> düğmesine dokun (eski iPhone’larda Paylaş doğrudan görünür). Yalnızca adresi mi görüyorsun? Önce biraz yukarı kaydır.`,'Aşağı kaydır ve <b>Ana Ekrana Ekle</b>’ye dokun','<b>Ekle</b>’ye dokun'],
   and:['Sağ üstteki <b>⋮</b> menüsüne dokun','<b>Ana ekrana ekle</b> veya <b>Uygulamayı yükle</b>’ye dokun','<b>Ekle</b> veya <b>Yükle</b>’ye dokun'],ok:'Tamam'},
  fr:{t:'Te revoilà ? 👋',p:n=>`Mets ${n} sur ton écran d’accueil. Un geste et tu joues, en plein écran.`,y:'Montre-moi',n:'Pas maintenant',h:n=>`Ajouter ${n} à l’écran d’accueil`,
-  ios:[`Touche <b>Partager</b> <span class="sh">⬆</span> ${inChrome?'en haut à droite':'en bas de Safari'}`,'Fais défiler et touche <b>Sur l’écran d’accueil</b>','Touche <b>Ajouter</b>'],
+  ios:[inChrome?`Touche <b>Partager</b> <span class="sh">⬆</span> en haut à droite`:`Dans la barre de Safari en bas, touche <b>•••</b> puis <b>Partager</b> <span class="sh">⬆</span> (les anciens iPhone affichent Partager directement). Tu ne vois que l’adresse ? Fais d’abord défiler un peu vers le haut.`,'Fais défiler et touche <b>Sur l’écran d’accueil</b>','Touche <b>Ajouter</b>'],
   and:['Touche le menu <b>⋮</b> en haut à droite','Touche <b>Ajouter à l’écran d’accueil</b> ou <b>Installer l’application</b>','Touche <b>Ajouter</b> ou <b>Installer</b>'],ok:'Compris'},
  es:{t:'¿Otra vez por aquí? 👋',p:n=>`Pon ${n} en tu pantalla de inicio. Un toque y a jugar, a pantalla completa.`,y:'Enséñame cómo',n:'Ahora no',h:n=>`Añadir ${n} a la pantalla de inicio`,
-  ios:[`Toca <b>Compartir</b> <span class="sh">⬆</span> ${inChrome?'arriba a la derecha':'abajo en Safari'}`,'Desliza y toca <b>Añadir a pantalla de inicio</b>','Toca <b>Añadir</b>'],
+  ios:[inChrome?`Toca <b>Compartir</b> <span class="sh">⬆</span> arriba a la derecha`:`En la barra de Safari, abajo, toca <b>•••</b> y luego <b>Compartir</b> <span class="sh">⬆</span> (los iPhone más antiguos muestran Compartir directamente). ¿Solo ves la dirección? Desliza un poco hacia arriba primero.`,'Desliza y toca <b>Añadir a pantalla de inicio</b>','Toca <b>Añadir</b>'],
   and:['Toca el menú <b>⋮</b> arriba a la derecha','Toca <b>Añadir a pantalla de inicio</b> o <b>Instalar aplicación</b>','Toca <b>Añadir</b> o <b>Instalar</b>'],ok:'Entendido'},
  pt:{t:'De volta? 👋',p:n=>`Põe ${n} no teu ecrã principal. Um toque e estás a jogar, em ecrã inteiro.`,y:'Mostra-me como',n:'Agora não',h:n=>`Adicionar ${n} ao ecrã principal`,
-  ios:[`Toca em <b>Partilhar</b> <span class="sh">⬆</span> ${inChrome?'no canto superior direito':'em baixo no Safari'}`,'Desliza e toca em <b>Adicionar ao ecrã principal</b>','Toca em <b>Adicionar</b>'],
+  ios:[inChrome?`Toca em <b>Partilhar</b> <span class="sh">⬆</span> no canto superior direito`:`Na barra do Safari, em baixo, toca em <b>•••</b> e depois em <b>Partilhar</b> <span class="sh">⬆</span> (os iPhone mais antigos mostram Partilhar logo). Só vês o endereço? Desliza primeiro um pouco para cima.`,'Desliza e toca em <b>Adicionar ao ecrã principal</b>','Toca em <b>Adicionar</b>'],
   and:['Toca no menu <b>⋮</b> no canto superior direito','Toca em <b>Adicionar ao ecrã principal</b> ou <b>Instalar aplicação</b>','Toca em <b>Adicionar</b> ou <b>Instalar</b>'],ok:'Percebi'}}[L]||null;
 if(!T)return;
 const st=document.createElement('style');

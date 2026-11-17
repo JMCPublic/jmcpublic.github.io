@@ -18,7 +18,7 @@ if((/natural-wonders-/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tm
   meta('apple-mobile-web-app-capable','yes');meta('mobile-web-app-capable','yes');
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__tmgBip=e});
   if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)document.documentElement.classList.add('tmg-app');
-  else{const a=document.createElement('script');a.src='/shared/a2hs.js?v=1';a.defer=true;h.appendChild(a)}})();
+  else{const a=document.createElement('script');a.src='/shared/a2hs.js?v=2';a.defer=true;h.appendChild(a)}})();
 (()=>{if(window.tmgReach||window.top!==window)return;
 const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
 const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
