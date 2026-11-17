@@ -10,7 +10,7 @@ Run from the repo root after changing index.html or wonders/index.html:  python3
 import re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-READY = {'rivers', 'lakes', 'mountains', 'deserts', 'forests', 'bodies-of-water', 'river-cities'}  # games with a simple version
+READY = {'rivers', 'lakes', 'mountains', 'deserts', 'forests', 'bodies-of-water', 'river-cities', 'where-is-bigger', 'which-of-five', 'how-many-borders'}  # games with a simple version
 SIMPLE_TEXT = {
     'rivers': 'A river lights up on the map. Which one is it? Pick from three.',
     'lakes': 'A lake lights up on the map. Which one is it? Pick from three.',
@@ -19,6 +19,9 @@ SIMPLE_TEXT = {
     'forests': 'A forest is marked on the map. Which one is it? Pick from three.',
     'bodies-of-water': 'A sea, gulf or strait lights up on the map. What is it called? Pick from three.',
     'river-cities': 'A city on a great river is marked on the map. Which one is it? Pick from three.',
+    'where-is-bigger': 'Three country shapes, not to scale. Which one covers the most land? Pick from three.',
+    'which-of-five': 'One country to beat and three challengers. Only one of them is bigger. Which?',
+    'how-many-borders': 'A country lights up on the map. How many countries does it touch by land? Pick from three.',
 }
 NOINDEX = '<meta name="robots" content="noindex, nofollow">'
 BANNER = ('<div style="position:relative;z-index:5;background:#fff3e8;color:#16130f;font:600 13px Inter,system-ui,sans-serif;'
@@ -56,6 +59,7 @@ out.write_text(s)
 w = (ROOT / 'wonders' / 'index.html').read_text()
 w = common(w)
 w = w.replace('<title>', '<title>Shadow · ', 1)
+w = w.replace("{n:'Which of Five?',", "{n:'Which of Three?',")  # renamed for the simple set (17 Nov)
 w = w.replace('<a class="brand" href="/"', '<a class="brand" href="/shadow/"')
 w = w.replace('href="/natural-wonders-masterbrain/"', f'href="{link("masterbrain")}"')
 w = w.replace('<a href="/">← All games</a>', '<a href="/shadow/">← All games</a>')
@@ -92,6 +96,12 @@ SIMPLE = {
                          intro='A sea, gulf or strait lights up on the map. What is it called? Pick from three.'),
  'river-cities': dict(name='River Cities', q='Which city is this?', noun='river cities', icon='river-cities', next='Next city →',
                       intro='A city on a great river is marked on the map. Which one is it? Pick from three.'),
+ 'where-is-bigger': dict(name='Where is Bigger?', q='Which covers the most land?', noun='countries', icon='where-is-bigger', next='Next →',
+                         intro='Three country shapes, not to scale. Which one covers the most land? Pick from three.'),
+ 'which-of-five': dict(name='Which of Three?', q='', noun='countries', icon='which-of-five', next='Next →',
+                       intro='One country to beat and three challengers. Only one of them is bigger. Which?'),
+ 'how-many-borders': dict(name='How Many Borders?', q='', noun='countries', icon='how-many-borders', next='Next →',
+                          intro='A country lights up on the map. How many countries does it touch by land? Pick from three.'),
 }
 import json as _json
 TPL = '''<!doctype html>
@@ -106,15 +116,15 @@ TPL = '''<!doctype html>
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
-<link rel="stylesheet" href="/shadow/simple.css?v=4">
+<link rel="stylesheet" href="/shadow/simple.css?v=5">
 </head>
 <body>
 <div class="bar">🕶️ Shadow site · simple {name} · private test</div>
 <div class="wrap" id="app"></div>
 <script>const CFG={cfg};window.TMG_SIMPLE=1;window.TMG_GAME=CFG.key;</script>
 <script src="data.js?v={ver}"></script>
-<script src="/shadow/i18n.js?v=1"></script>
-<script src="/shadow/simple.js?v=5"></script>
+<script src="/shadow/i18n.js?v=2"></script>
+<script src="/shadow/simple.js?v=6"></script>
 <script src="/shared/adbox.js?v=7" defer></script>
 <script src="/shared/reach.js?v=10" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>

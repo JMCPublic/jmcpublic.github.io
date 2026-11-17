@@ -100,7 +100,25 @@ forests:{en:['Forests','Which forest is this?','Next forest →','forests','A fo
   tr:['Nehir Şehirleri','Bu hangi şehir?','Sonraki şehir →','şehirler','Haritada büyük bir nehir kıyısındaki bir şehir işaretli. Hangisi? Üç seçenekten birini seç.'],
   fr:['Villes fluviales','Quelle ville est-ce ?','Ville suivante →','villes fluviales','Une ville au bord d’un grand fleuve est marquée sur la carte. Laquelle ? Choisis parmi trois.'],
   es:['Ciudades fluviales','¿Qué ciudad es esta?','Siguiente ciudad →','ciudades fluviales','Una ciudad junto a un gran río está marcada en el mapa. ¿Cuál es? Elige entre tres.'],
-  pt:['Cidades ribeirinhas','Que cidade é esta?','Próxima cidade →','cidades ribeirinhas','Uma cidade junto a um grande rio está marcada no mapa. Qual é? Escolhe entre três.']}};
+  pt:['Cidades ribeirinhas','Que cidade é esta?','Próxima cidade →','cidades ribeirinhas','Uma cidade junto a um grande rio está marcada no mapa. Qual é? Escolhe entre três.']},
+'where-is-bigger':{en:['Where is Bigger?','Which covers the most land?','Next →','countries','Three country shapes, not to scale. Which one covers the most land? Pick from three.'],
+  de:['Wo ist es größer?','Welches Land ist am größten?','Weiter →','Ländern','Drei Länderumrisse, nicht maßstabsgetreu. Welches Land ist am größten? Wähle aus drei.'],
+  tr:['Hangisi Daha Büyük?','Hangisi en büyük?','Sonraki →','ülkeler','Üç ülke şekli, ölçekli değil. Hangisi en büyük? Üç seçenekten birini seç.'],
+  fr:['Lequel est le plus grand ?','Lequel est le plus grand ?','Suivant →','pays','Trois formes de pays, pas à l’échelle. Lequel est le plus grand ? Choisis parmi trois.'],
+  es:['¿Cuál es más grande?','¿Cuál es el más grande?','Siguiente →','países','Tres siluetas de países, no a escala. ¿Cuál es el más grande? Elige entre tres.'],
+  pt:['Qual é maior?','Qual é o maior?','Seguinte →','países','Três formas de países, fora de escala. Qual é o maior? Escolhe entre três.']},
+'which-of-five':{en:['Which of Three?','','Next →','countries','One country to beat and three challengers. Only one of them is bigger. Which?'],
+  de:['Welches von dreien?','','Weiter →','Ländern','Ein Land, das es zu schlagen gilt, und drei Herausforderer. Nur einer ist größer. Welcher?'],
+  tr:['Üçünden Hangisi?','','Sonraki →','ülkeler','Geçilmesi gereken bir ülke ve üç rakip. Yalnızca biri daha büyük. Hangisi?'],
+  fr:['Lequel des trois ?','','Suivant →','pays','Un pays à battre et trois challengers. Un seul est plus grand. Lequel ?'],
+  es:['¿Cuál de los tres?','','Siguiente →','países','Un país a batir y tres aspirantes. Solo uno es más grande. ¿Cuál?'],
+  pt:['Qual dos três?','','Seguinte →','países','Um país a vencer e três desafiantes. Só um é maior. Qual?']},
+'how-many-borders':{en:['How Many Borders?','','Next →','countries','A country lights up on the map. How many countries does it touch by land? Pick from three.'],
+  de:['Wie viele Grenzen?','','Weiter →','Ländern','Ein Land leuchtet auf der Karte auf. An wie viele Länder grenzt es an Land? Wähle aus drei.'],
+  tr:['Kaç Sınır?','','Sonraki →','ülkeler','Haritada bir ülke parlıyor. Karadan kaç ülkeyle sınırı var? Üç seçenekten birini seç.'],
+  fr:['Combien de frontières ?','','Suivant →','pays','Un pays s’allume sur la carte. Avec combien de pays a-t-il une frontière terrestre ? Choisis parmi trois.'],
+  es:['¿Cuántas fronteras?','','Siguiente →','países','Un país se ilumina en el mapa. ¿Con cuántos países limita por tierra? Elige entre tres.'],
+  pt:['Quantas fronteiras?','','Seguinte →','países','Um país acende-se no mapa. Com quantos países faz fronteira por terra? Escolhe entre três.']}};
 /* the question when it depends on the place (Bodies of Water) */
 const QQ={
  'Which sea is this?':{de:'Welches Meer ist das?',tr:'Bu hangi deniz?',fr:'Quelle mer est-ce ?',es:'¿Qué mar es este?',pt:'Que mar é este?'},
@@ -110,5 +128,20 @@ const QQ={
  'Which channel is this?':{de:'Welcher Kanal ist das?',tr:'Bu hangi kanal?',fr:'Quel bras de mer est-ce ?',es:'¿Qué canal es este?',pt:'Que canal é este?'},
  'Which estuary is this?':{de:'Welche Mündung ist das?',tr:'Bu hangi haliç?',fr:'Quel estuaire est-ce ?',es:'¿Qué estuario es este?',pt:'Que estuário é este?'},
  'What is this called?':{de:'Wie heißt das?',tr:'Bunun adı ne?',fr:'Comment s’appelle-t-il ?',es:'¿Cómo se llama?',pt:'Como se chama?'}};
-window.TMGI={L,U:U[L],G:k=>(G[k]&&(G[k][L]||G[k].en)),QQ:s=>(L!=='en'&&QQ[s]&&QQ[s][L])||s};
+
+/* country games: questions, clues and facts built from the numbers */
+const X={
+en:{bq:c=>`How many countries does ${c} touch by land?`,bc:'Only borders on land count, not sea crossings.',tq:c=>`Which of these is bigger than ${c}?`,tc:'Only one of them is.',sc:'The shapes are not to scale. That’s the trick.',tobeat:'To beat',
+  and:' and ',one:l=>`Just one: ${l}.`,many:(n,l)=>`${n}: ${l}.`,times:(a,b,r)=>`${a} is about ${r} times the size of ${b}.`,pct:(a,b,p)=>`${a} is about ${p}% bigger than ${b}.`,bit:(a,b,p)=>`${a} is only a little bigger than ${b}: ${p}% more land.`,km:'km²'},
+de:{bq:c=>`An wie viele Länder grenzt ${c} an Land?`,bc:'Nur Grenzen an Land zählen, nicht über das Meer.',tq:c=>`Welches dieser Länder ist größer als ${c}?`,tc:'Nur eines ist es.',sc:'Die Umrisse sind nicht maßstabsgetreu. Das ist der Trick.',tobeat:'Zu schlagen',
+  and:' und ',one:l=>`Nur eines: ${l}.`,many:(n,l)=>`${n}: ${l}.`,times:(a,b,r)=>`${a} ist etwa ${r}-mal so groß wie ${b}.`,pct:(a,b,p)=>`${a} ist etwa ${p} % größer als ${b}.`,bit:(a,b,p)=>`${a} ist nur ein bisschen größer als ${b}: ${p} % mehr Fläche.`,km:'km²'},
+tr:{bq:c=>`${c} karadan kaç ülkeyle sınır komşusu?`,bc:'Yalnızca kara sınırları sayılır, deniz geçişleri sayılmaz.',tq:c=>`Bunlardan hangisi ${c} ülkesinden büyük?`,tc:'Yalnızca biri.',sc:'Şekiller ölçekli değil. İşin püf noktası bu.',tobeat:'Geçilecek ülke',
+  and:' ve ',one:l=>`Yalnızca bir: ${l}.`,many:(n,l)=>`${n}: ${l}.`,times:(a,b,r)=>`${a}, ${b} ülkesinin yaklaşık ${r} katı büyüklükte.`,pct:(a,b,p)=>`${a}, ${b} ülkesinden yaklaşık %${p} daha büyük.`,bit:(a,b,p)=>`${a}, ${b} ülkesinden yalnızca biraz büyük: %${p} daha fazla toprak.`,km:'km²'},
+fr:{bq:c=>`${c} : combien de pays voisins par la terre ?`,bc:'Seules les frontières terrestres comptent, pas la mer.',tq:c=>`Lequel est plus grand que ce pays : ${c} ?`,tc:'Un seul l’est.',sc:'Les formes ne sont pas à l’échelle. C’est là le piège.',tobeat:'À battre',
+  and:' et ',one:l=>`Un seul : ${l}.`,many:(n,l)=>`${n} : ${l}.`,times:(a,b,r)=>`${a} : environ ${r} fois la taille de ${b}.`,pct:(a,b,p)=>`${a} : environ ${p} % plus grand que ${b}.`,bit:(a,b,p)=>`${a} : à peine plus grand que ${b}, ${p} % de terres en plus.`,km:'km²'},
+es:{bq:c=>`¿Con cuántos países limita por tierra ${c}?`,bc:'Solo cuentan las fronteras por tierra, no por mar.',tq:c=>`¿Cuál de estos es más grande que ${c}?`,tc:'Solo uno lo es.',sc:'Las siluetas no están a escala. Ahí está el truco.',tobeat:'A batir',
+  and:' y ',one:l=>`Solo uno: ${l}.`,many:(n,l)=>`${n}: ${l}.`,times:(a,b,r)=>`${a} es unas ${r} veces más grande que ${b}.`,pct:(a,b,p)=>`${a} es un ${p} % más grande que ${b}.`,bit:(a,b,p)=>`${a} es solo un poco más grande que ${b}: un ${p} % más de tierra.`,km:'km²'},
+pt:{bq:c=>`Com quantos países faz fronteira por terra: ${c}?`,bc:'Só contam as fronteiras por terra, não por mar.',tq:c=>`Qual destes é maior do que ${c}?`,tc:'Só um deles é.',sc:'As formas não estão à escala. É esse o truque.',tobeat:'A vencer',
+  and:' e ',one:l=>`Só um: ${l}.`,many:(n,l)=>`${n}: ${l}.`,times:(a,b,r)=>`${a} tem cerca de ${r} vezes o tamanho de ${b}.`,pct:(a,b,p)=>`${a} é cerca de ${p} % maior do que ${b}.`,bit:(a,b,p)=>`${a} é só um pouco maior do que ${b}: mais ${p} % de território.`,km:'km²'}};
+window.TMGI={L,U:U[L],X:X[L],G:k=>(G[k]&&(G[k][L]||G[k].en)),QQ:s=>(L!=='en'&&QQ[s]&&QQ[s][L])||s};
 })();

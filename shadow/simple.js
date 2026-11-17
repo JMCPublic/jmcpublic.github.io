@@ -13,7 +13,7 @@ if(GI)Object.assign(CFG,{name:GI[0],q:GI[1],next:GI[2],noun:GI[3],intro:GI[4]});
 const nm=x=>(SG.tr&&SG.tr[L]&&SG.tr[L][x])||x;  /* place names in the player's language */
 const gname=k=>{const g=I.G(k);return g?g[0]:k};
 const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
-const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities']];
+const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?']];
 const dayRec=k=>{const raw=ls('s'+k+'-day')||'';try{const o=JSON.parse(raw);if(o&&o.d)return o}catch(e){}const p=raw.split(':');return p[0]?{d:p[0],n:+p[1]}:null};
 const playedToday=k=>{const r=dayRec(k);return r&&r.d===today()?r:null};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -45,23 +45,54 @@ function mapSVG(q){const v=SG.views[q.v],id='m'+Math.random().toString(36).slice
   return `<svg viewBox="${(v.vb||[0,0,v.w,v.h]).join(' ')}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(U.map(nm(v.n)))}"><defs><clipPath id="c${id}"><path d="${v.land}"/></clipPath>${grad}</defs>
   ${under}<path d="${v.land}" fill="#16130f"/>${extra}${over}</svg>`}
 
+
+/* ---------- the country games (Where is Bigger?, Which of Three?, How Many Borders?) ---------- */
+const XS=I.X||{};
+const cname=id=>nm((SG.names||{})[id]||id);
+const idOf=name=>Object.keys(SG.names||{}).find(k=>SG.names[k]===name);
+const num=n=>Number(n).toLocaleString(L==='en'?'en-GB':L);
+const listJoin=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+XS.and+a[a.length-1];
+function sil(id,fill){const c=SG.shapes[id],[x0,y0,x1,y1]=c.bb;return `<svg viewBox="${x0-4} ${y0-4} ${x1-x0+8} ${y1-y0+8}" preserveAspectRatio="xMidYMid meet"><path d="${c.d}" fill="${fill||'#16130f'}"/></svg>`}
+function toScale(ids){const m=Math.min(...ids.map(k=>SG.shapes[k].s));let x=0,H=0;const parts=ids.map((k,i)=>{const c=SG.shapes[k],f=m/c.s,[x0,y0,x1,y1]=c.bb,w=(x1-x0)*f,h=(y1-y0)*f;
+  const g=`<g transform="translate(${x} 0) scale(${f}) translate(${-x0} ${-y0})"><path d="${c.d}" fill="${i===0?'#e2552d':'#16130f'}"/></g>`;x+=w+14;H=Math.max(H,h);return g});
+  return `<svg class="scale" viewBox="-4 -4 ${x-6} ${H+8}" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg><div class="scalek">${ids.map((k,i)=>`<span${i===0?' class="hi"':''}>${esc(cname(k))} · ${num(SG.shapes[k].a)} ${XS.km}</span>`).join('')}</div>`}
+function cmp(a,b){const r=SG.shapes[a].a/SG.shapes[b].a,A=cname(a),B=cname(b);
+  return r>=1.95?XS.times(A,B,num(Math.round(r*10)/10)):r>=1.15?XS.pct(A,B,Math.round((r-1)*100)):XS.bit(A,B,Math.max(1,Math.round((r-1)*100)))}
+function bordersSVG(q,rev){const m=q.map;return `<svg viewBox="${m.vb.join(' ')}" preserveAspectRatio="xMidYMid meet" role="img"><path d="${m.ctx}" fill="#16130f"/>
+  ${m.nb.map(d=>`<path d="${d}" fill="${rev?'#ffd2b0':'#16130f'}" stroke="#7a7267" stroke-width="${m.vb[2]/260}" stroke-linejoin="round"/>`).join('')}
+  <path d="${m.d}" fill="#e2552d" stroke="#fff" stroke-width="${m.vb[2]/200}" stroke-linejoin="round"/></svg>`}
+function cardHTML(q){
+  if(q.k==='borders')return `<div class="mapcard"><span class="cname">${esc(nm(SG.region[q.c]))}</span><span class="lvl">${LV[q.t]}</span>${bordersSVG(q,false)}</div>`;
+  if(q.k==='shapes')return `<div class="silrow">${q.opts.map((o,k)=>`<div>${sil(idOf(o))}<b>${'ABC'[k]}</b></div>`).join('')}</div><div class="lvlrow">${LV[q.t]}</div>`;
+  if(q.k==='target')return `<div class="tgcard"><div class="tgs">${sil(q.tg)}</div><div><div class="tag">${esc(XS.tobeat)}</div><b>${esc(cname(q.tg))}</b><div class="tga">${num(SG.shapes[q.tg].a)} ${XS.km}</div></div><span class="lvl">${LV[q.t]}</span></div>`;
+  const v=SG.views[q.v];return `<div class="mapcard"><span class="cname">${esc(nm(v.n))}</span><span class="lvl">${LV[q.t]}</span>${mapSVG(q)}</div>`}
+function qLine(q){return q.k==='borders'?XS.bq(cname(q.c)):q.k==='target'?XS.tq(cname(q.tg)):q.k==='shapes'?CFG.q:qtext(q)}
+function clue(q){return q.k==='borders'?XS.bc:q.k==='target'?XS.tc:q.k==='shapes'?XS.sc:q.c}
+function factHTML(q){
+  if(q.k==='borders'){const l=listJoin(q.nbs.map(cname)),n=q.nbs.length;return esc(n===1?XS.one(l):XS.many(n,l))}
+  if(q.k==='shapes'){const f=q.f;return esc(cmp(f.big,f.nx))+toScale([f.big,f.nx,f.sm])}
+  if(q.k==='target'){const a=idOf(q.a);return esc(cmp(a,q.tg))+toScale([a,q.tg,...q.ids.filter(k=>k!==a&&k!==q.tg)])}
+  return esc(q.f)}
+function label(q){return q.k==='borders'?cname(q.c)+' · '+q.a:q.k==='target'?nm(q.a)+' > '+cname(q.tg):q.k==='shapes'?nm(q.a):nm(q.a)+'|'+nm(SG.views[q.v].n)}
+
 /* ---------- the game ---------- */
 let S;
 const back=`<a class="back" href="${CFG.home||'/shadow/wonders/'}">${esc(U.back)}</a><span class="row"></span>`;
 const qtext=q=>{if(q.qq){const t=I.QQ(q.qq);if(t!==q.qq||L==='en')return t}return CFG.q};
 function start(seed,practice){S={seed,practice,qs:pick(seed),i:0,res:[],answered:false};playQ()}
 function prog(){return `<div class="prog">${S.qs.map((_,k)=>`<i class="${k<S.res.length?(S.res[k]?'ok':'no'):k===S.i?'now':''}"></i>`).join('')}</div>`}
-function playQ(){const q=S.qs[S.i],v=SG.views[q.v];S.answered=false;
+function playQ(){const q=S.qs[S.i];S.answered=false;
   app.innerHTML=`<div class="play"><div class="top">${back}<span class="tag">${esc(U.of(S.i+1,S.qs.length))}</span></div>
-  ${prog()}<div class="mapcard"><span class="cname">${esc(nm(v.n))}</span><span class="lvl">${LV[q.t]}</span>${mapSVG(q)}</div>
-  <div class="q">${esc(qtext(q))}</div><p class="clue">${esc(q.c)}</p>
+  ${prog()}${cardHTML(q)}
+  <div class="q">${esc(qLine(q))}</div><p class="clue">${esc(clue(q))}</p>
   <div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${'ABC'[k]}</span>${esc(nm(o))}</button>`).join('')}</div><div id="after"></div></div>`;
   app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o));scrollTo(0,0)}
 function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o===q.a;S.res.push(ok);
   app.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const x=b.dataset.o;b.classList.add(x===q.a?'ok':x===o?'no':'dim')});
   app.querySelector('.prog').outerHTML=prog();
+  if(q.k==='borders'){const mc=app.querySelector('.mapcard svg');if(mc)mc.outerHTML=bordersSVG(q,true)}  /* the neighbours light up */
   const last=S.i===S.qs.length-1;
-  $('#after').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${esc(q.f)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
+  $('#after').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${factHTML(q)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
   $('#after .next').onclick=()=>{if(last)end();else{S.i++;playQ()}};
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
 function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{const r=playedToday(k);
@@ -70,18 +101,18 @@ function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{const r
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}
 function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
-  if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,a:S.qs.map(q=>q.a),v:S.qs.map(q=>q.v)}));
+  if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(rev?U.played:S.practice?U.practice:U.today)}</span></div>
   <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
   <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p></div>
-  <div class="list">${S.qs.map((q,k)=>`<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(nm(q.a))}</b> <span>· ${esc(nm(SG.views[q.v].n))}</span></div></div>`).join('')}</div>
+  <div class="list">${S.qs.map((q,k)=>{const [a,b]=(q.lab||label(q)).split('|');return `<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(a)}</b>${b?` <span>· ${esc(b)}</span>`:''}</div></div>`}).join('')}</div>
   <div class="btns"><button class="btn" id="share">${esc(U.share)}</button></div>
   <p class="small">${esc(U.tomorrow(CFG.noun))}</p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">'+esc(U.owner)+'</button></div>':''}`;
   $('#share').onclick=async()=>{try{if(navigator.share){await navigator.share({text:share+'\nhttps://twominute.games/'})}else{await navigator.clipboard.writeText(share+'\nhttps://twominute.games/');$('#share').textContent=U.copied}}catch(e){}};
   const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
-function review(r){S={seed:r.d,practice:true,qs:r.a.map((a,i)=>({a,v:r.v[i]})),res:r.res};end(true)}
+function review(r){const labs=r.l||(r.a||[]).map((a,i)=>nm(a)+(SG.views&&SG.views[r.v[i]]?'|'+nm(SG.views[r.v[i]].n):''));S={seed:r.d,practice:true,qs:labs.map(lab=>({lab})),res:r.res};end(true)}
 function intro(){const r=playedToday(CFG.key);if(r&&r.res&&!VIP){review(r);return}const done=r?[r.d,r.n]:[];const played=!!r;
   app.innerHTML=`<div class="top">${back}</div>
   <div class="panel intro menu"><div class="ttl"><span class="tag">${esc(U.kicker)}</span></div><h2>${esc(CFG.name)}</h2>
