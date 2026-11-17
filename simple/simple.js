@@ -132,7 +132,7 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(S.practice&&!rev?U.practice:dateTxt())}</span></div>
-  <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
+  <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big${rev||S.practice?' rev':''}">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
   <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p>${MB&&!rev?`<p class="best">${esc(mbLine())}</p>`:''}</div>
   <div class="list">${S.qs.map((q,k)=>{const [a,b]=(q.lab||label(q)).split('|');return `<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(a)}</b>${b?` <span>· ${esc(b)}</span>`:''}</div></div>`}).join('')}</div>

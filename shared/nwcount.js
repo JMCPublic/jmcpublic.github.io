@@ -29,5 +29,6 @@ if(!counted){
 // a finished game: the results score appears
 let done=false;
 setInterval(()=>{const big=document.querySelector('.big');if(!big){done=false;return}
+  if(big.classList.contains('rev'))return; /* 17 Nov: Admire my score shows today's score again (and a practice set isn't a real game) */
   if(!done){done=true;if(!TEST)bump({games:1,['played.'+GAME]:1})}},1000);
 })();

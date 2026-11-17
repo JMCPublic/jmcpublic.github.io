@@ -138,13 +138,13 @@ if(/^\/natural-wonders-where-is-bigger\//.test(location.pathname)){const L=(docu
   const f={[`langs.${L}.visits`]:1},fresh=ls('tmg-lang-'+L)!=='1';if(fresh){ls('tmg-lang-'+L,'1');f[`langs.${L}.uniques`]=1}
   const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
   ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
-  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
+  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big:not(.rev)')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
 // Rivers in each language, under langs.rv_<lang>
 if(/^\/natural-wonders-rivers\//.test(location.pathname)){const L='rv_'+((document.documentElement.lang||'en').slice(0,2).toLowerCase().replace(/[^a-z]/g,'')||'en');
   const f={[`langs.${L}.visits`]:1},fresh=ls('tmg-lang-'+L)!=='1';if(fresh){ls('tmg-lang-'+L,'1');f[`langs.${L}.uniques`]=1}
   const via=clean(q.get('via'));if(['link','offer','switch'].includes(via))f[`langs.${L}.via_${via}`]=1;
   ccReady.then(cc=>{if(fresh&&/^[A-Z]{2}$/.test(cc||''))f[`langs.${L}.cc_${cc}`]=1;bump(f)});
-  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
+  let fin=false;const mo=new MutationObserver(()=>{if(!fin&&document.querySelector('.score .big:not(.rev)')){fin=true;mo.disconnect();bump({[`langs.${L}.finished`]:1})}});mo.observe(document.body,{childList:true,subtree:true})}
 // same for Aperture and Landmarks, kept under langs.ap_<lang> and langs.lm_<lang> so the Where is Bigger? rows stay as they are
 if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)){const L=(/^\/aperture\/landmarks\//.test(location.pathname)?'lm_':'ap_')+((document.documentElement.lang||'en').slice(0,2).toLowerCase().replace(/[^a-z]/g,'')||'en');
   const f={[`langs.${L}.visits`]:1},fresh=ls('tmg-lang-'+L)!=='1';if(fresh){ls('tmg-lang-'+L,'1');f[`langs.${L}.uniques`]=1}
