@@ -1,0 +1,48 @@
+/* Aperture and Landmarks in the house style (17 Nov 2026, Jonathan chose mock-up "A tiles in C's orange-framed panel"):
+   the orange-and-black frame of Natural Wonders around the games. The picture screens (.viewer) keep their own light look. */
+:root{--bg:#212121;--sheet:#2b2b2b;--line:#3a3a3a;--frame:#3a3a3a;--ink:#fff;--soft:#c9c1b8;--faint:#9AA0A6;--blue:#FF9100;--blue-wash:rgba(255,145,0,.16);color-scheme:dark}
+html,body{background:#212121!important;color:#fff}
+body::before{content:'';position:fixed;left:-20vw;top:-260px;width:140vw;height:520px;background:radial-gradient(closest-side,#FF9100,#DD2C00 55%,transparent);opacity:.55;filter:blur(30px);pointer-events:none;z-index:0}
+header,.wordsbox,.statstrip,.mpromo,.qwrap,.tmgem{position:relative;z-index:1}
+header{background:transparent!important}
+header h1,header h1 a{color:#fff!important}header .o{border-color:#fff!important}.ver{color:#ffd2b0!important}
+.soundbtn,.helpbtn,.bugbtn{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important}
+#musicBtn.ask{border-color:#FF9100!important;color:#FF9100!important}
+.timerow,.meta,.meta i,.tlab{color:#e7e2dd!important}#time,.meta b{color:#ffb070!important}
+.seg{background:rgba(255,255,255,.18)!important}.seg.on,.seg.done{background:linear-gradient(90deg,#FF9100,#DD2C00)!important}
+/* the picture screen stays exactly as it was */
+.viewer{--bg:#f1f3f7;--sheet:#fff;--line:#e3e6eb;--frame:#b9c0cb;--ink:#16181d;--soft:#5b606b;--faint:#9aa0ab;--blue:#2b50e0;--blue-wash:#e6edff;color:#16181d;color-scheme:light;position:relative;z-index:1}
+.viewer #startBtn,.viewer .overlay .go:not(.ghost):not(.sub){background:linear-gradient(135deg,#FF9100,#DD2C00)!important;color:#fff!important;border:0!important}
+/* answer spaces and Clue / Clear / Skip */
+.tray{background:rgba(33,33,33,.94)!important;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:5}
+.tray .pill{background:#2b2b2b!important;border-color:#4a4a4a!important;color:#fff!important}.tray .pill small,.tray .pill span{color:#c9c1b8!important}
+.cell{background:rgba(255,255,255,.06)!important;border-color:#8a8580!important;color:#fff!important}.grp.cur .cell{border-color:#FF9100!important}
+.cell.rev{color:#ffb070!important}.cell.ok{background:rgba(23,138,82,.35)!important}.cell.miss{color:#ff8a7a!important}.sep,.guide{color:#9AA0A6!important}
+/* the words: black tiles with orange numbers in an orange-framed panel */
+.wordsbox{background:linear-gradient(180deg,#2b2b2b,#1c1c1c)!important;border:1.5px solid transparent!important;box-shadow:0 0 0 1.5px #FF9100,0 18px 40px -18px rgba(221,44,0,.6)!important}
+.whead h2{color:#fff}.whead h2 span{color:#FF9100!important}#wordCount{color:#9AA0A6}
+.sort{background:rgba(255,255,255,.08)!important}.sort button{color:#c9c1b8!important}.sort button[aria-pressed=true]{background:linear-gradient(135deg,#FF9100,#DD2C00)!important;color:#fff!important}
+.chip{background:#161616!important;border:1px solid #3d3d3d!important;color:#fff!important}.chip b{color:#FF9100!important}
+.chip:active,.chip.hit{background:rgba(255,145,0,.18)!important;border-color:#FF9100!important;color:#fff!important}.chip.hit b{color:#FF9100!important}
+.chip.gone{background:transparent!important;border:1px dashed #3d3d3d!important}
+/* "Have you tried…": orange border, with a white line between it and the words (17 Nov, Jonathan) */
+.mpromo{background:#2b2b2b!important;color:#fff!important;border:1.5px solid #FF9100!important;margin-top:16px!important;overflow:visible}
+.mpromo::before{content:'';position:absolute;left:12%;right:12%;top:-10px;height:1.5px;border-radius:2px;background:rgba(255,255,255,.75)}
+.mpromo .ptag{color:#FF9100!important}.mpromo small,.mpromo span{color:#c9c1b8}
+.statstrip{background:#2b2b2b!important;border-color:#3a3a3a!important;color:#c9c1b8!important}
+.qwrap .quote{background:#2b2b2b!important;color:#fff!important;border-color:#3a3a3a!important}
+/* the panel under the score (endmore.js) on the dark background */
+.tmgem{color:#fff}.tmgem .gl,.tmgem .more,.tmgem .mg,.tmgem .gb button{background:#2b2b2b!important;border-color:#3a3a3a!important;color:#fff!important}
+.tmgem .mg.done{background:#1c1c1c!important}.tmgem .mg.done span{color:#6fd39a!important}.tmgem .mg span,.tmgem .tg{color:#FF9100!important}
+.tmgem .ms,.tmgem .gb small,.tmgem .ty{color:#c9c1b8!important}.tmgem .more{box-shadow:0 0 0 1.5px #FF9100}
+/* computer layout: the three phone-shaped panels go dark; the picture (A) and the negative (B) stay light; the words panel (C) gets the orange frame */
+.phone{background:#2b2b2b!important;border-color:#3a3a3a!important;--tile:#161616;--line:#3d3d3d;box-shadow:0 24px 48px -24px rgba(0,0,0,.6)!important}
+.phone::before{background:rgba(255,255,255,.15)!important}.cap h2{color:#fff}.cap h2 span{color:#FF9100!important}
+.phone:has(.words){box-shadow:0 0 0 1.5px #FF9100,0 24px 48px -20px rgba(221,44,0,.55)!important;border-color:transparent!important}
+.negwrap{--sheet:#fff;--veil:#eceff3;--line:#e3e6eb;--ink:#16181d;--soft:#5b606b;--blue:#2b50e0;--blue-wash:#e6edff;color:#16181d}
+.phone .tray{background:transparent!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+#clear,#skipBtn{background:#161616!important;border:1px solid #3d3d3d!important;color:#fff!important}#skipBtn small{color:#c9c1b8!important}
+.ask,.vowel{color:#fff}.ask:hover:not(:disabled),.vowel:hover:not(:disabled){border-color:#FF9100!important;background:rgba(255,145,0,.16)!important}
+.vowel.hit{color:#FF9100!important;border-color:#FF9100!important}
+.zb{color:#c9c1b8}.zoom input{accent-color:#FF9100}
+.side [id^="promo"]{border:1.5px solid #FF9100!important}.pbig{border:1.5px solid #FF9100!important}
