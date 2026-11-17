@@ -1,6 +1,6 @@
 /* Simple games: the words on screen in six languages (17 Nov 2026).
    The language is the one the player chose once (home page menu or auto-detect), saved as tmg-lang, like every game.
-   ?lang=xx forces one for testing. Place names come with each game's data (SG.tr); clues and facts are English for now. */
+   ?lang=xx forces one for testing. Place names come with each game's data (SG.tr); clues and facts are translated per question (q.ct, tools/simple_ct.py). */
 (()=>{
 const ls=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const ok=['en','de','tr','fr','es','pt'];
@@ -8,6 +8,8 @@ const q=new URLSearchParams(location.search).get('lang');
 let L=(q&&ok.includes(q))?q:(ls('tmg-lang')||'');
 if(!ok.includes(L)){const n=(navigator.language||'en').slice(0,2).toLowerCase();L=ok.includes(n)?n:'en'}
 document.documentElement.lang=L;
+/* German keeps the noun in the dative ("mit Flüssen"); counting needs the plain plural ("zehn Flüsse"), 17 Nov */
+const DEN=n=>({'Flüssen':'Flüsse','Bergen':'Berge','Wäldern':'Wälder','Flussstädten':'Flussstädte','Ländern':'Länder','Meeren und Meerengen':'Meere und Meerengen'})[n]||n;
 const U={
 en:{back:'← Natural Wonders',admire:'Admire my score',mbs:(s,w)=>`💪 Strong today: ${s||'keep going'}.`+(w?` To work on: ${w}.`:''),of:(i,n)=>`${i} of ${n}`,lv:['Warm-up','Think about it','The clever one'],right:['Yes!','Spot on.','Correct!','Nicely done.'],wrong:a=>`It’s ${a}.`,
   score:'See my score',your:'Your score',best:n=>`Your best: ${n} / 10`,newbest:'🎉 Your best score yet',share:'Share my score',copied:'Copied ✓',
@@ -19,12 +21,12 @@ en:{back:'← Natural Wonders',admire:'Admire my score',mbs:(s,w)=>`💪 Strong 
   kicker:'Natural Wonders · simple',b1:n=>`Ten ${n}, about two minutes`,b2:'Starts easy, ends with a couple of clever ones',b3:'A fact about every one',start:'Start',again:'Play again (today’s set)',scored:n=>`Today you scored ${n} / 10`,map:n=>`Map of ${n} with one place highlighted`},
 de:{back:'← Natural Wonders',admire:'Mein Ergebnis bewundern',mbs:(s,w)=>`💪 Heute stark: ${s||'weiter so'}.`+(w?` Daran arbeiten: ${w}.`:''),of:(i,n)=>`${i} von ${n}`,lv:['Zum Aufwärmen','Nachdenken','Die knifflige'],right:['Ja!','Genau.','Richtig!','Gut gemacht.'],wrong:a=>`Richtig ist: ${a}.`,
   score:'Zu meinem Ergebnis',your:'Dein Ergebnis',best:n=>`Dein Bestwert: ${n} / 10`,newbest:'🎉 Dein bisher bestes Ergebnis',share:'Ergebnis teilen',copied:'Kopiert ✓',
-  tomorrow:n=>`Morgen zehn neue ${n}, für alle dieselben.`,today:'Heute',played:'Heutige Runde · gespielt',practice:'Übungsrunde',owner:'Übungsrunde (nur Inhaber)',
+  tomorrow:n=>`Morgen zehn neue ${DEN(n)}, für alle dieselben.`,today:'Heute',played:'Heutige Runde · gespielt',practice:'Übungsrunde',owner:'Übungsrunde (nur Inhaber)',
   playedmsg:'Du hast die heutige Runde gespielt. Um Mitternacht gibt es eine neue.',
-  v:[n=>'Perfekt! 🏆',n=>`Klasse. Du kennst dich mit ${n} wirklich aus.`,n=>'Gut gemacht, ein solides Ergebnis.',n=>'Nicht schlecht! Die kniffligen sind für alle knifflig.',n=>`Eine schwere Runde heute. Morgen gibt es zehn neue ${n}.`],
+  v:[n=>'Perfekt! 🏆',n=>`Klasse. Du kennst dich mit ${n} wirklich aus.`,n=>'Gut gemacht, ein solides Ergebnis.',n=>'Nicht schlecht! Die kniffligen sind für alle knifflig.',n=>`Eine schwere Runde heute. Morgen gibt es zehn neue ${DEN(n)}.`],
   another:'Spiel heute noch eins',alldone:'Für heute alles gespielt',left:k=>`Noch ${k} Natural-Wonders-Spiel${k>1?'e':''} für heute, je zehn Fragen.`,
   allmsg:'Du hast heute alle Natural-Wonders-Spiele gespielt. Klasse. Neue Runden um Mitternacht.',play:'Spielen',
-  kicker:'Natural Wonders · einfach',b1:n=>`Zehn ${n}, etwa zwei Minuten`,b2:'Fängt leicht an, endet mit ein paar kniffligen',b3:'Zu jeder ein Fakt',start:'Los geht’s',again:'Nochmal spielen (heutige Runde)',scored:n=>`Heute hast du ${n} / 10`,map:n=>`Karte: ${n}, ein Ort markiert`},
+  kicker:'Natural Wonders · einfach',b1:n=>`Zehn ${DEN(n)}, etwa zwei Minuten`,b2:'Fängt leicht an, endet mit ein paar kniffligen',b3:'Zu jeder ein Fakt',start:'Los geht’s',again:'Nochmal spielen (heutige Runde)',scored:n=>`Heute hast du ${n} / 10`,map:n=>`Karte: ${n}, ein Ort markiert`},
 tr:{back:'← Natural Wonders',admire:'Puanıma bir bak',mbs:(s,w)=>`💪 Bugün güçlü olduğun: ${s||'devam et'}.`+(w?` Çalışman gereken: ${w}.`:''),of:(i,n)=>`${i} / ${n}`,lv:['Isınma','Biraz düşün','Zor olan'],right:['Evet!','Tam isabet.','Doğru!','Harika.'],wrong:a=>`Doğru cevap: ${a}.`,
   score:'Puanımı gör',your:'Puanın',best:n=>`En iyi puanın: ${n} / 10`,newbest:'🎉 Şimdiye kadarki en iyi puanın',share:'Puanımı paylaş',copied:'Kopyalandı ✓',
   tomorrow:n=>`Yarın on yeni soru, herkes için aynı.`,today:'Bugün',played:'Bugünün turu · oynandı',practice:'Alıştırma turu',owner:'Alıştırma turu (yalnızca sahibi)',

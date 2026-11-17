@@ -78,12 +78,13 @@ function cardHTML(q){
   if(q.k==='target')return `<div class="tgcard"><div class="tgs">${sil(q.tg)}</div><div><div class="tag">${esc(XS.tobeat)}</div><b>${esc(cname(q.tg))}</b><div class="tga">${num(SG.shapes[q.tg].a)} ${XS.km}</div></div><span class="lvl">${LV[q.t]}</span></div>`;
   const v=SG.views[q.v];return `<div class="mapcard"><span class="cname">${esc(nm(v.n))}</span><span class="lvl">${LV[q.t]}</span>${mapSVG(q)}</div>`}
 function qLine(q){return q.k==='borders'?XS.bq(cname(q.c)):q.k==='target'?XS.tq(cname(q.tg)):q.k==='shapes'?CFG.q:qtext(q)}
-function clue(q){return q.k==='borders'?XS.bc:q.k==='target'?XS.tc:q.k==='shapes'?XS.sc:q.c}
+const CT=(q,i)=>(L!=='en'&&q.ct&&q.ct[L]&&q.ct[L][i])||(i?q.f:q.c);  /* translated clue (0) and fact (1), 17 Nov */
+function clue(q){return q.k==='borders'?XS.bc:q.k==='target'?XS.tc:q.k==='shapes'?XS.sc:CT(q,0)}
 function factHTML(q){
   if(q.k==='borders'){const l=listJoin(q.nbs.map(cname)),n=q.nbs.length;return esc(n===1?XS.one(l):XS.many(n,l))}
   if(q.k==='shapes'){const f=q.f;return esc(cmp(f.big,f.nx))+toScale([f.big,f.nx,f.sm])}
   if(q.k==='target'){const a=idOf(q.a);return esc(cmp(a,q.tg))+toScale([a,q.tg,...q.ids.filter(k=>k!==a&&k!==q.tg)])}
-  return esc(q.f)}
+  return esc(CT(q,1))}
 function label(q){return q.k==='borders'?cname(q.c)+' · '+q.a:q.k==='target'?nm(q.a)+' > '+cname(q.tg):q.k==='shapes'?nm(q.a):nm(q.a)+'|'+nm(SG.views[q.v].n)}
 
 /* ---------- the game ---------- */
@@ -137,9 +138,25 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p>${MB&&!rev?`<p class="best">${esc(mbLine())}</p>`:''}</div>
   <div class="list">${S.qs.map((q,k)=>{const [a,b]=(q.lab||label(q)).split('|');return `<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(a)}</b>${b?` <span>· ${esc(b)}</span>`:''}</div></div>`}).join('')}</div>
   <div class="btns"><button class="btn" id="share">${esc(U.share)}</button></div>
-  <p class="small">${esc(U.tomorrow(CFG.noun))}</p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">'+esc(U.owner)+'</button></div>':''}`;
+  <p class="small">${esc(U.tomorrow(CFG.noun))}</p><p class="small srcl"><button type="button" class="lnk" id="srcBtn">${esc(SRCT[0])}</button></p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">'+esc(U.owner)+'</button></div>':''}`;
   $('#share').onclick=async()=>{try{if(navigator.share){await navigator.share({text:share+'\nhttps://twominute.games/'})}else{await navigator.clipboard.writeText(share+'\nhttps://twominute.games/');$('#share').textContent=U.copied}}catch(e){}};
+  $('#srcBtn').onclick=sources;
   const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
+
+/* ---------- Sources (17 Nov 2026): the same sources the original games cited, in a sheet over the game ---------- */
+const SRCT={en:['Sources','Where the facts come from','The figures and facts in this game come from the published sources below, the same ones the original game used. Each figure is shown as its source gives it; sources sometimes disagree.','Maps: Natural Earth (public domain), simplified for small screens.','One page for each place','Think something is wrong? Tell us with the Feedback button.','Close'],
+ de:['Quellen','Woher die Fakten stammen','Die Zahlen und Fakten in diesem Spiel stammen aus den unten genannten veröffentlichten Quellen, denselben wie im ursprünglichen Spiel. Jede Zahl steht so da, wie ihre Quelle sie angibt; Quellen sind sich nicht immer einig.','Karten: Natural Earth (gemeinfrei), für kleine Bildschirme vereinfacht.','Eine Seite für jeden Ort','Stimmt etwas nicht? Sag es uns über den Feedback-Knopf.','Schließen'],
+ tr:['Kaynaklar','Bilgiler nereden geliyor','Bu oyundaki sayılar ve bilgiler, aşağıdaki yayımlanmış kaynaklardan, yani orijinal oyunun kullandığı kaynaklardan gelir. Her sayı, kaynağının verdiği şekliyle gösterilir; kaynaklar bazen birbirini tutmaz.','Haritalar: Natural Earth (kamu malı), küçük ekranlar için sadeleştirildi.','Her yer için bir sayfa','Yanlış bir şey mi var? Geri bildirim düğmesiyle bize söyle.','Kapat'],
+ fr:['Sources','D’où viennent les faits','Les chiffres et les faits de ce jeu viennent des sources publiées ci-dessous, les mêmes que celles du jeu d’origine. Chaque chiffre est donné tel que sa source l’indique ; les sources ne sont pas toujours d’accord.','Cartes : Natural Earth (domaine public), simplifiées pour les petits écrans.','Une page pour chaque lieu','Quelque chose vous semble faux ? Dites-le-nous avec le bouton Avis.','Fermer'],
+ es:['Fuentes','De dónde salen los datos','Las cifras y los datos de este juego proceden de las fuentes publicadas que aparecen abajo, las mismas que usó el juego original. Cada cifra se muestra tal como la da su fuente; a veces las fuentes no coinciden.','Mapas: Natural Earth (dominio público), simplificados para pantallas pequeñas.','Una página para cada lugar','¿Ves algo mal? Dínoslo con el botón de comentarios.','Cerrar'],
+ pt:['Fontes','De onde vêm os factos','Os números e os factos deste jogo vêm das fontes publicadas abaixo, as mesmas que o jogo original usou. Cada número aparece tal como a fonte o indica; as fontes nem sempre concordam.','Mapas: Natural Earth (domínio público), simplificados para ecrãs pequenos.','Uma página para cada lugar','Achas que algo está errado? Diz-nos com o botão de comentários.','Fechar']}[L]||[];
+function sources(){const show=()=>{const d=(window.TMGSRC||{})[CFG.key]||{m:[],p:[]};const li=x=>`<li><a href="${esc(x[1])}" target="_blank" rel="noopener">${esc(x[0])}</a></li>`;
+  const ov=document.createElement('div');ov.className='srcov';ov.innerHTML=`<div class="srcbox" role="dialog" aria-label="${esc(SRCT[0])}"><div class="tag">${esc(SRCT[0])}</div><h3>${esc(SRCT[1])}</h3><p>${esc(SRCT[2])}</p>
+   <ul>${d.m.filter(x=>!/^Natural Earth$/.test(x[0])).map(li).join('')}</ul><p class="sm">${esc(SRCT[3])}</p>
+   ${d.p.length?`<details><summary>${esc(SRCT[4])} · ${d.p.length}</summary><ul class="pl">${d.p.map(li).join('')}</ul></details>`:''}
+   <p class="sm">${esc(SRCT[5])}</p><button type="button" class="btn ghost" id="srcX">${esc(SRCT[6])}</button></div>`;
+  document.body.appendChild(ov);const x=()=>ov.remove();ov.onclick=e=>{if(e.target===ov)x()};ov.querySelector('#srcX').onclick=x};
+  if(window.TMGSRC)return show();const sc=document.createElement('script');sc.src='/simple/sources.js?v=1';sc.onload=show;document.head.appendChild(sc)}
 function review(r){const labs=r.l||(r.a||[]).map((a,i)=>nm(a)+(SG.views&&SG.views[r.v[i]]?'|'+nm(SG.views[r.v[i]].n):''));S={seed:r.d,practice:true,qs:labs.map(lab=>({lab})),res:r.res};end(true)}
 function intro(){const r=playedToday(CFG.key);const done=r?[r.d,r.n]:[];const played=!!r;  /* played today: Admire my score, not Play again (17 Nov, Jonathan) */
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(dateTxt())}</span></div>
