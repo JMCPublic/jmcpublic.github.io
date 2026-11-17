@@ -2,7 +2,7 @@
 
 Questions come from tools/simple_banks.py; maps come from each full game's own data
 (../natural-wonders-<game>/index.html), so every answer is checked against the real game.
-Output: shadow/<game>/data.js  ->  const SG = {views:{...}, q:[...]}
+Output: simple/data/<game>.js  ->  const SG = {views:{...}, q:[...]}
 
   view  = {n: name shown on the map, w, h, land: SVG path, clip: clip lines to the land,
            sea: true if the highlight is water drawn under the land,
@@ -150,7 +150,7 @@ def translations(game, views, qs):
     return tr
 
 def write(game, views, qs):
-    dst = ROOT / 'shadow' / game / 'data.js'
+    dst = ROOT / 'simple' / 'data' / f'{game}.js'  # live from 17 Nov (the swap): one data file per game
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(f'/* Simple {game} data: built by tools/shadow_simple.py from the full game. Do not edit by hand. */\n'
                    f'var SG=(window.SGD=window.SGD||{{}})["{game}"]=' + json.dumps({'views': views, 'q': qs, 'tr': translations(game, views, qs)}, ensure_ascii=False, separators=(',', ':')) + ';\n')

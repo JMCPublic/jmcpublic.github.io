@@ -156,7 +156,7 @@ if(/^\/aperture\//.test(location.pathname)&&!/\/stats\//.test(location.pathname)
 {const TOPIC='tmg-pnz2n1a4wqw9';
  const P2=location.pathname,nw=P2.match(/natural-wonders-([a-z-]+)/);
  const GAME=/\/aperture\/landmarks/.test(P2)?'landmarks':/\/aperture(\/|$)/.test(P2)&&!/stats/.test(P2)?'objects':nw?nw[1]:/\/duggen/.test(P2)?'duggen':null;
- const NAMES={objects:'Aperture',landmarks:'Aperture Landmarks',duggen:"Duggen's Outback Maze",'where-is-bigger':'Where is Bigger?','which-of-five':'Which of Five?','how-many-borders':'How Many Borders?','bodies-of-water':'Bodies of Water','river-cities':'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
+ const NAMES={objects:'Aperture',landmarks:'Aperture Landmarks',duggen:"Duggen's Outback Maze",'where-is-bigger':'Where is Bigger?','which-of-five':'Which of Three?','how-many-borders':'How Many Borders?','bodies-of-water':'Bodies of Water','river-cities':'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
  const lang=(document.documentElement.lang||'en').slice(0,2);
  const ping=()=>{const k='tmg-ping-'+GAME;if(ls(k))return;ls(k,'1');
    if(!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return;

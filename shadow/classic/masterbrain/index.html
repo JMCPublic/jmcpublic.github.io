@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f3ec">
+<title>Natural Wonders · Masterbrain</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ec;--card:#fff;--ink:#16130f;--muted:#6f685d;--line:#e6e0d4;--accent:#e2552d;--cu:#b8663a;--hl:#d6eaf6;--good:#1f7a4a;--goodbg:#e3f3e9;--bad:#b3261e;--badbg:#fbe6e3}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
+h1{font-family:Fraunces,Georgia,serif;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1;font-size:clamp(34px,5vw,48px)}
+h2{font-family:Fraunces,Georgia,serif;font-weight:800;margin:0 0 4px;font-size:22px}
+.nwser{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}.nwser b{color:var(--cu);font-weight:700}.nwser a{color:inherit;text-underline-offset:3px}
+.menuhead{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin-bottom:16px}
+.sub{flex:1;min-width:260px;max-width:560px;margin:0 0 2px;color:var(--muted);font-size:15px;line-height:1.5}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.menu{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px}
+.label{font:700 11.5px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 8px}
+.label:first-child{margin-top:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 13px;font:700 15px Inter,sans-serif;color:var(--ink);cursor:pointer;text-align:left}
+.opt small{display:block;font-weight:500;font-size:11.5px;color:var(--muted);margin-top:1px}
+.opt.on{background:var(--ink);border-color:var(--ink);color:#fff}.opt.on small{color:#d9d3c8}
+.btn{border:0;border-radius:999px;background:var(--accent);color:#fff;font:700 16px Inter,sans-serif;padding:13px 26px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn[disabled]{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.glist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.gi{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600}
+.plate{width:26px;height:26px;border-radius:6px;display:inline-grid;place-items:center;flex:none;font-family:Cinzel,Copperplate,Georgia,serif;font-weight:700;font-size:13px;line-height:1;color:#fff4ea;
+ background:radial-gradient(circle at 4px 4px,#6e3517 1px,transparent 1.6px),radial-gradient(circle at calc(100% - 4px) 4px,#6e3517 1px,transparent 1.6px),radial-gradient(circle at 4px calc(100% - 4px),#6e3517 1px,transparent 1.6px),radial-gradient(circle at calc(100% - 4px) calc(100% - 4px),#6e3517 1px,transparent 1.6px),linear-gradient(135deg,#eab48a 0%,#c47746 30%,#97502a 58%,#d08f60 82%,#a85d33 100%);border:1px solid #7a3c1c;text-shadow:0 -1px 0 rgba(70,30,10,.55)}
+.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:16px;line-height:1.6}
+.note{background:#fff7e8;border:1px solid #f0dcb4;border-radius:12px;padding:10px 14px;font-size:14px;margin-top:14px}
+/* play */
+#bar{position:fixed;left:0;right:0;top:0;height:58px;z-index:30;background:var(--ink);color:#fff;display:none}
+#bar .in{max-width:1100px;margin:0 auto;height:100%;display:flex;align-items:center;gap:14px;padding:0 16px}
+#bar .mb{font:800 18px Fraunces,Georgia,serif;white-space:nowrap}
+#bar .rn{font-size:13px;color:#d9d3c8;white-space:nowrap}
+#bar .dots{flex:1;display:flex;gap:4px;min-width:0}
+#bar .dots i{flex:1;height:6px;border-radius:3px;background:#4a443b}#bar .dots i.done{background:#b8663a}#bar .dots i.now{background:#fff}
+#bar button{background:none;border:0;color:#d9d3c8;text-decoration:underline;font:500 14px Inter,sans-serif;cursor:pointer;padding:6px}
+#stage iframe{position:fixed;left:0;right:0;top:58px;bottom:0;width:100%;height:calc(100% - 58px);border:0;background:var(--bg);visibility:hidden}
+#stage iframe.show{visibility:visible}
+#loading{position:fixed;top:58px;left:0;right:0;bottom:0;display:none;place-items:center;font:600 15px Inter,sans-serif;color:var(--muted);z-index:5}
+/* results */
+.score{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.big{font:800 64px/1 Fraunces,Georgia,serif;letter-spacing:-.03em}.big small{font-size:28px;color:var(--muted)}
+.tsum{font-size:14px;margin:2px 0 4px}
+.st{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+.st td{padding:9px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.st td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.sbar{height:10px;border-radius:5px;background:#eee8dc;overflow:hidden;min-width:60px}.sbar i{display:block;height:100%;background:var(--ink)}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.tag.s{background:var(--goodbg);color:var(--good)}.tag.m{background:#f3eee4;color:#6f685d}.tag.w{background:var(--badbg);color:var(--bad)}
+.hl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.hl div{border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px}.hl b{display:block;font:800 18px Fraunces,Georgia,serif;margin-top:2px}
+.rhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 8px;flex-wrap:wrap}
+.rhead h3{font:800 20px Fraunces,Georgia,serif;margin:0}.rhead span{font-size:13px;color:var(--muted)}
+.rev{display:block}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}.toast.show{opacity:1}
+@media(max-width:700px){.st td.bc{display:none}.st td{padding:9px 4px}.tag{font-size:11px;padding:3px 7px}.menu{grid-template-columns:1fr}.glist{grid-template-columns:1fr 1fr}.hl{grid-template-columns:1fr}.big{font-size:52px}#bar .rn{display:none}#bar .mb{font-size:16px}h1{font-size:38px}.wrap{padding:max(14px,env(safe-area-inset-top)) 14px 32px}.btn{padding:12px 20px}}
+</style>
+</head>
+<body>
+<div style="position:relative;z-index:99;background:#fff3e8;color:#16130f;font:600 13px Inter,system-ui,sans-serif;text-align:center;padding:7px 12px">🕰️ Classic version (before 17 Nov 2026) · kept for comparison · not counted</div>
+<div id="app" class="wrap"></div>
+<div id="bar"><div class="in"><span class="mb">Masterbrain</span><span class="rn" id="rn"></span><div class="dots" id="dots"></div><button onclick="quit()">Quit</button></div></div>
+<div id="loading">Loading the next round…</div>
+<div id="stage"></div>
+<div class="toast" id="toast"></div>
+<script>
+const VERSION='v3';
+const HOME='https://twominute.games/wonders/';
+const R=a=>a[Math.random()*a.length|0];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+// each game: where it lives and how to set up one round of it
+const GAMES=[
+ {id:'rivers',n:'Rivers',path:'rivers',setup:()=>`S.where=${JSON.stringify(R(['countries','countries','mix']))};S.depth=3;S.rounds=1;`},
+ {id:'lakes',n:'Lakes',path:'lakes',setup:()=>`S.where='World';S.rankby='mixed';S.depthn=3;S.rounds=1;`},
+ {id:'water',n:'Bodies of Water',path:'bodies-of-water',setup:()=>`S.where='World';S.kinds={sea:true,lake:true,strait:true};S.rounds=1;S.locZoom=1;`},
+ {id:'mountains',n:'Mountains',path:'mountains',setup:()=>`S.where='World';S.mode=${JSON.stringify(R(['rank','name']))};S.depthn=3;S.rounds=1;S.locZoom=1;`},
+ {id:'deserts',n:'Deserts',path:'deserts',setup:()=>`S.where='World';S.mode=${JSON.stringify(R(['rank','name']))};S.depthn=3;S.rounds=1;S.locZoom=1;`},
+ {id:'borders',n:'How Many Borders?',path:'how-many-borders',setup:()=>`S.where='World';S.level='easy';S.rounds=1;S.locZoom=1;`},
+ {id:'rcities',n:'River Cities',path:'river-cities',setup:()=>`S.where='World';S.k=2;S.rounds=1;`},
+ {id:'bigger',n:'Where is Bigger?',path:'where-is-bigger',setup:()=>`S.mode=${JSON.stringify(R(['names','hidden']))};S.count=3;S.diff='easy';S.region='world';`},
+ {id:'five',n:'Which of Five?',path:'which-of-five',setup:()=>`S.mode='bigger';S.rounds3=1;S.diff='easy';S.region='world';`},
+ {id:'forests',n:'Forests',path:'forests',setup:()=>`S.where='World';S.mode=${JSON.stringify(R(['rank','name']))};S.depthn=3;S.rounds=1;S.locZoom=1;`}];
+const GBY=Object.fromEntries(GAMES.map(g=>[g.id,g]));
+let M={screen:'menu',rounds:10,timed:true,plan:[],cur:0,res:[],left:0,frames:{},t0:0,poll:null};
+try{const v=localStorage.getItem('timer_on');if(v!==null)M.timed=v==='1';const r=+localStorage.getItem('nwmb_rounds');if(r===10||r===20)M.rounds=r}catch(e){}
+const urlFor=g=>new URL('../'+g.path+'/',location.href).href;
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3800)}
+/* ---------- menu ---------- */
+function menuHTML(){
+  const file=location.protocol==='file:';
+  return `<div class="menuhead"><div><div class="nwser"><b>Natural Wonders</b> · The finale · <a href="${HOME}">All games</a></div><h1>Masterbrain</h1></div><p class="sub">A random mix from all ten games, one kind of question on each screen. At the end, see which games are your strongest and where you need work.</p></div>
+  <div class="panel menu"><div>
+    <div class="label">Number of rounds</div><div class="opts"><button class="opt ${M.rounds===10?'on':''}" onclick="setR(10)">10 rounds<small>One from each game</small></button><button class="opt ${M.rounds===20?'on':''}" onclick="setR(20)">20 rounds<small>Two from each game</small></button></div>
+    <div class="label">Timer</div><div class="opts"><button class="opt ${M.timed?'on':''}" onclick="setT(true)">⏱ Timed<small>30 seconds a round</small></button><button class="opt ${M.timed?'':'on'}" onclick="setT(false)">No timer<small>Take your time</small></button></div>
+    <div class="row" style="margin-top:18px"><button class="btn" onclick="start()" ${file?'disabled':''}>Start — ${M.rounds} rounds</button></div>
+    ${file?`<div class="note">Masterbrain plays the live games, so it only works from the website, not from a file on your computer. Open it at ${esc(HOME)}natural-wonders-masterbrain/</div>`:''}
+  </div><div><div class="label">The ten games</div><div class="glist">${GAMES.map((g,i)=>`<div class="gi"><span class="plate">${i+1}</span>${esc(g.n)}</div>`).join('')}</div>
+    <p style="font-size:13px;color:var(--muted);margin:14px 0 0;line-height:1.5">Each round is scored out of 10, so ranking rounds and pick-one rounds count the same. Your Masterbrain score is out of 100.</p></div></div>
+  <p class="foot">Every question comes from one of the ten games, and each game has its own Sources page. <a href="${HOME}" style="color:inherit">All games</a><br>Natural Wonders: Masterbrain ${VERSION}</p>`}
+window.setR=n=>{M.rounds=n;try{localStorage.setItem('nwmb_rounds',n)}catch(e){}render()};
+window.setT=v=>{M.timed=v;try{localStorage.setItem('timer_on',v?'1':'0')}catch(e){}render()};
+function render(){const app=document.getElementById('app');document.getElementById('bar').style.display=M.screen==='play'?'block':'none';app.style.display=M.screen==='play'?'none':'block';
+  if(M.screen==='menu')app.innerHTML=menuHTML();else if(M.screen==='results')app.innerHTML=resultsHTML(),mountReviews();scrollTo(0,0)}
+/* ---------- rounds ---------- */
+window.start=()=>{const reps=M.rounds/10;let plan=[];for(let k=0;k<reps;k++)plan=plan.concat(shuffle(GAMES.map(g=>g.id)));
+  // never the same game twice in a row
+  for(let i=1;i<plan.length;i++)if(plan[i]===plan[i-1]){const j=plan.findIndex((x,k)=>k>i&&x!==plan[i]&&plan[k-1]!==x&&(k+1>=plan.length||plan[k+1]!==plan[i]));if(j>0)[plan[i],plan[j]]=[plan[j],plan[i]]}
+  M.plan=plan;M.cur=0;M.res=[];M.left=0;M.screen='play';clearFrames();render();bar();prep(0);prep(1);show(0)};
+function clearFrames(){Object.values(M.frames).forEach(f=>f.el.remove());M.frames={};if(M.poll)clearInterval(M.poll)}
+function prep(i){if(i>=M.plan.length||M.frames[i])return;const g=GBY[M.plan[i]];const el=document.createElement('iframe');el.title=g.n;el.src=urlFor(g);const f={el,ready:false,g};
+  el.addEventListener('load',()=>{try{const d=el.contentDocument;const st=d.createElement('style');st.textContent='.top .row,.prog,.nwser{display:none!important}.play .top{margin-bottom:4px}html.phone .rank .btn[disabled]{position:static!important;box-shadow:none!important}';d.head.appendChild(st);
+    // inside Masterbrain each game plays a single round, so drop its own "Round 1 of 1" wording
+    const strip=()=>{d.querySelectorAll('.q span,.q div').forEach(n=>{for(const c of n.childNodes)if(c.nodeType===3&&/Round 1 of 1 · /.test(c.nodeValue))c.nodeValue=c.nodeValue.replace(/Round 1 of 1 · /,'')})};
+    new MutationObserver(strip).observe(d.getElementById('app')||d.body,{childList:true,subtree:true});f.ready=true}catch(e){f.err=true}});
+  M.frames[i]=f;document.getElementById('stage').appendChild(el)}
+function bar(){document.getElementById('rn').textContent=`Round ${M.cur+1} of ${M.plan.length} · ${GBY[M.plan[M.cur]].n}`;document.getElementById('dots').innerHTML=M.plan.map((_,i)=>`<i class="${i<M.cur?'done':i===M.cur?'now':''}"></i>`).join('')}
+function show(i,tries=0){const f=M.frames[i];const ld=document.getElementById('loading');
+  if(f.err){toast('That round could not load. Skipping it.');finish(i,null);return}
+  if(!f.ready){ld.style.display='grid';setTimeout(()=>show(i,tries),150);return}
+  const w=f.el.contentWindow;
+  try{w.eval(f.g.setup()+`TM.on=${M.timed};startGame();`)}catch(e){console.error(e)}
+  setTimeout(()=>{let scr='';try{scr=w.eval('S.screen')}catch(e){}
+    if(scr!=='play'){if(tries<4){show(i,tries+1);return}toast('That round could not start. Skipping it.');finish(i,null);return}
+    ld.style.display='none';f.el.classList.add('show');try{w.focus()}catch(e){}M.t0=performance.now();
+    M.poll=setInterval(()=>{let s='';try{s=w.eval('S.screen')}catch(e){}if(s==='results'){clearInterval(M.poll);M.poll=null;capture(i)}},200)},tries?120:60)}
+function capture(i){const f=M.frames[i];const d=f.el.contentDocument;const secs=Math.min(M.timed?30:1e9,(performance.now()-M.t0)/1000);
+  const bigEl=d.querySelector('.score .big');const m=bigEl?bigEl.textContent.match(/(\d+)\s*\/\s*(\d+)/):null;
+  const css=[...d.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+  const tmp=document.createElement('div');tmp.innerHTML=d.getElementById('app').innerHTML;
+  tmp.querySelectorAll(':scope > h1, :scope > .panel:first-of-type, :scope > p.foot, .srclink, .srcx').forEach(e=>e.remove());
+  const lab=[...tmp.querySelectorAll(':scope > .label')].find(e=>/round by round/i.test(e.textContent));if(lab)lab.remove();
+  tmp.querySelectorAll('[onclick]').forEach(e=>e.removeAttribute('onclick'));
+  tmp.querySelectorAll('.label').forEach(e=>{if(e.firstChild&&e.firstChild.nodeType===3)e.firstChild.nodeValue=e.firstChild.nodeValue.replace(/^Round 1 · /,'')});
+  const lay=['phone','tablet','desktop'].find(c=>d.documentElement.classList.contains(c))||'desktop';
+  finish(i,{right:m?+m[1]:0,total:m?+m[2]:1,secs,css,html:tmp.innerHTML,lay})}
+function finish(i,r){const f=M.frames[i];M.res[i]=r?{...r,g:M.plan[i]}:{g:M.plan[i],skipped:true,right:0,total:0,secs:0};
+  if(f){f.el.remove();delete M.frames[i]}
+  M.cur=i+1;if(M.cur>=M.plan.length){M.screen='results';clearFrames();render();return}
+  bar();prep(M.cur);prep(M.cur+1);show(M.cur)}
+window.quit=()=>{clearFrames();M.screen='menu';render()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&M.screen==='play')M.left++});
+/* ---------- results ---------- */
+function verdict(p){return p>=.95?'A true Masterbrain.':p>=.8?'Excellent. You know your world.':p>=.6?'Solid effort. A few surprises in there.':p>=.4?'Some of those caught you out.':'Plenty of world left to explore!'}
+const pts=r=>r.total?r.right/r.total*10:0;
+function resultsHTML(){const done=M.res.filter(r=>!r.skipped);const score=Math.round(done.reduce((s,r)=>s+pts(r),0)/Math.max(1,done.length)*10);
+  const right=done.reduce((s,r)=>s+r.right,0),total=done.reduce((s,r)=>s+r.total,0),secs=done.reduce((s,r)=>s+r.secs,0);
+  const by={};done.forEach(r=>{const b=by[r.g]||(by[r.g]={right:0,total:0,p:0,n:0});b.right+=r.right;b.total+=r.total;b.p+=pts(r);b.n++});
+  const rows=Object.entries(by).map(([id,b])=>({id,...b,pc:b.p/b.n/10})).sort((a,b)=>b.pc-a.pc);
+  const tag=pc=>pc>=.75?'<span class="tag s">Strong</span>':pc>=.45?'<span class="tag m">Getting there</span>':'<span class="tag w">Work on it</span>';
+  const fmtT=s=>{s=Math.round(s);return s<60?`${s} seconds`:`${Math.floor(s/60)} min ${s%60} s`};
+  const best=rows[0],worst=rows[rows.length-1];
+  return `<div class="nwser"><b>Natural Wonders</b> · Masterbrain</div><h1>Results</h1>
+  <div class="panel" style="margin-top:14px"><div class="score"><div class="big">${score}<small>/100</small></div><div><h2>${verdict(score/100)}</h2>
+   ${M.timed?`<div class="tsum"><b>${right}/${total} answers right in ${fmtT(secs)}</b> · ${M.left?`left the page ${M.left} time${M.left===1?'':'s'}`:'stayed on the page throughout'}</div>`:`<div class="tsum"><b>${right}/${total} answers right</b></div>`}
+   <div style="color:var(--muted);font-size:14px">${M.plan.length} rounds · ${M.timed?'30 seconds a round':'no timer'}${M.res.some(r=>r.skipped)?' · a round that failed to load was left out':''}</div></div></div>
+   <div class="row" style="margin-top:16px"><button class="btn" onclick="start()">Play again</button><button class="btn ghost" onclick="quit()">Change settings</button><button class="btn ghost" onclick="share(${score})">Share score</button><a class="btn ghost" href="${HOME}">All games</a></div></div>
+  <div class="panel" style="margin-top:16px"><div class="label">Strengths and weaknesses</div>
+   <table class="st">${rows.map(r=>`<tr><td><b>${esc(GBY[r.id].n)}</b></td><td class="bc" style="width:34%"><div class="sbar"><i style="width:${(r.pc*100).toFixed(0)}%"></i></div></td><td class="n">${r.right}/${r.total} right</td><td style="text-align:right">${tag(r.pc)}</td></tr>`).join('')}</table>
+   ${rows.length>1?`<div class="hl"><div>Strongest<b>${esc(GBY[best.id].n)}</b></div><div>Most room to improve<b>${esc(GBY[worst.id].n)}</b></div></div>`:''}</div>
+  <div class="label" style="margin-top:26px">Round by round</div>
+  ${M.res.map((r,i)=>r.skipped?`<div class="rhead"><h3>Round ${i+1} · ${esc(GBY[r.g].n)}</h3><span>Did not load</span></div>`:`<div class="rhead"><h3>Round ${i+1} · ${esc(GBY[r.g].n)}</h3><span>${r.right}/${r.total} right${M.timed?` · ${r.secs.toFixed(1)} s`:''} · <a href="${urlFor(GBY[r.g])}" target="_blank" rel="noopener" style="color:inherit">Play this game</a></span></div><div class="rev" data-i="${i}"></div>`).join('')}
+  <p class="foot">Every figure is shown exactly as published by the source named in each round. Each game's Sources page lists them all.<br>Natural Wonders: Masterbrain ${VERSION}</p>`}
+function mountReviews(){document.querySelectorAll('.rev').forEach(el=>{const r=M.res[+el.dataset.i];if(!r||!r.html)return;
+  let css=r.css.replace(/:root/g,':host').replace(/\bhtml\.(phone|tablet|desktop)\b/g,':host(.$1)').replace(/body\.timed[^{]*\{[^}]*\}/g,'').replace(/(^|[},\s])body(?=[\s{,.:])/g,'$1:host').replace(/(^|[},\s])html(?=[\s{,])/g,'$1:host');
+  const sh=el.attachShadow({mode:'open'});el.classList.add(r.lay);sh.innerHTML=`<style>${css}\n:host{display:block;background:transparent!important}.rcard{margin-bottom:0}</style><div class="wrap" style="padding:0;max-width:none">${r.html}</div>`})}
+window.share=async s=>{const t=`Natural Wonders: Masterbrain. I scored ${s}/100. Can you beat me?`;const u=location.href.startsWith('http')?location.href:'';
+  try{if(navigator.share){await navigator.share({text:t,url:u||undefined});return}}catch(e){return}
+  try{await navigator.clipboard.writeText(t+(u?' '+u:''));toast('Score copied. Paste it to a friend.')}catch(e){toast(t)}};
+render();
+</script>
+<!-- nw-stats: counts visits, new players, finished games and countries for Natural Wonders, all time and by month (UK time), like Aperture -->
+<script>
+(()=>{
+if(window.top!==window)return; // games played inside Masterbrain are counted as Masterbrain
+if(/^\/shadow\//.test(location.pathname))return; // classic copy: never counted
+const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname);
+const TEST=/\bClaude\//.test(navigator.userAgent);
+const GAME=((location.pathname.match(/natural-wonders-([a-z-]+)/)||[])[1]||'other').replace(/-/g,'_'); // underscores keep Firestore field names simple
+const HOUR=(()=>{try{return 'h'+new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',hourCycle:'h23'}).format(new Date()).slice(0,2)}catch(e){return 'h'+String(new Date().getHours()).padStart(2,'0')}})();
+const DEV=(()=>{try{const coarse=matchMedia('(pointer:coarse)').matches,s=Math.min(screen.width,screen.height);return !coarse?'desktop':s>=600?'tablet':'phone'}catch(e){return 'desktop'}})();
+const DAY=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),g=t=>p.find(x=>x.type===t).value;return g('year')+'-'+g('month')+'-'+g('day')}catch(e){return new Date().toISOString().slice(0,10)}})(); // UK date, e.g. 2026-11-03
+const MONTH=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit'}).formatToParts(new Date());return p.find(x=>x.type==='year').value+'-'+p.find(x=>x.type==='month').value}catch(e){const d=new Date();return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')}})();
+const TZ={"Africa/Abidjan":"CI","Africa/Accra":"GH","Africa/Addis_Ababa":"ET","Africa/Algiers":"DZ","Africa/Asmara":"ER","Africa/Asmera":"ER","Africa/Bamako":"ML","Africa/Bangui":"CF","Africa/Banjul":"GM","Africa/Bissau":"GW","Africa/Blantyre":"MW","Africa/Brazzaville":"CG","Africa/Bujumbura":"BI","Africa/Cairo":"EG","Africa/Casablanca":"MA","Africa/Ceuta":"ES","Africa/Conakry":"GN","Africa/Dakar":"SN","Africa/Dar_es_Salaam":"TZ","Africa/Djibouti":"DJ","Africa/Douala":"CM","Africa/El_Aaiun":"EH","Africa/Freetown":"SL","Africa/Gaborone":"BW","Africa/Harare":"ZW","Africa/Johannesburg":"ZA","Africa/Juba":"SS","Africa/Kampala":"UG","Africa/Khartoum":"SD","Africa/Kigali":"RW","Africa/Kinshasa":"CD","Africa/Lagos":"NG","Africa/Libreville":"GA","Africa/Lome":"TG","Africa/Luanda":"AO","Africa/Lubumbashi":"CD","Africa/Lusaka":"ZM","Africa/Malabo":"GQ","Africa/Maputo":"MZ","Africa/Maseru":"LS","Africa/Mbabane":"SZ","Africa/Mogadishu":"SO","Africa/Monrovia":"LR","Africa/Nairobi":"KE","Africa/Ndjamena":"TD","Africa/Niamey":"NE","Africa/Nouakchott":"MR","Africa/Ouagadougou":"BF","Africa/Porto-Novo":"BJ","Africa/Sao_Tome":"ST","Africa/Timbuktu":"ML","Africa/Tripoli":"LY","Africa/Tunis":"TN","Africa/Windhoek":"NA","America/Adak":"US","America/Anchorage":"US","America/Anguilla":"AI","America/Antigua":"AG","America/Araguaina":"BR","America/Argentina/Buenos_Aires":"AR","America/Argentina/Catamarca":"AR","America/Argentina/ComodRivadavia":"AR","America/Argentina/Cordoba":"AR","America/Argentina/Jujuy":"AR","America/Argentina/La_Rioja":"AR","America/Argentina/Mendoza":"AR","America/Argentina/Rio_Gallegos":"AR","America/Argentina/Salta":"AR","America/Argentina/San_Juan":"AR","America/Argentina/San_Luis":"AR","America/Argentina/Tucuman":"AR","America/Argentina/Ushuaia":"AR","America/Aruba":"AW","America/Asuncion":"PY","America/Atikokan":"CA","America/Atka":"US","America/Bahia":"BR","America/Bahia_Banderas":"MX","America/Barbados":"BB","America/Belem":"BR","America/Belize":"BZ","America/Blanc-Sablon":"CA","America/Boa_Vista":"BR","America/Bogota":"CO","America/Boise":"US","America/Buenos_Aires":"AR","America/Cambridge_Bay":"CA","America/Campo_Grande":"BR","America/Cancun":"MX","America/Caracas":"VE","America/Catamarca":"AR","America/Cayenne":"GF","America/Cayman":"KY","America/Chicago":"US","America/Chihuahua":"MX","America/Ciudad_Juarez":"MX","America/Coral_Harbour":"CA","America/Cordoba":"AR","America/Costa_Rica":"CR","America/Coyhaique":"CL","America/Creston":"CA","America/Cuiaba":"BR","America/Curacao":"CW","America/Danmarkshavn":"GL","America/Dawson":"CA","America/Dawson_Creek":"CA","America/Denver":"US","America/Detroit":"US","America/Dominica":"DM","America/Edmonton":"CA","America/Eirunepe":"BR","America/El_Salvador":"SV","America/Ensenada":"MX","America/Fort_Nelson":"CA","America/Fort_Wayne":"US","America/Fortaleza":"BR","America/Glace_Bay":"CA","America/Godthab":"GL","America/Goose_Bay":"CA","America/Grand_Turk":"TC","America/Grenada":"GD","America/Guadeloupe":"GP","America/Guatemala":"GT","America/Guayaquil":"EC","America/Guyana":"GY","America/Halifax":"CA","America/Havana":"CU","America/Hermosillo":"MX","America/Indiana/Indianapolis":"US","America/Indiana/Knox":"US","America/Indiana/Marengo":"US","America/Indiana/Petersburg":"US","America/Indiana/Tell_City":"US","America/Indiana/Vevay":"US","America/Indiana/Vincennes":"US","America/Indiana/Winamac":"US","America/Indianapolis":"US","America/Inuvik":"CA","America/Iqaluit":"CA","America/Jamaica":"JM","America/Jujuy":"AR","America/Juneau":"US","America/Kentucky/Louisville":"US","America/Kentucky/Monticello":"US","America/Knox_IN":"US","America/Kralendijk":"BQ","America/La_Paz":"BO","America/Lima":"PE","America/Los_Angeles":"US","America/Louisville":"US","America/Lower_Princes":"SX","America/Maceio":"BR","America/Managua":"NI","America/Manaus":"BR","America/Marigot":"MF","America/Martinique":"MQ","America/Matamoros":"MX","America/Mazatlan":"MX","America/Mendoza":"AR","America/Menominee":"US","America/Merida":"MX","America/Metlakatla":"US","America/Mexico_City":"MX","America/Miquelon":"PM","America/Moncton":"CA","America/Monterrey":"MX","America/Montevideo":"UY","America/Montreal":"CA","America/Montserrat":"MS","America/Nassau":"BS","America/New_York":"US","America/Nipigon":"CA","America/Nome":"US","America/Noronha":"BR","America/North_Dakota/Beulah":"US","America/North_Dakota/Center":"US","America/North_Dakota/New_Salem":"US","America/Nuuk":"GL","America/Ojinaga":"MX","America/Panama":"PA","America/Pangnirtung":"CA","America/Paramaribo":"SR","America/Phoenix":"US","America/Port-au-Prince":"HT","America/Port_of_Spain":"TT","America/Porto_Acre":"BR","America/Porto_Velho":"BR","America/Puerto_Rico":"PR","America/Punta_Arenas":"CL","America/Rainy_River":"CA","America/Rankin_Inlet":"CA","America/Recife":"BR","America/Regina":"CA","America/Resolute":"CA","America/Rio_Branco":"BR","America/Rosario":"AR","America/Santa_Isabel":"MX","America/Santarem":"BR","America/Santiago":"CL","America/Santo_Domingo":"DO","America/Sao_Paulo":"BR","America/Scoresbysund":"GL","America/Shiprock":"US","America/Sitka":"US","America/St_Barthelemy":"BL","America/St_Johns":"CA","America/St_Kitts":"KN","America/St_Lucia":"LC","America/St_Thomas":"VI","America/St_Vincent":"VC","America/Swift_Current":"CA","America/Tegucigalpa":"HN","America/Thule":"GL","America/Thunder_Bay":"CA","America/Tijuana":"MX","America/Toronto":"CA","America/Tortola":"VG","America/Vancouver":"CA","America/Virgin":"VI","America/Whitehorse":"CA","America/Winnipeg":"CA","America/Yakutat":"US","America/Yellowknife":"CA","Antarctica/Casey":"AQ","Antarctica/Davis":"AQ","Antarctica/DumontDUrville":"AQ","Antarctica/Macquarie":"AU","Antarctica/Mawson":"AQ","Antarctica/McMurdo":"AQ","Antarctica/Palmer":"AQ","Antarctica/Rothera":"AQ","Antarctica/South_Pole":"AQ","Antarctica/Syowa":"AQ","Antarctica/Troll":"AQ","Antarctica/Vostok":"AQ","Arctic/Longyearbyen":"SJ","Asia/Aden":"YE","Asia/Almaty":"KZ","Asia/Amman":"JO","Asia/Anadyr":"RU","Asia/Aqtau":"KZ","Asia/Aqtobe":"KZ","Asia/Ashgabat":"TM","Asia/Ashkhabad":"TM","Asia/Atyrau":"KZ","Asia/Baghdad":"IQ","Asia/Bahrain":"BH","Asia/Baku":"AZ","Asia/Bangkok":"TH","Asia/Barnaul":"RU","Asia/Beirut":"LB","Asia/Bishkek":"KG","Asia/Brunei":"BN","Asia/Calcutta":"IN","Asia/Chita":"RU","Asia/Choibalsan":"MN","Asia/Chongqing":"CN","Asia/Chungking":"CN","Asia/Colombo":"LK","Asia/Dacca":"BD","Asia/Damascus":"SY","Asia/Dhaka":"BD","Asia/Dili":"TL","Asia/Dubai":"AE","Asia/Dushanbe":"TJ","Asia/Famagusta":"CY","Asia/Gaza":"PS","Asia/Harbin":"CN","Asia/Hebron":"PS","Asia/Ho_Chi_Minh":"VN","Asia/Hong_Kong":"HK","Asia/Hovd":"MN","Asia/Irkutsk":"RU","Asia/Istanbul":"TR","Asia/Jakarta":"ID","Asia/Jayapura":"ID","Asia/Jerusalem":"IL","Asia/Kabul":"AF","Asia/Kamchatka":"RU","Asia/Karachi":"PK","Asia/Kashgar":"CN","Asia/Kathmandu":"NP","Asia/Katmandu":"NP","Asia/Khandyga":"RU","Asia/Kolkata":"IN","Asia/Krasnoyarsk":"RU","Asia/Kuala_Lumpur":"MY","Asia/Kuching":"MY","Asia/Kuwait":"KW","Asia/Macao":"MO","Asia/Macau":"MO","Asia/Magadan":"RU","Asia/Makassar":"ID","Asia/Manila":"PH","Asia/Muscat":"OM","Asia/Nicosia":"CY","Asia/Novokuznetsk":"RU","Asia/Novosibirsk":"RU","Asia/Omsk":"RU","Asia/Oral":"KZ","Asia/Phnom_Penh":"KH","Asia/Pontianak":"ID","Asia/Pyongyang":"KP","Asia/Qatar":"QA","Asia/Qostanay":"KZ","Asia/Qyzylorda":"KZ","Asia/Rangoon":"MM","Asia/Riyadh":"SA","Asia/Saigon":"VN","Asia/Sakhalin":"RU","Asia/Samarkand":"UZ","Asia/Seoul":"KR","Asia/Shanghai":"CN","Asia/Singapore":"SG","Asia/Srednekolymsk":"RU","Asia/Taipei":"TW","Asia/Tashkent":"UZ","Asia/Tbilisi":"GE","Asia/Tehran":"IR","Asia/Tel_Aviv":"IL","Asia/Thimbu":"BT","Asia/Thimphu":"BT","Asia/Tokyo":"JP","Asia/Tomsk":"RU","Asia/Ujung_Pandang":"ID","Asia/Ulaanbaatar":"MN","Asia/Ulan_Bator":"MN","Asia/Urumqi":"CN","Asia/Ust-Nera":"RU","Asia/Vientiane":"LA","Asia/Vladivostok":"RU","Asia/Yakutsk":"RU","Asia/Yangon":"MM","Asia/Yekaterinburg":"RU","Asia/Yerevan":"AM","Atlantic/Azores":"PT","Atlantic/Bermuda":"BM","Atlantic/Canary":"ES","Atlantic/Cape_Verde":"CV","Atlantic/Faeroe":"FO","Atlantic/Faroe":"FO","Atlantic/Jan_Mayen":"NO","Atlantic/Madeira":"PT","Atlantic/Reykjavik":"IS","Atlantic/South_Georgia":"GS","Atlantic/St_Helena":"SH","Atlantic/Stanley":"FK","Australia/ACT":"AU","Australia/Adelaide":"AU","Australia/Brisbane":"AU","Australia/Broken_Hill":"AU","Australia/Canberra":"AU","Australia/Currie":"AU","Australia/Darwin":"AU","Australia/Eucla":"AU","Australia/Hobart":"AU","Australia/LHI":"AU","Australia/Lindeman":"AU","Australia/Lord_Howe":"AU","Australia/Melbourne":"AU","Australia/NSW":"AU","Australia/North":"AU","Australia/Perth":"AU","Australia/Queensland":"AU","Australia/South":"AU","Australia/Sydney":"AU","Australia/Tasmania":"AU","Australia/Victoria":"AU","Australia/West":"AU","Australia/Yancowinna":"AU","Europe/Amsterdam":"NL","Europe/Andorra":"AD","Europe/Astrakhan":"RU","Europe/Athens":"GR","Europe/Belfast":"GB","Europe/Belgrade":"RS","Europe/Berlin":"DE","Europe/Bratislava":"SK","Europe/Brussels":"BE","Europe/Bucharest":"RO","Europe/Budapest":"HU","Europe/Busingen":"DE","Europe/Chisinau":"MD","Europe/Copenhagen":"DK","Europe/Dublin":"IE","Europe/Gibraltar":"GI","Europe/Guernsey":"GG","Europe/Helsinki":"FI","Europe/Isle_of_Man":"IM","Europe/Istanbul":"TR","Europe/Jersey":"JE","Europe/Kaliningrad":"RU","Europe/Kiev":"UA","Europe/Kirov":"RU","Europe/Kyiv":"UA","Europe/Lisbon":"PT","Europe/Ljubljana":"SI","Europe/London":"GB","Europe/Luxembourg":"LU","Europe/Madrid":"ES","Europe/Malta":"MT","Europe/Mariehamn":"AX","Europe/Minsk":"BY","Europe/Monaco":"MC","Europe/Moscow":"RU","Europe/Nicosia":"CY","Europe/Oslo":"NO","Europe/Paris":"FR","Europe/Podgorica":"ME","Europe/Prague":"CZ","Europe/Riga":"LV","Europe/Rome":"IT","Europe/Samara":"RU","Europe/San_Marino":"SM","Europe/Sarajevo":"BA","Europe/Saratov":"RU","Europe/Simferopol":"UA","Europe/Skopje":"MK","Europe/Sofia":"BG","Europe/Stockholm":"SE","Europe/Tallinn":"EE","Europe/Tirane":"AL","Europe/Tiraspol":"MD","Europe/Ulyanovsk":"RU","Europe/Uzhgorod":"UA","Europe/Vaduz":"LI","Europe/Vatican":"VA","Europe/Vienna":"AT","Europe/Vilnius":"LT","Europe/Volgograd":"RU","Europe/Warsaw":"PL","Europe/Zagreb":"HR","Europe/Zaporozhye":"UA","Europe/Zurich":"CH","Indian/Antananarivo":"MG","Indian/Chagos":"IO","Indian/Christmas":"CX","Indian/Cocos":"CC","Indian/Comoro":"KM","Indian/Kerguelen":"TF","Indian/Mahe":"SC","Indian/Maldives":"MV","Indian/Mauritius":"MU","Indian/Mayotte":"YT","Indian/Reunion":"RE","Pacific/Apia":"WS","Pacific/Auckland":"NZ","Pacific/Bougainville":"PG","Pacific/Chatham":"NZ","Pacific/Chuuk":"FM","Pacific/Easter":"CL","Pacific/Efate":"VU","Pacific/Enderbury":"KI","Pacific/Fakaofo":"TK","Pacific/Fiji":"FJ","Pacific/Funafuti":"TV","Pacific/Galapagos":"EC","Pacific/Gambier":"PF","Pacific/Guadalcanal":"SB","Pacific/Guam":"GU","Pacific/Honolulu":"US","Pacific/Johnston":"US","Pacific/Kanton":"KI","Pacific/Kiritimati":"KI","Pacific/Kosrae":"FM","Pacific/Kwajalein":"MH","Pacific/Majuro":"MH","Pacific/Marquesas":"PF","Pacific/Midway":"UM","Pacific/Nauru":"NR","Pacific/Niue":"NU","Pacific/Norfolk":"NF","Pacific/Noumea":"NC","Pacific/Pago_Pago":"AS","Pacific/Palau":"PW","Pacific/Pitcairn":"PN","Pacific/Pohnpei":"FM","Pacific/Ponape":"FM","Pacific/Port_Moresby":"PG","Pacific/Rarotonga":"CK","Pacific/Saipan":"MP","Pacific/Samoa":"AS","Pacific/Tahiti":"PF","Pacific/Tarawa":"KI","Pacific/Tongatapu":"TO","Pacific/Truk":"FM","Pacific/Wake":"UM","Pacific/Wallis":"WF","Pacific/Yap":"FM"}; // every time zone in the world (IANA tz database) and its country
+function country(){let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}if(TZ[tz])return TZ[tz];
+  for(const l of (navigator.languages||[navigator.language||''])){const m=/-([A-Z]{2})$/i.exec(l||'');if(m)return m[1].toUpperCase()}return 'XX'}
+async function commit(id,fields){try{await fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(fields).map(([f,n])=>({fieldPath:f,increment:{integerValue:String(n)}}))}}]})})}catch(e){}}
+// all-time, month and day records sent at once as separate requests (so one can't block another); keepalive lets them finish if the page closes
+async function bump(f,m,d){if(!LIVE)return;const w=[commit('wonders',f)];if(MONTH>='2026-11'){w.push(commit('wonders-'+MONTH,m||f),commit('wonders-'+DAY,d||m||f))}await Promise.all(w)}
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+// a visit: once per game per browser session
+let counted=false;try{counted=sessionStorage.getItem('nw-visit-'+GAME)==='1';sessionStorage.setItem('nw-visit-'+GAME,'1')}catch(e){}
+if(!counted){
+  if(TEST)bump({tests:1});
+  else{const vip=ls('ap-vip')==='1',seen=ls('nw-seen')==='1',seenM=ls('nw-seen-'+MONTH)==='1',seenD=ls('nw-seen-'+DAY)==='1';ls('nw-seen','1');ls('nw-seen-'+MONTH,'1');ls('nw-seen-'+DAY,'1');
+    const f={visits:1,['countries.'+country()]:1,['byGame.'+GAME]:1,['hours.'+HOUR]:1,['device.'+DEV]:1};if(vip)f.vip=1;const m={...f},d={...f};if(!seen)f.uniques=1;if(!seenM)m.uniques=1;if(!seenD)d.uniques=1;bump(f,m,d)}}
+// a finished game: the results score appears
+let done=false;
+setInterval(()=>{const big=document.querySelector('.big');if(!big){done=false;return}
+  if(!done){done=true;if(!TEST)bump({games:1,['played.'+GAME]:1})}},1000);
+})();
+</script>
+<!-- tmg-feedback: one Feedback button for ideas, likes and bug reports. Messages go privately to Firestore 'feedback'; only the owner can read them (stats page, signed in). -->
+<style>
+.tmgfb-pill{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:6px;background:var(--ink,#16181d);color:#fff;border:0;border-radius:999px;padding:9px 15px;font-family:inherit;font-weight:600;font-size:13.5px;line-height:1;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.22)}
+.tmgfb-pill[hidden],body.timed .tmgfb-pill,body:has(.play) .tmgfb-pill{display:none}
+.tmgfb-pill svg,.tmgfb-icon svg{width:15px;height:15px}
+.tmgfb-v{position:fixed;inset:0;z-index:2147483000;background:rgba(22,24,29,.35);display:flex;align-items:center;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.tmgfb-v[hidden]{display:none}
+.tmgfb-c{background:#fff;color:var(--ink,#16181d);border:1.5px solid var(--line,#d9dde4);border-radius:20px;padding:22px 22px 18px;width:100%;max-width:400px;max-height:calc(100% - 8px);overflow:auto;box-sizing:border-box;box-shadow:0 24px 48px -20px rgba(0,0,0,.35);font-family:inherit;font-size:15px;line-height:1.45;text-align:left}
+.tmgfb-c h2{margin:0 0 4px;font-size:20px;line-height:1.2}
+.tmgfb-c p{margin:0 0 14px;color:var(--muted,var(--soft,#5b606b));font-size:13.5px}
+.tmgfb-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tmgfb-chip{border:1.5px solid var(--line,#d9dde4);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;background:#fff;color:inherit;cursor:pointer}
+.tmgfb-chip[aria-pressed="true"]{background:var(--ink,#16181d);color:#fff;border-color:var(--ink,#16181d)}
+.tmgfb-c textarea,.tmgfb-c input{width:100%;box-sizing:border-box;border:1.5px solid var(--line,#d9dde4);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;color:inherit;background:#fff;outline:none}
+.tmgfb-c textarea{height:96px;resize:none}
+.tmgfb-c input{margin-top:8px}
+.tmgfb-c textarea:focus,.tmgfb-c input:focus{border-color:var(--ink,#16181d)}
+.tmgfb-meta{font-size:12px;color:var(--muted,var(--soft,#5b606b));margin-top:8px}
+.tmgfb-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:14px}
+.tmgfb-msg{flex:1;font-size:13px;color:var(--muted,var(--soft,#5b606b))}
+.tmgfb-b{border-radius:999px;padding:9px 18px;font:inherit;font-weight:600;font-size:14px;border:1.5px solid var(--line,#d9dde4);background:#fff;color:inherit;cursor:pointer}
+.tmgfb-b.go{background:var(--ink,#16181d);color:#fff;border-color:var(--ink,#16181d)}
+.tmgfb-b:disabled{opacity:.5}
+</style>
+<script>
+(()=>{if(window.tmgFb||window.top!==window)return;
+const CFG={p:'aperture-c0961',k:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI'};
+const ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>';
+const KINDS=[['idea','💡 Idea','What would make it better?'],['like','👍 Like it','What did you enjoy?'],['wrong','🐞 Something’s wrong','What went wrong, and where?']];
+let v,kind='idea';
+const dev=()=>{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c?(m>=600?'tablet':'phone'):'desktop'};
+function build(){v=document.createElement('div');v.className='tmgfb-v';v.hidden=true;
+  v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="Feedback or report a problem"><h2>Tell us what you think</h2>
+  <p>Choose Idea, Like it or Something’s wrong and let us know. It goes privately to the Two Minute Games back office only. It isn’t a public message, and nobody else can read it.</p>
+  <div class="tmgfb-chips">${KINDS.map(k=>`<button type="button" class="tmgfb-chip" data-k="${k[0]}" aria-pressed="${k[0]===kind}">${k[1]}</button>`).join('')}</div>
+  <textarea maxlength="1500" required aria-label="Your message"></textarea>
+  <input maxlength="150" autocomplete="email" placeholder="Name or email, only if you’d like a reply (optional)" aria-label="Name or email (optional)">
+  <div class="tmgfb-meta">We also send which game you were on and your type of device, nothing else.</div>
+  <div class="tmgfb-row"><span class="tmgfb-msg" aria-live="polite"></span><button type="button" class="tmgfb-b">Cancel</button><button type="submit" class="tmgfb-b go">Send</button></div></form>`;
+  document.body.appendChild(v);const f=v.querySelector('form'),t=f.querySelector('textarea'),c=f.querySelector('input'),m=f.querySelector('.tmgfb-msg'),go=f.querySelector('.go');
+  const setK=k=>{kind=k;f.querySelectorAll('.tmgfb-chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));t.placeholder=KINDS.find(x=>x[0]===k)[2]};setK(kind);
+  f.querySelectorAll('.tmgfb-chip').forEach(b=>b.onclick=()=>setK(b.dataset.k));
+  f.querySelector('.tmgfb-b:not(.go)').onclick=close;v.addEventListener('click',e=>{if(e.target===v)close()});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&!v.hidden)close()});
+  f.onsubmit=async e=>{e.preventDefault();const msg=t.value.trim();if(!msg){t.focus();return}
+    go.disabled=true;m.textContent='Sending…';let where='';try{if(window.tmgFbWhere)where=String(window.tmgFbWhere()).slice(0,400)}catch(_){}
+    const s=x=>({stringValue:String(x)});
+    const fields={kind:s(kind),message:s(msg.slice(0,1500)),contact:s(c.value.trim().slice(0,150)),game:s(document.title.slice(0,120)),page:s(location.pathname.slice(0,200)),device:s(dev()),where:s(where),ua:s(navigator.userAgent.slice(0,300)),at:{timestampValue:new Date().toISOString()}};
+    try{const r=await fetch(`https://firestore.googleapis.com/v1/projects/${CFG.p}/databases/(default)/documents/feedback?key=${CFG.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
+      if(!r.ok)throw 0;m.textContent='Thank you. Sent!';t.value='';c.value='';setTimeout(close,1400)}
+    catch(_){m.textContent='Couldn’t send just now. Please try again in a moment.';go.disabled=false}}}
+function open(){if(!v)build();const m=v.querySelector('.tmgfb-msg');m.textContent='';v.querySelector('.go').disabled=false;v.hidden=false;setTimeout(()=>v.querySelector('textarea').focus(),50)}
+function close(){if(v)v.hidden=true}
+window.tmgFb={open,close};
+function wire(){const own=document.querySelectorAll('[data-tmg-feedback]');
+  if(own.length){own.forEach(b=>b.addEventListener('click',e=>{e.preventDefault();open()}));return}
+  const p=document.createElement('button');p.type='button';p.className='tmgfb-pill';p.setAttribute('aria-label','Feedback or report a problem');p.innerHTML=ICON+'Feedback or bug';p.onclick=open;document.body.appendChild(p)}
+if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
+})();
+</script>
+<!-- /tmg-feedback -->
+
+
+</body>
+</html>

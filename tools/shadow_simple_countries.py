@@ -7,7 +7,7 @@
 
 Facts are built from the numbers in the player's language (shadow/i18n.js), so these games are fully translated.
 Country shapes, areas and names come from the full games (Where is Bigger? and How Many Borders?).
-Output: shadow/<game>/data.js  (SG = {kind, shapes|views, q, tr})
+Output: simple/data/<game>.js  (SG = {kind, shapes|views, q, tr})
 Run from the repo root:  python3 tools/shadow_simple_countries.py
 """
 import json, random, re, pathlib, ast, sys
@@ -53,7 +53,7 @@ def tr_for(ids, en_name):
 
 
 def write(game, data):
-    dst = ROOT / 'shadow' / game / 'data.js'
+    dst = ROOT / 'simple' / 'data' / f'{game}.js'  # live from 17 Nov (the swap): one data file per game
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(f'/* Simple {game} data: built by tools/shadow_simple_countries.py from the full games. Do not edit by hand. */\n'
                    f'var SG=(window.SGD=window.SGD||{{}})["{game}"]=' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n')

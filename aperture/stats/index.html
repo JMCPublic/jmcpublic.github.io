@@ -234,7 +234,7 @@ const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aper
 const AD={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
 const KEYS=['visits','uniques','vip','games','tests'];
 const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played',hr:'hours',dv:'device'};
-const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',forests:'Forests',masterbrain:'Masterbrain'};
+const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',forests:'Forests',masterbrain:'Masterbrain'};
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
 const nameOf=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(names?names.of(c):c);
@@ -480,7 +480,7 @@ function drawSrc(){const el=document.getElementById('rcSrc');const src=map(cur()
   ${rows.length?`<table class="rt"><tr><th>Link</th><th class="n">Visits</th><th class="n">New players</th><th class="n">Opened a game</th><th class="n">Came back</th></tr>${rows.map(r=>`<tr><td>${tagCountry(r[0])?flag(tagCountry(r[0]))+' ':''}${esc(LABEL(r[0]))}</td>${r.slice(1).map(x=>`<td class="n">${x}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet. Counting started on 5 Nov 2026.</p>'}${refLine(src)}`;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;drawSrc();drawLang();drawRate();drawDev();drawWalk();drawWitw()})}
 const LNAME={en:['🇬🇧','English'],de:['🇩🇪','Deutsch'],tr:['🇹🇷','Türkçe'],fr:['🇫🇷','Français'],es:['🌎','Español'],pt:['🌎','Português']};
-const WNAME={objects:'Aperture',landmarks:'Aperture Landmarks',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?',bodies_of_water:'Bodies of Water',river_cities:'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
+const WNAME={objects:'Aperture',landmarks:'Aperture Landmarks',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',how_many_borders:'How Many Borders?',bodies_of_water:'Bodies of Water',river_cities:'River Cities',rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',masterbrain:'Masterbrain'};
 function drawWalk(){const el=document.getElementById('rcWalk');if(!el)return;const W=map(cur().walk);const g={};
   Object.entries(W).forEach(([k,v])=>{const m=k.match(/^(.+)_([a-z]+)$/);if(!m)return;(g[m[1]]=g[m[1]]||{})[m[2]]=num(v)});
   const rows=Object.entries(g).sort((a,b)=>(b[1].shown||0)-(a[1].shown||0));
@@ -490,7 +490,7 @@ function drawWalk(){const el=document.getElementById('rcWalk');if(!el)return;con
     return `<tr><td>${esc(WNAME[k]||k)}</td><td class="n">${r.shown||0}</td><td class="n">${took||0}</td><td class="n">${fin||0}</td><td class="n">${sk||0}</td><td class="n">${pc(pl,r.shown)}</td></tr>`}).join('')}</table>`:'<p class="msgnote">Nothing yet. Needs Firestore rules v11 published.</p>'}`}
 function drawRate(){const el=document.getElementById('rcRate');if(!el)return;const R=map(cur().rate);const g={};
   Object.entries(R).forEach(([k,v])=>{const m=k.match(/^(.+)_(tough|easy|right)$/);if(!m)return;(g[m[1]]=g[m[1]]||{tough:0,easy:0,right:0})[m[2]]=num(v)});
-  const NM={rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',bodies_of_water:'Bodies of Water',river_cities:'River Cities',masterbrain:'Masterbrain',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',how_many_borders:'How Many Borders?'};
+  const NM={rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',bodies_of_water:'Bodies of Water',river_cities:'River Cities',masterbrain:'Masterbrain',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',how_many_borders:'How Many Borders?'};
   const rows=Object.entries(g).map(([k,r])=>[k,r,r.tough+r.easy+r.right]).sort((a,b)=>b[2]-a[2]);const pc=(a,t)=>t?Math.round(100*a/t)+'%':'–';
   el.innerHTML=`<div class="h2row"><h2>Goldilocks: how was that?</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 15 Nov 2026. Asked on the Natural Wonders results card, once per game per player per day. Lots of "too tough" or "too easy" means the levels need adjusting.</p>
   ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Answers</th><th class="n">Too tough</th><th class="n">Just right</th><th class="n">Too easy</th></tr>${rows.map(([k,r,t])=>`<tr><td>${esc(NM[k]||k)}</td><td class="n">${t}</td><td class="n">${r.tough} (${pc(r.tough,t)})</td><td class="n">${r.right} (${pc(r.right,t)})</td><td class="n">${r.easy} (${pc(r.easy,t)})</td></tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet.</p>'}<p class="msgnote">Home-screen tip (from 15 Nov): shown ${num(R.a2hs_shown)} · Show me how ${num(R.a2hs_how)} · Not now ${num(R.a2hs_no)}</p><p class="msgnote">🔒 Wrong stats passwords (from 16 Nov): ${num(R.gate_fail)}</p>`}
@@ -604,7 +604,7 @@ const fmt=n=>n.toLocaleString('en-GB');const pl=(n,w)=>fmt(n)+' '+w+(n===1?'':'s
 const flag=c=>/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0)))+' ':'';
 let dn;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const cn=c=>c==='XX'?'Unknown':c==='GB'?'United Kingdom':(()=>{try{return dn.of(c)}catch(e){return c}})();
 const FAMN={objects:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders'};
-const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Five?',forests:'Forests',masterbrain:'Masterbrain'};
+const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',forests:'Forests',masterbrain:'Masterbrain'};
 const SRCN=k=>k==='li'?'LinkedIn link':k==='fb'?'Facebook link':k==='walkin'?'Walk-ins (no link)':'Link ?from='+k.replace(/^t_/,'').replace(/_/g,'-');
 const LANGN={en:'English',de:'German',tr:'Turkish',fr:'French',es:'Spanish',pt:'Portuguese'};
 const ls=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
