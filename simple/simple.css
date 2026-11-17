@@ -83,4 +83,6 @@ a{color:inherit}
 .srcbox{background:#fff;color:var(--ink,#16181d);border-radius:22px;max-width:520px;width:100%;max-height:85vh;overflow:auto;padding:20px 20px 16px;font-size:14.5px;line-height:1.45;margin-bottom:env(safe-area-inset-bottom)}
 .srcbox h3{font:600 21px/1.2 Georgia,serif;margin:6px 0 8px}.srcbox ul{margin:8px 0 10px;padding-left:18px}.srcbox li{margin:5px 0}.srcbox a{color:#b4552a}
 .srcbox .sm{font-size:13px;color:var(--muted,#6f685d)}.srcbox details{margin:8px 0}.srcbox summary{cursor:pointer;font-weight:600}.srcbox .pl{columns:2;column-gap:18px;font-size:13px}
-.srcbox .btn{width:100%;margin-top:6px}
+.srcbox .btn{width:100%;margin-top:8px}
+.srcbox input{width:100%;box-sizing:border-box;border:1.5px solid var(--line,#ddd);border-radius:14px;padding:13px 14px;font:inherit;font-size:16px;margin-top:4px}
+.srcbox input:focus{outline:2px solid var(--cu,#d4592b);border-color:transparent}

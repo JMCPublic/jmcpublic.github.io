@@ -111,6 +111,7 @@ td.share{width:34%;padding-left:12px}
 .wcs{flex:none;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--blue);color:#fff;border-radius:999px;padding:3px 8px}
 .wcg{flex:none;color:var(--faint)}
 .msgnote{margin:0;color:var(--soft);font-size:14px}
+.srow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.srow .msgbtn{margin:0;padding:7px 12px;font-size:13px}
 .msgs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .msgs li{border:1.5px solid var(--frame);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
 .msgs .mh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--soft)}
@@ -139,6 +140,7 @@ td.share{width:34%;padding-left:12px}
 .langgame{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--soft,#5b606b)}
 .chl{list-style:none;margin:0;padding:0}.chl li{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--line,#e4e6ea);font-size:14.5px;line-height:1.4}.chl li:first-child{border-top:0}
 .chl time{flex:none;width:92px;font-weight:700;color:var(--soft)}.chl b{font-weight:700}
+.srow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.srow .msgbtn{margin:0;padding:7px 12px;font-size:13px}
 </style>
 </head>
 <body>
@@ -422,11 +424,21 @@ firebase.initializeApp({apiKey:K,authDomain:P+'.firebaseapp.com',projectId:P},'m
 const auth=firebase.app('msgs').auth();
 const signIn=()=>{body.innerHTML='<p class="msgnote">Sign in with your Google account to read messages from players.</p><button class="msgbtn" id="msgIn">Sign in with Google</button>';who.textContent='';
   document.getElementById('msgIn').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{body.insertAdjacentHTML('beforeend',`<p class="msgnote">Sign-in didn’t work (${esc(e.code||e.message)}).</p>`)})};
-const KIND={idea:'💡 Idea',like:'👍 Like it',wrong:'🐞 Something’s wrong',translation:'🌐 Translation'};
+const KIND={idea:'💡 Idea',like:'👍 Like it',wrong:'🐞 Something’s wrong',translation:'🌐 Translation',sources:'📚 Sources request'};
 const LNAME={de:'German',tr:'Turkish',fr:'French',es:'Spanish',pt:'Portuguese'};
 // translation reports: kind 'translation', or (if the rules ever refuse that kind) kind 'wrong' with a [Translation XX] prefix
-const tr=d=>{const k=val(d.fields.kind),m=val(d.fields.message),w=val(d.fields.where);if(k==='translation')return{k:'translation',m,w};const x=/^\[Translation ([A-Z]{2})\] /.exec(m);return x?{k:'translation',m:m.slice(x[0].length),w}:{k,m,w}};
+const tr=d=>{const k=val(d.fields.kind),m=val(d.fields.message),w=val(d.fields.where);if(k==='translation')return{k:'translation',m,w};
+  /* sources requests (17 Nov): kind 'sources', or kind 'idea' with a [Sources request] prefix if the rules refuse the new kind */
+  if(k==='sources')return{k:'sources',m,w};if(/^\[Sources request\] /.test(m))return{k:'sources',m:m.slice(18),w};const x=/^\[Translation ([A-Z]{2})\] /.exec(m);return x?{k:'translation',m:m.slice(x[0].length),w}:{k,m,w}};
 const phr=w=>{const x=/^translation · (\w+) · (\w+) · phrase: (.*)$/.exec(w||'');return x?{lang:x[1],scr:x[2],ph:x[3]}:null};
+
+/* the reply for a sources request: this game's sources, ready to paste into an email (17 Nov) */
+const SRCNAME={rivers:'Rivers',lakes:'Lakes','bodies-of-water':'Bodies of Water',mountains:'Mountains',deserts:'Deserts',forests:'Forests','river-cities':'River Cities','how-many-borders':'How Many Borders?','where-is-bigger':'Where is Bigger?','which-of-five':'Which of Three?',masterbrain:'Masterbrain'};
+async function srcText(g){if(!window.TMGSRC)await new Promise(ok=>{const s=document.createElement('script');s.src='/simple/sources.js?v=1';s.onload=ok;s.onerror=ok;document.head.appendChild(s)});
+  const d=(window.TMGSRC||{})[g]||{m:[],p:[]},n=SRCNAME[g]||g;
+  return `Hello,\n\nThank you for playing ${n} at twominute.games. Here are the sources for the figures and facts in the game:\n\n`+d.m.map(x=>`• ${x[0]}: ${x[1]}`).join('\n')
+   +(d.p.length?`\n\nOne page for each place:\n`+d.p.map(x=>`• ${x[0]}: ${x[1]}`).join('\n'):'')
+   +`\n\nMaps: Natural Earth (public domain), simplified for small screens.\n\nAs promised, we have now deleted your email address from our messages.\n\nBest wishes,\nTwo Minute Games`}
 const val=f=>f==null?'':f.stringValue??f.timestampValue??f.integerValue??(f.mapValue?JSON.stringify(f.mapValue):'');
 const when=t=>new Date(t).toLocaleString('en-GB',{timeZone:'Europe/London',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 async function load(u){lastLoad=Date.now();who.innerHTML=`${esc(u.email)} · <button class="msglink" id="msgOut">Sign out</button>`;document.getElementById('msgOut').onclick=()=>auth.signOut();
@@ -438,12 +450,17 @@ async function load(u){lastLoad=Date.now();who.innerHTML=`${esc(u.email)} · <bu
   const rows=fb.map(d=>{const x=tr(d),P=x.k==='translation'?phr(x.w):null;return{d,t:val(d.fields.at)||d.createTime,kk:x.k,k:(KIND[x.k]||'Message')+(P&&LNAME[P.lang]?' · '+LNAME[P.lang]:''),m:x.m,ph:P?P.ph:'',c:val(d.fields.contact),g:val(d.fields.game),dv:val(d.fields.device),w:P?val(d.fields.page)+' · '+P.scr+' screen':[val(d.fields.page),x.w].filter(Boolean).join(' · ')}})
     .concat(bugs.map(d=>({d,t:d.createTime,kk:'wrong',k:'🐞 Bug report (old form)',m:val(d.fields.message),c:'',g:'Aperture',dv:'',w:[val(d.fields.page),val(d.fields.version),val(d.fields.screen)].filter(Boolean).join(' · ')})))
     .sort((a,b)=>new Date(b.t)-new Date(a.t));
+  /* UK GDPR: a sources request (an email address) is kept no longer than 30 days */
+  for(let i=rows.length-1;i>=0;i--){const r=rows[i];if(r.kk==='sources'&&Date.now()-new Date(r.t)>30*864e5){try{const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok)rows.splice(i,1)}catch(e){}}}
   if(!rows.length){body.innerHTML='<p class="msgnote">No messages yet. When players send feedback from any game, it appears here.</p>';return}
   try{window.tmgMsgs=rows.map(r=>({t:r.t,k:r.kk}));dispatchEvent(new Event('tmg-msgs'))}catch(e){}
-  const FIL=[['all','All'],['idea','💡 Ideas'],['like','👍 Likes'],['wrong','🐞 Problems'],['translation','🌐 Translations']];let fil='all';
+  const FIL=[['all','All'],['sources','📚 Sources'],['idea','💡 Ideas'],['like','👍 Likes'],['wrong','🐞 Problems'],['translation','🌐 Translations']];let fil='all';
   const draw=()=>{const vis=rows.map((r,i)=>[r,i]).filter(([r])=>fil==='all'||r.kk===fil);
-  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><div class="msgfil">${FIL.map(([k,l])=>{const n=k==='all'?rows.length:rows.filter(r=>r.kk===k).length;return `<button data-f="${k}" class="${k===fil?'on':''}">${l} ${n}</button>`}).join('')}</div>${vis.length?'':'<p class="msgnote">None of this kind yet.</p>'}<ul class="msgs">${vis.map(([r,i])=>`<li class="${+new Date(r.t)>(+(()=>{try{return localStorage.getItem('tmg-msg-seen')}catch(e){return 0}})()||0)?'isnew':''}"><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">Delete</button></div>${r.ph?`<div class="ph">Phrase: ${esc(r.ph)}</div>`:''}<div class="t">${esc(r.m)}</div>${r.c?`<div class="c">${r.kk==='translation'?'From':'Reply to'}: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}</li>`).join('')}</ul>`;
+  body.innerHTML=`<p class="msgnote">${rows.length} message${rows.length>1?'s':''}, newest first.</p><div class="msgfil">${FIL.map(([k,l])=>{const n=k==='all'?rows.length:rows.filter(r=>r.kk===k).length;return `<button data-f="${k}" class="${k===fil?'on':''}">${l} ${n}</button>`}).join('')}</div>${vis.length?'':'<p class="msgnote">None of this kind yet.</p>'}<ul class="msgs">${vis.map(([r,i])=>`<li class="${+new Date(r.t)>(+(()=>{try{return localStorage.getItem('tmg-msg-seen')}catch(e){return 0}})()||0)?'isnew':''}"><div class="mh"><span class="k">${esc(r.k)}</span><span>${esc(when(r.t))}</span><span>${esc(r.g)}</span>${r.dv?`<span>${esc(r.dv)}</span>`:''}<button class="msglink del" data-i="${i}">${r.kk==='sources'?'Sent, delete':'Delete'}</button></div>${r.ph?`<div class="ph">Phrase: ${esc(r.ph)}</div>`:''}<div class="t">${esc(r.m)}</div>${r.c?`<div class="c">${r.kk==='translation'?'From':'Reply to'}: ${esc(r.c)}</div>`:''}${r.w?`<div class="w">${esc(r.w)}</div>`:''}${r.kk==='sources'?`<div class="srow"><button class="msgbtn sc" data-i="${i}">Copy sources list</button><button class="msgbtn se" data-i="${i}">Copy email</button></div>`:''}</li>`).join('')}</ul>`;
   body.querySelectorAll('.msgfil button').forEach(b=>b.onclick=()=>{fil=b.dataset.f;draw()});
+  const cp=async(b,t)=>{try{await navigator.clipboard.writeText(t);const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,1500)}catch(e){b.textContent='Couldn’t copy'}};
+  body.querySelectorAll('.se').forEach(b=>b.onclick=()=>cp(b,rows[b.dataset.i].c));
+  body.querySelectorAll('.sc').forEach(b=>b.onclick=async()=>{const r=rows[b.dataset.i],g=(/sources · ([a-z-]+)/.exec(r.w||'')||[])[1]||'';cp(b,await srcText(g))});
   body.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{const r=rows[b.dataset.i];if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Tap again to delete';setTimeout(()=>{b.dataset.arm='';b.textContent='Delete'},3000);return}
     const x=await fetch('https://firestore.googleapis.com/v1/'+r.d.name,{method:'DELETE',...H});if(x.ok){rows.splice(+b.dataset.i,1);draw()}else b.textContent='Couldn’t delete'})};draw()}
 let lastLoad=0;document.addEventListener('visibilitychange',()=>{const u=auth.currentUser;if(document.visibilityState==='visible'&&u&&(u.email||'').toLowerCase()===OWNER&&Date.now()-lastLoad>60000){lastLoad=Date.now();load(u).catch(()=>{})}});
@@ -603,6 +620,7 @@ try{const OWNER='mybetterbrain109@gmail.com';firebase.app('msgs').auth().onAuthS
 
 /* Changes to the games (17 Nov 2026, Jonathan): dated, newest first, UK dates. Add a line here whenever something big changes */
 const CHANGES=[
+ ['2026-11-17','<b>Natural Wonders:</b> clues and facts in all six languages; Sources button (players leave an email, the request comes to Messages, deleted within 30 days); “Spotted a translation mistake?” card.'],
  ['2026-11-17','<b>Natural Wonders page:</b> language button with a flag in the top right; the page and its games follow the chosen language.'],
  ['2026-11-17','<b>Aperture and Landmarks in the house style:</b> the orange-and-black Natural Wonders frame, black word tiles with orange numbers in an orange-framed panel. The pictures themselves unchanged.'],
  ['2026-11-17','<b>New look and simpler games.</b> All 11 Natural Wonders games redesigned: one thing lights up, pick from three, ten a day (easy start, a couple of clever ones), once a day with “Admire my score”. Old versions kept privately for comparison.'],
