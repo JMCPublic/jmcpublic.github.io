@@ -476,3 +476,6 @@ AP_OTD = {
 
 # once a day (17 Nov 2026)
 UI = UI + [('Admire my score', 'Puanıma bir bak'), ('You’ve played today’s set. A new one is ready at midnight.', 'Bugünün turunu oynadın. Gece yarısı yenisi hazır.'), ('Practice round', 'Alıştırma turu'), ('Owner only', 'Yalnızca sahibi')]
+
+# Easy / Hard (17 Nov 2026)
+UI = UI + [('data-g="easy" aria-pressed="${GAPM===\'easy\'}">Easy<small>bigger gaps</small>', 'data-g="easy" aria-pressed="${GAPM===\'easy\'}">Kolay<small>daha büyük boşluklar</small>'), ('data-g="hard" aria-pressed="${GAPM===\'hard\'}">Hard<small>smaller gaps</small>', 'data-g="hard" aria-pressed="${GAPM===\'hard\'}">Zor<small>daha küçük boşluklar</small>'), ("${GAPM==='hard'?'Hard':'Easy'}", "${GAPM==='hard'?'Zor':'Kolay'}")]

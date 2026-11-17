@@ -476,3 +476,6 @@ AP_OTD = {
 
 # once a day (17 Nov 2026)
 UI = UI + [('Admire my score', 'Admirer mon score'), ('You’ve played today’s set. A new one is ready at midnight.', 'Tu as joué la série du jour. Une nouvelle arrive à minuit.'), ('Practice round', 'Série d’entraînement'), ('Owner only', 'Propriétaire seulement')]
+
+# Easy / Hard (17 Nov 2026)
+UI = UI + [('data-g="easy" aria-pressed="${GAPM===\'easy\'}">Easy<small>bigger gaps</small>', 'data-g="easy" aria-pressed="${GAPM===\'easy\'}">Facile<small>ouvertures plus grandes</small>'), ('data-g="hard" aria-pressed="${GAPM===\'hard\'}">Hard<small>smaller gaps</small>', 'data-g="hard" aria-pressed="${GAPM===\'hard\'}">Difficile<small>ouvertures plus petites</small>'), ("${GAPM==='hard'?'Hard':'Easy'}", "${GAPM==='hard'?'Difficile':'Facile'}")]

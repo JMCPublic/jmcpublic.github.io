@@ -671,3 +671,6 @@ UI += [('<button class="go" id="startBtn">Start</button>', '<button class="go" i
 
 # once a day (17 Nov 2026)
 UI = UI + [('Admire my score', 'Mein Ergebnis bewundern'), ('You’ve played today’s set. A new one is ready at midnight.', 'Du hast die heutige Runde gespielt. Um Mitternacht gibt es eine neue.'), ('Practice round', 'Übungsrunde'), ('Owner only', 'Nur Inhaber')]
+
+# Easy / Hard (17 Nov 2026)
+UI = UI + [('data-g="easy" aria-pressed="${GAPM===\'easy\'}">Easy<small>bigger gaps</small>', 'data-g="easy" aria-pressed="${GAPM===\'easy\'}">Leicht<small>größere Lücken</small>'), ('data-g="hard" aria-pressed="${GAPM===\'hard\'}">Hard<small>smaller gaps</small>', 'data-g="hard" aria-pressed="${GAPM===\'hard\'}">Schwer<small>kleinere Lücken</small>'), ("${GAPM==='hard'?'Hard':'Easy'}", "${GAPM==='hard'?'Schwer':'Leicht'}")]
