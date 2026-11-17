@@ -3,6 +3,8 @@
 (()=>{if(window.tmgAd||window.top!==window)return;
 const ADS={client:'ca-pub-9558088049243609',slotWide:'',slotPhone:''};   // slotWide: 728x90 unit, slotPhone: 320x100 unit
 const d=document,root=d.documentElement,path=location.pathname;
+{const ua=navigator.userAgent,v=+(/Version\/(\d+)/.exec(ua)||/OS (\d+)_/.exec(ua)||[])[1]||0,sa=navigator.standalone||matchMedia('(display-mode: standalone)').matches;
+ if(/iPhone|iPod/.test(ua)&&v>=26&&!sa)root.classList.add('tmg-iosbar')}
 const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path)||!!window.TMG_GAME /* simple games (17 Nov) */,isHome=path==='/'||/^\/wonders\/?$/.test(path);
 const css=`
 #tmgAd{box-sizing:border-box;font-family:inherit;color:var(--ink,#16181d)}
@@ -28,6 +30,10 @@ const css=`
 #tmgAd.flow .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
 html.tmgad-play #tmgAd{display:none!important}html.tmg-playing .tmgfb-pill{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
 html.tmgad-on body{padding-bottom:var(--tmgad-h,0px)}
+/* iPhone, iOS 26 and later, in the browser (17 Nov, Jonathan): Safari's bottom bar floats over the page, so the floating box sits just above it and Share stays reachable */
+html.tmg-iosbar #tmgAd.fixed,html.tmg-iosbar.tmgap-float #tmgAd.flow{bottom:var(--tmg-iosbar,60px);padding-bottom:8px;border-bottom:1px solid var(--line,#d5dae2)}
+html.tmg-iosbar.tmgad-on body{padding-bottom:calc(var(--tmgad-h,0px) + var(--tmg-iosbar,60px))}
+html.tmg-iosbar.tmgap-float body{padding-bottom:calc(var(--tmgap-h,0px) + var(--tmg-iosbar,60px))}
 html.tmgad-on .tbar{bottom:var(--tmgad-h,0px)!important}
 html.tmgad-on .tmgfb-pill{bottom:calc(var(--tmgad-h,0px) + 12px)}
 html.tmgad-on .toast{bottom:calc(var(--tmgad-h,0px) + 22px)}

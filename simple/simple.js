@@ -12,6 +12,9 @@ const I=window.TMGI||{L:'en',U:null,G:()=>null,QQ:s=>s},U=I.U,L=I.L,GI=I.G(CFG.k
 if(GI)Object.assign(CFG,{name:GI[0],q:GI[1],next:GI[2],noun:GI[3],intro:GI[4]});
 const nm=x=>(SG.tr&&SG.tr[L]&&SG.tr[L][x])||x;  /* place names in the player's language */
 const gname=k=>{const g=I.G(k);return g?g[0]:k};
+/* the date, the way the player's country writes it (17 Nov, Jonathan): Tue 17 Nov, Di., 17. Nov., 17 Kas Sal... */
+const LOC=(()=>{const n=navigator.language||'';return n.toLowerCase().startsWith(L)?n:({en:'en-GB',de:'de-DE',tr:'tr-TR',fr:'fr-FR',es:'es-ES',pt:'pt-PT'})[L]})();
+const dateTxt=()=>{try{return new Date().toLocaleDateString(LOC,{weekday:'short',day:'numeric',month:'short'})}catch(e){return U.today}};
 const gameUrl=k=>(CFG.base||'/natural-wonders-')+k+'/';
 const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
 const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain']];
@@ -114,7 +117,7 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   if(!S.practice&&!rev){try{const R=JSON.parse(ls('nw_record')||'null')||{games:{},right:0,total:0},g=R.games[CFG.key]||{played:0,best:0};g.played++;const pc=n*10;if(pc>=(g.best||0)){g.best=pc;g.bestTxt=n+'/10'}R.games[CFG.key]=g;R.right=(R.right||0)+n;R.total=(R.total||0)+10;ls('nw_record',JSON.stringify(R))}catch(e){}}
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
-  app.innerHTML=`<div class="top">${back}<span class="tag">${esc(rev?U.played:S.practice?U.practice:U.today)}</span></div>
+  app.innerHTML=`<div class="top">${back}<span class="tag">${esc(S.practice&&!rev?U.practice:dateTxt())}</span></div>
   <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
   <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p>${MB&&!rev?`<p class="best">${esc(mbLine())}</p>`:''}</div>
@@ -125,7 +128,7 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
 function review(r){const labs=r.l||(r.a||[]).map((a,i)=>nm(a)+(SG.views&&SG.views[r.v[i]]?'|'+nm(SG.views[r.v[i]].n):''));S={seed:r.d,practice:true,qs:labs.map(lab=>({lab})),res:r.res};end(true)}
 function intro(){const r=playedToday(CFG.key);const done=r?[r.d,r.n]:[];const played=!!r;  /* played today: Admire my score, not Play again (17 Nov, Jonathan) */
-  app.innerHTML=`<div class="top">${back}</div>
+  app.innerHTML=`<div class="top">${back}<span class="tag">${esc(dateTxt())}</span></div>
   <div class="panel intro menu"><div class="ttl"><span class="tag">${esc(U.kicker)}</span></div><h2>${esc(CFG.name)}</h2>
   <p>${esc(CFG.intro)}</p>
   <ul><li>${esc(U.b1(CFG.noun))}</li><li>${esc(U.b2)}</li><li>${esc(U.b3)}</li></ul>
