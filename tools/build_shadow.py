@@ -106,14 +106,14 @@ TPL = '''<!doctype html>
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
-<link rel="stylesheet" href="/shadow/simple.css?v=2">
+<link rel="stylesheet" href="/shadow/simple.css?v=3">
 </head>
 <body>
 <div class="bar">🕶️ Shadow site · simple {name} · private test</div>
 <div class="wrap" id="app"></div>
 <script>const CFG={cfg};</script>
 <script src="data.js?v={ver}"></script>
-<script src="/shadow/simple.js?v=2"></script>
+<script src="/shadow/simple.js?v=3"></script>
 </body>
 </html>
 '''

@@ -8,6 +8,10 @@ const app=document.getElementById('app'),$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const K='s'+CFG.key;
+const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
+const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities']];
+const dayRec=k=>{const raw=ls('s'+k+'-day')||'';try{const o=JSON.parse(raw);if(o&&o.d)return o}catch(e){}const p=raw.split(':');return p[0]?{d:p[0],n:+p[1]}:null};
+const playedToday=k=>{const r=dayRec(k);return r&&r.d===today()?r:null};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 function rng(seed){let h=1779033703^seed.length;for(let i=0;i<seed.length;i++){h=Math.imul(h^seed.charCodeAt(i),3432918353);h=h<<13|h>>>19}
   return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return((h^=h>>>16)>>>0)/4294967296}}
@@ -55,20 +59,25 @@ function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o==
   $('#after').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?['Yes!','Spot on.','Correct!','Nicely done.'][S.i%4]:'It’s '+art(q.a)+esc(q.a)+'.'}</b>${esc(q.f)}</div><button class="next">${last?'See my score':esc(CFG.next||'Next →')}</button>`;
   $('#after .next').onclick=()=>{if(last)end();else{S.i++;playQ()}};
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
+function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{const r=playedToday(k);
+    return `<a class="mg${r?' done':''}" href="/shadow/${k}/"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(n)}</b><span>${r?'✓ '+r.n+' / 10':'Play'}</span></a>`}).join('');
+  const left=GAMES.filter(g=>g[0]!==CFG.key&&!playedToday(g[0])).length;
+  return `<div class="panel more"><div class="tag">${left?'Play another today':'All done for today'}</div><p class="msub">${left?left+' more Natural Wonders game'+(left>1?'s':'')+' to play today, ten questions each.':'You’ve played every Natural Wonders game today. Brilliant. New sets at midnight.'}</p><div class="mgs">${rows}</div></div>`}
 function verdict(n){return n===10?'Perfect! 🏆':n>=8?'Brilliant. You really know your '+CFG.noun+'.':n>=6?'Nicely done, a solid score.':n>=4?'Not bad! The clever ones are clever for everyone.':'A tough set today. Tomorrow brings ten fresh '+CFG.noun+'.'}
-function end(){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
-  if(!S.practice)ls(K+'-day',S.seed+':'+n);
+function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
+  if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,a:S.qs.map(q=>q.a),v:S.qs.map(q=>q.v)}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
-  app.innerHTML=`<div class="top">${back}<span class="tag">${S.practice?'Practice set':'Today'}</span></div>
+  app.innerHTML=`<div class="top">${back}<span class="tag">${rev?'Today’s set · played':S.practice?'Practice set':'Today'}</span></div>
   <div class="panel"><div class="tag">Your score</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
-  <p class="best">${newBest?'🎉 Your best score yet':best?'Your best: '+best+' / 10':''}</p>
+  <p class="best">${rev?'You’ve played today’s set. A new one is ready at midnight.':newBest?'🎉 Your best score yet':best?'Your best: '+best+' / 10':''}</p>
   <div class="list">${S.qs.map((q,k)=>`<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(q.a)}</b> <span>· ${esc(SG.views[q.v].n)}</span></div></div>`).join('')}</div>
-  <div class="btns"><button class="btn" id="share">Share my score</button><button class="btn ghost" id="again">Try a practice set</button><a class="btn ghost" href="/shadow/wonders/">More games</a></div>
-  <p class="small">Ten new ${esc(CFG.noun)} every day at midnight, the same for everyone.</p></div>`;
+  <div class="btns"><button class="btn" id="share">Share my score</button></div>
+  <p class="small">Ten new ${esc(CFG.noun)} tomorrow, the same for everyone.</p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">Practice set (owner only)</button></div>':''}`;
   $('#share').onclick=async()=>{try{if(navigator.share){await navigator.share({text:share+'\nhttps://twominute.games/'})}else{await navigator.clipboard.writeText(share+'\nhttps://twominute.games/');$('#share').textContent='Copied ✓'}}catch(e){}};
-  $('#again').onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
-function intro(){const done=(ls(K+'-day')||'').split(':');const played=done[0]===today();
+  const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
+function review(r){S={seed:r.d,practice:true,qs:r.a.map((a,i)=>({a,v:r.v[i]})),res:r.res};end(true)}
+function intro(){const r=playedToday(CFG.key);if(r&&r.res&&!VIP){review(r);return}const done=r?[r.d,r.n]:[];const played=!!r;
   app.innerHTML=`<div class="top">${back}</div>
   <div class="panel intro"><div class="ttl"><span class="tag">Natural Wonders · simple</span></div><h2>${esc(CFG.name)}</h2>
   <p>${esc(CFG.intro)}</p>

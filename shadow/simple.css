@@ -58,3 +58,7 @@ a{color:inherit}
 .pulse{animation:pulse 1.8s ease-out infinite,grow 1.8s ease-out infinite}
 @media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:.5}}
 .cname,.lvl{background:rgba(255,255,255,.9);border-radius:8px;padding:2px 8px;z-index:1}.cname{top:8px;left:10px}.lvl{top:10px;right:10px}
+.more{margin-top:12px}.msub{color:var(--muted);font-size:14.5px;margin:4px 0 10px}
+.mgs{display:grid;gap:7px}.mg{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:8px 12px;background:#fff}
+.mg img{width:40px;height:40px;border-radius:10px;flex:none}.mg b{flex:1;font-size:15.5px}.mg span{font-size:13.5px;font-weight:700;color:var(--accent)}
+.mg.done{background:#f6f3ec}.mg.done span{color:var(--good)}
