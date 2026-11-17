@@ -62,7 +62,7 @@ TPL = """<!doctype html>
 <script>const CFG={cfg};window.TMG_SIMPLE=1;window.TMG_GAME=CFG.key;</script>
 {data}<script src="/simple/i18n.js?v={v}"></script>
 <script src="/simple/simple.js?v={v}"></script>
-<script src="/shared/adbox.js?v=8" defer></script>
+<script src="/shared/adbox.js?v=9" defer></script>
 <script src="/shared/reach.js?v=13" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>
 <script src="/shared/nwcount.js?v=1" defer></script>

@@ -46,3 +46,7 @@ header h1,header h1 a{color:#fff!important}header .o{border-color:#fff!important
 .vowel.hit{color:#FF9100!important;border-color:#FF9100!important}
 .zb{color:#c9c1b8}.zoom input{accent-color:#FF9100}
 .side [id^="promo"]{border:1.5px solid #FF9100!important}.pbig{border:1.5px solid #FF9100!important}
+/* the floating ad space: a white line along its top separates it from the word tiles (17 Nov, Jonathan) */
+#tmgAd.fixed,#tmgAd.flow{background:#212121!important;border-top:0!important}
+#tmgAd.fixed::before,#tmgAd.flow::before{content:'';position:absolute;left:12%;right:12%;top:0;height:1.5px;border-radius:2px;background:rgba(255,255,255,.8)}
+html.tmg-iosbar #tmgAd.fixed{border-bottom-color:#3a3a3a!important}

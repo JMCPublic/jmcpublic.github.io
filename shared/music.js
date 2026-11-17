@@ -145,5 +145,6 @@ function showAsk(){if(chosen()||isOn())return;if(busy()){if(++askTries<40)setTim
 D.addEventListener('click',e=>{if(ask&&!(e.target.closest&&e.target.closest('.tmgask')))hideAsk();if(e.target.closest&&e.target.closest('.tmgmus,#musicBtn,.tmgnpc'))setTimeout(askPaint,50)},true);
 new MutationObserver(()=>askPaint()).observe(D.body,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']});
 setTimeout(()=>{askPaint();showAsk()},1300);
+addEventListener('scroll',()=>hideAsk(),{passive:true});
 window.tmgMusic={card,toggle,line:()=>{if(AP&&!shown){shown=true;place();showLine()}}};
 })();
