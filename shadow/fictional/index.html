@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fictional a→z · Two Minute Games</title>
+<meta name="description" content="A daily literary letter hunt. Answer the clues, collect the letters, find the hidden word.">
+<meta name="theme-color" content="#212121">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" href="/icons/tmg-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Fictional a→z (built 17 Nov 2026 from the approved mock-up). House look: deep charcoal, orange-to-red glow and halo,
+   bold white headline, orange-outline pills, white-framed letter tiles. Phone first; on a laptop it sits centred. */
+:root{--bg:#212121;--card:#2b2b2b;--cardline:#3a3a3a;--ink:#fff;--soft:#a8adb3;--faint:#80868b;--hot:#FF9100;--deep:#DD2C00;--tile:#2f2f2f;--well:#1b1b1b;--bad:#ff8a73;
+  --line:#3a3a3a;--muted:#a8adb3;--sheet:#2b2b2b;--frame:#3a3a3a;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+a{color:inherit}
+[hidden]{display:none!important}
+.glow{position:fixed;pointer-events:none;left:50%;top:-300px;width:min(900px,170vw);height:560px;transform:translateX(-50%);background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.5;filter:blur(34px);z-index:0}
+.wrap{position:relative;z-index:1;max-width:440px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 18px 14px;min-height:calc(100dvh - var(--tmgad-h,0px));display:flex;flex-direction:column}
+.serif{font-family:Fraunces,Georgia,serif}
+.sup{font-family:Inter,system-ui,sans-serif;font-weight:700;color:var(--hot);vertical-align:super;font-size:.36em;margin-left:2px;letter-spacing:0;text-shadow:none}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
+.brand{display:flex;align-items:center;font-weight:800;font-size:16px;letter-spacing:-.02em;text-decoration:none}
+.brand .o{width:11px;height:11px;border-radius:50%;border:3px solid #fff;margin-right:6px;flex:none}.brand .tld{color:#ffd2b0}
+.iconbtn{width:42px;height:42px;border-radius:21px;border:1.5px solid rgba(255,255,255,.28);background:rgba(0,0,0,.25);display:grid;place-items:center;padding:0;text-decoration:none}
+.iconbtn svg{width:17px;height:17px}
+.gpill{border-radius:999px;border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;color:#fff;font-weight:600}
+.gfill{border:0;border-radius:999px;background:linear-gradient(90deg,var(--hot),var(--deep));color:#1a1a1a;font-weight:800;box-shadow:0 0 0 1px rgba(255,145,0,.35),0 0 28px rgba(221,44,0,.55);text-decoration:none;display:flex;align-items:center;justify-content:center}
+.opill{border-radius:999px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.card{background:var(--card);border:1px solid var(--cardline);border-radius:18px}
+
+/* start */
+.hero{text-align:center;padding:4px 0 0}
+.kick{font-size:11px;font-weight:700;letter-spacing:.14em;color:#ffd2b0}
+.hero h1{margin:2px 0 2px;font:700 46px/1.02 Fraunces,Georgia,serif;letter-spacing:-.02em;text-shadow:0 0 30px rgba(255,106,38,.55)}
+.hero p{margin:0;color:#e7e2dd;font-size:14px}.hero .date{color:var(--soft);font-size:12.5px;margin-top:2px}
+.types{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.types h2{margin:0;font-size:13px;font-weight:700}
+.glab{font-size:11.5px;font-weight:700;letter-spacing:.12em;color:var(--soft);margin-top:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.tbtn{position:relative;height:44px;padding:0 15px;font-size:14px;font-weight:600;border-radius:999px;border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;color:#fff;box-shadow:0 0 12px rgba(255,145,0,.18)}
+.tbtn[aria-pressed="true"]{background:linear-gradient(90deg,var(--hot),var(--deep)) border-box;color:#1a1a1a;font-weight:800;box-shadow:0 0 0 1px rgba(255,145,0,.35),0 0 24px rgba(221,44,0,.5)}
+.tbtn .tick{position:absolute;top:-6px;right:-4px;width:18px;height:18px;border-radius:9px;background:#7fd29b;color:#123;display:grid;place-items:center;font-size:11px;font-weight:800;border:2px solid var(--bg)}
+.desc{margin:0;font-size:12.5px;color:var(--soft);min-height:18px}
+.how{padding:10px 13px;display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.how div{display:flex;gap:11px;align-items:center;font-size:13.5px;line-height:1.3}
+.how b{flex:none;width:24px;height:24px;border-radius:12px;border:1.5px solid var(--hot);color:var(--hot);display:grid;place-items:center;font-size:12px}
+.playzone{flex:1 1 auto;min-height:80px;display:flex;align-items:center;justify-content:center;padding:8px 0}
+.playbtn{width:200px;height:54px;font-size:17px;position:relative;top:-12px}
+.streak{display:flex;justify-content:center;gap:12px;font-size:13px;color:var(--soft);flex-wrap:wrap}
+.partner{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--soft);margin-top:8px}
+.logo-slot{height:24px;padding:0 10px;border:1px dashed #6b6b6b;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;letter-spacing:.06em;color:#cfd3d8}
+
+/* play */
+.ptitle{display:flex;flex-direction:column;align-items:center;line-height:1}
+.ptitle b{font:700 22px Fraunces,Georgia,serif;text-shadow:0 0 22px rgba(255,106,38,.55)}
+.ptitle span{font-size:11px;color:var(--soft);margin-top:3px}
+.clock{min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
+.clock b{font-size:17px}.clock i{font-style:normal;font-size:12px;color:var(--hot);margin-left:3px}
+.dots{display:flex;gap:5px;margin:10px 0 9px}.dots i{flex:1;height:6px;border-radius:3px;background:#444}
+.dots i.done{background:var(--hot)}.dots i.now{background:#fff}
+.qcard{padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 40px rgba(221,44,0,.12)}
+.got{display:flex;gap:10px;align-items:flex-start;background:#3a2a22;border-radius:12px;padding:8px 11px;font-size:13px;line-height:1.35}
+.got svg{flex:none;width:18px;height:18px;margin-top:1px}
+.got u{color:var(--hot);text-decoration-thickness:2px}.got .f{color:#d8d2cc}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:700}
+.qhead span:first-child{color:var(--soft);letter-spacing:.06em}.qhead span:last-child{color:var(--hot)}
+.qtext{font:500 23px/1.22 Fraunces,Georgia,serif;min-height:56px}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ch{min-height:50px;padding:6px 8px;border-radius:14px;border:1.5px solid var(--hot);background:var(--tile);color:#fff;font-size:15px;font-weight:600;box-shadow:0 0 12px rgba(255,145,0,.2);line-height:1.15}
+.ch.no{border-color:#555;color:#8a8a8a;text-decoration:line-through;box-shadow:none;cursor:default}
+.typerow{display:flex;gap:8px;align-items:center}
+.typerow label{font-size:12px;color:var(--soft);flex:none}
+.typerow input{flex:1;min-width:0;height:42px;border-radius:12px;border:1.5px solid #555;background:var(--well);color:#fff;padding:0 12px;font:16px Inter,system-ui,sans-serif}
+.typerow input:focus{outline:none;border-color:var(--hot)}
+.typerow .go{height:42px;padding:0 16px;font-size:14px}
+.hintrow{display:flex;justify-content:space-between;align-items:center;min-height:24px;gap:10px;flex-wrap:wrap}
+.hintbtn{background:none;border:0;padding:2px 0;font-size:13px;font-weight:700;color:var(--hot);text-decoration:underline;text-underline-offset:3px}
+.hint{font-size:13px;font-weight:700;color:var(--hot)}
+.oops{font-size:12.5px;color:var(--bad)}
+.big2{font:700 26px Fraunces,Georgia,serif;margin:4px 0 0}
+.note{font-size:14px;color:#d8d2cc;margin:0}
+.scorebtn{height:50px;font-size:15px;margin-top:6px}
+.hw{margin-top:11px}
+.hwhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lab{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--soft)}
+.hwclue{font:italic 500 15px Fraunces,Georgia,serif;text-align:right}
+.slots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.slot{flex:0 1 48px;min-width:0;aspect-ratio:46/52;border-radius:11px;border:2px dashed #fff;opacity:.85}
+.tile{flex:0 1 48px;min-width:0;aspect-ratio:46/52;border-radius:11px;border:2px solid #fff;background:var(--tile);color:#fff;font:700 24px Fraunces,Georgia,serif;display:grid;place-items:center;padding:0;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 0 0 1px rgba(255,145,0,.18),0 0 16px rgba(255,145,0,.3)}
+.slots.many .tile,.slots.many .slot{flex-basis:38px}.slots.many .tile{font-size:20px}
+.slots.solved .tile{background:linear-gradient(180deg,var(--hot),var(--deep));color:#1a1a1a;box-shadow:0 0 18px rgba(221,44,0,.55)}
+.miss{text-align:center;font-size:12.5px;color:var(--bad);margin-top:6px}
+.tray{margin-top:10px;background:var(--well);border:1px solid var(--cardline);border-radius:16px;padding:8px 10px 10px}
+.trayhead{display:flex;justify-content:space-between;align-items:center}
+.trayhead div{display:flex;gap:14px}
+.trayhead button{background:none;border:0;padding:6px 0;font-size:12.5px;font-weight:700}
+.traytiles{display:flex;flex-wrap:wrap;gap:7px;min-height:50px;align-items:center}
+.traytiles .tile{flex:0 0 44px;width:44px;height:50px;aspect-ratio:auto;font-size:22px;border-color:rgba(255,255,255,.75)}
+.traytiles .empty{font-size:12.5px;color:var(--soft)}
+.drop{animation:drop .55s ease-out}
+@keyframes drop{0%{transform:translateY(-36px);opacity:0}70%{transform:translateY(4px);opacity:1}100%{transform:none}}
+.ghost{position:fixed;z-index:100;pointer-events:none;width:46px;height:52px;margin:-26px 0 0 -23px;transform:scale(1.12);box-shadow:0 10px 24px rgba(0,0,0,.55),0 0 22px rgba(255,145,0,.6)}
+.tile.lift{opacity:.25}
+.slot.over,.tile.over{outline:3px solid var(--hot);outline-offset:2px}
+
+/* end */
+.score{padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;box-shadow:0 0 40px rgba(221,44,0,.14)}
+.when{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--hot);text-align:center}
+.endword{display:flex;gap:5px;justify-content:center;flex-wrap:nowrap}
+.endword span{width:40px;height:46px;border-radius:9px;border:2px solid #fff;background:linear-gradient(180deg,var(--hot),var(--deep));color:#1a1a1a;font:700 23px Fraunces,Georgia,serif;display:grid;place-items:center;box-shadow:0 0 18px rgba(221,44,0,.5)}
+.endword.many span{width:32px;height:40px;font-size:19px}
+.endhint{font:italic 500 15px Fraunces,Georgia,serif;color:var(--soft)}
+.big{font-size:42px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}.big i{font-style:normal;font-size:17px;color:var(--hot);margin-left:6px;font-weight:600}
+.best{font-size:13px;color:var(--soft);text-align:center}
+.sq{display:flex;gap:5px}.sq i{width:22px;height:22px;border-radius:4px;border:1.5px solid #fff;background:var(--hot)}.sq i.h{background:#6b4a33}
+.sqkey{font-size:11px;color:var(--soft)}
+.endbtns{align-self:stretch;display:flex;flex-direction:column;gap:8px}
+.endbtns .gfill{height:50px;font-size:15px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.two>*{height:44px;font-size:14px}
+.txtlink{background:none;border:0;padding:6px;font-size:13px;font-weight:700;color:var(--hot);text-decoration:none;text-align:center}
+.audio{margin-top:12px;padding:14px 16px;background:#1d1d1d;border:1px solid rgba(255,145,0,.45);border-radius:18px;box-shadow:0 0 26px rgba(221,44,0,.18);display:flex;flex-direction:column;gap:11px}
+.audio .ah{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.audio h3{margin:0;font:700 18px Fraunces,Georgia,serif}
+.books{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.book{display:flex;flex-direction:column;gap:5px;text-decoration:none}
+.cover{aspect-ratio:2/3;border-radius:4px;border:2px solid #fff;padding:8px 6px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 16px rgba(0,0,0,.45);overflow:hidden}
+.cover b{font:700 11.5px/1.15 Fraunces,Georgia,serif;color:#fff;overflow-wrap:anywhere}
+.cover small{font-size:9.5px;color:rgba(255,255,255,.8);line-height:1.2}
+.book .t{font-size:12px;font-weight:600;line-height:1.25}.book .a{font-size:11px;color:var(--soft)}.book .l{font-size:12px;font-weight:700;color:var(--hot)}
+.audio .opill{height:44px;font-size:14px;border-color:var(--hot);color:var(--hot)}
+.disc{font-size:11px;color:var(--soft)}
+.foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--soft);margin:12px 0 4px}
+.foot a{color:var(--hot);text-decoration:none;font-weight:600}
+
+/* leave check */
+.veil{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.veil .card{max-width:360px;width:100%;padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 40px rgba(221,44,0,.25)}
+.veil h2{margin:0 0 4px;font:700 21px Fraunces,Georgia,serif}
+.veil button{min-height:48px;padding:8px 14px;font-size:14px;text-align:center;line-height:1.3}
+.toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#1a1a1a;font-weight:700;font-size:14px;padding:10px 16px;border-radius:999px;z-index:150;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+
+/* the shared ad box (/shared/adbox.js), framed in white on its own glow, as on the home page */
+#tmgAd.fixed{background:#1a1a1a!important;border-top:0!important;overflow:hidden}
+#tmgAd.fixed::before{content:"";position:absolute;pointer-events:none;width:max(520px,130%);height:300px;left:-15%;bottom:-110px;background:radial-gradient(closest-side,var(--hot),var(--deep) 55%,transparent);opacity:.7;filter:blur(16px)}
+#tmgAd .tmgad-in{position:relative;z-index:1;background:rgba(33,33,33,.92)!important;border:2px solid #fff!important}
+#tmgAd .tmgad-l{color:#cfd3d8!important}
+#tmgAd .tmgad-house{background:linear-gradient(100deg,#3a2a22,#2b2b2b)!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}
+#tmgAd .tmgad-house span{color:#c9ccd0!important}#tmgAd .tmgad-house i{color:#fff!important;border-color:var(--hot)!important}
+.tmgfb-pill{background:#fff!important;color:#1a1a1a!important}
+html.fx-nofb .tmgfb-pill{display:none!important}
+@media (max-height:700px){.hero h1{font-size:44px}.how{gap:6px;padding:10px 13px}.qtext{font-size:20px;min-height:48px}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap" id="app">
+
+<!-- START -->
+<section id="start">
+  <div class="top">
+    <a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
+  </div>
+  <div class="hero">
+    <div class="kick">ONE QUIZ PER FICTION TYPE, EVERY DAY</div>
+    <h1>Fictional<span class="sup">a→z</span></h1>
+    <p>Answer the clues, collect the letters, find the hidden word.</p>
+    <p class="date" id="sDate"></p>
+  </div>
+  <div class="types">
+    <h2>Choose your fiction type</h2>
+    <div class="glab">POPULAR</div>
+    <div class="row" id="rowPop"></div>
+    <div class="glab">CLASSIC</div>
+    <div class="row" id="rowClassic"></div>
+    <p class="desc" id="sDesc"></p>
+  </div>
+  <div class="card how">
+    <div><b>1</b><span>Answer each clue: tap a choice, or type it if you prefer.</span></div>
+    <div><b>2</b><span>The letter it asks for drops into your tray.</span></div>
+    <div><b>3</b><span>Drag your letters onto the line to find the hidden word.</span></div>
+  </div>
+  <div class="playzone"><button class="gfill playbtn" id="playBtn">Play</button></div>
+  <div class="streak" id="sStreak"></div>
+  <div class="partner"><span>In partnership with</span><span class="logo-slot">AUDIBLE LOGO</span></div>
+</section>
+
+<!-- PLAY -->
+<section id="play" hidden>
+  <div class="top">
+    <button class="iconbtn" id="backBtn" aria-label="Leave this quiz"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="ptitle"><b>Fictional<span class="sup">a→z</span></b><span id="pType"></span></div>
+    <div class="clock" aria-live="off"><b id="clock">0:00</b><i id="pen"></i></div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="card qcard">
+    <div class="got" id="got" hidden></div>
+    <div id="qBox">
+      <div class="qhead"><span id="qNum"></span><span id="qPos"></span></div>
+      <div class="qtext serif" id="qText" style="margin:8px 0 10px"></div>
+      <div class="choices" id="choices"></div>
+      <div class="typerow" style="margin-top:10px">
+        <label for="typeIn" id="typeLab">Or type it</label>
+        <input id="typeIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Your answer">
+        <button class="gpill go" id="goBtn">Go</button>
+      </div>
+      <div class="hintrow" style="margin-top:8px">
+        <button class="hintbtn" id="hintBtn"></button>
+        <span class="hint" id="hintTxt" hidden></span>
+        <span class="oops" id="oops" hidden>Not that one (+10s)</span>
+      </div>
+    </div>
+    <div id="allBox" hidden>
+      <div class="big2">All the letters found</div>
+      <p class="note" style="margin-top:6px">Now drag them onto the line below. Try as many combinations as you like: no penalty for shuffling.</p>
+    </div>
+    <div id="solvedBox" hidden>
+      <div class="big2" id="solvedT"></div>
+      <p class="note" id="solvedN" style="margin-top:6px"></p>
+      <button class="gfill scorebtn" id="scoreBtn" style="width:100%">Get your score</button>
+    </div>
+  </div>
+  <div class="hw">
+    <div class="hwhead"><span class="lab">THE HIDDEN WORD</span><span class="hwclue" id="hwClue"></span></div>
+    <div class="slots" id="slots"></div>
+    <div class="miss" id="miss" hidden>Not quite: keep rearranging.</div>
+  </div>
+  <div class="tray" id="tray">
+    <div class="trayhead"><span class="lab">YOUR TRAY</span><div><button id="shufBtn">Shuffle</button><button id="clearBtn">Clear line</button></div></div>
+    <div class="traytiles" id="trayTiles"></div>
+  </div>
+</section>
+
+<!-- END -->
+<section id="end" hidden>
+  <div class="top">
+    <a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
+    <b class="serif" style="font-size:20px;text-shadow:0 0 22px rgba(255,106,38,.55)">Fictional<span class="sup">a→z</span></b>
+  </div>
+  <div class="card score">
+    <div class="when" id="eWhen"></div>
+    <div class="endword" id="eWord"></div>
+    <div class="endhint" id="eHint"></div>
+    <div id="eTime"></div>
+    <div class="best" id="eBest"></div>
+    <div class="sq" id="eSq" aria-label="Clue by clue"></div>
+    <div class="sqkey">Bright: answered clean · Dim: clue or a wrong guess</div>
+    <div style="font-size:13px;font-weight:700" id="eStreak"></div>
+    <div class="endbtns">
+      <button class="gfill" id="shareBtn">Challenge a friend</button>
+      <div class="two"><button class="opill" id="anotherBtn">Try another type</button><button class="opill" id="admireBtn">Admire my score</button></div>
+      <a class="txtlink" href="/">I'm just too good: play something different?</a>
+    </div>
+  </div>
+  <div class="audio">
+    <div class="ah"><h3>Audiobook recommendations</h3><span class="logo-slot">AUDIBLE LOGO</span></div>
+    <div class="disc" style="margin-top:-6px">From today's quiz</div>
+    <div class="books" id="eBooks"></div>
+    <a class="opill" id="audibleBtn" target="_blank" rel="noopener sponsored">Listen on Audible</a>
+    <div class="disc">Links go to Audible. Affiliate links coming soon: Two Minute Games may then earn a commission.</div>
+  </div>
+  <div class="foot"><span id="eNext"></span><a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">Enjoying Fictional? Buy us a coffee</a></div>
+</section>
+</main>
+
+<div class="veil" id="leave" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="leaveT">
+    <h2 id="leaveT">Are you sure you want to leave the good stuff?</h2>
+    <button class="gfill" id="stayBtn">No. I'm staying. I was about to make a poor life choice.</button>
+    <button class="opill" id="goBackBtn">Yes. I am leaving. I'll live with the consequences.</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>window.TMG_GAME='fictional';</script>
+<script src="quizzes.js?v=1"></script>
+<script>
+(()=>{
+const Q=window.FICTIONAL_QUIZZES, $=id=>document.getElementById(id), D=document, H=D.documentElement;
+const TYPES=[
+ {id:'pop-easy',grp:'pop',name:'Easy',label:'Popular Easy',list:'popular',choices:true,desc:'Crime, page-turners and much-loved favourites.'},
+ {id:'pop-medium',grp:'pop',name:'Medium',label:'Popular Medium',list:'popular',choices:false,desc:"Today's Popular quiz, typed. Choices only if you ask."},
+ {id:'easy',grp:'classic',name:'Easy',label:'Classic Easy',list:'easy',choices:true,desc:'The big classics everyone has heard of.'},
+ {id:'medium',grp:'classic',name:'Medium',label:'Classic Medium',list:'medium',choices:false,desc:'Classic characters, letters from inside the word.'},
+ {id:'difficult',grp:'classic',name:'Difficult',label:'Classic Difficult',list:'difficult',choices:false,desc:'Supporting characters and fine detail.'},
+ {id:'world',grp:'classic',name:'World',label:'World Classic',list:'world',choices:false,desc:'Classics from China, India, Japan, Africa and beyond.'}
+];
+const PEN=10;
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+let S={};try{S=JSON.parse(ls('fictional-v1')||'{}')}catch(e){}
+S.played=S.played||{};S.best=S.best||{};S.streak=S.streak||{n:0,last:''};
+const save=()=>ls('fictional-v1',JSON.stringify(S));
+const norm=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const letters=s=>norm(s).replace(/[0-9]/g,'').toUpperCase();
+const ord=n=>n+(n%100>10&&n%100<14?'th':['th','st','nd','rd'][n%10]||'th');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+
+/* the day: local date, same quiz for everyone on the same date */
+const now=new Date(),Y=now.getFullYear(),M=now.getMonth(),Dd=now.getDate();
+const TODAY=Y+'-'+String(M+1).padStart(2,'0')+'-'+String(Dd).padStart(2,'0');
+const DAYNUM=Math.round((Date.UTC(Y,M,Dd)-Date.UTC(2026,10,17))/864e5);
+const yest=(()=>{const d=new Date(Y,M,Dd-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+$('sDate').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+const pick=list=>{const a=Q[list];return a[((DAYNUM%a.length)+a.length)%a.length]};
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hash=s=>[...s].reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619),2166136261);
+/* clue order mixed each day, so the letters never arrive already spelling the word */
+function order(quiz,key){const r=rng(hash(key+TODAY)),n=quiz.clues.length,idx=[...Array(n).keys()];
+  for(let tries=0;tries<30;tries++){for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+    const seq=idx.map(i=>letters(quiz.clues[i].a)[quiz.clues[i].pos-1]).join('');if(seq!==quiz.word||n<2)break}
+  return idx.map(i=>quiz.clues[i])}
+
+/* ---------- start ---------- */
+let sel=ls('fictional-type')||'pop-easy';if(!TYPES.find(t=>t.id===sel))sel='pop-easy';
+function drawStart(){
+  const mk=t=>{const p=S.played[TODAY+'|'+t.id];return `<button class="tbtn" data-t="${t.id}" aria-pressed="${t.id===sel}">${t.name}${p?'<span class="tick" aria-label="played">✓</span>':''}</button>`};
+  $('rowPop').innerHTML=TYPES.filter(t=>t.grp==='pop').map(mk).join('');
+  $('rowClassic').innerHTML=TYPES.filter(t=>t.grp==='classic').map(mk).join('');
+  const t=TYPES.find(x=>x.id===sel);$('sDesc').textContent=t.desc;
+  $('playBtn').textContent=S.played[TODAY+'|'+sel]?'Admire my score':'Play';
+  const st=(S.streak.last===TODAY||S.streak.last===yest)?S.streak.n:0;
+  $('sStreak').innerHTML=`<span>Streak: ${st} day${st===1?'':'s'}</span><span aria-hidden="true">·</span><span>Next quiz in ${untilMidnight()}</span>`;
+}
+D.querySelector('.types').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;sel=b.dataset.t;ls('fictional-type',sel);drawStart()});
+$('playBtn').onclick=()=>{const p=S.played[TODAY+'|'+sel];if(p)showEnd(sel,p,true);else startQuiz(sel)};
+function untilMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.max(0,Math.round((m-n)/1000));return Math.floor(s/3600)+'h '+String(Math.floor(s%3600/60)).padStart(2,'0')+'m'}
+function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
+
+/* ---------- play ---------- */
+let G=null,timer=null;
+function startQuiz(tid){
+  const T=TYPES.find(t=>t.id===tid),quiz=pick(T.list);
+  G={T,quiz,clues:order(quiz,T.list),step:0,tiles:{},tray:[],slots:Array(quiz.word.length).fill(null),pen:0,start:Date.now(),end:null,
+     marks:[],helped:false,hint:0,wrong:[],last:null,newest:null,result:null};
+  $('pType').textContent=T.label+' · '+now.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  $('hwClue').textContent=quiz.hint;
+  show('play');drawPlay();clearInterval(timer);timer=setInterval(tick,1000);tick();
+}
+function secs(){return Math.floor(((G.end||Date.now())-G.start)/1000)+G.pen}
+function tick(){if(!G)return;$('clock').textContent=fmt(secs());$('pen').textContent=G.pen?'('+G.pen+')':''}
+function addPen(){G.pen+=PEN;G.helped=true;tick()}
+function drawPlay(){
+  const c=G.clues[G.step],n=G.clues.length,solved=G.result==='right';
+  $('dots').innerHTML=G.clues.map((x,i)=>`<i class="${i<G.step?'done':i===G.step?'now':''}"></i>`).join('');
+  const g=$('got');
+  if(G.last&&!solved){const L=G.last,ls_=letters(L.a),p=L.pos-1;
+    /* underline the letter taken, inside the answer as written */
+    let k=-1,html='';for(const ch of L.a){const isL=/[a-z0-9]/i.test(norm(ch));if(isL)k++;html+=(isL&&k===p)?'<u>'+esc(ch)+'</u>':esc(ch)}
+    g.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="#FF9100" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><div><b>${html}</b>${L.f?` <span class="f">· ${esc(L.f)}</span>`:''}</div>`;g.hidden=false}
+  else g.hidden=true;
+  $('qBox').hidden=!c;$('allBox').hidden=!!c||solved;$('solvedBox').hidden=!solved;
+  if(c){
+    $('qNum').textContent=`CLUE ${G.step+1} OF ${n}`;$('qPos').textContent=`Take the ${ord(c.pos)} letter`;$('qText').textContent=c.q;
+    const showCh=G.T.choices||G.hint>=2;
+    if(showCh){if(!G.opts){const r=rng(hash(c.a+TODAY)),o=[c.a,...c.ch];for(let i=o.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}G.opts=o}
+      $('choices').innerHTML=G.opts.map(o=>`<button class="ch${G.wrong.includes(o)?' no':''}" data-o="${esc(o)}"${G.wrong.includes(o)?' aria-disabled="true"':''}>${esc(o)}</button>`).join('');$('choices').hidden=false}
+    else $('choices').hidden=true;
+    $('typeLab').textContent=showCh?'Or type it':'Type it';
+    const hl=c.a.replace(/[^\p{L}]/gu,'').length;
+    $('hintTxt').textContent=`Starts with ${letters(c.a)[0]} · ${hl} letters`;$('hintTxt').hidden=G.hint<1;
+    const canMore=G.hint<1||(!G.T.choices&&G.hint<2);
+    $('hintBtn').textContent=G.hint<1?'Press for a clue (+10s)':'Show the choices (+10s)';$('hintBtn').hidden=!canMore;
+  }
+  if(solved){$('solvedT').textContent=G.quiz.word.charAt(0)+G.quiz.word.slice(1).toLowerCase()+' it is.';$('solvedN').textContent=G.quiz.end||'Nicely read. Your score is ready.'}
+  drawBoard();
+}
+function drawBoard(){
+  const solved=G.result==='right',n=G.slots.length;
+  const sl=$('slots');sl.className='slots'+(n>7?' many':'')+(solved?' solved':'');
+  sl.innerHTML=G.slots.map((id,i)=>id?`<button class="tile" data-id="${id}" data-slot="${i}" aria-label="Letter ${G.tiles[id]} in space ${i+1}. Tap to send back">${G.tiles[id]}</button>`:`<div class="slot" data-slot="${i}" aria-label="Empty space ${i+1}"></div>`).join('');
+  $('trayTiles').innerHTML=G.tray.length?G.tray.map(id=>`<button class="tile${id===G.newest?' drop':''}" data-id="${id}" aria-label="Letter ${G.tiles[id]}. Tap to place">${G.tiles[id]}</button>`).join(''):'<span class="empty">Letters land here. Drag or tap them onto the line.</span>';
+  $('miss').hidden=G.result!=='wrong';
+}
+function answer(txt,fromChoice){
+  const c=G.clues[G.step];if(!c||G.result==='right')return;
+  const t=norm(txt);if(!t)return;
+  const ok=t===norm(c.a)||(c.alt||[]).some(a=>norm(a)===t);
+  if(ok){
+    if(!G.helped)G.marks.push(1);else G.marks.push(0);
+    const id='t'+G.step;G.tiles[id]=letters(c.a)[c.pos-1];G.tray.push(id);G.newest=id;
+    G.last=c;G.step++;G.hint=0;G.wrong=[];G.opts=null;G.helped=false;$('typeIn').value='';$('oops').hidden=true;
+    drawPlay();
+    if(G.step<G.clues.length&&!matchMedia('(pointer:coarse)').matches)$('typeIn').focus();
+  }else{
+    if(fromChoice){if(!G.wrong.includes(txt)){G.wrong.push(txt);addPen()}}
+    else{addPen();$('oops').hidden=false}
+    drawPlay();
+  }
+}
+$('choices').addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(b&&!b.classList.contains('no'))answer(b.dataset.o,true)});
+$('goBtn').onclick=()=>answer($('typeIn').value,false);
+$('typeIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();answer($('typeIn').value,false)}});
+$('typeIn').addEventListener('input',()=>{$('oops').hidden=true});
+$('hintBtn').onclick=()=>{G.hint++;addPen();drawPlay()};
+
+function check(){
+  if(G.slots.includes(null)){G.result=null;return}
+  const w=G.slots.map(id=>G.tiles[id]).join('');
+  if(w===G.quiz.word){G.result='right';G.end=Date.now();clearInterval(timer);tick();finish()}else G.result='wrong';
+}
+function place(id,to){
+  if(G.result==='right')return;
+  const from=G.slots.indexOf(id);
+  if(to===undefined){to=G.slots.indexOf(null);if(to<0)return}
+  const occ=G.slots[to];if(occ===id)return;
+  if(from>=0)G.slots[from]=occ;else{G.tray=G.tray.filter(x=>x!==id);if(occ)G.tray.push(occ)}
+  G.slots[to]=id;G.newest=null;check();drawPlay();
+}
+function unplace(i){if(G.result==='right')return;const id=G.slots[i];if(!id)return;G.slots[i]=null;G.tray.push(id);G.newest=null;G.result=null;drawPlay()}
+$('shufBtn').onclick=()=>{const t=G.tray;for(let i=t.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[t[i],t[j]]=[t[j],t[i]]}G.newest=null;drawBoard()};
+$('clearBtn').onclick=()=>{if(G.result==='right')return;G.slots.forEach((id,i)=>{if(id){G.tray.push(id);G.slots[i]=null}});G.result=null;G.newest=null;drawPlay()};
+
+/* drag and tap, with a finger or a mouse */
+let drag=null;
+function targetAt(x,y){const el=D.elementFromPoint(x,y);if(!el)return null;const s=el.closest('[data-slot]');if(s)return{slot:+s.dataset.slot,el:s};if(el.closest('#tray'))return{tray:true,el:$('tray')};return null}
+D.addEventListener('pointerdown',e=>{
+  const t=e.target.closest('#slots .tile,#trayTiles .tile');if(!t||!G||G.result==='right')return;
+  e.preventDefault();drag={id:t.dataset.id,el:t,x:e.clientX,y:e.clientY,moved:false,ghost:null,over:null,pid:e.pointerId};
+  try{t.setPointerCapture(e.pointerId)}catch(_){}
+});
+D.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.pid)return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6){drag.moved=true;const g=drag.el.cloneNode(true);g.className='tile ghost';g.removeAttribute('data-slot');D.body.appendChild(g);drag.ghost=g;drag.el.classList.add('lift')}
+  if(drag.moved){drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px';
+    const tg=targetAt(e.clientX,e.clientY),el=tg&&tg.slot!==undefined?tg.el:null;
+    if(drag.over!==el){drag.over&&drag.over.classList.remove('over');el&&el.classList.add('over');drag.over=el}}
+});
+function endDrag(e,cancel){
+  if(!drag||e.pointerId!==drag.pid)return;const d=drag;drag=null;
+  d.ghost&&d.ghost.remove();d.el.classList.remove('lift');d.over&&d.over.classList.remove('over');
+  if(cancel)return;
+  const inSlot=G.slots.indexOf(d.id);
+  if(!d.moved){if(inSlot>=0)unplace(inSlot);else place(d.id);return}
+  const tg=targetAt(e.clientX,e.clientY);
+  if(tg&&tg.slot!==undefined)place(d.id,tg.slot);else if(tg&&tg.tray&&inSlot>=0)unplace(inSlot);
+}
+D.addEventListener('pointerup',e=>endDrag(e,false));
+D.addEventListener('pointercancel',e=>endDrag(e,true));
+D.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.closest('#slots .tile,#trayTiles .tile');if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();const i=G.slots.indexOf(t.dataset.id);if(i>=0)unplace(i);else place(t.dataset.id)}});
+
+/* leaving mid-quiz */
+$('backBtn').onclick=()=>{if(G&&G.result!=='right')$('leave').hidden=false;else{show('start');drawStart()}};
+$('stayBtn').onclick=()=>{$('leave').hidden=true};
+$('goBackBtn').onclick=()=>{$('leave').hidden=true;clearInterval(timer);G=null;show('start');drawStart()};
+
+/* ---------- finish and end card ---------- */
+function finish(){
+  const key=TODAY+'|'+G.T.id,s=secs();
+  const res={t:s,p:G.pen,marks:G.marks,word:G.quiz.word,list:G.T.list};
+  const prevBest=S.best[G.T.id];res.newBest=prevBest===undefined||s<prevBest;res.prevBest=prevBest;
+  if(res.newBest)S.best[G.T.id]=s;
+  S.played[key]=res;
+  if(S.streak.last!==TODAY){S.streak.n=(S.streak.last===yest?S.streak.n:0)+1;S.streak.last=TODAY}
+  /* keep the record small: forget days older than three weeks */
+  const cut=new Date(Y,M,Dd-21).toISOString().slice(0,10);for(const k in S.played)if(k.slice(0,10)<cut)delete S.played[k];
+  save();
+}
+$('scoreBtn').onclick=()=>showEnd(G.T.id,S.played[TODAY+'|'+G.T.id],false);
+const SPINES=['#5a3b2a','#2f4a3a','#4a2a33','#2a3a55','#55452a','#3e2f55'];
+function showEnd(tid,r,again){
+  const T=TYPES.find(t=>t.id===tid),quiz=pick(T.list);
+  $('eWhen').textContent=T.label.toUpperCase()+' · '+now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  const w=$('eWord');w.className='endword'+(quiz.word.length>7?' many':'');w.innerHTML=[...quiz.word].map(c=>`<span>${c}</span>`).join('');
+  $('eHint').textContent=quiz.hint;
+  const big=$('eTime');big.className='big'+(again?' rev':'');big.innerHTML=fmt(r.t)+(r.p?`<i>(${r.p})</i>`:'');
+  $('eBest').textContent=r.newBest?(r.prevBest===undefined?`Your first ${T.label} score`:`Your best ${T.label} time`):`Your best ${T.label} time is ${fmt(S.best[tid])}`;
+  $('eSq').innerHTML=r.marks.map(m=>`<i class="${m?'':'h'}"></i>`).join('');
+  $('eStreak').textContent=`Streak: ${S.streak.n} day${S.streak.n===1?'':'s'}`;
+  /* audiobooks from today's quiz: up to three different books */
+  const seen=new Set(),books=[];for(const c of quiz.clues){if(c.b&&!seen.has(c.b[0])){seen.add(c.b[0]);books.push(c.b)}if(books.length===3)break}
+  const uk=(()=>{try{return/^Europe\/(London|Dublin)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)}catch(e){return true}})();
+  const base=uk?'https://www.audible.co.uk':'https://www.audible.com';
+  $('eBooks').innerHTML=books.map((b,i)=>`<a class="book" href="${base}/search?keywords=${encodeURIComponent(b[0]+' '+b[1])}" target="_blank" rel="noopener sponsored">
+    <div class="cover" style="background:linear-gradient(160deg,${SPINES[(hash(b[0])>>>0)%SPINES.length]},#151515)"><b>${esc(b[0])}</b><small>${esc(b[1])}</small></div>
+    <span class="t">${esc(b[0])}</span><span class="a">${esc(b[1])}</span><span class="l">Listen</span></a>`).join('');
+  $('audibleBtn').href=base+'/';
+  $('eNext').textContent='Next quiz in '+untilMidnight();
+  $('shareBtn').onclick=()=>share(T,r);
+  show('end');
+}
+$('anotherBtn').onclick=()=>{const next=TYPES.find(t=>!S.played[TODAY+'|'+t.id]);if(next){sel=next.id;ls('fictional-type',sel)}show('start');drawStart()};
+$('admireBtn').onclick=()=>{const b=$('eTime');b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500});toast('Looking good.')};
+function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,1800)}
+function share(T,r){
+  const sq=r.marks.map(m=>m?'🟧':'🟫').join('');
+  const txt=`Fictional a→z · ${T.label} · ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}\n${sq}\n${fmt(r.t)}${r.p?' ('+r.p+')':''}\nCan you beat me?`;
+  const url='https://twominute.games/shadow/fictional/';
+  if(navigator.share){navigator.share({text:txt,url}).catch(()=>{});return}
+  const all=txt+'\n'+url;
+  (navigator.clipboard?navigator.clipboard.writeText(all):Promise.reject()).then(()=>toast('Copied: paste it to a friend'),()=>{prompt('Copy this to a friend:',all)});
+}
+
+show('start');drawStart();
+})();
+</script>
+<script src="/shared/feedback.js?v=1" defer></script>
+<script src="/shared/nwcount.js?v=1" defer></script>
+<script src="/shared/adbox.js?v=9" defer></script>
+</body>
+</html>
