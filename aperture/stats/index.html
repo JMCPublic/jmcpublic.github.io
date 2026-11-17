@@ -412,6 +412,11 @@ function fxDetail(p){const f=p.get('wonders'),x=f.fx||{},g=k=>x[k]||0,el=documen
       <div class="num"><b>${fmt(left)}</b><span>Left mid-quiz*</span></div>
     </div>
     <table class="nwg"><thead><tr><th>Fiction type</th><th class="r">Started</th><th class="r">Finished</th><th class="r">Finish</th><th class="r">Time: &lt;1 · 1–2 · 2–3 · 3–5 · 5+ min</th><th class="r">No clues</th><th class="r">No wrong guesses</th><th class="r">Tough / Right / Easy</th></tr></thead><tbody>${rows}</tbody></table>
+    <h3 class="sub3">Player journeys <small style="font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--soft)">· what each player finished next, the same day</small></h3>
+    ${(()=>{const nm=Object.fromEntries([['start','First of the day'],...FXT]);const P=Object.entries(x).filter(([k])=>/^p_/.test(k)).map(([k,v])=>{const m=k.slice(2).split('__');return[m[0],m[1],v]}).sort((a,b)=>b[2]-a[2]);
+      const N=[1,2,3,4,5,6].map(n=>g('n_'+n)),days=N[0];
+      return (P.length?`<table class="nwg"><thead><tr><th>After</th><th>Then played</th><th class="r">Players</th></tr></thead><tbody>${P.map(([a,b,v])=>`<tr><td>${esc(nm[a]||a)}</td><td>${esc(nm[b]||b)}</td><td class="r n">${fmt(v)}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">No journeys yet.</p>')
+        +`<p class="msgnote">Fiction types finished per player per day: ${N.map((v,i)=>`${i+1}${i===5?'+':''}: ${fmt(i<5?v-N[i+1]:v)}`).join(' · ')}${days?` · ${pc(N[1],days)} went on to a second type`:''}</p>`})()}
     <h3 class="sub3">On the end card</h3>
     <div class="nums">
       <div class="num"><b>${fmt(g('share'))}</b><span>Challenge a friend</span></div>
@@ -420,7 +425,7 @@ function fxDetail(p){const f=p.get('wonders'),x=f.fx||{},g=k=>x[k]||0,el=documen
       <div class="num"><b>${fmt(g('another'))}</b><span>Try another type</span></div>
       <div class="num"><b>${fmt(g('admire'))}</b><span>Admire my score</span></div>
     </div>
-    <p class="msgnote">Visits and quizzes finished are counted from launch (17 Nov 2026). * Everything else from 17 Nov, 20:30: the earlier detail was only kept on players' own phones. Natural Wonders figures above leave Fictional out (except new players, countries, hours and devices, which are shared).</p>`}
+    <p class="msgnote">Visits and quizzes finished are counted from launch (17 Nov 2026). * Everything else from 17 Nov, 20:30, journeys from 20:45: the earlier detail was only kept on players' own phones. Natural Wonders figures above leave Fictional out (except new players, countries, hours and devices, which are shared).</p>`}
 function nwDetail(p){const f0=p.get('wonders'),f={...f0,visits:f0.visits-(f0.bg.fictional||0),games:f0.games-(f0.pl.fictional||0)};
   const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
   const gs=Object.keys(NWN).map(k=>[k,f.bg[k]||0,f.pl[k]||0]).sort((a,b)=>b[1]-a[1]||b[2]-a[2]),gmax=Math.max(1,...gs.map(x=>x[1]));
