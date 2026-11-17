@@ -28,7 +28,9 @@ const css=`
 #tmgAd.flow{flex:none;display:flex;justify-content:center;padding:2px 0 calc(4px + env(safe-area-inset-bottom))}
 #tmgAd.flow .tmgad-in{border-radius:16px;padding:16px 10px 8px;position:relative}
 #tmgAd.flow .tmgad-in.p .tmgad-l{position:absolute;top:3px;left:10px}
-html.tmgad-play #tmgAd{display:none!important}html.tmg-playing .tmgfb-pill{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
+html.tmgad-play #tmgAd:not(.inres){display:none!important}
+/* results pages on phones (17 Nov, Jonathan): one ad in the page, just under the score card, with a clear gap and its label */
+#tmgAd.fixed.inres{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;margin:18px 0 6px;padding:0!important;background:transparent!important;border:0!important;z-index:auto}html.tmg-playing .tmgfb-pill{display:none!important}html.tmgad-play{--tmgad-h:0px!important}
 html.tmgad-on body{padding-bottom:var(--tmgad-h,0px)}
 /* iPhone, iOS 26 and later, in the browser (17 Nov, Jonathan): Safari's bottom bar floats over the page, so the floating box sits just above it and Share stays reachable */
 html.tmg-iosbar #tmgAd.fixed,html.tmg-iosbar.tmgap-float #tmgAd.flow{bottom:var(--tmg-iosbar,60px);padding-bottom:8px;border-bottom:1px solid var(--line,#d5dae2)}
@@ -129,7 +131,11 @@ function playWatch(){if(!isNW)return;let was=null,wasP=null;const chk=()=>{const
 function apFloat(){if(!isAp||!/\/mobile\//.test(path))return;const chk=()=>{const b=d.body,on=!!box&&mode==='flow'&&b.classList.contains('waiting')&&!b.classList.contains('done')&&!root.classList.contains('tw-on')&&!box.classList.contains('endmv');
     if(on!==root.classList.contains('tmgap-float'))root.classList.toggle('tmgap-float',on);if(on)root.style.setProperty('--tmgap-h',box.offsetHeight+'px');sync()};
   new MutationObserver(chk).observe(d.body,{attributes:true,attributeFilter:['class']});new MutationObserver(chk).observe(root,{attributes:true,attributeFilter:['class']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
-function start(){mirror();build();playWatch();apFloat();{let q=0;new MutationObserver(()=>{if(!q&&!wide)q=requestAnimationFrame(()=>{q=0;sync()})}).observe(d.body,{childList:true,subtree:true})}addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
+function resultsPlace(){if(!box||!isNW||wide||mode!=='fixed')return;
+  const big=d.querySelector('.panel .score .big'),panel=big&&big.closest('.panel');
+  if(panel&&panel.offsetParent){if(panel.nextElementSibling!==box){panel.after(box)}if(!box.classList.contains('inres')){box.classList.add('inres');root.classList.remove('tmgad-on');sync()}}
+  else if(box.classList.contains('inres')){box.classList.remove('inres');d.body.appendChild(box);root.classList.add('tmgad-on');sync()}}
+function start(){mirror();build();playWatch();apFloat();{let q=0;new MutationObserver(()=>{if(!q&&!wide)q=requestAnimationFrame(()=>{q=0;resultsPlace();sync()})}).observe(d.body,{childList:true,subtree:true})}addEventListener('resize',()=>{clearTimeout(start.t);start.t=setTimeout(build,120)});setTimeout(sync,600);if(d.fonts)d.fonts.ready.then(sync)}
 window.tmgAd={ADS,rebuild:build};
 if(d.body)start();else addEventListener('DOMContentLoaded',start);
 })();

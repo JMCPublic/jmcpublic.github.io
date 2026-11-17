@@ -154,7 +154,7 @@ a{color:inherit}
 .audio .opill{height:44px;font-size:14px;border-color:var(--hot);color:var(--hot)}
 .disc{font-size:11px;color:var(--soft)}
 .sharebar{margin-top:12px}.sharebar .opill{width:100%;height:46px;font-size:14.5px;border-color:var(--hot)}
-#endAd #tmgAd{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;margin:14px 0 0;width:auto!important;padding:6px 8px calc(8px + env(safe-area-inset-bottom))!important;overflow:hidden}
+#endAd #tmgAd{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;margin:18px 0 6px;width:auto!important;padding:6px 8px calc(8px + env(safe-area-inset-bottom))!important;overflow:hidden}
 .foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--soft);margin:12px 0 4px}
 .foot a{color:var(--hot);text-decoration:none;font-weight:600}
 
@@ -284,6 +284,7 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
       <a class="txtlink" href="/">I'm just too good: play something different?</a>
     </div>
   </div>
+  <div id="endAd"></div>
   <div class="card gl" id="gl" hidden></div>
   <div class="audio">
     <div class="ah"><h3>Audiobook recommendations</h3><span class="logo-slot">AUDIBLE LOGO</span></div>
@@ -294,7 +295,6 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
   </div>
   <div class="sharebar"><button class="opill" id="shareGameEnd">Share Fictional with a friend</button></div>
   <div class="foot"><span id="eNext"></span><a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">Enjoying Fictional? Buy us a coffee</a></div>
-  <div id="endAd"></div>
 </section>
 </main>
 
@@ -365,7 +365,7 @@ function placeAd(){const b=$('tmgAd');if(!b)return;const end=!$('end').hidden;
   if(end&&b.parentNode!==$('endAd')){$('endAd').appendChild(b);H.classList.remove('tmgad-on')}
   else if(!end&&b.parentNode===$('endAd')){D.body.appendChild(b);H.classList.add('tmgad-on')}}
 new MutationObserver(()=>{const b=$('tmgAd');if(b&&!$('end').hidden&&b.parentNode!==$('endAd'))placeAd()}).observe(D.body,{childList:true});
-function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;setTimeout(placeAd,0);H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
+function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;$('play').classList.toggle('play',id==='play');setTimeout(placeAd,0);H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
 
 /* ---------- play ---------- */
 /* ---------- stats (17 Nov 2026): every count is +1 on one field, in the same Natural Wonders stats records as visits
