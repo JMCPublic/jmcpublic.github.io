@@ -50,6 +50,9 @@ h2{font-size:20px;font-weight:800;letter-spacing:-.01em;margin:30px 0 4px}
 .ic span{color:var(--soft);font-weight:500;font-size:11.5px;margin-top:-5px}
 .back{display:inline-block;margin-top:30px;color:#b5bac0;font-size:14px}.back:hover{color:#fff}
 @media (max-width:370px){h1{font-size:31px;margin-top:26px}}
+.inapp{background:#3a2a22;border:1px solid rgba(255,145,0,.5);border-radius:16px;padding:14px 16px;margin:0 0 16px;font-size:14.5px;line-height:1.45;color:#fff}.inapp ol{margin:8px 0 0;padding-left:20px}.inapp li{margin:3px 0}
+.ic .addr{display:block;font-size:11px;opacity:.75;margin-top:2px}
+.copied{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#1a1a1a;font-weight:700;padding:10px 16px;border-radius:999px;z-index:50}
 </style>
 </head>
 <body>
@@ -57,6 +60,10 @@ h2{font-size:20px;font-weight:800;letter-spacing:-.01em;margin:30px 0 4px}
 <div class="wrap">
 <a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
 <h1>Put the games on your home screen</h1>
+<div class="inapp" id="inapp" hidden>
+  <b>You're inside the Two Minute Games app</b>, the icon already on your home screen. Apps opened from an icon don't show Safari's address bar or Share button, so a new icon can't be added from here.
+  <ol><li>Tap a game below to copy its address.</li><li>Open the <b>Safari</b> app itself and paste the address into the address bar.</li><li>Then follow the steps: <b>•••</b> → <b>Share</b> → <b>Add to Home Screen</b>.</li></ol>
+</div>
 <p class="sub">Each game gets its own icon and opens full screen, like an app. One tap and you're playing. Nothing to download.</p>
 
 <div class="tabs" role="tablist">
@@ -100,6 +107,12 @@ document.getElementById('grid').innerHTML=G.map(([u,k,n,s])=>`<a class="ic" href
 const tabs=[...document.querySelectorAll('.tabs button')];
 const pick=id=>{tabs.forEach(b=>{const on=b.getAttribute('aria-controls')===id;b.setAttribute('aria-selected',on);document.getElementById(b.getAttribute('aria-controls')).hidden=!on})};
 tabs.forEach(b=>b.onclick=()=>pick(b.getAttribute('aria-controls')));
+/* opened from a home-screen icon: no Safari buttons here, so explain, and let each icon copy its address for Safari */
+if(navigator.standalone||matchMedia('(display-mode: standalone)').matches){document.getElementById('inapp').hidden=false;
+  document.querySelectorAll('#grid .ic').forEach(el=>{const u='twominute.games'+(el.getAttribute('href')==='/'?'':el.getAttribute('href').replace(/\/$/,''));
+    el.insertAdjacentHTML('beforeend',`<span class="addr">${u}</span>`);
+    el.addEventListener('click',e=>{e.preventDefault();const full='https://'+u+'/';const done=()=>{const t=document.createElement('div');t.className='copied';t.textContent='Copied: now open Safari and paste it';document.body.appendChild(t);setTimeout(()=>t.remove(),2200)};
+      (navigator.clipboard?navigator.clipboard.writeText(full):Promise.reject()).then(done,()=>prompt('Copy this into Safari:',full))})})}
 if(/Android/i.test(navigator.userAgent))pick('and');
 </script>
 <script src="/shared/reach.js?v=13" defer></script>

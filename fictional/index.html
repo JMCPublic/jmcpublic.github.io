@@ -153,6 +153,8 @@ a{color:inherit}
 .book .t{font-size:12px;font-weight:600;line-height:1.25}.book .a{font-size:11px;color:var(--soft)}.book .l{font-size:12px;font-weight:700;color:var(--hot)}
 .audio .opill{height:44px;font-size:14px;border-color:var(--hot);color:var(--hot)}
 .disc{font-size:11px;color:var(--soft)}
+.sharebar{margin-top:12px}.sharebar .opill{width:100%;height:46px;font-size:14.5px;border-color:var(--hot)}
+#endAd #tmgAd{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;margin:14px 0 0;width:auto!important;padding:6px 8px calc(8px + env(safe-area-inset-bottom))!important;overflow:hidden}
 .foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--soft);margin:12px 0 4px}
 .foot a{color:var(--hot);text-decoration:none;font-weight:600}
 
@@ -290,7 +292,9 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
     <a class="opill" id="audibleBtn" target="_blank" rel="noopener sponsored">Listen on Audible</a>
     <div class="disc">Links go to Audible. Affiliate links coming soon: Two Minute Games may then earn a commission.</div>
   </div>
+  <div class="sharebar"><button class="opill" id="shareGameEnd">Share Fictional with a friend</button></div>
   <div class="foot"><span id="eNext"></span><a href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">Enjoying Fictional? Buy us a coffee</a></div>
+  <div id="endAd"></div>
 </section>
 </main>
 
@@ -356,7 +360,12 @@ function drawStart(){
 D.querySelector('.types').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;sel=b.dataset.t;ls('fictional-type',sel);drawStart()});
 $('playBtn').onclick=()=>{const p=S.played[TODAY+'|'+sel];if(p)showEnd(sel,p,true);else startQuiz(sel)};
 function untilMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.max(0,Math.round((m-n)/1000));return Math.floor(s/3600)+'h '+String(Math.floor(s%3600/60)).padStart(2,'0')+'m'}
-function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
+/* the ad: floating at the foot of the screen, except on the results page, where it sits at the bottom of the page */
+function placeAd(){const b=$('tmgAd');if(!b)return;const end=!$('end').hidden;
+  if(end&&b.parentNode!==$('endAd')){$('endAd').appendChild(b);H.classList.remove('tmgad-on')}
+  else if(!end&&b.parentNode===$('endAd')){D.body.appendChild(b);H.classList.add('tmgad-on')}}
+new MutationObserver(()=>{const b=$('tmgAd');if(b&&!$('end').hidden&&b.parentNode!==$('endAd'))placeAd()}).observe(D.body,{childList:true});
+function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;setTimeout(placeAd,0);H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
 
 /* ---------- play ---------- */
 /* ---------- stats (17 Nov 2026): every count is +1 on one field, in the same Natural Wonders stats records as visits
@@ -550,6 +559,9 @@ function showEnd(tid,r,again){
 }
 $('eBooks').addEventListener('click',e=>{if(e.target.closest('.book'))fx('aud_book')});
 $('audibleBtn').addEventListener('click',()=>fx('aud_main'));
+$('shareGameEnd').onclick=()=>{fx('share_game');const url='https://twominute.games/fictional/',txt='Fictional a→z: a daily literary letter hunt. Answer the clues, collect the letters, find the hidden word. Have a go:';
+  if(navigator.share){navigator.share({title:'Fictional a→z',text:txt,url}).catch(()=>{});return}
+  (navigator.clipboard?navigator.clipboard.writeText(txt+' '+url):Promise.reject()).then(()=>toast('Copied: paste it to a friend'),()=>prompt('Copy this to a friend:',txt+' '+url))};
 $('anotherBtn').onclick=()=>{fx('another');const next=TYPES.find(t=>!S.played[TODAY+'|'+t.id]);if(next){sel=next.id;ls('fictional-type',sel)}show('start');drawStart()};
 $('admireBtn').onclick=()=>{fx('admire');const b=$('eTime');b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500});toast('Looking good.')};
 /* Goldilocks "How was that?" (as on the other games): once per fiction type per day, one tap */
