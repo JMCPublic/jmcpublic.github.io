@@ -1,4 +1,4 @@
-/* twominute.games background music (v1, 11 Nov 2026; v2 15 Nov: ♫ on every screen; v3 17 Nov: one tap on ♫ turns music off or on, the Now playing line opens the card)
+/* twominute.games background music (v1, 11 Nov 2026; v2 15 Nov: ♫ on every screen; v3 17 Nov: one tap on ♫ turns music off or on; the ⓘ beside it, or the Now playing line, opens the card)
    Natural Wonders games: a quiet classical loop, ON by default, starting on the player's first tap
    (browsers don't allow sound before that). A ♫ button in the game header turns it off/on (remembered on the device).
    When the music starts, a grey "Now playing" line shows under ♫ for 5 seconds; tapping it opens the Now playing card
@@ -51,6 +51,8 @@ const cc=()=>{try{return (window.tmgReach&&tmgReach.cc&&tmgReach.cc())||''}catch
 const bump=ev=>{try{window.tmgReach&&tmgReach.bump&&tmgReach.bump({[`walk.music_${ev}`]:1})}catch(e){}};
 const css=`.tmgmus{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(0,0,0,.18);background:rgba(255,255,255,.7);display:inline-grid;place-items:center;font-size:15px;line-height:1;color:#b4552a;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;flex:none}
 .tmgmus.off{color:#9aa0a6;text-decoration:line-through}
+.tmgmusi{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15);background:rgba(255,255,255,.7);display:inline-grid;place-items:center;font:700 13px/1 Georgia,serif;font-style:italic;color:#6f685d;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;flex:none}
+.tmgmusi.h1b{width:30px;height:30px;margin:0 0 0 auto;background:#fff}
 .tmgmus.float{position:fixed;top:10px;right:12px;z-index:60}#bar .tmgmus.inbar{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#ffb38a;text-decoration:none;padding:0;margin:0;font-size:15px}
 .tmgnp{position:fixed;z-index:61;background:#6b7078;color:#fff;font:12px/1.2 system-ui,sans-serif;border-radius:999px;padding:6px 12px;box-shadow:0 6px 16px -8px rgba(0,0,0,.45);white-space:nowrap;cursor:pointer;opacity:0;transition:opacity .3s;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis}
 .tmgnp.on{opacity:1}.tmgnp i{opacity:.8;font-style:normal}
@@ -84,13 +86,15 @@ const isOn=()=>AP?((D.getElementById('musicBtn')||{getAttribute:()=>'true'}).get
 function paint(){if(AP)return;btns.forEach(b=>{b.textContent='♫';b.classList.toggle('off',!on);b.title=on?W[3]:W[4];b.setAttribute('aria-label',on?W[3]:W[4])})}
 function play(){if(!on)return;audio.play().then(()=>{started=true;if(!shown){shown=true;showLine()}}).catch(()=>{})}
 function toggle(e){e&&e.stopPropagation();if(AP){const b=D.getElementById('musicBtn');if(b){window.__tmgMusBy=1;b.click();window.__tmgMusBy=0}bump(isOn()?'on':'off');return}on=!on;ls('tmg-music',on?'on':'off');bump(on?'on':'off');if(on)play();else audio.pause();paint()}
+/* 17 Nov: a small ⓘ beside ♫ always opens the Now playing card (piece, composer, fact and a classical station for the player's country) */
+function mkInfo(cls){const b=D.createElement('button');b.type='button';b.className='tmgmusi '+(cls||'');b.textContent='i';b.title=W[0];b.setAttribute('aria-label',W[0]);b.onclick=e=>{e.stopPropagation();hideLine();card()};return b}
 function mkBtn(cls){const b=D.createElement('button');b.type='button';b.className='tmgmus '+(cls||'');b.onclick=e=>{e.stopPropagation();hideLine();toggle(e);if(on)showLine()}; /* 17 Nov: one tap turns music off or on (Paul's feedback); the grey Now playing line under ♫ opens the card */btns.add(b);paint();return b}
 /* put ♫ in the game header (it is redrawn every question, so keep re-adding it) */
-function place(){if(AP){const b=D.getElementById('musicBtn');if(b)btns.add(b);return}const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
+function place(){if(AP){const b=D.getElementById('musicBtn');if(b)btns.add(b);return}const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus')){const mb=mkBtn();row.insertBefore(mb,row.firstChild);mb.after(mkInfo())}
   btns.forEach(b=>{if(!b.isConnected)btns.delete(b)});
   /* menu and results have no game bar: ♫ sits at the right-hand end of the page title, so it's on every screen without covering anything */
   const barShown=!!D.querySelector('#bar')&&getComputedStyle(D.querySelector('#bar')).display!=='none';const inbar=D.querySelector('.top .row .tmgmus')||(barShown&&D.querySelector('#bar .tmgmus.inbar'));
-  if(!inbar&&window.top===window){const h=[...D.querySelectorAll('h1')].find(x=>x.offsetParent&&!x.closest('.play,.top,#bar,.tmgnpc'));if(h&&!h.querySelector('.tmgmus'))h.appendChild(mkBtn('h1b'))}
+  if(!inbar&&window.top===window){const h=[...D.querySelectorAll('h1')].find(x=>x.offsetParent&&!x.closest('.play,.top,#bar,.tmgnpc'));if(h&&!h.querySelector('.tmgmus')){h.appendChild(mkInfo('h1b'));h.appendChild(mkBtn('h1b'))}}
   /* Masterbrain: ♫ sits in its dark top bar, just before Quit (it used to float on top of Quit) */
   if(GAME==='masterbrain'){const bar=D.querySelector('#bar .in');if(bar&&!bar.querySelector('.tmgmus')){const q=[...bar.querySelectorAll('button')].pop();bar.insertBefore(mkBtn('inbar'),q||null)}}}
 new MutationObserver(place).observe(D.body,{childList:true,subtree:true});place();

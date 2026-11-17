@@ -124,13 +124,14 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   $('#share').onclick=async()=>{try{if(navigator.share){await navigator.share({text:share+'\nhttps://twominute.games/'})}else{await navigator.clipboard.writeText(share+'\nhttps://twominute.games/');$('#share').textContent=U.copied}}catch(e){}};
   const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
 function review(r){const labs=r.l||(r.a||[]).map((a,i)=>nm(a)+(SG.views&&SG.views[r.v[i]]?'|'+nm(SG.views[r.v[i]].n):''));S={seed:r.d,practice:true,qs:labs.map(lab=>({lab})),res:r.res};end(true)}
-function intro(){const r=playedToday(CFG.key);if(r&&r.res&&!VIP){review(r);return}const done=r?[r.d,r.n]:[];const played=!!r;
+function intro(){const r=playedToday(CFG.key);const done=r?[r.d,r.n]:[];const played=!!r;  /* played today: Admire my score, not Play again (17 Nov, Jonathan) */
   app.innerHTML=`<div class="top">${back}</div>
   <div class="panel intro menu"><div class="ttl"><span class="tag">${esc(U.kicker)}</span></div><h2>${esc(CFG.name)}</h2>
   <p>${esc(CFG.intro)}</p>
   <ul><li>${esc(U.b1(CFG.noun))}</li><li>${esc(U.b2)}</li><li>${esc(U.b3)}</li></ul>
-  <div class="btns"><button class="btn" id="go">${esc(played?U.again:U.start)}</button>${played?`<p class="best" style="text-align:center">${esc(U.scored(done[1]))}</p>`:''}</div></div>`;
-  $('#go').onclick=()=>start(today(),played)}
+  <div class="btns">${played?`<p class="best" style="text-align:center;margin:0">${esc(U.scored(done[1]))}</p>`:''}<button class="btn" id="go">${esc(played?U.admire:U.start)}</button>${played&&VIP?`<button class="btn ghost" id="again">${esc(U.owner)}</button>`:''}</div></div>`;
+  $('#go').onclick=()=>{if(!played)start(today(),false);else if(r.res)review(r);else start(today(),true)};
+  const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true)}
 window.__simple={mapSVG,pick};
 intro();
 })();
