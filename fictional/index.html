@@ -131,6 +131,12 @@ a{color:inherit}
 .endbtns .gfill{height:50px;font-size:15px}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.two>*{height:44px;font-size:14px}
 .txtlink{background:none;border:0;padding:6px;font-size:13px;font-weight:700;color:var(--hot);text-decoration:none;text-align:center}
+.gl{margin-top:12px;padding:12px 14px}
+.gl h4{margin:0 0 9px;text-align:center;font:700 16px Fraunces,Georgia,serif}
+.gl .gb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.gl button{border:1.5px solid var(--hot);background:var(--tile);color:#fff;border-radius:14px;padding:9px 5px;font-size:14px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:0 0 12px rgba(255,145,0,.18)}
+.gl button small{font-weight:500;font-size:11px;line-height:1.25;color:var(--soft);text-align:center}
+.gl .ty{text-align:center;font-size:14px;color:#e7e2dd;margin:2px 0}
 .audio{margin-top:12px;padding:14px 16px;background:#1d1d1d;border:1px solid rgba(255,145,0,.45);border-radius:18px;box-shadow:0 0 26px rgba(221,44,0,.18);display:flex;flex-direction:column;gap:11px}
 .audio .ah{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .audio h3{margin:0;font:700 18px Fraunces,Georgia,serif}
@@ -266,6 +272,7 @@ html.fx-nofb .tmgfb-pill{display:none!important}
       <a class="txtlink" href="/">I'm just too good: play something different?</a>
     </div>
   </div>
+  <div class="card gl" id="gl" hidden></div>
   <div class="audio">
     <div class="ah"><h3>Audiobook recommendations</h3><span class="logo-slot">AUDIBLE LOGO</span></div>
     <div class="disc" style="margin-top:-6px">From today's quiz</div>
@@ -342,11 +349,20 @@ function untilMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMont
 function show(id){for(const s of ['start','play','end'])$(s).hidden=s!==id;H.classList.toggle('tmg-playing',id==='play');H.classList.toggle('fx-nofb',id!=='end');window.scrollTo(0,0)}
 
 /* ---------- play ---------- */
+/* ---------- stats (17 Nov 2026): every count is +1 on one field, in the same Natural Wonders stats records as visits
+   (all time, this month, today; UK dates). Goldilocks also goes to the Reach records like the other games. Never on the shadow site or in Claude's test browser. */
+const FB='https://firestore.googleapis.com/v1/projects/aperture-c0961/databases/(default)/documents',FBK='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI';
+const LIVE=location.protocol==='https:'&&!/claude|anthropic|usercontent/.test(location.hostname)&&!/^\/shadow\//.test(location.pathname)&&!/\bClaude\//.test(navigator.userAgent);
+const UK=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),g=t=>p.find(x=>x.type===t).value;return{m:g('year')+'-'+g('month'),d:g('year')+'-'+g('month')+'-'+g('day')}}catch(e){const d=new Date().toISOString();return{m:d.slice(0,7),d:d.slice(0,10)}}})();
+function fbInc(doc,fields){if(!LIVE)return;try{fetch(FB+':commit?key='+FBK,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({writes:[{transform:{document:'projects/aperture-c0961/databases/(default)/documents/stats/'+doc,fieldTransforms:Object.keys(fields).map(f=>({fieldPath:f,increment:{integerValue:'1'}}))}}]})}).catch(()=>{})}catch(e){}}
+function fx(...keys){const f={};keys.forEach(k=>f['fx.'+k]=1);fbInc('wonders',f);fbInc('wonders-'+UK.m,f);fbInc('wonders-'+UK.d,f)}
+const tk=t=>t.replace(/-/g,'_');
 let G=null,timer=null;
 function startQuiz(tid){
   const T=TYPES.find(t=>t.id===tid),quiz=pick(T.list);
   G={T,quiz,clues:order(quiz,T.list),step:0,tiles:{},tray:[],slots:Array(quiz.word.length).fill(null),pen:0,start:Date.now(),end:null,
-     marks:[],helped:false,hint:0,wrong:[],last:null,newest:null,result:null};
+     marks:[],helped:false,hint:0,wrong:[],last:null,newest:null,result:null,used:0,wrongs:0};fx('s_'+tk(T.id));
   $('pType').textContent=T.label+' · '+now.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   $('hwClue').textContent=quiz.hint;
   show('play');drawPlay();clearInterval(timer);timer=setInterval(tick,1000);tick();
@@ -397,8 +413,8 @@ function answer(txt,fromChoice){
     drawPlay();
     if(G.step<G.clues.length&&!matchMedia('(pointer:coarse)').matches)$('typeIn').focus();
   }else{
-    if(fromChoice){if(!G.wrong.includes(txt)){G.wrong.push(txt);addPen()}}
-    else{addPen();$('oops').hidden=false}
+    if(fromChoice){if(!G.wrong.includes(txt)){G.wrong.push(txt);G.wrongs++;addPen()}}
+    else{G.wrongs++;addPen();$('oops').hidden=false}
     drawPlay();
   }
 }
@@ -406,7 +422,7 @@ $('choices').addEventListener('click',e=>{const b=e.target.closest('[data-o]');i
 $('goBtn').onclick=()=>answer($('typeIn').value,false);
 $('typeIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();answer($('typeIn').value,false)}});
 $('typeIn').addEventListener('input',()=>{$('oops').hidden=true});
-$('hintBtn').onclick=()=>{G.hint++;addPen();drawPlay()};
+$('hintBtn').onclick=()=>{G.hint++;G.used++;addPen();drawPlay()};
 
 function check(){
   if(G.slots.includes(null)){G.result=null;return}
@@ -456,7 +472,7 @@ D.addEventListener('keydown',e=>{const t=e.target.closest&&e.target.closest('#sl
 /* leaving mid-quiz */
 $('backBtn').onclick=()=>{if(G&&G.result!=='right')$('leave').hidden=false;else{show('start');drawStart()}};
 $('stayBtn').onclick=()=>{$('leave').hidden=true};
-$('goBackBtn').onclick=()=>{$('leave').hidden=true;clearInterval(timer);G=null;show('start');drawStart()};
+$('goBackBtn').onclick=()=>{$('leave').hidden=true;clearInterval(timer);if(G)fx('l_'+tk(G.T.id));G=null;show('start');drawStart()};
 
 /* ---------- finish and end card ---------- */
 function finish(){
@@ -471,6 +487,8 @@ function finish(){
   save();
   /* for the twominute.games home page card: done today, and the streak */
   ls('fictional-best-'+TODAY,'1');ls('fictional-streak',JSON.stringify({n:S.streak.n,last:S.streak.last}));
+  const t=tk(G.T.id),b=s<60?'a':s<120?'b':s<180?'c':s<300?'d':'e',k=n=>n>=3?'3':String(n);
+  fx('g_'+t,'t_'+t+'_'+b,'c_'+t+'_'+k(G.used),'w_'+t+'_'+k(G.wrongs));
 }
 $('scoreBtn').onclick=()=>showEnd(G.T.id,S.played[TODAY+'|'+G.T.id],false);
 /* original cover art, drawn here (no copyrighted images): a motif chosen from the book's title, colours from the title */
@@ -515,11 +533,21 @@ function showEnd(tid,r,again){
     <span class="t">${esc(b[0])}</span><span class="a">${esc(b[1])}</span><span class="l">Listen</span></a>`).join('');
   $('audibleBtn').href=base+'/';
   $('eNext').textContent='Next quiz in '+untilMidnight();
-  $('shareBtn').onclick=()=>share(T,r);
+  $('shareBtn').onclick=()=>{fx('share');share(T,r)};
+  drawRate(tid);
   show('end');
 }
-$('anotherBtn').onclick=()=>{const next=TYPES.find(t=>!S.played[TODAY+'|'+t.id]);if(next){sel=next.id;ls('fictional-type',sel)}show('start');drawStart()};
-$('admireBtn').onclick=()=>{const b=$('eTime');b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500});toast('Looking good.')};
+$('eBooks').addEventListener('click',e=>{if(e.target.closest('.book'))fx('aud_book')});
+$('audibleBtn').addEventListener('click',()=>fx('aud_main'));
+$('anotherBtn').onclick=()=>{fx('another');const next=TYPES.find(t=>!S.played[TODAY+'|'+t.id]);if(next){sel=next.id;ls('fictional-type',sel)}show('start');drawStart()};
+$('admireBtn').onclick=()=>{fx('admire');const b=$('eTime');b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:500});toast('Looking good.')};
+/* Goldilocks "How was that?" (as on the other games): once per fiction type per day, one tap */
+function drawRate(tid){const box=$('gl'),key='fictional-rate-'+tid;
+  if(ls(key)===TODAY&&!/[?&]rate=1/.test(location.search)){box.hidden=true;return}
+  box.hidden=false;box.innerHTML='<h4>How was that?</h4><div class="gb">'+[['tough','Too tough',"I don't have a degree in literature!"],['right','Just right','You have found my level'],['easy','Too easy','At least try and challenge me']]
+    .map(([k,a,b])=>`<button type="button" data-k="${k}">${a}<small>${b}</small></button>`).join('')+'</div>';
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ls(key,TODAY);box.innerHTML='<p class="ty">Thanks! We use this to get the levels right.</p>';const k=b.dataset.k;
+    fx('r_'+tk(tid)+'_'+k);const f={['rate.fictional_'+k]:1};fbInc('reach',f);fbInc('reach-'+UK.m,f)})}
 function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,1800)}
 function share(T,r){
   const sq=r.marks.map(m=>m?'🟧':'🟫').join('');

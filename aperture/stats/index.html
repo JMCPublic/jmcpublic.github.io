@@ -215,6 +215,9 @@ document.getElementById('gateF').onsubmit=async e=>{e.preventDefault();const i=d
   </section>
   <section class="card" id="nwDetail"></section>
 
+  <h2 class="fam">Fictional a→z <small>the daily literary letter hunt · follows “Show detail for” above</small></h2>
+  <section class="card" id="fxDetail"></section>
+
   <h2 class="fam" data-tab="reach">Reach <small>where visitors came from, how far your links spread, and who's on the map</small></h2>
   <section class="card" data-tab="reach" id="rcWitw"><div class="h2row"><h2>Where in the World</h2><small>your LinkedIn and Facebook links, plus walk-ins by country</small></div><div id="rcWtiles" class="tiles"></div><div class="rcconts" id="rcConts"></div><svg id="rcMap" style="width:100%;height:auto;background:#f6f8ff;border-radius:14px"></svg><p class="msgnote" id="rcKey">● people who sent the form · shaded: countries with walk-ins</p><div class="rbody"><p class="msgnote">Sign in on the Messages tab to see the names.</p></div></section>
   <section class="card" data-tab="reach" id="rcSrc"><p class="msgnote">Loading…</p></section>
@@ -238,7 +241,7 @@ const BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default
 const GAMES=[{id:'objects',name:'Aperture',url:'../'},{id:'landmarks',name:'Aperture Landmarks',url:'../landmarks/'}];
 const AD={aperture:'Aperture',landmarks:'Aperture Landmarks',wonders:'Natural Wonders',bigger:'Where is Bigger?'};
 const KEYS=['visits','uniques','vip','games','tests'];
-const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played',hr:'hours',dv:'device'};
+const FAM=['objects','landmarks','wonders'],MAPS={c:'countries',promo:'promo',bg:'byGame',pl:'played',hr:'hours',dv:'device',fx:'fx'};
 const NWN={rivers:'Rivers',lakes:'Lakes',bodies_of_water:'Bodies of Water',mountains:'Mountains',deserts:'Deserts',how_many_borders:'How Many Borders?',river_cities:'River Cities',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',forests:'Forests',masterbrain:'Masterbrain'};
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 let names=null;try{names=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
@@ -337,7 +340,7 @@ async function render(){
   dayCard('nwDay',['wonders'],'all Natural Wonders games');
 
   // Natural Wonders: same layout, its own numbers
-  const nw=(m,k)=>k==='tried'?Object.keys(m.g.wonders.pl).filter(x=>m.g.wonders.pl[x]>0).length:m.g.wonders[k];
+  const nw=(m,k)=>{const w=m.g.wonders;return k==='tried'?Object.keys(w.pl).filter(x=>x!=='fictional'&&w.pl[x]>0).length:k==='visits'?w.visits-(w.bg.fictional||0):k==='games'?w.games-(w.pl.fictional||0):w[k]};
   document.getElementById('nwNowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nwNowDays').textContent=document.getElementById('nowDays').textContent;
   document.getElementById('nwTiles').innerHTML=[['Visits','visits'],['New players','uniques'],['Games played','games'],['Games tried','tried']].map(([lab,k])=>{
@@ -367,7 +370,7 @@ async function render(){
   detail(P.find(p=>p.id===current));
 }
 function detail(p){
-  nwDetail(p);
+  nwDetail(p);fxDetail(p);
   document.getElementById('apWhen').innerHTML=`<div class="h2row"><h2>Aperture · when and on what</h2><small>${esc(p.label)} · both games</small></div>${whenHTML(add(add(blank(),p.get('objects')),p.get('landmarks')))}`;
   document.getElementById('games').innerHTML=GAMES.map(g=>{const f=p.get(g.id);
     const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
@@ -393,7 +396,32 @@ function whenHTML(f){const hv=[...Array(24)].map((_,h)=>f.hr['h'+String(h).padSt
     <div class="hrs" title="Visits by hour">${hv.map((v,h)=>`<i class="${v?'':'z'}" style="height:${v?Math.max(6,Math.round(v/hm*100)):3}%" title="${String(h).padStart(2,'0')}:00 · ${v} visit${v===1?'':'s'}"></i>`).join('')}</div>
     <div class="hlab"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span></div></div>
     <div><h3 class="sub3">On what</h3><div class="devs">${['📱 Phone','Tablet','🖥 Desktop'].map((l,i)=>`<div class="dev"><span>${l}</span><b>${fmt(dvt[i])}</b><div class="bar"><i style="width:${dsum?Math.round(dvt[i]/dsum*100):0}%"></i></div></div>`).join('')}</div></div></div>`}
-function nwDetail(p){const f=p.get('wonders');
+/* Fictional a→z (17 Nov 2026): visits and finished games since launch (17 Nov), and the per-type detail counted from 17 Nov, 20:30 */
+const FXT=[['pop_easy','Popular Easy'],['pop_medium','Popular Medium'],['easy','Classic Easy'],['medium','Classic Medium'],['difficult','Classic Difficult'],['world','World Classic']];
+function fxDetail(p){const f=p.get('wonders'),x=f.fx||{},g=k=>x[k]||0,el=document.getElementById('fxDetail');if(!el)return;
+  const visits=f.bg.fictional||0,done=f.pl.fictional||0,started=FXT.reduce((a,[t])=>a+g('s_'+t),0),fin=FXT.reduce((a,[t])=>a+g('g_'+t),0),left=FXT.reduce((a,[t])=>a+g('l_'+t),0);
+  const pc=(a,b)=>b?Math.round(100*a/b)+'%':'–';
+  const rows=FXT.map(([t,n])=>{const s=g('s_'+t),d=g('g_'+t),tb=['a','b','c','d','e'].map(b=>g('t_'+t+'_'+b)),r=['tough','right','easy'].map(k=>g('r_'+t+'_'+k)),rt=r[0]+r[1]+r[2];
+    return `<tr><td>${n}</td><td class="r n">${fmt(s)}</td><td class="r n">${fmt(d)}</td><td class="r n">${pc(d,s)}</td><td class="r n">${tb.map(fmt).join(' · ')}</td><td class="r n">${pc(g('c_'+t+'_0'),d)}</td><td class="r n">${pc(g('w_'+t+'_0'),d)}</td><td class="r n">${rt?`${r[0]} / ${r[1]} / ${r[2]}`:'–'}</td></tr>`}).join('');
+  el.innerHTML=`<div class="h2row"><h2><a href="/fictional/">Fictional a→z</a></h2><small>${esc(p.label)} · change it under “Show detail for” above</small></div>
+    <div class="nums">
+      <div class="num"><b>${fmt(visits)}</b><span>Visits</span></div>
+      <div class="num"><b>${fmt(done)}</b><span>Quizzes finished</span></div>
+      <div class="num"><b>${fmt(started)}</b><span>Quizzes started*</span></div>
+      <div class="num"><b>${pc(fin,started)}</b><span>Finish rate*</span></div>
+      <div class="num"><b>${fmt(left)}</b><span>Left mid-quiz*</span></div>
+    </div>
+    <table class="nwg"><thead><tr><th>Fiction type</th><th class="r">Started</th><th class="r">Finished</th><th class="r">Finish</th><th class="r">Time: &lt;1 · 1–2 · 2–3 · 3–5 · 5+ min</th><th class="r">No clues</th><th class="r">No wrong guesses</th><th class="r">Tough / Right / Easy</th></tr></thead><tbody>${rows}</tbody></table>
+    <h3 class="sub3">On the end card</h3>
+    <div class="nums">
+      <div class="num"><b>${fmt(g('share'))}</b><span>Challenge a friend</span></div>
+      <div class="num"><b>${fmt(g('aud_book'))}</b><span>Audible: a book</span></div>
+      <div class="num"><b>${fmt(g('aud_main'))}</b><span>Listen on Audible</span></div>
+      <div class="num"><b>${fmt(g('another'))}</b><span>Try another type</span></div>
+      <div class="num"><b>${fmt(g('admire'))}</b><span>Admire my score</span></div>
+    </div>
+    <p class="msgnote">Visits and quizzes finished are counted from launch (17 Nov 2026). * Everything else from 17 Nov, 20:30: the earlier detail was only kept on players' own phones. Natural Wonders figures above leave Fictional out (except new players, countries, hours and devices, which are shared).</p>`}
+function nwDetail(p){const f0=p.get('wonders'),f={...f0,visits:f0.visits-(f0.bg.fictional||0),games:f0.games-(f0.pl.fictional||0)};
   const c=Object.entries(f.c).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]||nameOf(a[0]).localeCompare(nameOf(b[0]))),total=c.reduce((s,x)=>s+x[1],0)||1;
   const gs=Object.keys(NWN).map(k=>[k,f.bg[k]||0,f.pl[k]||0]).sort((a,b)=>b[1]-a[1]||b[2]-a[2]),gmax=Math.max(1,...gs.map(x=>x[1]));
   document.getElementById('nwDetail').innerHTML=`<div class="h2row"><h2><a href="/wonders/">Natural Wonders</a></h2><small>${esc(p.label)} · change it under “Show detail for” above</small></div>
@@ -510,9 +538,9 @@ function drawWalk(){const el=document.getElementById('rcWalk');if(!el)return;con
     return `<tr><td>${esc(WNAME[k]||k)}</td><td class="n">${r.shown||0}</td><td class="n">${took||0}</td><td class="n">${fin||0}</td><td class="n">${sk||0}</td><td class="n">${pc(pl,r.shown)}</td></tr>`}).join('')}</table>`:'<p class="msgnote">Nothing yet. Needs Firestore rules v11 published.</p>'}`}
 function drawRate(){const el=document.getElementById('rcRate');if(!el)return;const R=map(cur().rate);const g={};
   Object.entries(R).forEach(([k,v])=>{const m=k.match(/^(.+)_(tough|easy|right)$/);if(!m)return;(g[m[1]]=g[m[1]]||{tough:0,easy:0,right:0})[m[2]]=num(v)});
-  const NM={rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',bodies_of_water:'Bodies of Water',river_cities:'River Cities',masterbrain:'Masterbrain',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',how_many_borders:'How Many Borders?',aperture:'Aperture',landmarks:'Landmarks'};
+  const NM={rivers:'Rivers',lakes:'Lakes',mountains:'Mountains',deserts:'Deserts',forests:'Forests',bodies_of_water:'Bodies of Water',river_cities:'River Cities',masterbrain:'Masterbrain',where_is_bigger:'Where is Bigger?',which_of_five:'Which of Three?',how_many_borders:'How Many Borders?',aperture:'Aperture',landmarks:'Landmarks',fictional:'Fictional a→z'};
   const rows=Object.entries(g).map(([k,r])=>[k,r,r.tough+r.easy+r.right]).sort((a,b)=>b[2]-a[2]);const pc=(a,t)=>t?Math.round(100*a/t)+'%':'–';
-  el.innerHTML=`<div class="h2row"><h2>Goldilocks: how was that?</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 15 Nov 2026. Asked on the Natural Wonders results card, once per game per player per day. Lots of "too tough" or "too easy" means the levels need adjusting.</p>
+  el.innerHTML=`<div class="h2row"><h2>Goldilocks: how was that?</h2><small>${period==='month'?'this month':'all time'}</small></div><p class="msgnote">Started 15 Nov 2026. Asked on the Natural Wonders and Fictional a→z results cards, once per game per player per day. Lots of "too tough" or "too easy" means the levels need adjusting.</p>
   ${rows.length?`<table class="rt"><tr><th>Game</th><th class="n">Answers</th><th class="n">Too tough</th><th class="n">Just right</th><th class="n">Too easy</th></tr>${rows.map(([k,r,t])=>`<tr><td>${esc(NM[k]||k)}</td><td class="n">${t}</td><td class="n">${r.tough} (${pc(r.tough,t)})</td><td class="n">${r.right} (${pc(r.right,t)})</td><td class="n">${r.easy} (${pc(r.easy,t)})</td></tr>`).join('')}</table>`:'<p class="msgnote">Nothing yet.</p>'}<p class="msgnote">Home-screen tip (from 15 Nov): shown ${num(R.a2hs_shown)} · Show me how ${num(R.a2hs_how)} · Not now ${num(R.a2hs_no)}</p><p class="msgnote">🔒 Wrong stats passwords (from 16 Nov): ${num(R.gate_fail)}</p>`}
 function drawDev(){const el=document.getElementById('rcDev');if(!el)return;const D=map(cur().dev);const g={os:[],ty:[],br:[],m:[]};
   Object.entries(D).forEach(([k,v])=>{const m=k.match(/^(os|ty|br|m)_(.+)$/);if(m)g[m[1]].push([m[2],num(v)])});Object.values(g).forEach(a=>a.sort((x,y)=>y[1]-x[1]));
