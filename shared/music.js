@@ -1,4 +1,4 @@
-/* twominute.games background music (v1, 11 Nov 2026; v2 15 Nov: ♫ on every screen, one tap opens the music card, the card turns music off or on)
+/* twominute.games background music (v1, 11 Nov 2026; v2 15 Nov: ♫ on every screen; v3 17 Nov: one tap on ♫ turns music off or on, the Now playing line opens the card)
    Natural Wonders games: a quiet classical loop, ON by default, starting on the player's first tap
    (browsers don't allow sound before that). A ♫ button in the game header turns it off/on (remembered on the device).
    When the music starts, a grey "Now playing" line shows under ♫ for 5 seconds; tapping it opens the Now playing card
@@ -84,7 +84,7 @@ const isOn=()=>AP?((D.getElementById('musicBtn')||{getAttribute:()=>'true'}).get
 function paint(){if(AP)return;btns.forEach(b=>{b.textContent='♫';b.classList.toggle('off',!on);b.title=on?W[3]:W[4];b.setAttribute('aria-label',on?W[3]:W[4])})}
 function play(){if(!on)return;audio.play().then(()=>{started=true;if(!shown){shown=true;showLine()}}).catch(()=>{})}
 function toggle(e){e&&e.stopPropagation();if(AP){const b=D.getElementById('musicBtn');if(b){window.__tmgMusBy=1;b.click();window.__tmgMusBy=0}bump(isOn()?'on':'off');return}on=!on;ls('tmg-music',on?'on':'off');bump(on?'on':'off');if(on)play();else audio.pause();paint()}
-function mkBtn(cls){const b=D.createElement('button');b.type='button';b.className='tmgmus '+(cls||'');b.onclick=e=>{e.stopPropagation();hideLine();card()};btns.add(b);paint();return b}
+function mkBtn(cls){const b=D.createElement('button');b.type='button';b.className='tmgmus '+(cls||'');b.onclick=e=>{e.stopPropagation();hideLine();toggle(e);if(on)showLine()}; /* 17 Nov: one tap turns music off or on (Paul's feedback); the grey Now playing line under ♫ opens the card */btns.add(b);paint();return b}
 /* put ♫ in the game header (it is redrawn every question, so keep re-adding it) */
 function place(){if(AP){const b=D.getElementById('musicBtn');if(b)btns.add(b);return}const row=D.querySelector('.top .row');if(row&&!row.querySelector('.tmgmus'))row.insertBefore(mkBtn(),row.firstChild);
   btns.forEach(b=>{if(!b.isConnected)btns.delete(b)});

@@ -126,7 +126,7 @@ TPL = '''<!doctype html>
 <script src="/shadow/i18n.js?v=3"></script>
 <script src="/shadow/simple.js?v=8"></script>
 <script src="/shared/adbox.js?v=7" defer></script>
-<script src="/shared/reach.js?v=10" defer></script>
+<script src="/shared/reach.js?v=11" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>
 <script src="/shared/nwcount.js?v=1" defer></script>
 </body>
