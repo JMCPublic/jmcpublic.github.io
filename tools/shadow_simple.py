@@ -126,11 +126,34 @@ def check(bank, names, game):
     return tiers
 
 
+import simple_names as NM
+def _river_names():
+    out = {l: {} for l in NM.LANGS}
+    for l in NM.LANGS:
+        f = GAMES_DIR / 'natural-wonders-rivers' / 'tools' / 'i18n' / f'{l}.py'
+        g = {}
+        if f.exists(): exec(f.read_text(), g)
+        out[l].update(NM.RIVERS_EXTRA[l]); out[l].update(g.get('N', {}))
+    return out
+
+def translations(game, views, qs):
+    """Only the names this game shows: answers, wrong answers, map names."""
+    used = {q['a'] for q in qs} | {w for q in qs for w in q['w']} | {v['n'] for v in views.values()}
+    src = _river_names() if game == 'rivers' else NM.GAME_NAMES[game]
+    tr = {}
+    for l in NM.LANGS:
+        d = {}
+        for n in used:
+            t = src[l].get(n) or NM.MAPS[l].get(n)
+            if t and t != n: d[n] = t
+        tr[l] = d
+    return tr
+
 def write(game, views, qs):
     dst = ROOT / 'shadow' / game / 'data.js'
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(f'/* Simple {game} data: built by tools/shadow_simple.py from the full game. Do not edit by hand. */\n'
-                   'const SG=' + json.dumps({'views': views, 'q': qs}, ensure_ascii=False, separators=(',', ':')) + ';\n')
+                   'const SG=' + json.dumps({'views': views, 'q': qs, 'tr': translations(game, views, qs)}, ensure_ascii=False, separators=(',', ':')) + ';\n')
     return dst.stat().st_size // 1024
 
 

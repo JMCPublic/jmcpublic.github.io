@@ -113,7 +113,8 @@ TPL = '''<!doctype html>
 <div class="wrap" id="app"></div>
 <script>const CFG={cfg};</script>
 <script src="data.js?v={ver}"></script>
-<script src="/shadow/simple.js?v=3"></script>
+<script src="/shadow/i18n.js?v=1"></script>
+<script src="/shadow/simple.js?v=4"></script>
 </body>
 </html>
 '''
