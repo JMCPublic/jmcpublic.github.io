@@ -13,7 +13,7 @@ if(GI)Object.assign(CFG,{name:GI[0],q:GI[1],next:GI[2],noun:GI[3],intro:GI[4]});
 const nm=x=>(SG.tr&&SG.tr[L]&&SG.tr[L][x])||x;  /* place names in the player's language */
 const gname=k=>{const g=I.G(k);return g?g[0]:k};
 const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
-const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?']];
+const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain']];
 const dayRec=k=>{const raw=ls('s'+k+'-day')||'';try{const o=JSON.parse(raw);if(o&&o.d)return o}catch(e){}const p=raw.split(':');return p[0]?{d:p[0],n:+p[1]}:null};
 const playedToday=k=>{const r=dayRec(k);return r&&r.d===today()?r:null};
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -22,7 +22,13 @@ function rng(seed){let h=1779033703^seed.length;for(let i=0;i<seed.length;i++){h
 const shuffle=(a,r)=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const art=a=>L!=='en'?'':(CFG.the===true||(CFG.theRe&&new RegExp(CFG.theRe).test(a)))?'the ':'';
 const MIX={1:4,2:3,3:3},LV={1:U.lv[0],2:U.lv[1],3:U.lv[2]};
-function pick(seed){const r=rng(K+':'+seed);let out=[];
+const MB=!!CFG.mb,MBC=MB?{name:CFG.name,noun:CFG.noun,next:CFG.next}:null;
+function loadGame(g){return new Promise((res,rej)=>{if(window.SGD&&SGD[g])return res(SGD[g]);const sc=document.createElement('script');sc.src='/shadow/'+g+'/data.js?v='+(CFG.mbv||1);sc.onload=()=>{if(CUR)window.SG=SGD[CUR];res(SGD[g])};sc.onerror=rej;document.head.appendChild(sc)})}
+let CUR=null;
+function useGame(g){CUR=g;window.SG=SGD[g];const gi=I.G(g)||[];Object.assign(CFG,{q:gi[1]||'',the:(CFG.mb[g]||{}).the,theRe:(CFG.mb[g]||{}).theRe},MBC)}
+async function mbQ(slot){await loadGame(slot.g);useGame(slot.g);if(!slot.q){const r=rng(K+':'+S.seed+':'+slot.g),pool=SG.q.filter(q=>q.t===slot.t);const q=pool[Math.floor(r()*pool.length)];Object.assign(slot,q,{q:1,opts:shuffle([q.a,...q.w],r)})}return slot}
+function pick(seed){if(MB){const r=rng(K+':'+seed),gs=shuffle(Object.keys(CFG.mb),r),T=[1,1,1,1,2,2,2,3,3,3];return gs.map((g,i)=>({g,t:T[i]}))}
+  const r=rng(K+':'+seed);let out=[];
   for(const t of [1,2,3])out=out.concat(shuffle(SG.q.filter(q=>q.t===t),r).slice(0,MIX[t]));
   return out.map(q=>({...q,opts:shuffle([q.a,...q.w],r)}))}
 
@@ -51,7 +57,7 @@ const XS=I.X||{};
 const cname=id=>nm((SG.names||{})[id]||id);
 const idOf=name=>Object.keys(SG.names||{}).find(k=>SG.names[k]===name);
 const num=n=>Number(n).toLocaleString(L==='en'?'en-GB':L);
-const listJoin=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+XS.and+a[a.length-1];
+const listJoin=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+(XS.and||' and ')+a[a.length-1];
 function sil(id,fill){const c=SG.shapes[id],[x0,y0,x1,y1]=c.bb;return `<svg viewBox="${x0-4} ${y0-4} ${x1-x0+8} ${y1-y0+8}" preserveAspectRatio="xMidYMid meet"><path d="${c.d}" fill="${fill||'#16130f'}"/></svg>`}
 function toScale(ids){const m=Math.min(...ids.map(k=>SG.shapes[k].s));let x=0,H=0;const parts=ids.map((k,i)=>{const c=SG.shapes[k],f=m/c.s,[x0,y0,x1,y1]=c.bb,w=(x1-x0)*f,h=(y1-y0)*f;
   const g=`<g transform="translate(${x} 0) scale(${f}) translate(${-x0} ${-y0})"><path d="${c.d}" fill="${i===0?'#e2552d':'#16130f'}"/></g>`;x+=w+14;H=Math.max(H,h);return g});
@@ -81,13 +87,15 @@ const back=`<a class="back" href="${CFG.home||'/shadow/wonders/'}">${esc(U.back)
 const qtext=q=>{if(q.qq){const t=I.QQ(q.qq);if(t!==q.qq||L==='en')return t}return CFG.q};
 function start(seed,practice){S={seed,practice,qs:pick(seed),i:0,res:[],answered:false};playQ()}
 function prog(){return `<div class="prog">${S.qs.map((_,k)=>`<i class="${k<S.res.length?(S.res[k]?'ok':'no'):k===S.i?'now':''}"></i>`).join('')}</div>`}
-function playQ(){const q=S.qs[S.i];S.answered=false;
+async function playQ(){if(MB){await mbQ(S.qs[S.i]);const nx=S.qs[S.i+1];if(nx)loadGame(nx.g).catch(()=>{})}
+  const q=S.qs[S.i];S.answered=false;
   app.innerHTML=`<div class="play"><div class="top">${back}<span class="tag">${esc(U.of(S.i+1,S.qs.length))}</span></div>
   ${prog()}${cardHTML(q)}
   <div class="q">${esc(qLine(q))}</div><p class="clue">${esc(clue(q))}</p>
   <div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${'ABC'[k]}</span>${esc(nm(o))}</button>`).join('')}</div><div id="after"></div></div>`;
   app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o));scrollTo(0,0)}
 function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o===q.a;S.res.push(ok);
+  if(MB)q.lab=label(q).split('|')[0]+'|'+gname(q.g);
   app.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const x=b.dataset.o;b.classList.add(x===q.a?'ok':x===o?'no':'dim')});
   app.querySelector('.prog').outerHTML=prog();
   if(q.k==='borders'){const mc=app.querySelector('.mapcard svg');if(mc)mc.outerHTML=bordersSVG(q,true)}  /* the neighbours light up */
@@ -99,6 +107,7 @@ function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{const r
     return `<a class="mg${r?' done':''}" href="/shadow/${k}/"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(gname(k))}</b><span>${r?'✓ '+r.n+' / 10':esc(U.play)}</span></a>`}).join('');
   const left=GAMES.filter(g=>g[0]!==CFG.key&&!playedToday(g[0])).length;
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
+function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),no=g.filter((_,k)=>!S.res[k]);return U.mbs(listJoin(ok.slice(0,3)),listJoin(no.slice(0,2)))}
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}
 function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
@@ -106,7 +115,7 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(rev?U.played:S.practice?U.practice:U.today)}</span></div>
   <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
-  <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p></div>
+  <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p>${MB&&!rev?`<p class="best">${esc(mbLine())}</p>`:''}</div>
   <div class="list">${S.qs.map((q,k)=>{const [a,b]=(q.lab||label(q)).split('|');return `<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(a)}</b>${b?` <span>· ${esc(b)}</span>`:''}</div></div>`}).join('')}</div>
   <div class="btns"><button class="btn" id="share">${esc(U.share)}</button></div>
   <p class="small">${esc(U.tomorrow(CFG.noun))}</p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">'+esc(U.owner)+'</button></div>':''}`;

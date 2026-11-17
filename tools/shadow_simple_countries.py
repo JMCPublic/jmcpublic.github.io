@@ -56,7 +56,7 @@ def write(game, data):
     dst = ROOT / 'shadow' / game / 'data.js'
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(f'/* Simple {game} data: built by tools/shadow_simple_countries.py from the full games. Do not edit by hand. */\n'
-                   'const SG=' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n')
+                   f'var SG=(window.SGD=window.SGD||{{}})["{game}"]=' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n')
     return dst.stat().st_size // 1024
 
 

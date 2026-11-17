@@ -153,7 +153,7 @@ def write(game, views, qs):
     dst = ROOT / 'shadow' / game / 'data.js'
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(f'/* Simple {game} data: built by tools/shadow_simple.py from the full game. Do not edit by hand. */\n'
-                   'const SG=' + json.dumps({'views': views, 'q': qs, 'tr': translations(game, views, qs)}, ensure_ascii=False, separators=(',', ':')) + ';\n')
+                   f'var SG=(window.SGD=window.SGD||{{}})["{game}"]=' + json.dumps({'views': views, 'q': qs, 'tr': translations(game, views, qs)}, ensure_ascii=False, separators=(',', ':')) + ';\n')
     return dst.stat().st_size // 1024
 
 

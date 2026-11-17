@@ -10,7 +10,7 @@ Run from the repo root after changing index.html or wonders/index.html:  python3
 import re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-READY = {'rivers', 'lakes', 'mountains', 'deserts', 'forests', 'bodies-of-water', 'river-cities', 'where-is-bigger', 'which-of-five', 'how-many-borders'}  # games with a simple version
+READY = {'rivers', 'lakes', 'mountains', 'deserts', 'forests', 'bodies-of-water', 'river-cities', 'where-is-bigger', 'which-of-five', 'how-many-borders', 'masterbrain'}  # games with a simple version
 SIMPLE_TEXT = {
     'rivers': 'A river lights up on the map. Which one is it? Pick from three.',
     'lakes': 'A lake lights up on the map. Which one is it? Pick from three.',
@@ -123,8 +123,8 @@ TPL = '''<!doctype html>
 <div class="wrap" id="app"></div>
 <script>const CFG={cfg};window.TMG_SIMPLE=1;window.TMG_GAME=CFG.key;</script>
 <script src="data.js?v={ver}"></script>
-<script src="/shadow/i18n.js?v=2"></script>
-<script src="/shadow/simple.js?v=6"></script>
+<script src="/shadow/i18n.js?v=3"></script>
+<script src="/shadow/simple.js?v=8"></script>
 <script src="/shared/adbox.js?v=7" defer></script>
 <script src="/shared/reach.js?v=10" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>
@@ -138,4 +138,15 @@ for key, c in SIMPLE.items():
     ver = int(data.stat().st_mtime) if data.exists() else 1
     (ROOT / 'shadow' / key).mkdir(exist_ok=True)
     (ROOT / 'shadow' / key / 'index.html').write_text(TPL.format(name=c['name'], icon=c['icon'], cfg=_json.dumps(cfg, ensure_ascii=False), ver=ver))
+
+# Masterbrain (17 Nov): the daily finale, one question from each simple game, getting harder; each game's data loads when its question comes up
+mb = {k: {x: v for x, v in c.items() if x in ('the', 'theRe')} for k, c in SIMPLE.items()}
+mbv = max(int((ROOT / 'shadow' / k / 'data.js').stat().st_mtime) for k in SIMPLE)
+cfg = dict(key='masterbrain', name='Masterbrain', q='', noun='questions', next='Next →', mb=mb, mbv=mbv,
+           intro='The daily finale: one question from every Natural Wonders game, getting harder as you go.')
+html = TPL.format(name='Masterbrain', icon='masterbrain', cfg=_json.dumps(cfg, ensure_ascii=False), ver=1)
+html = html.replace('<script src="data.js?v=1"></script>\n', '<script>var SG;</script>\n')
+(ROOT / 'shadow' / 'masterbrain').mkdir(exist_ok=True)
+(ROOT / 'shadow' / 'masterbrain' / 'index.html').write_text(html)
+print('masterbrain page built')
 print('simple game pages:', ', '.join(SIMPLE))
