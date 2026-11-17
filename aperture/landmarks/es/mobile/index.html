@@ -922,6 +922,12 @@ function newRound(){
   overlay.hidden=false;
   overlay.innerHTML=`<span class="label">Ronda ${G.round+1} de ${ROUNDS} · ${n} palabra${n>1?'s':''}${window.tmgSpot?tmgSpot.badge(G):''}</span><h3>¿Dónde está?</h3><button class="go" id="startBtn">Empezar</button>`;
   $('startBtn').onclick=startRound;
+  /* already played today: Admirar mi puntuación, not a new game (17 Nov, Jonathan) */
+  {let sv=null;try{if(G.round===0&&G.mode==='daily'&&localStorage.getItem('ap-vip')!=='1')sv=JSON.parse(localStorage.getItem((location.pathname.includes('/landmarks/')?'apL-day-':'ap2-day-')+G.key))}catch(e){}
+   if(sv){overlay.innerHTML=`<span class="label">${G.label}</span><h3>${sv.t}</h3><p>Ya has jugado la ronda de hoy. A medianoche habrá otra.</p><button class="go" id="admireBtn">Admirar mi puntuación</button>`;
+    $('admireBtn').onclick=()=>{overlay.innerHTML=sv.h;document.body.classList.add('done');document.body.classList.remove('waiting');hideQuote();
+      const cb=$('copyBtn');if(cb)cb.onclick=async()=>{if(navigator.share){try{await navigator.share({text:sv.c});cb.textContent='Enviado';return}catch(err){if(err&&err.name==='AbortError')return}}try{await navigator.clipboard.writeText(sv.c);cb.textContent='Copiado'}catch(err){}};
+      const el=$('nextIn');if(el){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`}}}}
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');
   updateHUD();
@@ -976,15 +982,17 @@ function finish(){
     ${BL?`<p class="bestln k${BL.kind}">${BL.text}</p>`:`<p>${isBest?(best?'Nuevo récord en este dispositivo.':''):`Tu mejor tiempo aquí: ${fmt(best)}.`}</p>`}
     <p class="next">Siguiente reto en <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Reta a alguien</button>
-    ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Reto de hoy</button>'}<button class="go ghost sub" id="randBtn">Jugar una ronda nueva<small>Puedes hacerlo mejor, lo sé</small></button><a class="go ghost sub" id="diffBtn" href="/">Jugar a otra cosa<small>Lo sé, soy demasiado bueno</small></a></div>
+    ${localStorage.getItem('ap-vip')==='1'?'<button class="go ghost sub" id="randBtn">Ronda de práctica<small>Solo el dueño</small></button>':''}</div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ ¿Te ha gustado? <u>Invítame a un café</u></a>`;
   $('copyBtn').onclick=async e=>{const b=e.currentTarget;
     if(navigator.share){try{await navigator.share({text:challenge});b.textContent='Enviado';return}catch(err){if(err&&err.name==='AbortError')return}}
     try{navigator.clipboard.writeText(challenge).then(()=>{b.textContent='Copiado'},()=>{b.textContent='No se pudo copiar';tick(result.replace(/\n/g,' · '))})}
     catch(err){b.textContent='No se pudo copiar';tick(result.replace(/\n/g,' · '))}};
-  $('randBtn').onclick=()=>startGame('random');
+  if($('randBtn'))$('randBtn').onclick=()=>startGame('random');  /* once a day (17 Nov): extra rounds only on the owner's devices */
   clearInterval(nextT);const tickNext=()=>{const el=$('nextIn');if(!el){clearInterval(nextT);return}const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`};tickNext();nextT=setInterval(tickNext,30000);
   if($('dailyBtn'))$('dailyBtn').onclick=()=>startGame('daily');
+  /* today's result, kept on this device so coming back shows it (Admirar mi puntuación) instead of a new game */
+  if(G.mode==='daily'){try{localStorage.setItem((location.pathname.includes('/landmarks/')?'apL-day-':'ap2-day-')+G.key,JSON.stringify({h:overlay.innerHTML,c:challenge,t:fmt(G.total)}))}catch(e){}}
   tick(`Tiempo final ${fmt(G.total)}, con ${fmtPen(G.totalPen)} s de penalización.`);
 }
 
@@ -1209,7 +1217,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 })();
 </script>
 <!-- /tmg-feedback -->
-<script src="/shared/adbox.js?v=4" defer></script>
+<script src="/shared/adbox.js?v=8" defer></script>
 <script src="/shared/fitquote.js" defer></script>
 <script src="/shared/lmlang.js?v=4" defer></script>
 <script src="/shared/reach.js?v=13" defer></script>
@@ -1239,5 +1247,6 @@ function check(){if(!document.body.classList.contains('done')||!document.querySe
 new MutationObserver(check).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
 })();
 </script>
+<script src="/shared/endmore.js?v=1" defer></script>
 </body>
 </html>

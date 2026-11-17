@@ -473,3 +473,6 @@ AP_OTD = {
  '1231': [1879, 'Thomas Edison elektrikli ampulünü halka ilk kez gösterir.'],
  '1125': [1952, 'Agatha Christie’nin Fare Kapanı oyunu Londra’da sahnelenmeye başlar ve dünyanın en uzun süre oynanan oyunu olur.'],
 }
+
+# once a day (17 Nov 2026)
+UI = UI + [('Admire my score', 'Puanıma bir bak'), ('You’ve played today’s set. A new one is ready at midnight.', 'Bugünün turunu oynadın. Gece yarısı yenisi hazır.'), ('Practice round', 'Alıştırma turu'), ('Owner only', 'Yalnızca sahibi')]

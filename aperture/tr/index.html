@@ -1033,6 +1033,12 @@ function newRound(){
   overlay.hidden=false;
   overlay.innerHTML=`<span class="label">Tur ${G.round+1} / ${ROUNDS} · ${n} kelime</span><h3>Ne görüyorsun?</h3><button class="go" id="startBtn">Başla</button>`;
   $('startBtn').onclick=startRound;
+  /* already played today: Puanıma bir bak, not a new game (17 Nov, Jonathan) */
+  {let sv=null;try{if(G.round===0&&G.mode==='daily'&&localStorage.getItem('ap-vip')!=='1')sv=JSON.parse(localStorage.getItem((location.pathname.includes('/landmarks/')?'apL-day-':'ap2-day-')+G.key))}catch(e){}
+   if(sv){overlay.innerHTML=`<span class="label">${G.label}</span><h3>${sv.t}</h3><p>Bugünün turunu oynadın. Gece yarısı yenisi hazır.</p><button class="go" id="admireBtn">Puanıma bir bak</button>`;
+    $('admireBtn').onclick=()=>{overlay.innerHTML=sv.h;document.body.classList.add('done');document.body.classList.remove('waiting');hideQuote();
+      const cb=$('copyBtn');if(cb)cb.onclick=async()=>{if(navigator.share){try{await navigator.share({text:sv.c});cb.textContent='Gönderildi';return}catch(err){if(err&&err.name==='AbortError')return}}try{await navigator.clipboard.writeText(sv.c);cb.textContent='Kopyalandı'}catch(err){}};
+      const el=$('nextIn');if(el){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`}}}}
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');
   updateHUD();
@@ -1083,14 +1089,16 @@ function finish(){
     ${BL?`<p class="bestln k${BL.kind}">${BL.text}</p>`:`<p>${isBest?(best?'Bu cihazda yeni rekor.':''):`Buradaki en iyi süren: ${fmt(best)}.`}</p>`}
     <p class="next">Sonraki test <b id="nextIn"></b></p>
     <div class="btns"><button class="go" id="copyBtn">Kopyala</button>
-    ${G.mode==='daily'?'':'<button class="go ghost" id="dailyBtn">Bugünün testi</button>'}<button class="go ghost sub" id="randBtn">Yeni bir tur oyna<small>Daha iyisini yapabilirsin, biliyorum</small></button><a class="go ghost sub" id="diffBtn" href="/">Başka bir şey oyna<small>Biliyorum, fazla iyiyim</small></a></div>
+    ${localStorage.getItem('ap-vip')==='1'?'<button class="go ghost sub" id="randBtn">Alıştırma turu<small>Yalnızca sahibi</small></button>':''}</div>
     <a class="kofi" href="https://ko-fi.com/twominutegames" target="_blank" rel="noopener">☕ Beğendin mi? <u>Bana bir kahve ısmarla</u></a>`;
   $('copyBtn').onclick=e=>{const b=e.currentTarget;
     try{navigator.clipboard.writeText(result).then(()=>{b.textContent='Kopyalandı'},()=>{b.textContent='Kopyalanamadı';tick(result.replace(/\n/g,' · '))})}
     catch(err){b.textContent='Kopyalanamadı';tick(result.replace(/\n/g,' · '))}};
-  $('randBtn').onclick=()=>startGame('random');
+  if($('randBtn'))$('randBtn').onclick=()=>startGame('random');  /* once a day (17 Nov): extra rounds only on the owner's devices */
   clearInterval(nextT);const tickNext=()=>{const el=$('nextIn');if(!el){clearInterval(nextT);return}const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`};tickNext();nextT=setInterval(tickNext,30000);
   if($('dailyBtn'))$('dailyBtn').onclick=()=>startGame('daily');
+  /* today's result, kept on this device so coming back shows it (Puanıma bir bak) instead of a new game */
+  if(G.mode==='daily'){try{localStorage.setItem((location.pathname.includes('/landmarks/')?'apL-day-':'ap2-day-')+G.key,JSON.stringify({h:overlay.innerHTML,c:challenge,t:fmt(G.total)}))}catch(e){}}
   tick(`Toplam süre ${fmt(G.total)}, bunun ${fmtPen(G.totalPen)} sn’si ceza.`);
 }
 
@@ -1340,5 +1348,6 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <script src="/shared/lmlang.js?v=4" defer></script>
 <script src="/shared/reach.js?v=13" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
+<script src="/shared/endmore.js?v=1" defer></script>
 </body>
 </html>

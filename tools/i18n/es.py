@@ -473,3 +473,6 @@ AP_OTD = {
  '1231': [1879, 'Thomas Edison muestra por primera vez al público su bombilla eléctrica.'],
  '1125': [1952, 'La ratonera, de Agatha Christie, se estrena en Londres. Se convertirá en la obra de teatro con más tiempo en cartel del mundo.'],
 }
+
+# once a day (17 Nov 2026)
+UI = UI + [('Admire my score', 'Admirar mi puntuación'), ('You’ve played today’s set. A new one is ready at midnight.', 'Ya has jugado la ronda de hoy. A medianoche habrá otra.'), ('Practice round', 'Ronda de práctica'), ('Owner only', 'Solo el dueño')]

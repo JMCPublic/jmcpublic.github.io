@@ -472,3 +472,6 @@ AP_OTD = {
  '1231': [1879, 'Thomas Edison mostra pela primeira vez ao público sua lâmpada elétrica.'],
  '1125': [1952, 'A Ratoeira, de Agatha Christie, estreia em Londres. Torna-se a peça em cena há mais tempo no mundo.'],
 }
+
+# once a day (17 Nov 2026)
+UI = UI + [('Admire my score', 'Admirar a minha pontuação'), ('You’ve played today’s set. A new one is ready at midnight.', 'Já jogaste a ronda de hoje. À meia-noite há outra.'), ('Practice round', 'Ronda de treino'), ('Owner only', 'Só o dono')]

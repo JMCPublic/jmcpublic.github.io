@@ -473,3 +473,6 @@ AP_OTD = {
  '1231': [1879, 'Thomas Edison montre pour la première fois au public son ampoule électrique.'],
  '1125': [1952, 'La Souricière d’Agatha Christie est créée à Londres. Elle deviendra la pièce jouée le plus longtemps au monde.'],
 }
+
+# once a day (17 Nov 2026)
+UI = UI + [('Admire my score', 'Admirer mon score'), ('You’ve played today’s set. A new one is ready at midnight.', 'Tu as joué la série du jour. Une nouvelle arrive à minuit.'), ('Practice round', 'Série d’entraînement'), ('Owner only', 'Propriétaire seulement')]

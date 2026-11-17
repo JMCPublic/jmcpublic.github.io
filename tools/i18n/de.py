@@ -668,3 +668,6 @@ UI += [('>💡 Clue<small class="cluesub">(Press for a clue)</small>', '>💡 Ti
 
 # Start button on each round (16 Nov, reported by Adam): was left in English
 UI += [('<button class="go" id="startBtn">Start</button>', '<button class="go" id="startBtn">Start</button>')]
+
+# once a day (17 Nov 2026)
+UI = UI + [('Admire my score', 'Mein Ergebnis bewundern'), ('You’ve played today’s set. A new one is ready at midnight.', 'Du hast die heutige Runde gespielt. Um Mitternacht gibt es eine neue.'), ('Practice round', 'Übungsrunde'), ('Owner only', 'Nur Inhaber')]
