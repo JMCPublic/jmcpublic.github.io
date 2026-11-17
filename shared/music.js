@@ -6,7 +6,7 @@
    Recordings: public domain / CC0 (Handel CC BY-SA), all credited on twominute.games/about#music. */
 (()=>{
 if(window.tmgMusic)return;
-const D=document,P=location.pathname,m=P.match(/natural-wonders-([a-z-]+)/);
+const D=document,P=location.pathname,m=P.match(/natural-wonders-([a-z-]+)/)||(window.TMG_GAME?[0,window.TMG_GAME]:null); /* simple games name themselves (17 Nov) */
 /* Aperture and Landmarks play their own music (in the page) under their own ♫ button; here they only get the Now playing line and card */
 const AP=/^\/aperture\//.test(P)&&!/\/stats\//.test(P);
 if(!m&&!AP)return;

@@ -106,15 +106,19 @@ TPL = '''<!doctype html>
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
-<link rel="stylesheet" href="/shadow/simple.css?v=3">
+<link rel="stylesheet" href="/shadow/simple.css?v=4">
 </head>
 <body>
 <div class="bar">🕶️ Shadow site · simple {name} · private test</div>
 <div class="wrap" id="app"></div>
-<script>const CFG={cfg};</script>
+<script>const CFG={cfg};window.TMG_SIMPLE=1;window.TMG_GAME=CFG.key;</script>
 <script src="data.js?v={ver}"></script>
 <script src="/shadow/i18n.js?v=1"></script>
-<script src="/shadow/simple.js?v=4"></script>
+<script src="/shadow/simple.js?v=5"></script>
+<script src="/shared/adbox.js?v=7" defer></script>
+<script src="/shared/reach.js?v=10" defer></script>
+<script src="/shared/feedback.js?v=1" defer></script>
+<script src="/shared/nwcount.js?v=1" defer></script>
 </body>
 </html>
 '''

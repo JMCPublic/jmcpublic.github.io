@@ -2,7 +2,7 @@
    Asked once per game per device per day, never during a round, never in the way of the buttons. */
 (()=>{
 const L=(document.documentElement.lang||'en').slice(0,2);
-const G=(location.pathname.match(/natural-wonders-([a-z-]+)/)||[])[1]||'';
+const G=(location.pathname.match(/natural-wonders-([a-z-]+)/)||[])[1]||window.TMG_GAME||'';
 const TP={en:{rivers:'rivers',lakes:'lakes',mountains:'mountains',deserts:'deserts',forests:'forests','bodies-of-water':'oceanography','river-cities':'river cities',masterbrain:'everything',_:'geography'},
  de:{rivers:'Flüssen',lakes:'Seen',mountains:'Bergen',deserts:'Wüsten',forests:'Wäldern','bodies-of-water':'Ozeanografie','river-cities':'Flussstädten',masterbrain:'allem',_:'Geografie'},
  tr:{rivers:'nehirler',lakes:'göller',mountains:'dağlar',deserts:'çöller',forests:'ormanlar','bodies-of-water':'oşinografi','river-cities':'nehir şehirleri',masterbrain:'her şey',_:'coğrafya'},

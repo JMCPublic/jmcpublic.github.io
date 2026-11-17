@@ -3,7 +3,7 @@
 (()=>{if(window.tmgAd||window.top!==window)return;
 const ADS={client:'ca-pub-9558088049243609',slotWide:'',slotPhone:''};   // slotWide: 728x90 unit, slotPhone: 320x100 unit
 const d=document,root=d.documentElement,path=location.pathname;
-const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path),isHome=path==='/'||/^\/wonders\/?$/.test(path);
+const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path)||!!window.TMG_GAME /* simple games (17 Nov) */,isHome=path==='/'||/^\/wonders\/?$/.test(path);
 const css=`
 #tmgAd{box-sizing:border-box;font-family:inherit;color:var(--ink,#16181d)}
 #tmgAd .tmgad-in{display:flex;align-items:center;justify-content:center;gap:12px;background:var(--sheet,var(--card,#fff));border:1.5px solid var(--frame,var(--line,#b9c0cb));border-radius:22px;padding:14px 16px;box-sizing:border-box}

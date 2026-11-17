@@ -47,15 +47,15 @@ function mapSVG(q){const v=SG.views[q.v],id='m'+Math.random().toString(36).slice
 
 /* ---------- the game ---------- */
 let S;
-const back=`<a class="back" href="/shadow/wonders/">${esc(U.back)}</a>`;
+const back=`<a class="back" href="${CFG.home||'/shadow/wonders/'}">${esc(U.back)}</a><span class="row"></span>`;
 const qtext=q=>{if(q.qq){const t=I.QQ(q.qq);if(t!==q.qq||L==='en')return t}return CFG.q};
 function start(seed,practice){S={seed,practice,qs:pick(seed),i:0,res:[],answered:false};playQ()}
 function prog(){return `<div class="prog">${S.qs.map((_,k)=>`<i class="${k<S.res.length?(S.res[k]?'ok':'no'):k===S.i?'now':''}"></i>`).join('')}</div>`}
 function playQ(){const q=S.qs[S.i],v=SG.views[q.v];S.answered=false;
-  app.innerHTML=`<div class="top">${back}<span class="tag">${esc(U.of(S.i+1,S.qs.length))}</span></div>
+  app.innerHTML=`<div class="play"><div class="top">${back}<span class="tag">${esc(U.of(S.i+1,S.qs.length))}</span></div>
   ${prog()}<div class="mapcard"><span class="cname">${esc(nm(v.n))}</span><span class="lvl">${LV[q.t]}</span>${mapSVG(q)}</div>
   <div class="q">${esc(qtext(q))}</div><p class="clue">${esc(q.c)}</p>
-  <div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${'ABC'[k]}</span>${esc(nm(o))}</button>`).join('')}</div><div id="after"></div>`;
+  <div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-o="${esc(o)}"><span class="k">${'ABC'[k]}</span>${esc(nm(o))}</button>`).join('')}</div><div id="after"></div></div>`;
   app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o));scrollTo(0,0)}
 function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o===q.a;S.res.push(ok);
   app.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const x=b.dataset.o;b.classList.add(x===q.a?'ok':x===o?'no':'dim')});
@@ -73,9 +73,9 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,a:S.qs.map(q=>q.a),v:S.qs.map(q=>q.v)}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(rev?U.played:S.practice?U.practice:U.today)}</span></div>
-  <div class="panel"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
+  <div class="panel"><div class="score"><div class="tag">${esc(U.your)}</div><div class="big">${n}<small> / 10</small></div><p class="verdict">${verdict(n)}</p>
   <div class="dots">${S.res.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div>
-  <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p>
+  <p class="best">${esc(rev?U.playedmsg:newBest?U.newbest:best?U.best(best):'')}</p></div>
   <div class="list">${S.qs.map((q,k)=>`<div class="li"><i>${S.res[k]?'✅':'❌'}</i><div><b>${esc(nm(q.a))}</b> <span>· ${esc(nm(SG.views[q.v].n))}</span></div></div>`).join('')}</div>
   <div class="btns"><button class="btn" id="share">${esc(U.share)}</button></div>
   <p class="small">${esc(U.tomorrow(CFG.noun))}</p></div>${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">'+esc(U.owner)+'</button></div>':''}`;
@@ -84,7 +84,7 @@ function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||
 function review(r){S={seed:r.d,practice:true,qs:r.a.map((a,i)=>({a,v:r.v[i]})),res:r.res};end(true)}
 function intro(){const r=playedToday(CFG.key);if(r&&r.res&&!VIP){review(r);return}const done=r?[r.d,r.n]:[];const played=!!r;
   app.innerHTML=`<div class="top">${back}</div>
-  <div class="panel intro"><div class="ttl"><span class="tag">${esc(U.kicker)}</span></div><h2>${esc(CFG.name)}</h2>
+  <div class="panel intro menu"><div class="ttl"><span class="tag">${esc(U.kicker)}</span></div><h2>${esc(CFG.name)}</h2>
   <p>${esc(CFG.intro)}</p>
   <ul><li>${esc(U.b1(CFG.noun))}</li><li>${esc(U.b2)}</li><li>${esc(U.b3)}</li></ul>
   <div class="btns"><button class="btn" id="go">${esc(played?U.again:U.start)}</button>${played?`<p class="best" style="text-align:center">${esc(U.scored(done[1]))}</p>`:''}</div></div>`;

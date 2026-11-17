@@ -5,7 +5,7 @@
 (()=>{
 if(window.tmgWalk)return; /* loaded twice (page tag and reach.js) */
 const D=document,H=D.documentElement,P=location.pathname;
-if(/\/(duggen|aperture\/stats|where|about)(\/|$)/.test(P))return;
+if(/\/(duggen|aperture\/stats|where|about)(\/|$)/.test(P)||window.TMG_SIMPLE)return; /* the simple games explain themselves (17 Nov) */
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const force=/[?&]walk=1/.test(location.search);
 const coarse=matchMedia('(pointer:coarse)').matches;
