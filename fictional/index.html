@@ -2,14 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fictional a→z · Two Minute Games</title>
 <meta name="description" content="A daily literary letter hunt. Answer the clues, collect the letters, find the hidden word.">
 <meta name="theme-color" content="#212121">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
-<link rel="apple-touch-icon" href="/icons/tmg-180.png">
+<link rel="apple-touch-icon" href="/icons/fictional-180.png">
+<meta name="apple-mobile-web-app-title" content="Fictional">
+<meta property="og:title" content="Fictional a→z · Two Minute Games">
+<meta property="og:description" content="A daily literary letter hunt. Answer the clues, collect the letters, find the hidden word.">
+<meta property="og:url" content="https://twominute.games/fictional/">
+<meta property="og:image" content="https://twominute.games/og-v2.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
@@ -132,9 +136,11 @@ a{color:inherit}
 .audio h3{margin:0;font:700 18px Fraunces,Georgia,serif}
 .books{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .book{display:flex;flex-direction:column;gap:5px;text-decoration:none}
-.cover{aspect-ratio:2/3;border-radius:4px;border:2px solid #fff;padding:8px 6px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 16px rgba(0,0,0,.45);overflow:hidden}
-.cover b{font:700 11.5px/1.15 Fraunces,Georgia,serif;color:#fff;overflow-wrap:anywhere}
-.cover small{font-size:9.5px;color:rgba(255,255,255,.8);line-height:1.2}
+.cover{position:relative;aspect-ratio:2/3;border-radius:4px;border:2px solid #fff;padding:7px 6px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 16px rgba(0,0,0,.45);overflow:hidden}
+.cover svg{position:absolute;inset:0;width:100%;height:100%}
+.cover b,.cover small{position:relative;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.cover b{font:700 11px/1.15 Fraunces,Georgia,serif;color:#fff;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.cover small{font-size:9px;color:rgba(255,255,255,.88);line-height:1.2}
 .book .t{font-size:12px;font-weight:600;line-height:1.25}.book .a{font-size:11px;color:var(--soft)}.book .l{font-size:12px;font-weight:700;color:var(--hot)}
 .audio .opill{height:44px;font-size:14px;border-color:var(--hot);color:var(--hot)}
 .disc{font-size:11px;color:var(--soft)}
@@ -281,7 +287,7 @@ html.fx-nofb .tmgfb-pill{display:none!important}
 <div class="toast" id="toast" hidden></div>
 
 <script>window.TMG_GAME='fictional';</script>
-<script src="quizzes.js?v=1"></script>
+<script src="quizzes.js?v=2"></script>
 <script>
 (()=>{
 const Q=window.FICTIONAL_QUIZZES, $=id=>document.getElementById(id), D=document, H=D.documentElement;
@@ -463,9 +469,34 @@ function finish(){
   /* keep the record small: forget days older than three weeks */
   const cut=new Date(Y,M,Dd-21).toISOString().slice(0,10);for(const k in S.played)if(k.slice(0,10)<cut)delete S.played[k];
   save();
+  /* for the twominute.games home page card: done today, and the streak */
+  ls('fictional-best-'+TODAY,'1');ls('fictional-streak',JSON.stringify({n:S.streak.n,last:S.streak.last}));
 }
 $('scoreBtn').onclick=()=>showEnd(G.T.id,S.played[TODAY+'|'+G.T.id],false);
-const SPINES=['#5a3b2a','#2f4a3a','#4a2a33','#2a3a55','#55452a','#3e2f55'];
+/* original cover art, drawn here (no copyrighted images): a motif chosen from the book's title, colours from the title */
+const MOTIFS=[
+ ['water',/sea|nile|river|island|ocean|water|lake|treasure|moby|tempest|beach|tide|rain|waves|odyssey|ship/i],
+ ['night',/night|death|murder|dark|blood|dracula|silen|shining|exorcist|vampire|moon|ghost|misery|^it$|woods|hound|knots|crosses|stranger|plague|darkness/i],
+ ['key',/code|key|secret|club|myster|patient|crime|punish|detective|sherlock|stone|list|orient|express|thief|trial|castle|falcon|sleep|identity|housemaid|floor|ripley|spy/i],
+ ['love',/love|heart|romance|pride|persuasion|emma|jane|anna|rebecca|wuthering|notebook|girl|women|bride|song|read|you|earring|sensibility|romeo|juliet|margarita|lolita|bovary/i],
+ ['peak',/mountain|heights|north|snow|country|dune|arrakis|wild|lighthouse|road|magic|martian|hail|world|galaxy|time machine/i],
+ ['sun',/sun|desert|cairo|india|gold|yellow|alchemist|prophet|kite|geisha|china|kingdom|thrones|war|peace|empire|prince|king|lear|republic|gita|ramayana|mahabharata|genji|gitanjali|shahnameh|rubaiyat/i],
+ ['tree',/tree|garden|orchard|forest|grass|leaves|walden|farm|wheat|flies|cherry|bird|mockingbird|nightingale|wood|elephants|pi$|jungle|hobbit|rings|lion/i]];
+const PAL=[['#3b1f4a','#8a3b6b','#ffb38a'],['#12304a','#1f6b8a','#ffd27a'],['#3a2414','#8a4b1f','#ffe0a3'],['#1d3b2a','#3f7a4f','#f4e2a1'],['#401818','#9a2f2f','#ffc89a'],['#202a44','#4a5b9a','#ffcf9a'],['#2e2e2e','#6a5a4a','#ff9e5e']];
+function coverArt(title){
+  const h=hash(title)>>>0,[c1,c2,ac]=PAL[h%PAL.length],m=(MOTIFS.find(x=>x[1].test(title))||[(['rings','quill'])[h%2]])[0];
+  const id='g'+(h%1e6);let art='';
+  if(m==='water')art=`<circle cx="70" cy="62" r="13" fill="${ac}" opacity=".9"/>`+[88,100,112,124].map((y,i)=>`<path d="M-5 ${y} q 12.5 -9 25 0 t 25 0 t 25 0 t 25 0 t 25 0" fill="none" stroke="${ac}" stroke-width="${3.4-i*.5}" opacity="${.95-i*.18}"/>`).join('');
+  else if(m==='night')art=`<circle cx="52" cy="80" r="22" fill="${ac}"/><circle cx="62" cy="73" r="20" fill="${c2}"/>`+[[20,52],[78,40],[30,106],[84,108],[64,30]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${1.2+i%2}" fill="#fff" opacity=".85"/>`).join('');
+  else if(m==='key')art=`<circle cx="50" cy="82" r="26" fill="none" stroke="${ac}" stroke-width="2.5"/><circle cx="50" cy="76" r="8" fill="${ac}"/><path d="M45 80 L42 98 L58 98 L55 80 Z" fill="${ac}"/>`;
+  else if(m==='love')art=[0,60,120,180,240,300].map(a=>`<ellipse cx="50" cy="66" rx="9" ry="18" fill="${ac}" opacity=".55" transform="rotate(${a} 50 82)"/>`).join('')+`<circle cx="50" cy="82" r="7" fill="${ac}"/><path d="M50 98 C 48 110 46 118 44 132" stroke="${ac}" stroke-width="2" fill="none"/>`;
+  else if(m==='peak')art=`<circle cx="68" cy="56" r="9" fill="${ac}" opacity=".85"/><path d="M-2 130 L34 66 L52 96 L66 76 L104 130 Z" fill="${ac}" opacity=".85"/><path d="M34 66 L27 79 L34 76 L40 80 Z" fill="#fff" opacity=".9"/>`;
+  else if(m==='sun')art=`<circle cx="50" cy="84" r="16" fill="${ac}"/>`+[...Array(12)].map((_,i)=>`<line x1="50" y1="${84-22}" x2="50" y2="${84-32}" stroke="${ac}" stroke-width="2.4" stroke-linecap="round" transform="rotate(${i*30} 50 84)"/>`).join('');
+  else if(m==='tree')art=`<rect x="47" y="92" width="6" height="34" fill="${ac}"/><circle cx="50" cy="76" r="22" fill="${ac}" opacity=".9"/><circle cx="36" cy="86" r="12" fill="${ac}" opacity=".75"/><circle cx="64" cy="86" r="12" fill="${ac}" opacity=".75"/>`;
+  else if(m==='quill')art=`<path d="M70 44 C 40 60 32 92 34 124 L38 124 C 44 96 56 70 70 44 Z" fill="${ac}"/><path d="M34 124 L30 136" stroke="${ac}" stroke-width="2"/>`;
+  else art=[30,22,14,6].map((r,i)=>`<circle cx="50" cy="84" r="${r}" fill="none" stroke="${ac}" stroke-width="2.2" opacity="${.4+i*.18}"/>`).join('');
+  return `<svg viewBox="0 0 100 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c2}"/><stop offset="1" stop-color="${c1}"/></linearGradient></defs><rect width="100" height="150" fill="url(#${id})"/><rect x="0" y="0" width="100" height="40" fill="#000" opacity=".28"/>${art}<rect x="6" y="140" width="88" height="1.2" fill="#fff" opacity=".5"/></svg>`;
+}
 function showEnd(tid,r,again){
   const T=TYPES.find(t=>t.id===tid),quiz=pick(T.list);
   $('eWhen').textContent=T.label.toUpperCase()+' · '+now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
@@ -480,7 +511,7 @@ function showEnd(tid,r,again){
   const uk=(()=>{try{return/^Europe\/(London|Dublin)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)}catch(e){return true}})();
   const base=uk?'https://www.audible.co.uk':'https://www.audible.com';
   $('eBooks').innerHTML=books.map((b,i)=>`<a class="book" href="${base}/search?keywords=${encodeURIComponent(b[0]+' '+b[1])}" target="_blank" rel="noopener sponsored">
-    <div class="cover" style="background:linear-gradient(160deg,${SPINES[(hash(b[0])>>>0)%SPINES.length]},#151515)"><b>${esc(b[0])}</b><small>${esc(b[1])}</small></div>
+    <div class="cover">${coverArt(b[0])}<b>${esc(b[0])}</b><small>${esc(b[1])}</small></div>
     <span class="t">${esc(b[0])}</span><span class="a">${esc(b[1])}</span><span class="l">Listen</span></a>`).join('');
   $('audibleBtn').href=base+'/';
   $('eNext').textContent='Next quiz in '+untilMidnight();
@@ -493,7 +524,7 @@ function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout
 function share(T,r){
   const sq=r.marks.map(m=>m?'🟧':'🟫').join('');
   const txt=`Fictional a→z · ${T.label} · ${now.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}\n${sq}\n${fmt(r.t)}${r.p?' ('+r.p+')':''}\nCan you beat me?`;
-  const url='https://twominute.games/shadow/fictional/';
+  const url='https://twominute.games/fictional/';
   if(navigator.share){navigator.share({text:txt,url}).catch(()=>{});return}
   const all=txt+'\n'+url;
   (navigator.clipboard?navigator.clipboard.writeText(all):Promise.reject()).then(()=>toast('Copied: paste it to a friend'),()=>{prompt('Copy this to a friend:',all)});
