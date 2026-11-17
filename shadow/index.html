@@ -42,9 +42,13 @@ h1 .br{display:block}
 .sub{color:#e7e2dd;font-size:15px;margin:0}
 /* greeting pill + language chooser */
 .pillw{position:relative;margin:22px 0 18px}
-.pill{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#e8eaed;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 4px 4px 12px;background:rgba(0,0,0,.3);max-width:100%}
-.pill .hi{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.lg{flex:none;display:inline-flex;align-items:center;gap:4px;background:#fff;color:#212121;border:0;border-radius:999px;padding:6px 11px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer}
+/* 17 Nov (Jonathan): time · date · language button, read left to right; no flag, no greeting. Long date where it fits, else 23:21 · 17/11/26 */
+.pill{display:inline-flex;align-items:center;gap:9px;font-size:14px;color:#e8eaed;max-width:100%}
+.pill .hi{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;min-width:0}
+.pill .sep{color:rgba(255,255,255,.45)}
+#hiTime{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";letter-spacing:.02em;font-weight:600;color:#fff}
+.lg{flex:none;display:inline-flex;align-items:center;gap:4px;background:#000;color:#fff;border:1.5px solid #FF9100;border-radius:999px;padding:5px 11px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer}
+.lg:hover{background:#1a1a1a}
 .lg::after{content:"";border:4px solid transparent;border-top:5px solid currentColor;border-bottom:0;margin-top:2px}
 .menu{position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:250px;background:#fff;color:#16130f;border-radius:16px;box-shadow:0 18px 40px -10px rgba(0,0,0,.6);padding:6px;margin:0;list-style:none}
 .menu[hidden]{display:none}
@@ -100,7 +104,7 @@ html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
   <h1 id="hHead"><span class="br">Two minutes.</span> <span class="br">Every day.</span></h1>
   <p class="sub" id="hSub">Quick daily puzzles, the same for everyone.</p>
   <div class="pillw" id="hiPill">
-    <div class="pill"><span class="hi" id="hiText"><span id="hiFlag"></span><span id="hiWord">Hello</span><span id="hiDate"></span></span>
+    <div class="pill"><span class="hi" id="hiText"><time id="hiTime"></time><span class="sep">·</span><time id="hiDate"></time></span><span class="sep">·</span>
       <button class="lg" id="lgBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language">EN</button></div>
     <ul class="menu" id="lgMenu" hidden></ul>
   </div>
@@ -148,8 +152,16 @@ let L=ls('tmg-lang');if(!T[L])L='en';
 let CC='';
 const flag=c=>c&&/^[A-Z]{2}$/.test(c)?String.fromCodePoint(...[...c].map(ch=>127397+ch.charCodeAt(0))):'';
 function cname(c){if(L==='en'){if(c==='GB')return 'UK';if(c==='US')return 'USA'}try{return new Intl.DisplayNames([T[L].loc],{type:'region'}).of(c)}catch(e){return c}}
-function greet(){const t=T[L];const w=CC?((L==='en'&&window.tmgHI&&tmgHI[CC])||t.hello)+' '+cname(CC):t.hello;
-  $('hiFlag').textContent=CC?flag(CC)+' ':'';$('hiWord').textContent=w;$('hiDate').textContent=' · '+d.toLocaleDateString(t.loc,{weekday:'short',day:'numeric',month:'short'})}
+/* the time and date beside the language button (17 Nov): "23:19 · Tuesday 17th of November · EN" in the page's language,
+   "23:21 · 17/11/26 · EN" when the long date won't fit on the phone */
+const ord=n=>n+(n%100>10&&n%100<14?'th':({1:'st',2:'nd',3:'rd'})[n%10]||'th');
+function longDate(n){const t=T[L];if(L==='en')return n.toLocaleDateString('en-GB',{weekday:'long'})+' '+ord(n.getDate())+' of '+n.toLocaleDateString('en-GB',{month:'long'});
+  return n.toLocaleDateString(t.loc,{weekday:'long',day:'numeric',month:'long'})}
+function shortDate(n){return n.toLocaleDateString(L==='en'?'en-GB':T[L].loc,{day:'2-digit',month:'2-digit',year:'2-digit'})}
+function greet(){const n=new Date(),tm=$('hiTime'),dt=$('hiDate'),pw=$('hiPill');
+  tm.textContent=n.toLocaleTimeString(L==='en'?'en-GB':T[L].loc,{hour:'2-digit',minute:'2-digit',hour12:false});tm.dateTime=n.toISOString();
+  dt.textContent=longDate(n);const p=dt.closest('.pill');if(pw&&p){p.style.maxWidth='none';const w=p.getBoundingClientRect().width;p.style.maxWidth='';if(getComputedStyle(pw).position!=='absolute'&&w>pw.clientWidth+1)dt.textContent=shortDate(n)}}
+setInterval(greet,15000);addEventListener('resize',()=>greet());
 function cards(){const t=T[L];
   document.querySelectorAll('.game').forEach(a=>{const st=a.querySelector('.status'),pl=a.querySelector('.play');st.textContent='';pl.textContent=t.play;if(!a.dataset.best)return;let done=false,streak=0;
     try{done=!!localStorage.getItem(a.dataset.best+key);const s=JSON.parse(localStorage.getItem(a.dataset.streak)||'null');if(s)streak=s.n||0;
