@@ -90,3 +90,8 @@ a{color:inherit}
 .back{white-space:nowrap}
 .top .tag{white-space:nowrap}
 @media (max-width:380px){.top .tag{display:none}.top .row{margin-right:0;gap:5px}.top{gap:8px}.back{font-size:13.5px}}
+
+/* photo on the answer card (18 Nov) */
+.fact .ph{margin:-12px -14px 10px;border-radius:16px 16px 0 0;overflow:hidden;background:#e9e4da}
+.fact .ph img{display:block;width:100%;height:clamp(120px,32vw,190px);object-fit:cover}
+.fact .ph figcaption{font-size:11px;color:var(--muted);padding:5px 10px 0;line-height:1.3}.fact .ph figcaption a{color:inherit}

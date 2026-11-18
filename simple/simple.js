@@ -80,6 +80,9 @@ function cardHTML(q){
 function qLine(q){return q.k==='borders'?XS.bq(cname(q.c)):q.k==='target'?XS.tq(cname(q.tg)):q.k==='shapes'?CFG.q:qtext(q)}
 const CT=(q,i)=>(L!=='en'&&q.ct&&q.ct[L]&&q.ct[L][i])||(i?q.f:q.c);  /* translated clue (0) and fact (1), 17 Nov */
 function clue(q){return q.k==='borders'?XS.bc:q.k==='target'?XS.tc:q.k==='shapes'?XS.sc:CT(q,0)}
+/* a photo of the real place on the answer card (18 Nov; Lakes first, the photos the classic Lakes had): q.ph = [image path, author, licence, source page] */
+const PHT={en:'Photo',de:'Foto',tr:'Fotoğraf',fr:'Photo',es:'Foto',pt:'Foto'}[L]||'Photo';
+function phHTML(q){const p=q.ph;if(!p)return'';return `<figure class="ph"><img src="${esc(p[0])}" alt="${esc(nm(q.a))}" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${PHT}: <a href="${esc(p[3])}" target="_blank" rel="noopener">${esc(p[1])}</a> · ${esc(p[2])}</figcaption></figure>`}
 function factHTML(q){
   if(q.k==='borders'){const l=listJoin(q.nbs.map(cname)),n=q.nbs.length;return esc(n===1?XS.one(l):XS.many(n,l))}
   if(q.k==='shapes'){const f=q.f;return esc(cmp(f.big,f.nx))+toScale([f.big,f.nx,f.sm])}
@@ -121,7 +124,7 @@ function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o==
   app.querySelector('.prog').outerHTML=prog();
   if(q.k==='borders'){const mc=app.querySelector('.mapcard svg');if(mc)mc.outerHTML=bordersSVG(q,true)}  /* the neighbours light up */
   const last=S.i===S.qs.length-1;
-  $('#after').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${factHTML(q)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
+  $('#after').innerHTML=`<div class="fact">${phHTML(q)}<b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${factHTML(q)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
   $('#after .next').onclick=()=>{if(last)end();else{S.i++;playQ()}};
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
 const apDone=k=>{try{return JSON.parse(ls(APK[k]+today())||'null')}catch(e){return null}};
