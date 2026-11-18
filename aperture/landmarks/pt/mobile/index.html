@@ -684,6 +684,7 @@ function shapePath(t){
 }
 function firstShapes(){const fl=R()<.5,sp=[[rnd(170,240),rnd(170,230),rnd(-10,10)],[rnd(380,440),rnd(220,300),rnd(-10,10)],[rnd(250,350),rnd(420,460),90+rnd(-8,8)]];return sp.map(([x,y,rot])=>({type:"line",x:fl?600-x:x,y,w:20,h:rnd(140,160),rot}))}
 const BSTEP=[5,4,4,3,3];
+window.tmgMidGame=()=>{try{return !!((S&&S.running&&!S.ended)||(G&&G.results&&G.results.length>0&&G.results.length<G.order.length))}catch(e){return false}};
 function newShape(first){
   if(first)return{type:'line',x:rnd(230,370),y:300,w:20,h:rnd(360,440),rot:rnd(-8,8)};
   const types=['line','line','line','circle','keyhole','star','triangle','cross'];
@@ -1238,6 +1239,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <script src="/shared/adbox.js?v=9" defer></script>
 <script src="/shared/fitquote.js" defer></script>
 <script src="/shared/lmlang.js?v=4" defer></script>
+<script src="/shared/homebtn.js?v=1" defer></script>
 <script src="/shared/reach.js?v=13" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 <!-- end pointer (15 Nov): after the last round the score card is above the word grid; a dark pointer says so (tap to jump up), and the ad box moves up under the score card so it is in view at the end of the game -->

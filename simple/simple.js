@@ -81,6 +81,9 @@ function qLine(q){return q.k==='borders'?XS.bq(cname(q.c)):q.k==='target'?XS.tq(
 const CT=(q,i)=>(L!=='en'&&q.ct&&q.ct[L]&&q.ct[L][i])||(i?q.f:q.c);  /* translated clue (0) and fact (1), 17 Nov */
 function clue(q){return q.k==='borders'?XS.bc:q.k==='target'?XS.tc:q.k==='shapes'?XS.sc:CT(q,0)}
 /* a photo of the real place on the answer card (18 Nov; Lakes first, the photos the classic Lakes had): q.ph = [image path, author, licence, source page] */
+const HML={en:"All games",de:"Alle Spiele",tr:"Tüm oyunlar",fr:"Tous les jeux",es:"Todos los juegos",pt:"Todos os jogos"}[L]||"All games";
+const HSVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>';
+window.tmgMidGame=()=>!!(S&&!S.over&&S.res&&S.res.length>0&&S.res.length<S.qs.length);
 const PHT={en:'Photo',de:'Foto',tr:'Fotoğraf',fr:'Photo',es:'Foto',pt:'Foto'}[L]||'Photo';
 function phHTML(q){const p=q.ph;if(!p)return'';return `<figure class="ph"><img src="${esc(p[0])}" alt="${esc(nm(q.a))}" loading="lazy" onerror="this.parentNode.remove()"><figcaption>${PHT}: <a href="${esc(p[3])}" target="_blank" rel="noopener">${esc(p[1])}</a> · ${esc(p[2])}</figcaption></figure>`}
 function factHTML(q){
@@ -97,7 +100,7 @@ let S;
 (()=>{try{const lg=L;if(!lg||lg==='en')return;const ml=document.querySelector('link[rel="manifest"]');if(!ml||!/-en\.webmanifest/.test(ml.getAttribute('href')))return;
   ml.setAttribute('href',ml.getAttribute('href').replace('-en.webmanifest','-'+lg+'.webmanifest'));
   fetch(ml.href).then(r=>r.json()).then(j=>{let m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(!m){m=document.createElement('meta');m.name='apple-mobile-web-app-title';document.head.appendChild(m)}m.content=j.short_name||j.name}).catch(()=>{})}catch(e){}})();
-const back=`<a class="back" href="${CFG.home||'/wonders/'}">${esc(U.back)}</a><span class="row"><button type="button" class="lgb" aria-haspopup="true" aria-label="Language">${L.toUpperCase()} ▾</button></span>`;
+const back=`<a class="tmghome hmb" href="/" aria-label="${HML}" title="${HML}">${HSVG}</a><a class="back" href="${CFG.home||'/wonders/'}">${esc(U.back)}</a><span class="row"><button type="button" class="lgb" aria-haspopup="true" aria-label="Language">${L.toUpperCase()} ▾</button></span>`;
 /* 17 Nov (mock-up approved): the language button beside ♫ and ⓘ. Picks one of six, saves it as tmg-lang (like the home page menu) and reloads */
 const LANGS=[['en','English'],['de','Deutsch'],['tr','Türkçe'],['fr','Français'],['es','Español'],['pt','Português']];
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.lgb'),m=document.querySelector('.lgm');
@@ -136,7 +139,7 @@ function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
 function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),no=g.filter((_,k)=>!S.res[k]);return U.mbs(listJoin(ok.slice(0,3)),listJoin(no.slice(0,2)))}
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}
-function end(rev){const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
+function end(rev){S.over=1;const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
   if(!S.practice&&!rev){try{const R=JSON.parse(ls('nw_record')||'null')||{games:{},right:0,total:0},g=R.games[CFG.key]||{played:0,best:0};g.played++;const pc=n*10;if(pc>=(g.best||0)){g.best=pc;g.bestTxt=n+'/10'}R.games[CFG.key]=g;R.right=(R.right||0)+n;R.total=(R.total||0)+10;ls('nw_record',JSON.stringify(R))}catch(e){}}
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
