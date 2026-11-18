@@ -86,3 +86,7 @@ a{color:inherit}
 .srcbox .btn{width:100%;margin-top:8px}
 .srcbox input{width:100%;box-sizing:border-box;border:1.5px solid var(--line,#ddd);border-radius:14px;padding:13px 14px;font:inherit;font-size:16px;margin-top:4px}
 .srcbox input:focus{outline:2px solid var(--cu,#d4592b);border-color:transparent}
+/* very narrow phones (iPhone SE and smaller), 18 Nov: keep the top row on one line; the progress bar below already shows "1 of 10" */
+.back{white-space:nowrap}
+.top .tag{white-space:nowrap}
+@media (max-width:380px){.top .tag{display:none}.top .row{margin-right:0;gap:5px}.top{gap:8px}.back{font-size:13.5px}}
