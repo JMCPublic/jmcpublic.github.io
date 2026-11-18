@@ -23,6 +23,8 @@
 <link rel="stylesheet" href="/simple/simple.css?v=11182137">
 <style>/* TEST 18 Nov: page is 2px taller than the screen with Safari's toolbar hidden, so one swipe up shrinks the toolbar and it stays small */
 html{min-height:calc(100lvh + 2px)}</style>
+<script>/* TEST: when the game jumps to the top for a new question, stop 1px short if the player has already swiped, so Safari keeps its toolbar small */
+(()=>{const st=window.scrollTo.bind(window);window.scrollTo=function(x,y){if(arguments.length===2&&x===0&&y===0&&window.scrollY>0)return st(0,1);return st.apply(window,arguments)}})();</script>
 </head>
 <body>
 <!-- Natural Wonders, simple version (live 17 Nov 2026). The page is built by tools/build_simple_pages.py in jmcpublic.github.io; the classic version is at /shadow/classic/rivers/ -->
