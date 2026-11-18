@@ -113,7 +113,7 @@ html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
 <div class="toprow"><div><a class="brand" href="/shadow/"><span class="o" aria-hidden="true"></span>twominute<span>.games</span></a><a class="allg" href="/" id="allg">← all games</a></div><button class="lgx" id="lgx" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Language"></button></div>
 <header>
  <div><p class="kick">A series of ten geography games</p><h1>Natural Wonders</h1><p class="lead">Rivers, lakes, seas, peaks, deserts, borders and the true size of countries. A few minutes each, free, no sign-up.</p></div>
- <div class="hr"><a class="mbb" href="/shadow/classic/masterbrain/"><img src="/icons/masterbrain-180.png" alt="" width="58" height="58"><span class="mt"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">One question from every game, getting harder</span></span><span class="mba">Play →</span></a></div>
+ <div class="hr"><a class="mbb" href="/shadow/classic/masterbrain/"><img src="/icons/masterbrain-180.png?v=4" alt="" width="58" height="58"><span class="mt"><span class="mbk">The finale</span><b>Masterbrain</b><span class="mbs">One question from every game, getting harder</span></span><span class="mba">Play →</span></a></div>
 </header>
 <section id="record"></section>
 <main class="grid" id="grid"></main>
@@ -184,7 +184,7 @@ if(PW){const $=s=>document.querySelector(s),set=(s,t)=>{const e=$(s);if(e)e.text
   const fa=[...document.querySelectorAll('footer a')].find(a=>a.getAttribute('href')==='/');if(fa)fa.textContent=PW[6];
   GAMES.forEach(g=>{const t=TMGI.G(g.slug);if(t){g.n=t[0];g.t=t[4]}});}
 document.getElementById('grid').innerHTML=GAMES.map((g,i)=>{
- const inner=`<div class="top"><img class="ic" src="/icons/${g.slug}-180.png" alt="" width="58" height="58"><span class="plate">${i+1}</span></div><div class="tx"><h2>${g.n}</h2><p>${g.t}</p></div><span class="play">${g.soon?'Coming soon':((typeof PW!=='undefined'&&PW)?PW[5]:'Play')}</span>`;
+ const inner=`<div class="top"><img class="ic" src="/icons/${g.slug}-180.png?v=4" alt="" width="58" height="58"><span class="plate">${i+1}</span></div><div class="tx"><h2>${g.n}</h2><p>${g.t}</p></div><span class="play">${g.soon?'Coming soon':((typeof PW!=='undefined'&&PW)?PW[5]:'Play')}</span>`;
  return g.soon?`<div class="g soon">${inner}</div>`:`<a class="g" href="${B+g.slug}/">${inner}</a>`}).join('');
 
 // ---------- Your Natural Wonders: built from what this device has played ----------
