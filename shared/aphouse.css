@@ -30,7 +30,7 @@ header h1,header h1 a{color:#fff!important}header .o{border-color:#fff!important
 .mpromo::before{content:'';position:absolute;left:12%;right:12%;top:-10px;height:1.5px;border-radius:2px;background:rgba(255,255,255,.75)}
 .mpromo .ptag{color:#FF9100!important}.mpromo small,.mpromo span{color:#c9c1b8}
 .statstrip{background:#2b2b2b!important;border-color:#3a3a3a!important;color:#c9c1b8!important}
-.qwrap .quote{background:#2b2b2b!important;color:#fff!important;border-color:#3a3a3a!important}
+/* (18 Nov) the quote and On this day cards keep their own light look, like the picture they sit on */
 /* the panel under the score (endmore.js) on the dark background */
 .tmgem{color:#fff}.tmgem .gl,.tmgem .more,.tmgem .mg,.tmgem .gb button{background:#2b2b2b!important;border-color:#3a3a3a!important;color:#fff!important}
 .tmgem .mg.done{background:#1c1c1c!important}.tmgem .mg.done span{color:#6fd39a!important}.tmgem .mg span,.tmgem .tg{color:#FF9100!important}
@@ -50,3 +50,6 @@ header h1,header h1 a{color:#fff!important}header .o{border-color:#fff!important
 #tmgAd.fixed,#tmgAd.flow{background:#212121!important;border-top:0!important}
 #tmgAd.fixed::before,#tmgAd.flow::before{content:'';position:absolute;left:12%;right:12%;top:0;height:1.5px;border-radius:2px;background:rgba(255,255,255,.8)}
 html.tmg-iosbar #tmgAd.fixed{border-bottom-color:#3a3a3a!important}
+/* "Have you tried" side cards: the game's icon on the glow (18 Nov) */
+.promo .art.ico{display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(255,145,0,.35),transparent 60%),#1c1c1c!important}
+.promo .art.ico img{width:min(62%,120px);height:auto;aspect-ratio:1;border-radius:22%;box-shadow:0 10px 22px -10px rgba(0,0,0,.8)}

@@ -389,7 +389,7 @@ body:not(.waiting) .quizhead{display:none}
 .gapc button[aria-pressed="true"]{border-color:var(--blue,#2b50e0);background:var(--blue-wash,#e6edff);color:var(--blue,#2b50e0)}
 .gapc button[aria-pressed="true"] small{color:var(--blue,#2b50e0)}
 </style>
-<link rel="stylesheet" href="/shared/aphouse.css?v=2">
+<link rel="stylesheet" href="/shared/aphouse.css?v=3">
 <script src="/shared/bestline.js?v=1"></script>
 </head>
 <body>
@@ -1253,7 +1253,9 @@ function pgo(p,e){e.preventDefault();const t=setTimeout(()=>location.href=p.href
 (()=>{
 const card=document.getElementById('promo'),body=document.getElementById('pbody');if(!card)return;
 let big=null,veil=null;
-function drawSmall(){const p=PROMOS[pi];body.innerHTML=`<div class="art">${p.art}</div><span class="ptag">Have you tried</span><span class="psmall">${p.small}</span><span class="pmore">${p.tag} →</span><div class="dots">${PROMOS.map((_,k)=>`<i class="${k===pi?'on':''}"></i>`).join('')}</div>`}
+/* 18 Nov: the small card shows the game's new orange-and-charcoal icon (the drawing stays in the big card) */
+const ICO={aperture:'/icons/aperture-180.png?v=3',landmarks:'/icons/landmarks-180.png?v=3',wonders:'/icons/natural-wonders-180.png?v=3',bigger:'/icons/natural-wonders-180.png?v=3'};
+function drawSmall(){const p=PROMOS[pi];body.innerHTML=`${ICO[p.id]?`<div class="art ico"><img src="${ICO[p.id]}" alt=""></div>`:`<div class="art">${p.art}</div>`}<span class="ptag">Have you tried</span><span class="psmall">${p.small}</span><span class="pmore">${p.tag} →</span><div class="dots">${PROMOS.map((_,k)=>`<i class="${k===pi?'on':''}"></i>`).join('')}</div>`}
 function rotate(){if(big||card.matches(':hover'))return;card.classList.add('fade');setTimeout(()=>{pi=(pi+1)%PROMOS.length;drawSmall();card.classList.remove('fade')},300)}
 function startRotate(){clearInterval(ptimer);ptimer=setInterval(rotate,8000)}
 function targetRect(){const c=document.querySelectorAll('.phones .phone')[2].getBoundingClientRect(),s=card.getBoundingClientRect();
