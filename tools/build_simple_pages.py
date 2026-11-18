@@ -53,7 +53,8 @@ TPL = """<!doctype html>
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
 <link rel="manifest" href="/icons/m/{icon}-en.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght;700;800&display=swap"><link rel="stylesheet" href="/shared/nunito.css?v=1">
 <link rel="stylesheet" href="/simple/simple.css?v={v}">
 </head>
 <body>

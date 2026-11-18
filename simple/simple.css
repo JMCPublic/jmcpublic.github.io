@@ -11,15 +11,15 @@ a{color:inherit}
 .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .back{font-size:14px;color:var(--muted);text-decoration:none;padding:4px 0}
 .ttl{display:flex;align-items:baseline;gap:8px}
-.ttl h1{font:800 26px/1 Fraunces,Georgia,serif;letter-spacing:-.02em;margin:0}
+.ttl h1{font:800 26px/1 Nunito,Inter,system-ui,sans-serif;letter-spacing:-.02em;margin:0}
 .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cu)}
 .prog{display:flex;gap:5px;margin:12px 0 10px}.prog i{flex:1;height:6px;border-radius:3px;background:var(--line)}
 .prog i.ok{background:var(--good)}.prog i.no{background:var(--bad)}.prog i.now{background:var(--accent)}
 .mapcard{position:relative;background:#fff;border:2px solid var(--line);border-radius:22px;padding:8px;height:min(40dvh,380px);min-height:220px;display:flex}
 .mapcard svg{width:100%;height:100%}
-.cname{position:absolute;top:10px;left:14px;font:800 19px Fraunces,Georgia,serif;pointer-events:none}
+.cname{position:absolute;top:10px;left:14px;font:800 19px Nunito,Inter,system-ui,sans-serif;pointer-events:none}
 .lvl{position:absolute;top:12px;right:14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.q{font:600 22px/1.2 Fraunces,Georgia,serif;margin:14px 2px 4px}
+.q{font:700 22px/1.2 Nunito,Inter,system-ui,sans-serif;margin:14px 2px 4px}
 .clue{color:var(--muted);font-size:15px;line-height:1.45;margin:0 2px 12px}
 .opts{display:grid;gap:9px}
 .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:13px 14px;font-size:17px;font-weight:700;cursor:pointer;transition:border-color .12s,background .12s}
@@ -35,12 +35,12 @@ a{color:inherit}
 .next{display:block;width:100%;margin-top:12px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:14px;cursor:pointer}
 /* start + end */
 .panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px 20px;margin-top:14px}
-.intro h2{font:800 30px/1.05 Fraunces,Georgia,serif;letter-spacing:-.02em;margin:6px 0 8px}
+.intro h2{font:800 30px/1.05 Nunito,Inter,system-ui,sans-serif;letter-spacing:-.02em;margin:6px 0 8px}
 .intro p{color:var(--muted);font-size:15.5px;line-height:1.5;margin:0 0 6px}
 .intro ul{margin:10px 0 4px;padding-left:20px;color:var(--ink);font-size:15px;line-height:1.7}
-.big{font:800 64px/1 Fraunces,Georgia,serif;letter-spacing:-.03em;margin:4px 0 6px}
+.big{font:800 64px/1 Nunito,Inter,system-ui,sans-serif;letter-spacing:-.03em;margin:4px 0 6px}
 .big small{font-size:28px;color:var(--muted)}
-.verdict{font:600 20px/1.25 Fraunces,Georgia,serif;margin:0 0 10px}
+.verdict{font:700 20px/1.25 Nunito,Inter,system-ui,sans-serif;margin:0 0 10px}
 .dots{display:flex;gap:6px;margin:12px 0 4px}.dots i{flex:1;height:10px;border-radius:5px}.dots i.ok{background:var(--good)}.dots i.no{background:var(--bad)}
 .best{color:var(--muted);font-size:14px;margin:8px 0 0}
 .list{margin-top:14px;display:grid;gap:6px}
@@ -68,7 +68,7 @@ a{color:inherit}
 .silrow svg{width:100%;height:min(22dvh,150px)}.silrow b{font:800 13px Inter,sans-serif;color:var(--muted);margin-top:4px}
 .lvlrow{text-align:right;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 4px 0}
 .tgcard{position:relative;display:flex;gap:14px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:22px;padding:14px}
-.tgs{width:38%;flex:none}.tgs svg{width:100%;height:min(22dvh,150px)}.tgcard b{display:block;font:800 26px/1.1 Fraunces,Georgia,serif;margin:2px 0}.tga{color:var(--muted);font-size:13px}
+.tgs{width:38%;flex:none}.tgs svg{width:100%;height:min(22dvh,150px)}.tgcard b{display:block;font:800 26px/1.1 Nunito,Inter,system-ui,sans-serif;margin:2px 0}.tga{color:var(--muted);font-size:13px}
 .fact svg.scale{display:block;width:100%;height:110px;margin:10px 0 6px}.scalek{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted)}.scalek .hi{color:var(--accent);font-weight:700}
 
 /* language button and menu (17 Nov) */
