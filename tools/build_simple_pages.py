@@ -64,7 +64,7 @@ TPL = """<!doctype html>
 {data}<script src="/simple/i18n.js?v={v}"></script>
 <script src="/simple/simple.js?v={v}"></script>
 <script src="/shared/howler.js?v=2" defer></script>
-<script src="/shared/adbox.js?v=10" defer></script>
+<script src="/shared/adbox.js?v=11" defer></script>
 <script src="/shared/homebtn.js?v=1" defer></script>
 <script src="/shared/gfoot.js?v=1" defer></script>
 <script src="/shared/reach.js?v=13" defer></script>

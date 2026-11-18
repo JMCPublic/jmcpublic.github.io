@@ -105,12 +105,12 @@ function line(){if(wide&&!isHome){box.classList.remove('lined');return}let ref=n
   box.style.setProperty('--tmgad-l',Math.max(0,Math.round(g.left-b.left))+'px');box.style.setProperty('--tmgad-r',Math.max(0,Math.round(b.right-g.right))+'px');box.classList.add('lined')}
 function sync(){if(!box)return;
   if(mode==='fixed'||mode==='flow'){line();const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l'),hs=box.querySelector('.tmgad-house');
-    if(!wide&&inn&&sl&&lb){const t=hs&&hs.querySelector('b');lb.style.left=(sl.offsetLeft+(t?t.offsetLeft:0))+'px'}
+    if(!wide&&inn&&sl&&lb){const t=hs&&hs.querySelector('b');lb.style.left=(sl.offsetLeft+(t?t.offsetLeft:0))+'px'}if(d.getElementById('skipBtn')&&inn&&sl&&lb){inn.style.position='relative';lb.style.position='absolute';lb.style.left=sl.offsetLeft+'px';lb.style.top=Math.max(0,(sl.offsetTop-lb.offsetHeight)/2)+'px'} /* 18 Nov, Aperture and Landmarks: label centred in the dark band above the card, lined up with the card's left edge */
     if(mode==='fixed'&&!root.classList.contains('tmgad-play'))root.style.setProperty('--tmgad-h',box.offsetHeight+'px');return}
   // inline: as wide as boxes A to C, banner centred, label just left of it at its top edge
   const ph=[...d.querySelectorAll('main.phones>.phone')];if(ph.length){const a=ph[0].getBoundingClientRect(),c=ph[ph.length-1].getBoundingClientRect();box.style.width=Math.round(c.right-a.left)+'px'}
   const inn=box.querySelector('.tmgad-in'),sl=box.querySelector('.tmgad-slot'),lb=box.querySelector('.tmgad-l');
-  if(inn&&sl&&lb){inn.style.position='relative';lb.style.position='absolute';lb.style.top=(sl.offsetTop)+'px';lb.style.left=Math.max(10,sl.offsetLeft-lb.offsetWidth-12)+'px'}}
+  if(inn&&sl&&lb){inn.style.position='relative';lb.style.position='absolute';lb.style.top=(sl.offsetTop)+'px';lb.style.left=Math.max(10,sl.offsetLeft-lb.offsetWidth-12)+'px'}if(d.getElementById('skipBtn')&&inn&&sl&&lb){inn.style.position='relative';lb.style.position='absolute';lb.style.left=sl.offsetLeft+'px';lb.style.top=Math.max(0,(sl.offsetTop-lb.offsetHeight)/2)+'px'} /* 18 Nov, Aperture and Landmarks: label centred in the dark band above the card, lined up with the card's left edge */}
 // mirrored side column for Aperture on laptops: "Have you tried" on top, stats below, kept in step with the right-hand column
 function mirror(){const m=d.querySelector('main.phones'),side=m&&m.querySelector(':scope>.side');if(!side||!isAp||/\/mobile\//.test(path))return;
   const sc=side.querySelector('.statcard'),pr=side.querySelector('.promo');if(!sc||!pr)return;
