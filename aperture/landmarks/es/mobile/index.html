@@ -682,6 +682,8 @@ function shapePath(t){
   }
   const out=new Path2D();out.addPath(p,new DOMMatrix().translate(t.x,t.y).rotate(t.rot).scale(t.type==='line'?1:GAPF()));return out;
 }
+function firstShapes(){const fl=R()<.5,sp=[[rnd(170,240),rnd(170,230),rnd(-10,10)],[rnd(380,440),rnd(220,300),rnd(-10,10)],[rnd(250,350),rnd(420,460),90+rnd(-8,8)]];return sp.map(([x,y,rot])=>({type:"line",x:fl?600-x:x,y,w:20,h:rnd(140,160),rot}))}
+const BSTEP=[5,4,4,3,3];
 function newShape(first){
   if(first)return{type:'line',x:rnd(230,370),y:300,w:20,h:rnd(360,440),rot:rnd(-8,8)};
   const types=['line','line','line','circle','keyhole','star','triangle','cross'];
@@ -773,7 +775,7 @@ function thinWords(){
   const out=withRng(S.rngW,()=>shuffle(S.words.filter(o=>!S.obj.answer.includes(o.w)&&!S.gone.has(o.w))).slice(0,THIN));
   out.forEach(o=>{S.gone.add(o.w);o.el.classList.add('gone');o.el.disabled=true});
   S.slots.forEach(g=>{if(groupFull(g)&&S.gone.has(groupText(g)))g.forEach(c=>{if(!c.rev)c.val=''})});
-  S.thins++;SFX.words();revealTiles(8);renderSlots();$('wordCount').textContent=`${56-S.gone.size} palabras`;setTimeout(layoutWords,380);return true;
+  S.thins++;SFX.words();revealTiles(4);renderSlots();$('wordCount').textContent=`${56-S.gone.size} palabras`;setTimeout(layoutWords,380);return true;
 }
 
 /* ---------- answer slots (B) ---------- */
@@ -870,7 +872,7 @@ function loop(now){
   if(window.tmgHold){last=now;raf=requestAnimationFrame(loop);return} /* clock waits while the Now playing card is open */
   S.elapsed+=Math.min(.25,(now-last)/1000);last=now;
   const stage=Math.floor(S.elapsed/STAGE);
-  while(S.stages<stage&&S.stages<STAGES-1){S.stages++;addViewpoint();revealTiles(8);tick(`${S.stages*STAGE} segundos. Hay un nuevo punto de vista abierto y el negativo se llena.`)}
+  while(S.stages<stage&&S.stages<STAGES-1){S.stages++;addViewpoint();revealTiles(BSTEP[S.stages-1]||3);tick(`${S.stages*STAGE} segundos. Hay un nuevo punto de vista abierto y el negativo se llena.`)}
   const leftS=Math.ceil(LIMIT-S.elapsed);if(leftS<=10&&mus)musicStop(1.5);if(leftS<=10&&leftS!==S.lastTick&&leftS>0){S.lastTick=leftS;SFX.tick()}
   if(S.elapsed>=LIMIT){S.elapsed=LIMIT;endRound(false);return}
   updateHUD();raf=requestAnimationFrame(loop);
@@ -922,8 +924,8 @@ function newRound(){
   const obj=OBJECTS[G.order[G.round]];
   S={obj,viewpoints:[],shown:new Set(),tileQueue:[],elapsed:0,running:false,ended:false,won:false,pen:0,helps:0,thins:0,stages:0,vowels:new Set(),cur:0,
      rngV:mulberry32(rs+1),rngW:mulberry32(rs+2)};
-  buildObject(obj);S.viewpoints.push(newShape(true));buildReveal();
-  S.tileQueue=shuffle(Array.from({length:64},(_,i)=>i));revealTiles(6);
+  buildObject(obj);S.viewpoints.push(...firstShapes());buildReveal();
+  S.tileQueue=shuffle(Array.from({length:64},(_,i)=>i));revealTiles(3);
   buildWords(obj);buildSlots(obj);
   document.querySelectorAll('.vowel').forEach(b=>b.classList.remove('hit','miss'));
   view={s:1,tx:0,ty:0};zoomTo(1);
