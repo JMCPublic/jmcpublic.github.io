@@ -119,3 +119,6 @@ html.tmgdark #tmgAd.fixed .tmgad-in.w{justify-content:center}
 /* the shared Feedback button and card (/shared/feedback.js) on the dark pages: an orange pill, and the card keeps its light colours */
 html.tmgdark .tmgfb-pill{background:linear-gradient(90deg,var(--hot),var(--deep));color:#fff;box-shadow:0 8px 24px -6px rgba(221,44,0,.7)}
 html.tmgdark .tmgfb-v{--ink:#16181d;--line:#d9dde4;--muted:#5b606b;--soft:#5b606b;--card:#fff;color-scheme:light}
+
+/* round home button, 18 Nov 2026 */
+.top .tr{display:flex;align-items:center;gap:8px}.tmghome{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);color:#e8eaed;display:grid;place-items:center;flex:none}.tmghome:hover{color:#fff;border-color:rgba(255,255,255,.6)}

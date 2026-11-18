@@ -36,6 +36,7 @@ a{color:inherit}
 .brand .o{width:11px;height:11px;border-radius:50%;border:3px solid #fff;margin-right:6px;flex:none}.brand .tld{color:#ffd2b0}
 .iconbtn{width:42px;height:42px;border-radius:21px;border:1.5px solid rgba(255,255,255,.28);background:rgba(0,0,0,.25);display:grid;place-items:center;padding:0;text-decoration:none}
 .iconbtn svg{width:17px;height:17px}
+.iconbtn.tmghome{color:#fff}.iconbtn.tmghome svg{width:17px;height:17px}
 .gpill{border-radius:999px;border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(90deg,var(--hot),var(--deep)) border-box;color:#fff;font-weight:600}
 .gfill{border:0;border-radius:999px;background:linear-gradient(90deg,var(--hot),var(--deep));color:#1a1a1a;font-weight:800;box-shadow:0 0 0 1px rgba(255,145,0,.35),0 0 28px rgba(221,44,0,.55);text-decoration:none;display:flex;align-items:center;justify-content:center}
 .opill{border-radius:999px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-weight:600;text-decoration:none;display:flex;align-items:center;justify-content:center}
@@ -186,6 +187,7 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
 <section id="start">
   <div class="top">
     <a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
+    <a class="iconbtn tmghome" href="/" aria-label="All games" title="All games"></a>
   </div>
   <div class="hero">
     <div class="kick">ONE QUIZ PER FICTION TYPE, EVERY DAY</div>
@@ -220,7 +222,7 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
 <!-- PLAY -->
 <section id="play" hidden>
   <div class="top">
-    <button class="iconbtn" id="backBtn" aria-label="Leave this quiz"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div style="display:flex;gap:8px"><a class="iconbtn tmghome" href="/" aria-label="All games" title="All games"></a><button class="iconbtn" id="backBtn" aria-label="Leave this quiz"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button></div>
     <div class="ptitle"><b>Fictional<span class="sup">a→z</span></b><span id="pType"></span></div>
     <div class="clock" aria-live="off"><b id="clock">0:00</b><i id="pen"></i></div>
   </div>
@@ -267,7 +269,7 @@ html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
 <section id="end" hidden>
   <div class="top">
     <a class="brand" href="/"><span class="o"></span>twominute<span class="tld">.games</span></a>
-    <b class="serif" style="font-size:20px;text-shadow:0 0 22px rgba(255,106,38,.55)">Fictional<span class="sup">a→z</span></b>
+    <span style="display:flex;align-items:center;gap:10px"><b class="serif" style="font-size:20px;text-shadow:0 0 22px rgba(255,106,38,.55)">Fictional<span class="sup">a→z</span></b><a class="iconbtn tmghome" href="/" aria-label="All games" title="All games"></a></span>
   </div>
   <div class="card score">
     <div class="when" id="eWhen"></div>
@@ -584,9 +586,13 @@ function share(T,r){
 /* opened from a home-screen icon (no Safari bar, no address): say so, and how to add Fictional by itself */
 if(navigator.standalone||matchMedia('(display-mode: standalone)').matches){$('homeLine').innerHTML='📱 You\'re in the home-screen app, so Safari\'s buttons are hidden. To give Fictional its own icon, open <b>twominute.games/fictional</b> in Safari and add it from there. <button class="mini2" id="copyLink">Copy the link</button>';
   $('copyLink').onclick=()=>{const u='https://twominute.games/fictional/';(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link copied: paste it into Safari'),()=>prompt('Copy this link into Safari:',u))}}
+/* round home button (shared/homebtn.js): fill in its icon, and ask before leaving while a quiz is under way */
+addEventListener('DOMContentLoaded',()=>D.querySelectorAll('.tmghome').forEach(a=>{if(!a.innerHTML.trim())a.innerHTML=window.TMG_HOUSE||''}));
+window.tmgMidGame=()=>!!(G&&G.result!=='right'&&!$('play').hidden);
 show('start');drawStart();
 })();
 </script>
+<script src="/shared/homebtn.js?v=1" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>
 <script src="/shared/nwcount.js?v=1" defer></script>
 <script src="/shared/adbox.js?v=9" defer></script>
