@@ -53,3 +53,9 @@ html.tmg-iosbar #tmgAd.fixed{border-bottom-color:#3a3a3a!important}
 /* "Have you tried" side cards: the game's icon on the glow (18 Nov) */
 .promo .art.ico{display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(255,145,0,.35),transparent 60%),#1c1c1c!important}
 .promo .art.ico img{width:min(62%,120px);height:auto;aspect-ratio:1;border-radius:22%;box-shadow:0 10px 22px -10px rgba(0,0,0,.8)}
+/* the "Have you tried" pop-up (computer) and slide-up sheet (phone) stay white, so their text stays dark; Play is the orange button (18 Nov) */
+.pbig,.msheet{--ink:#16181d;--soft:#5b606b;--blue:#c2410c;--frame:#e3e6eb;color:#16181d}
+.pbig h3,.msheet h3{color:#16181d!important}
+.pbig .ptag,.msheet .ptag{color:#c2410c!important}
+.pbig .go,.msheet .go{background:linear-gradient(135deg,#FF9100,#DD2C00)!important;color:#fff!important;border:0!important}
+.pbig{border-color:#FF9100!important}
