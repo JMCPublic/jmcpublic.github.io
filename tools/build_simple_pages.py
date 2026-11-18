@@ -47,7 +47,7 @@ TPL = """<!doctype html>
 <meta property="og:title" content="Natural Wonders · {name}">
 <meta property="og:description" content="{intro}">
 <meta property="og:url" content="https://twominute.games/natural-wonders-{key}/">
-<meta property="og:image" content="https://twominute.games/og-v2.png">
+<meta property="og:image" content="https://twominute.games/og-v3.png">
 <meta name="theme-color" content="#f6f3ec">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
