@@ -1062,6 +1062,7 @@ function newRound(){
     $('admireBtn').onclick=()=>{window.tmgAdmired=1;overlay.innerHTML=sv.h;document.body.classList.add('done');document.body.classList.remove('waiting');hideQuote();
       const cb=$('copyBtn');if(cb)cb.onclick=async()=>{if(navigator.share){try{await navigator.share({text:sv.c});cb.textContent='Sent';return}catch(err){if(err&&err.name==='AbortError')return}}try{await navigator.clipboard.writeText(sv.c);cb.textContent='Copied'}catch(err){}};
       const el=$('nextIn');if(el){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1)-n,h=Math.floor(m/3600000),mi=Math.floor(m%3600000/60000);el.textContent=h?`${h}h ${mi}m`:`${mi}m`}}}}
+  document.body.classList.toggle('midgame',G.round>0);/* between rounds the ad must not float over the next grid (18 Nov) */
   document.body.classList.add('waiting');
   if(G.round===0)showQuote('open');
   updateHUD();

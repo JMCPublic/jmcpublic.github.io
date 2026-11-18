@@ -4,7 +4,7 @@
 const ADS={client:'ca-pub-9558088049243609',slotWide:'',slotPhone:''};   // slotWide: 728x90 unit, slotPhone: 320x100 unit
 const d=document,root=d.documentElement,path=location.pathname;
 {const ua=navigator.userAgent,v=+(/Version\/(\d+)/.exec(ua)||/OS (\d+)_/.exec(ua)||[])[1]||0,sa=navigator.standalone||matchMedia('(display-mode: standalone)').matches;
- if(/iPhone|iPod/.test(ua)&&!sa)root.classList.add('tmg-iosbar')} /* 17 Nov: every iPhone browser, not just ones reporting iOS 26 (Chrome and others on iPhone don't say the version the same way), so the toolbar always has room */
+ const saf=/Version\/(\d+)/.exec(ua);if(/iPhone|iPod/.test(ua)&&!sa&&saf&&+saf[1]>=26)root.classList.add('tmg-iosbar')} /* 18 Nov: only Safari on iOS 26+, whose toolbar floats over the page. On iOS 18 and in Chrome the bar is solid and the page already ends above it, so lifting the ad left a gap (Jonathan's screenshot) */ /* 17 Nov: every iPhone browser, not just ones reporting iOS 26 (Chrome and others on iPhone don't say the version the same way), so the toolbar always has room */
 const isAp=/^\/aperture\//.test(path),isNW=/^\/natural-wonders-/.test(path)||!!window.TMG_GAME /* simple games (17 Nov) */,isHome=path==='/'||/^\/wonders\/?$/.test(path);
 const css=`
 #tmgAd{box-sizing:border-box;font-family:inherit;color:var(--ink,#16181d)}
@@ -124,11 +124,12 @@ function mirror(){const m=d.querySelector('main.phones'),side=m&&m.querySelector
   p2.addEventListener('click',e=>{e.preventDefault();pr.click()})}
 // Natural Wonders on phones: no ad strip while a game is running, so it can never cover the answers
 // Masterbrain plays each round in a frame (#stage) while its menu (#app) is hidden
-const playing=()=>{if(d.querySelector('.play'))return true;const st=d.getElementById('stage'),ap=d.getElementById('app');return !!(st&&st.querySelector('iframe')&&st.offsetParent!==null&&ap&&getComputedStyle(ap).display==='none')};
+const vis=e=>!!e&&e.offsetParent!==null;
+const playing=()=>{if(d.querySelector('.play'))return true;if(vis(d.querySelector('.shell .opts'))&&vis(d.querySelector('.shell .prog')))return true; /* Name That Classic and What's That Noise? (18 Nov): their question screen has .prog + .opts */const st=d.getElementById('stage'),ap=d.getElementById('app');return !!(st&&st.querySelector('iframe')&&st.offsetParent!==null&&ap&&getComputedStyle(ap).display==='none')};
 function playWatch(){if(!isNW)return;let was=null,wasP=null;const chk=()=>{const p=playing();if(p!==wasP){wasP=p;root.classList.toggle('tmg-playing',p)}
     const on=mode==='fixed'&&!wide&&p;if(on===was)return;was=on;root.classList.toggle('tmgad-play',on);if(!on)sync();dispatchEvent(new Event('resize'))};
   new MutationObserver(chk).observe(d.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
-function apFloat(){if(!isAp||!/\/mobile\//.test(path))return;const chk=()=>{const b=d.body,on=!!box&&mode==='flow'&&b.classList.contains('waiting')&&!b.classList.contains('done')&&!root.classList.contains('tw-on')&&!box.classList.contains('endmv');
+function apFloat(){if(!isAp||!/\/mobile\//.test(path))return;const chk=()=>{const b=d.body,on=!!box&&mode==='flow'&&b.classList.contains('waiting')&&!b.classList.contains('midgame')&&!b.classList.contains('done')&&!root.classList.contains('tw-on')&&!box.classList.contains('endmv');
     if(on!==root.classList.contains('tmgap-float'))root.classList.toggle('tmgap-float',on);if(on)root.style.setProperty('--tmgap-h',box.offsetHeight+'px');sync()};
   new MutationObserver(chk).observe(d.body,{attributes:true,attributeFilter:['class']});new MutationObserver(chk).observe(root,{attributes:true,attributeFilter:['class']});addEventListener('resize',()=>setTimeout(chk,150));chk()}
 function resultsPlace(){if(!box||!isNW||wide||mode!=='fixed')return;
