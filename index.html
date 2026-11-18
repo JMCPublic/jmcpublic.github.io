@@ -114,6 +114,18 @@ html.home #tmgAd.fixed .tmgad-in.w{justify-content:center}
 /* 18 Nov: Nunito for the logo, hero, card titles and buttons (approved mock C); Inter stays for body text */
 h1,.brand{font-family:Nunito,Inter,system-ui,sans-serif;font-weight:800}
 h2,.play,button,.btn{font-family:Nunito,Inter,system-ui,sans-serif;font-weight:800}
+/* 18 Nov (approved mock home_grid_v1): laptops get three across, big centred icon, full-width Play. Phones keep the list. */
+@media (min-width:860px){
+  .wrap{max-width:1080px}
+  h1{margin-top:44px}.sub{margin-bottom:30px}
+  .games{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .game{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 22px 18px}
+  .game img{width:80px;height:80px;border-radius:19px;margin:0 0 12px}
+  .game .t{display:flex;flex-direction:column;align-items:center;flex:1}
+  .game h2{font-size:22px;margin-bottom:6px}
+  .game p{font-size:14.5px;line-height:1.45;max-width:30ch;margin:0 auto}
+  .game .play{align-self:stretch;text-align:center;margin-top:14px;padding:10px 0;font-size:16px;border:0;color:#fff;background:linear-gradient(90deg,#FF9100,#DD2C00)}
+}
 </style>
 </head>
 <body>
