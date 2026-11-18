@@ -13,7 +13,7 @@ if((/natural-wonders-/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tm
   let l=(document.documentElement.lang||'en').slice(0,2);if(!['en','de','tr','fr','es','pt'].includes(l))l='en';const h=document.head;
   const link=(rel,href)=>{let e=h.querySelector(`link[rel="${rel}"]`);if(!e){e=document.createElement('link');e.rel=rel;h.appendChild(e)}e.href=href};
   const meta=(n,c)=>{let e=h.querySelector(`meta[name="${n}"]`);if(!e){e=document.createElement('meta');e.name=n;h.appendChild(e)}e.content=c};
-  link('apple-touch-icon',`/icons/${k}-180.png`);link('manifest',`/icons/m/${k}-${l}.webmanifest`);
+  link('apple-touch-icon',`/icons/${k}-180.png?v=3`);link('manifest',`/icons/m/${k}-${l}.webmanifest`);
   fetch(`/icons/m/${k}-${l}.webmanifest`).then(r=>r.json()).then(j=>meta('apple-mobile-web-app-title',j.short_name)).catch(()=>{});
   meta('apple-mobile-web-app-capable','yes');meta('mobile-web-app-capable','yes');
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__tmgBip=e});

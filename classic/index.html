@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#212121">
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="/icons/classic-180.png">
+<link rel="apple-touch-icon" href="/icons/classic-180.png?v=3">
 <meta name="apple-mobile-web-app-title" content="Classics">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="/icons/m/classic-en.webmanifest">
@@ -70,13 +70,13 @@ const TUNES=[
  {t:3,n:"Funeral March (Piano Sonata No. 2)",c:"Chopin",bpm:60,f:"It was played at Chopin’s own funeral in Paris in 1849.",
   m:[["Bb3",1],["Bb3",.75],["Bb3",.25],["Bb3",1],["Db4",.75],["C4",.25],["C4",.75],["Bb3",.25],["Bb3",.75],["A3",.25],["Bb3",2]]},
 ];
-window.CFG={icon:'/icons/classic-180.png',key:'classic',name:'Name That Classic',kicker:'Music · daily',
+window.CFG={icon:'/icons/classic-180.png?v=3',key:'classic',name:'Name That Classic',kicker:'Music · daily',
   intro:'A famous classical tune plays. Pick the piece from three.',
   bullets:['Ten tunes, about two minutes','Starts easy, ends with a couple of clever ones','A fact about every one'],
   q:'Name that classic',clue:'Listen, then pick the piece. Play it again as often as you like.',
   per:10,mix:{1:4,2:3,3:3},next:'Next tune',tomorrow:'Ten new tunes tomorrow, the same for everyone.',
   verdicts:['Perfect! 🏆','Brilliant. You really know your classics.','Nicely done, a solid score.','Not bad! The clever ones are clever for everyone.','A tough set today. Tomorrow brings ten fresh tunes.'],
-  other:{img:'/icons/noise-180.png',e:'🔊',n:"What's That Noise?",d:'Five everyday sounds a day. Name them.',href:'/noise/'},
+  other:{img:'/icons/noise-180.png?v=3',e:'🔊',n:"What's That Noise?",d:'Five everyday sounds a day. Name them.',href:'/noise/'},
   items:TUNES.map(x=>({t:x.t,n:x.n,c:x.c,f:x.f,p:A=>A.melody(x.m,x.bpm)}))};
 </script>
 <script>window.TMG_GAME='classic';</script>

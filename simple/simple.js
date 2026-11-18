@@ -126,9 +126,9 @@ function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o==
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
 const apDone=k=>{try{return JSON.parse(ls(APK[k]+today())||'null')}catch(e){return null}};
 function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{
-    if(APK[k]){const r=apDone(k);return `<a class="mg${r?' done':''}" href="/aperture/${k==='landmarks'?'landmarks/':''}${APDIR}"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(n)}</b><span>${r?'✓ '+esc(r.t||''):esc(U.play)}</span></a>`}
+    if(APK[k]){const r=apDone(k);return `<a class="mg${r?' done':''}" href="/aperture/${k==='landmarks'?'landmarks/':''}${APDIR}"><img src="/icons/${k}-180.png?v=3" alt="" width="40" height="40"><b>${esc(n)}</b><span>${r?'✓ '+esc(r.t||''):esc(U.play)}</span></a>`}
     const r=playedToday(k);
-    return `<a class="mg${r?' done':''}" href="${gameUrl(k)}"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(gname(k))}</b><span>${r?'✓ '+r.n+' / 10':esc(U.play)}</span></a>`}).join('');
+    return `<a class="mg${r?' done':''}" href="${gameUrl(k)}"><img src="/icons/${k}-180.png?v=3" alt="" width="40" height="40"><b>${esc(gname(k))}</b><span>${r?'✓ '+r.n+' / 10':esc(U.play)}</span></a>`}).join('');
   const left=GAMES.filter(g=>g[0]!==CFG.key&&!APK[g[0]]&&!playedToday(g[0])).length;  /* the message counts the Natural Wonders games */
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
 function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),no=g.filter((_,k)=>!S.res[k]);return U.mbs(listJoin(ok.slice(0,3)),listJoin(no.slice(0,2)))}

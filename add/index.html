@@ -103,7 +103,7 @@ const G=[['/','tmg','Two Minute Games','All the games'],['/aperture/','aperture'
  ['/natural-wonders-masterbrain/','masterbrain','Masterbrain'],['/natural-wonders-rivers/','rivers','Rivers'],['/natural-wonders-lakes/','lakes','Lakes'],['/natural-wonders-mountains/','mountains','Mountains'],
  ['/natural-wonders-deserts/','deserts','Deserts'],['/natural-wonders-forests/','forests','Forests'],['/natural-wonders-bodies-of-water/','bodies-of-water','Waters'],['/natural-wonders-river-cities/','river-cities','River Cities'],
  ['/natural-wonders-how-many-borders/','how-many-borders','Borders'],['/natural-wonders-where-is-bigger/','where-is-bigger','Bigger?'],['/natural-wonders-which-of-five/','which-of-five','Which of Three?']];
-document.getElementById('grid').innerHTML=G.map(([u,k,n,s])=>`<a class="ic" href="${u}"><img src="/icons/${k}-180.png?v=2" alt="" width="64" height="64">${n}${s?`<span>${s}</span>`:''}</a>`).join('');
+document.getElementById('grid').innerHTML=G.map(([u,k,n,s])=>`<a class="ic" href="${u}"><img src="/icons/${k}-180.png?v=3" alt="" width="64" height="64">${n}${s?`<span>${s}</span>`:''}</a>`).join('');
 const tabs=[...document.querySelectorAll('.tabs button')];
 const pick=id=>{tabs.forEach(b=>{const on=b.getAttribute('aria-controls')===id;b.setAttribute('aria-selected',on);document.getElementById(b.getAttribute('aria-controls')).hidden=!on})};
 tabs.forEach(b=>b.onclick=()=>pick(b.getAttribute('aria-controls')));

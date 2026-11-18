@@ -67,7 +67,7 @@ function steps(){const and=!ios;box.className='a2hs st';
   box.querySelector('.ok').onclick=close}
 function show(){if(shown)return;shown=true;S.n=(S.n||0)+1;S.nx=Date.now()+7*864e5;save();count('shown');R.classList.add('tmg-a2hs-on');
   box=document.createElement('div');box.className='a2hs';box.setAttribute('role','dialog');const k=g?g[1]:lm?'landmarks':'aperture';
-  box.innerHTML=`<div class="r"><img src="/icons/${k}-180.png" alt=""><div><b class="t">${T.t}</b><p>${T.p(name())}</p></div></div><div class="acts"><button class="y">${T.y}</button><button class="n">${T.n}</button></div>`;
+  box.innerHTML=`<div class="r"><img src="/icons/${k}-180.png?v=3" alt=""><div><b class="t">${T.t}</b><p>${T.p(name())}</p></div></div><div class="acts"><button class="y">${T.y}</button><button class="n">${T.n}</button></div>`;
   edges(box);document.body.appendChild(box);
   box.querySelector('.n').onclick=()=>{count('no');if(S.n>=2)S.done=1;save();close()};
   box.querySelector('.y').onclick=async()=>{count('how');S.done=1;save();const bip=window.__tmgBip;

@@ -47,7 +47,7 @@ function build(){if(D.querySelector('.tmgem'))return;
   const box=D.createElement('section');box.className='tmgem';
   const KEY='tmg-rate-'+GAME,DAY=new Date().toISOString().slice(0,10);
   const gl=ls(KEY)===DAY?'':`<div class="gl"><h4>${esc(TT[0])}</h4><div class="gb">${[['tough',1],['easy',3],['right',5]].map(([k,i])=>`<button type="button" data-k="${k}">${esc(TT[i])}<small>${esc(TT[i+1])}</small></button>`).join('')}</div></div>`;
-  const rows=K.filter(k=>k!==GAME).map(k=>{const s=status(k),i=K.indexOf(k);return `<a class="mg${s?' done':''}" href="${url(k)}"><img src="/icons/${k}-180.png" alt="" width="40" height="40"><b>${esc(N[i]||k)}</b><span>${esc(s||TT[12])}</span></a>`}).join('');
+  const rows=K.filter(k=>k!==GAME).map(k=>{const s=status(k),i=K.indexOf(k);return `<a class="mg${s?' done':''}" href="${url(k)}"><img src="/icons/${k}-180.png?v=3" alt="" width="40" height="40"><b>${esc(N[i]||k)}</b><span>${esc(s||TT[12])}</span></a>`}).join('');
   const left=K.filter(k=>k!==GAME&&!status(k)).length;
   box.innerHTML=gl+`<div class="more"><div class="tg">${esc(left?TT[8]:TT[9])}</div><p class="ms">${esc(left?TT[10](left):TT[11])}</p>${rows}</div>`;
   anchor.after(box);

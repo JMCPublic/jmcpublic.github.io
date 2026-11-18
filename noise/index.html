@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#212121">
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="/icons/noise-180.png">
+<link rel="apple-touch-icon" href="/icons/noise-180.png?v=3">
 <meta name="apple-mobile-web-app-title" content="Noise">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="/icons/m/noise-en.webmanifest">
@@ -107,13 +107,13 @@ const SOUNDS=[
 {t:3,n:'Cash register',w:['Bicycle bell','Slot machine'],f:'James Ritty, a saloon owner in Ohio, invented the cash register in 1879 to stop staff pocketing the takings.',
  p:A=>{const t=A.t;A.noise(t,.05,{f:2500,q:4,g:.7,a:.001,r:.04});A.noise(t+.12,.05,{f:2000,q:4,g:.6,a:.001,r:.04});A.bell(2600,t+.25,1.6,.25);A.noise(t+.35,.5,{ft:'lowpass',f:900,g:.4,a:.02,r:.2});return 2}},
 ];
-window.CFG={icon:'/icons/noise-180.png',key:'noise',name:'What’s That Noise?',kicker:'Sounds · daily',
+window.CFG={icon:'/icons/noise-180.png?v=3',key:'noise',name:'What’s That Noise?',kicker:'Sounds · daily',
   intro:'An everyday sound plays. What is it? Pick from three.',
   bullets:['Five sounds, about two minutes','Starts easy, ends with a clever one','A fact about every one'],
   q:'What’s that noise?',clue:'Listen, then pick what you heard. Play it again as often as you like.',
   per:5,mix:{1:2,2:2,3:1},next:'Next sound',tomorrow:'Five new sounds tomorrow, the same for everyone.',
   verdicts:['Perfect! Ears like a bat 🦇','Brilliant. Sharp ears today.','Nicely done, a solid score.','Not bad! The clever one is clever for everyone.','A tough set. Tomorrow brings five fresh sounds.'],
-  other:{img:'/icons/classic-180.png',e:'🎻',n:'Name That Classic',d:'Ten famous classical tunes a day.',href:'/classic/'},
+  other:{img:'/icons/classic-180.png?v=3',e:'🎻',n:'Name That Classic',d:'Ten famous classical tunes a day.',href:'/classic/'},
   items:SOUNDS};
 </script>
 <script>window.TMG_GAME='noise';</script>
