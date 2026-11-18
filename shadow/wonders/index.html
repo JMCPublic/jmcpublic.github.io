@@ -8,7 +8,7 @@
 <title>Shadow · Natural Wonders · Geography Games</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
-<link rel="apple-touch-icon" href="/icons/natural-wonders-180.png">
+<link rel="apple-touch-icon" href="/icons/natural-wonders-180.png?v=2">
 <meta name="apple-mobile-web-app-title" content="Wonders">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="Ten quick geography games: rivers, lakes, seas, mountains, deserts, borders and country sizes.">
@@ -158,6 +158,11 @@ const FL={gb:'<svg viewBox="0 0 60 30"><clipPath id="fgb"><path d="M30,15h30v15z
  mx:'<svg viewBox="0 0 3 2"><path fill="#CE1126" d="M0 0h3v2H0z"/><path fill="#fff" d="M0 0h2v2H0z"/><path fill="#006847" d="M0 0h1v2H0z"/><circle cx="1.5" cy="1" r=".22" fill="#8C5A2B"/></svg>',
  pt:'<svg viewBox="0 0 30 20"><path fill="#F00" d="M0 0h30v20H0z"/><path fill="#060" d="M0 0h12v20H0z"/><circle cx="12" cy="10" r="3.4" fill="#FF0"/><circle cx="12" cy="10" r="2.3" fill="#F00"/></svg>',
  br:'<svg viewBox="0 0 30 20"><path fill="#009C3B" d="M0 0h30v20H0z"/><path fill="#FFDF00" d="M15 2.5L27 10 15 17.5 3 10z"/><circle cx="15" cy="10" r="4.2" fill="#002776"/></svg>'};
+
+/* home-screen name in the player's language (18 Nov): point the page at its language's home-screen file and give iPhones the same name */
+(()=>{try{const lg=LG;if(!lg||lg==='en')return;const ml=document.querySelector('link[rel="manifest"]');if(!ml||!/-en\.webmanifest/.test(ml.getAttribute('href')))return;
+  ml.setAttribute('href',ml.getAttribute('href').replace('-en.webmanifest','-'+lg+'.webmanifest'));
+  fetch(ml.href).then(r=>r.json()).then(j=>{let m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(!m){m=document.createElement('meta');m.name='apple-mobile-web-app-title';document.head.appendChild(m)}m.content=j.short_name||j.name}).catch(()=>{})}catch(e){}})();
 const NL=(navigator.language||'').toLowerCase();
 const flagOf=l=>l==='en'?(/-(us|ca)$/.test(NL)?'us':'gb'):l==='pt'?(/-br$/.test(NL)?'br':'pt'):l==='es'?(/-(mx|us)$/.test(NL)?'mx':'es'):l;
 const LGS=[['en','English'],['de','Deutsch'],['tr','Türkçe'],['fr','Français'],['es','Español'],['pt','Português']];

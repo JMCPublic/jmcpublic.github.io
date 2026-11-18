@@ -89,6 +89,11 @@ function label(q){return q.k==='borders'?cname(q.c)+' · '+q.a:q.k==='target'?nm
 
 /* ---------- the game ---------- */
 let S;
+
+/* home-screen name in the player's language (18 Nov): point the page at its language's home-screen file and give iPhones the same name */
+(()=>{try{const lg=L;if(!lg||lg==='en')return;const ml=document.querySelector('link[rel="manifest"]');if(!ml||!/-en\.webmanifest/.test(ml.getAttribute('href')))return;
+  ml.setAttribute('href',ml.getAttribute('href').replace('-en.webmanifest','-'+lg+'.webmanifest'));
+  fetch(ml.href).then(r=>r.json()).then(j=>{let m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(!m){m=document.createElement('meta');m.name='apple-mobile-web-app-title';document.head.appendChild(m)}m.content=j.short_name||j.name}).catch(()=>{})}catch(e){}})();
 const back=`<a class="back" href="${CFG.home||'/wonders/'}">${esc(U.back)}</a><span class="row"><button type="button" class="lgb" aria-haspopup="true" aria-label="Language">${L.toUpperCase()} ▾</button></span>`;
 /* 17 Nov (mock-up approved): the language button beside ♫ and ⓘ. Picks one of six, saves it as tmg-lang (like the home page menu) and reloads */
 const LANGS=[['en','English'],['de','Deutsch'],['tr','Türkçe'],['fr','Français'],['es','Español'],['pt','Português']];
