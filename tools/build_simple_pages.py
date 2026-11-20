@@ -49,7 +49,7 @@ TPL = """<!doctype html>
 <meta property="og:url" content="https://twominute.games/natural-wonders-{key}/">
 <meta property="og:image" content="https://twominute.games/og-v4.png">
 <meta name="theme-color" content="#f6f3ec">
-<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="apple-touch-icon" href="/icons/{icon}-180.png">
 <link rel="manifest" href="/icons/m/{icon}-en.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
