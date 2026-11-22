@@ -140,6 +140,7 @@ td.share{width:34%;padding-left:12px}
 .langgame{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--soft,#5b606b)}
 .chl{list-style:none;margin:0;padding:0}.chl li{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--line,#e4e6ea);font-size:14.5px;line-height:1.4}.chl li:first-child{border-top:0}
 .chl time{flex:none;width:92px;font-weight:700;color:var(--soft)}.chl b{font-weight:700}
+.chl li.chmore{display:block;padding-top:6px}.chmore summary{cursor:pointer;font-weight:700;color:var(--soft);font-size:14px;padding:4px 0;list-style:none}.chmore summary::-webkit-details-marker{display:none}.chmore summary::before{content:'▸ ';}.chmore details[open] summary::before{content:'▾ ';}.chmore summary span{font-weight:400}.chmore .chl li:first-child{border-top:1px solid var(--line,#e4e6ea)}
 .srow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.srow .msgbtn{margin:0;padding:7px 12px;font-size:13px}
 </style>
 </head>
@@ -288,7 +289,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v30';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v31';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -654,6 +655,11 @@ try{const OWNER='mybetterbrain109@gmail.com';firebase.app('msgs').auth().onAuthS
 
 /* Changes to the games (17 Nov 2026, Jonathan): dated, newest first, UK dates. Add a line here whenever something big changes */
 const CHANGES=[
+ ['2026-11-18','<b>Aperture:</b> 40 new objects (50 in all), each day 2 easy, 2 medium, then a hard one in round 5.'],
+ ['2026-11-18','<b>Landmarks:</b> first view is three short windows; Box B fills more slowly (about a third full at 100 s instead of nearly three-quarters).'],
+ ['2026-11-18','<b>No ads during play:</b> none between Aperture and Landmarks rounds or during Name That Classic and What’s That Noise?; on iPhones before iOS 26 the ad sits right on Safari’s toolbar.'],
+ ['2026-11-18','<b>Every game:</b> round home button (asks before leaving mid-game) and a footer with our own Share button; Nunito lettering across the site; Lakes photos on the answer card; all game icons in orange and charcoal.'],
+ ['2026-11-18','<b>Home page on laptops:</b> three across with big icons and full-width Play buttons (phones unchanged).'],
  ['2026-11-17','<b>Natural Wonders:</b> clues and facts in all six languages; Sources button (players leave an email, the request comes to Messages, deleted within 30 days); “Spotted a translation mistake?” card.'],
  ['2026-11-17','<b>Natural Wonders page:</b> language button with a flag in the top right; the page and its games follow the chosen language.'],
  ['2026-11-17','<b>Aperture and Landmarks in the house style:</b> the orange-and-black Natural Wonders frame, black word tiles with orange numbers in an orange-framed panel. The pictures themselves unchanged.'],
@@ -661,7 +667,10 @@ const CHANGES=[
  ['2026-11-17','<b>Aperture and Landmarks:</b> once a day like the others, Easy (bigger gaps, the default) and Hard (smaller gaps), “How was that?” and “Play another today” under the score.'],
  ['2026-11-17','<b>Music</b> now off until the player turns it on (♫ pulses and invites them once a day). Language button added to the Natural Wonders games.']];
 const ukd=d=>new Date(d+'T12:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-document.getElementById('chList').innerHTML=CHANGES.map(([d,t])=>`<li><time datetime="${d}">${ukd(d)}</time><span>${t}</span></li>`).join('');
+/* 22 Nov (Jonathan): the latest day's changes are the headline; earlier days fold away under "Earlier changes" */
+(()=>{const row=([d,t])=>`<li><time datetime="${d}">${ukd(d)}</time><span>${t}</span></li>`;
+  const latest=CHANGES.reduce((m,[d])=>d>m?d:m,'');const top=CHANGES.filter(([d])=>d===latest),rest=CHANGES.filter(([d])=>d!==latest).sort((a,b)=>a[0]<b[0]?1:-1);
+  document.getElementById('chList').innerHTML=top.map(row).join('')+(rest.length?`<li class="chmore"><details><summary>Earlier changes <span>(${rest.length})</span></summary><ul class="chl">${rest.map(row).join('')}</ul></details></li>`:'');})();
 const KEY='tmg-seen-v1',SKEY='tmg-seen-base';
 const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>v?+(v.integerValue||v.doubleValue||0):0;const map=v=>(v&&v.mapValue&&v.mapValue.fields)||{};
