@@ -291,7 +291,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v32';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v33';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -721,7 +721,7 @@ const CHANGES=[
 const ukd=d=>new Date(d+'T12:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 /* 22 Nov (Jonathan): the latest day's changes are the headline; earlier days fold away under "Earlier changes" */
 (()=>{const row=([d,t])=>`<li><time datetime="${d}">${ukd(d)}</time><span>${t}</span></li>`;
-  const latest=CHANGES.reduce((m,[d])=>d>m?d:m,'');const top=CHANGES.filter(([d])=>d===latest),rest=CHANGES.filter(([d])=>d!==latest).sort((a,b)=>a[0]<b[0]?1:-1);
+  const all=CHANGES.map((c,i)=>[c,i]).sort((a,b)=>a[0][0]<b[0][0]?1:a[0][0]>b[0][0]?-1:a[1]-b[1]).map(x=>x[0]);const top=all.slice(0,1),rest=all.slice(1); /* one headline: the newest change; the rest fold away */
   document.getElementById('chList').innerHTML=top.map(row).join('')+(rest.length?`<li class="chmore"><details><summary>Earlier changes <span>(${rest.length})</span></summary><ul class="chl">${rest.map(row).join('')}</ul></details></li>`:'');})();
 const KEY='tmg-seen-v1',SKEY='tmg-seen-base';
 const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -758,7 +758,7 @@ function draw(){const body=document.getElementById('wcBody'),title=document.getE
   const days=Math.max(1/24,(now.at-base.at)/864e5),prev=base.prevRate;
   let cmp='';if(prev&&prev.days>=1/24&&T.visits+prev.visits>0){const r1=T.visits/days,r0=prev.visits/prev.days;cmp=r0?(r1>r0*1.15?' · ▲ busier than the time before':r1<r0*0.85?' · ▼ quieter than the time before':' · about the same pace as the time before'):''}
   L.push({tab:'games',id:'tiles',big:true,h:T.visits?`<b>${pl(T.visits,'visit')}</b>, ${pl(T.uniques,'new player')}, ${pl(T.games,'game')} played${cmp}`:'No new visits yet',s:per.join(' · ')});
-  CHANGES.filter(([dt])=>Date.parse(dt+'T23:59:59Z')>base.at).forEach(([dt,t])=>L.push({tab:'games',id:'chCard',star:true,h:'Games changed '+ukd(dt)+': '+t.replace(/<[^>]+>/g,'').split('.')[0]}));
+  {const nc={};CHANGES.filter(([dt])=>Date.parse(dt+'T23:59:59Z')>base.at).forEach(([dt,t])=>{(nc[dt]=nc[dt]||[]).push(t)});Object.entries(nc).sort((a,b)=>a[0]<b[0]?1:-1).forEach(([dt,ts])=>L.push({tab:'games',id:'chCard',star:true,h:'Games changed '+ukd(dt)+': '+ts[0].replace(/<[^>]+>/g,'').split('.')[0]+(ts.length>1?' (+'+(ts.length-1)+' more)':'')}))} /* one line per day */
   // 2. countries
   const newC=Object.keys(now.c).filter(c=>now.c[c]>0&&!(base.c[c]>0)&&c!=='XX');
   newC.forEach(c=>L.push({tab:'games',id:'games',star:true,h:`${flag(c)}<b>${esc(cn(c))}</b>: first visit ever`,s:pl(now.c[c],'visit')+' so far'}));
