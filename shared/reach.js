@@ -71,7 +71,7 @@ ccReady.then(cc=>{const f={};
    sent on its own so it can never hold up the other counts. The older 'hours' counts stay on UK time. */
 ccReady.then(cc=>{window.tmgCC=cc||'';if(!/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)&&!window.TMG_SIMPLE)return;
   const hh='h'+String(new Date().getHours()).padStart(2,'0'),f={['lt.'+hh]:1};if(cc&&/^[A-Z]{2}$/.test(cc))f['lc.'+cc+'.'+hh]=1;bump(f)});
-if((/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tmgWhereL){window.__tmgWhereL=1;const wq=document.createElement('script');wq.src='/shared/whereq.js?v=1';wq.defer=true;document.head.appendChild(wq)}
+if((/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tmgWhereL){window.__tmgWhereL=1;const wq=document.createElement('script');wq.src='/shared/whereq.js?v=2';wq.defer=true;document.head.appendChild(wq)}
 /* devices (17 Nov): once per device, the kind of device, its system and version, the browser and (Android only) the phone model,
    all from what the browser itself reports. Nothing personal. Sent on its own so it can never hold up the other counts */
 (async()=>{if(ls('tmg-dev')==='1')return;try{const ua=navigator.userAgent,c=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,28)||'unknown';

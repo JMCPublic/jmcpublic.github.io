@@ -291,7 +291,7 @@ async function render(){
   const {all,list}=state,t=ukNow(),nowId=mid(t.y,t.m),dim=new Date(t.y,t.m,0).getDate();
   if(!list.find(x=>x.id===nowId))list.push({id:nowId,g:Object.fromEntries(FAM.map(f=>[f,blank()]))});
   const now=list.find(x=>x.id===nowId),prevId=t.m===1?mid(t.y-1,12):mid(t.y,t.m-1),prev=list.find(x=>x.id===prevId&&!x.launch);
-  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v33';
+  up.textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' · stats v34';
   document.getElementById('nowTitle').textContent='This month so far · '+MN[t.m-1];
   document.getElementById('nowDays').textContent=t.d===dim?'last day':t.d+(t.d===1?' day':' days')+' in';
   const frac=t.d/dim,mon=MN[(t.m+10)%12].slice(0,3);
@@ -614,6 +614,7 @@ function openCont(k){const D=mapData(),[n,vb]=CONT[k];let ov=document.getElement
   const rows=D.all.filter(c=>inBox(c,vb)).map(c=>[c,D.games[c]||0,D.walk[c]||0,D.links[c]||0,D.pins[c]||0]).sort((a,b)=>(b[1]+b[2]+b[3]+b[4])-(a[1]+a[2]+a[3]+a[4])||cn(a[0]).localeCompare(cn(b[0])));
   const d=x=>x||'–';
   ov.querySelector('.rclist').innerHTML=rows.length?`<table class="rt"><tr><th>Country</th><th class="n">Game visits</th><th class="n">Walk-ins</th><th class="n">Through your links</th><th class="n">Sent the form</th></tr>${rows.map(r=>`<tr><td>${flag(r[0])} ${esc(r[0]==='GB'?'UK':cn(r[0]))}</td><td class="n">${d(r[1])}</td><td class="n">${d(r[2])}</td><td class="n">${d(r[3])}</td><td class="n">${d(r[4])}</td></tr>`).join('')}</table><p class="msgnote">${period==='month'?'This month':'All time'} · game visits are from Aperture, Landmarks and Natural Wonders; “through your links” shows once you're signed in.</p>`:`<p class="msgnote">No visitors from ${esc(n)} yet.</p>`;
+  if(k==='namerica'){(async()=>{await drawCityDots(null,z);usPanel(ov.querySelector('.rclist'),z)})()}
   ov.hidden=false}
 async function drawWitw(){const w=map(cur().witw);const t=k=>{const f=map(w[k]);return [num(f.shown),num(f.sent),num(f.closed)]};const li=t('li'),fb=t('fb');
   if(!WM)WM=await fetch('/shared/wmap.json').then(r=>r.json()).catch(()=>null);
@@ -647,29 +648,49 @@ let GA=[],UKH={all:{},month:{}},TZM=null,CITY={},SHOWALL_U=false;
 const offNow=z=>{try{const d=new Date(),p=new Intl.DateTimeFormat('en-US',{timeZone:z,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).formatToParts(d),g=t=>+p.find(x=>x.type===t).value;return Math.round((Date.UTC(g('year'),g('month')-1,g('day'),g('hour')%24,g('minute'))-d.getTime())/6e4)}catch(e){return null}};
 async function capsTz(){if(TZM)return TZM;try{const [t,pl]=await Promise.all([fetch('/shared/tz.json').then(r=>r.json()),fetch('/shared/places.json?v=2').then(r=>r.json())]);TZM={tz:t,caps:pl.caps}}catch(e){TZM={tz:{},caps:{}}}return TZM}
 function fits(e){if(!e.tz)return null;const said=e.country,tc=TZM.tz[e.tz];if(tc===said)return true;const cap=TZM.caps[said];if(cap&&cap[4]){const a=offNow(cap[4]),b=offNow(e.tz);if(a!=null&&a===b)return true}return false}
-async function cityXY(c,town){if(!town)return null;if(!CITY[c])CITY[c]=fetch('/shared/cities/'+c+'.json').then(r=>r.ok?r.json():[]).catch(()=>[]);const L=await CITY[c];const f=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();const q=f(town);const hit=L.find(r=>f(r[0])===q);return hit?[hit[1],hit[2],hit[0]]:null}
+async function cityXY(c,town){if(!town)return null;if(!CITY[c])CITY[c]=fetch('/shared/cities/'+c+'.json').then(r=>r.ok?r.json():[]).catch(()=>[]);const L=await CITY[c];const f=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();const q=f(town);const hit=L.find(r=>f(r[3]?r[0]+', '+r[3]:r[0])===q)||L.find(r=>f(r[0])===q);return hit?[hit[1],hit[2],hit[3]?hit[0]+', '+hit[3]:hit[0],hit[3]||'']:null}
+const RUDE=/(f+u+c+k|sh[i1]t|cunt|bitch|bastard|wank|twat|dick|cock|pussy|penis|vagina|porn|nazi|hitler|arse|asshole|nigg|fag|slut|whore|retard|scheisse|scheiße|fotze|arschloch|hurensohn|wichser|merde|putain|connard|salope|encul|mierda|puta|cabr[oó]n|gilipollas|co[ñn]o|joder|caralho|porra|buceta|viado|foder|siktir|orospu|amk|yarrak|g[oö]t)/i; /* 22 Nov: rude or joke towns are hidden automatically */
 async function drawWhere(){const el=document.getElementById('rcWhere');if(!el)return;await capsTz();
   const w=map(map(cur().witw).game),n=k=>num(w[k]),shown=n('shown'),sent=n('sent'),closed=n('closed'),never=n('never');
-  const inP=e=>period==='all'||String(e.at||'').startsWith(MONTH);const list=GA.filter(e=>!e.hidden&&inP(e));
+  const inP=e=>period==='all'||String(e.at||'').startsWith(MONTH);const rude=GA.filter(e=>!e.hidden&&inP(e)&&RUDE.test(e.town||''));const list=GA.filter(e=>!e.hidden&&inP(e)&&!RUDE.test(e.town||''));
+  for(const e of list)e.known=!e.town||!!(await cityXY(e.country,e.town)); /* checked against the town list */
+  const chk=list.filter(e=>!e.known);
   const ok=list.filter(e=>fits(e)!==false),un=list.filter(e=>fits(e)===false);
-  const grp={};ok.forEach(e=>{const k=e.country+'|'+(e.town||'').trim();(grp[k]=grp[k]||{c:e.country,t:(e.town||'').trim(),n:0,q:fits(e)}).n++});
+  const grp={};ok.forEach(e=>{const k=e.country+'|'+(e.known?(e.town||'').trim():'\u0000');(grp[k]=grp[k]||{c:e.country,t:e.known?(e.town||'').trim():'\u0000',n:0,q:fits(e)}).n++});
   const rows=Object.values(grp).sort((a,b)=>b.n-a.n||cn(a.c).localeCompare(cn(b.c)));
   const pct=shown?Math.round(sent/shown*100)+'%':'–';
   el.innerHTML=`<div class="h2row"><h2>Where players say they are</h2><small>the weekly question at the end of a game · ${period==='month'?'this month':'all time'}</small></div>
   <div class="tiles"><div class="tile"><span>Asked</span><b>${shown}</b><em>cards shown after a game</em></div><div class="tile"><span>Answered</span><b>${sent}</b><em>${pct} of those asked</em></div><div class="tile"><span>Not now</span><b>${closed}</b><em>asked again next week</em></div><div class="tile"><span>Don't ask again</span><b>${never}</b><em>never asked again on that device</em></div></div>
-  ${rows.length?`<table class="rt"><tr><th>Country</th><th>Nearest city</th><th class="n">Answers</th><th>Time zone</th></tr>${rows.map(r=>`<tr><td>${flag(r.c)} ${esc(r.c==='GB'?'UK':cn(r.c))}</td><td>${esc(r.t||'(not given)')}</td><td class="n">${r.n}</td><td>${r.q===null?'<span style="color:var(--soft)">not known</span>':'<span style="color:#2e7d32;font-weight:700">✓ fits</span>'}</td></tr>`).join('')}</table>`:'<p class="msgnote">No answers yet. The card shows at most once a week per device, after a finished game.</p>'}
+  ${rows.length?`<table class="rt"><tr><th>Country</th><th>Nearest city</th><th class="n">Answers</th><th>Time zone</th></tr>${rows.map(r=>`<tr><td>${flag(r.c)} ${esc(r.c==='GB'?'UK':cn(r.c))}</td><td>${r.t==='\u0000'?'<i style="color:var(--soft)">a town not in the list (see Check these)</i>':esc(r.t||'(not given)')}</td><td class="n">${r.n}</td><td>${r.q===null?'<span style="color:var(--soft)">not known</span>':'<span style="color:#2e7d32;font-weight:700">✓ fits</span>'}</td></tr>`).join('')}</table>`:'<p class="msgnote">No answers yet. The card shows at most once a week per device, after a finished game.</p>'}
   ${un.length?`<details${SHOWALL_U?' open':''} id="rcUnd"><summary style="font-weight:700;color:#b26a00;cursor:pointer;margin-top:8px">Undisclosed: ${un.length} answer${un.length===1?'':'s'} didn't match the device's time zone</summary><table class="rt"><tr><th>Said</th><th>Device time zone</th><th>When</th></tr>${un.map(e=>`<tr><td>${flag(e.country)} ${esc(cn(e.country))}${e.town?', '+esc(e.town):''}${e.test?' <small>(test)</small>':''}</td><td>${esc(e.tz)}</td><td>${new Date(e.at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td></tr>`).join('')}</table></details>`:''}
-  <p class="msgnote">Answers that fit their time zone also go on the Where in the World map as orange dots: on the city when it's in the town list, otherwise on the country. ${GA.length?'':'Sign in on the Messages tab to see the answers; the counts above show without signing in.'}</p>`;
+  ${chk.length?`<details id="rcChk"><summary style="font-weight:700;color:#c2410c;cursor:pointer;margin-top:8px">Check these: ${chk.length} town${chk.length===1?'':'s'} not in the town list</summary><p class="msgnote">Typed by players and not a town we know, so they could be villages, spellings or jokes. Hide any that aren't real; their text never shows on the map.</p><table class="rt"><tr><th>Typed</th><th>Country</th><th>When</th><th></th></tr>${chk.map(e=>`<tr><td>${esc(e.town)}${e.test?' <small>(test)</small>':''}</td><td>${flag(e.country)} ${esc(cn(e.country))}</td><td>${new Date(e.at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</td><td style="text-align:right"><button class="rbtn" data-gh="${esc(e.name)}">Hide</button></td></tr>`).join('')}</table></details>`:''}
+  ${rude.length?`<p class="msgnote">${rude.length} rude or joke answer${rude.length===1?' was':'s were'} hidden automatically.</p>`:''}
+  <p class="msgnote">Answers that fit their time zone also go on the Where in the World map as orange dots: on the city when it's in the town list, otherwise on the country (without the typed text). In the US, the state lights up orange for a day when its first player answers, then fades; zoom into North America for the list of states and towns. ${GA.length?'':'Sign in on the Messages tab to see the answers; the counts above show without signing in.'}</p>`;
   const d=document.getElementById('rcUnd');if(d)d.ontoggle=()=>{SHOWALL_U=d.open};
+  el.querySelectorAll('[data-gh]').forEach(b=>b.onclick=async()=>{const e=GA.find(x=>x.name===b.dataset.gh);if(!e||!H)return;const r=await fetch(`https://firestore.googleapis.com/v1/${e.name}?updateMask.fieldPaths=hidden`,{method:'PATCH',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({fields:{hidden:{booleanValue:true}}})});if(r.ok){e.hidden=true;drawWhere()}else b.textContent='Couldn’t hide'});
   drawCityDots(ok)}
 let OKG=[],DOTGEN=new WeakMap();async function drawCityDots(ok,svgEl){if(ok)OKG=ok;else ok=OKG;const svg=svgEl||document.getElementById('rcMap');if(!svg||!WM)return;
   const gen=(DOTGEN.get(svg)||0)+1;DOTGEN.set(svg,gen); /* only the latest redraw puts dots down (two redraws at once doubled them) */
-  const pts={};for(const e of ok){const xy=await cityXY(e.country,e.town);let x,y,lab;if(xy){[x,y,lab]=xy}else{const p=WM.cen[WM.a2[e.country]];if(!p)continue;[x,y]=p;lab=e.town?e.town+' (not in the town list)':'(no city given)'}
+  const pts={},US={};for(const e of ok){const xy=await cityXY(e.country,e.town);let x,y,lab;if(xy){[x,y,lab]=xy;if(xy[3]){const S=US[xy[3]]=US[xy[3]]||{n:0,first:Infinity,towns:{}};S.n++;S.first=Math.min(S.first,Date.parse(e.at)||Infinity);S.towns[lab]=(S.towns[lab]||0)+1}}else{const p=WM.cen[WM.a2[e.country]];if(!p)continue;[x,y]=p;lab=e.town?'a town not in the list':'(no city given)'}
     const k=x+','+y;(pts[k]=pts[k]||{x,y,n:0,lab,c:e.country}).n++}
-  if(DOTGEN.get(svg)!==gen)return;svg.querySelectorAll('.rcpl').forEach(x=>x.remove());
+  if(DOTGEN.get(svg)!==gen)return;svg.querySelectorAll('.rcpl').forEach(x=>x.remove());USD=US;await usLayer(svg,US);if(DOTGEN.get(svg)!==gen)return;
   const ns='http://www.w3.org/2000/svg';Object.values(pts).forEach(p=>{const g=document.createElementNS(ns,'g');g.setAttribute('class','rcpl');g.setAttribute('data-tip',`${esc(p.lab)} · ${esc(cn(p.c))} · ${p.n} player${p.n===1?'':'s'} said so`);
     const c=document.createElementNS(ns,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',String(Math.min(9,3.2+p.n*.8)));c.setAttribute('fill','#FF9100');c.setAttribute('stroke','#fff');c.setAttribute('stroke-width','1.2');g.appendChild(c);svg.appendChild(g)});
   if(svgEl)return;const key=document.getElementById('rcKey');if(key&&Object.keys(pts).length&&!/players said/.test(key.innerHTML))key.innerHTML+=' · <span style="color:#FF9100">●</span> players said they play here'}
+/* US states (22 Nov): outlines over the US; a state lights up orange for 24 hours when its first player answers, then fades back to the US colour */
+let USS=null,USD={};const STN={};
+async function usLayer(svg,US){if(!USS)USS=await fetch('/shared/usstates.json').then(r=>r.json()).catch(()=>({}));svg.querySelectorAll('.uss').forEach(x=>x.remove());
+  const ns='http://www.w3.org/2000/svg',g=document.createElementNS(ns,'g');g.setAttribute('class','uss');const now=Date.now();
+  Object.entries(USS).forEach(([st,o])=>{STN[st]=o.n;const p=document.createElementNS(ns,'path');p.setAttribute('d',o.d);p.setAttribute('data-st',st);
+    const S=US[st],age=S?now-S.first:Infinity,op=age<864e5?Math.max(0,1-age/864e5)*.85:0;
+    p.setAttribute('fill','#FF9100');p.setAttribute('fill-opacity',op.toFixed(2));p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','.35');
+    p.setAttribute('data-tip',`${esc(o.n)}${S?' · '+S.n+' player'+(S.n===1?'':'s')+' said so':''}`);g.appendChild(p)});
+  const first=svg.querySelector('.rcpl');first?svg.insertBefore(g,first):svg.appendChild(g)}
+function usPanel(box,svg){const rows=Object.entries(USD).sort((a,b)=>b[1].n-a[1].n);
+  const html=`<h3 class="sub3" style="margin-top:4px">US states and towns</h3>${rows.length?`<table class="rt uspan"><tr><th>State</th><th class="n">Players</th><th>Towns</th></tr>${rows.map(([st,S])=>`<tr data-st="${st}"><td>${esc(STN[st]||st)}</td><td class="n">${S.n}</td><td>${Object.entries(S.towns).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<span data-st="${st}" style="cursor:default">${esc(t.replace(/, [A-Z]{2}$/,''))}${n>1?' ('+n+')':''}</span>`).join(', ')}</td></tr>`).join('')}</table><p class="msgnote">Point at a state or town to light it up on the map. A state glows orange for 24 hours after its first player answers, then fades.</p>`:'<p class="msgnote">No US states yet: they appear as players in the US answer the weekly question.</p>'}`;
+  const d=document.createElement('div');d.innerHTML=html;box.prepend(d);
+  const lite=(st,on)=>svg.querySelectorAll(`.uss path[data-st="${st}"]`).forEach(p=>{if(on){p.dataset.op=p.getAttribute('fill-opacity');p.setAttribute('fill-opacity','.7')}else if(p.dataset.op!=null)p.setAttribute('fill-opacity',p.dataset.op)});
+  d.querySelectorAll('[data-st]').forEach(el=>{el.onmouseenter=()=>lite(el.dataset.st,true);el.onmouseleave=()=>lite(el.dataset.st,false)})}
 /* when people play: UK time (each game's counts) or the players' own local time (from 22 Nov), and favourite local time by country */
 let TMODE='local';
 function drawTimes(){const el=document.getElementById('rcTimes');if(!el)return;const lt=map(cur().lt),lc=map(cur().lc),uk=UKH[period]||{};
