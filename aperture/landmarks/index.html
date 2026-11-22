@@ -1030,6 +1030,7 @@ function endRound(win,skipped){
   updateHUD();
 }
 function finish(){
+  if(G.mode==='daily')setTimeout(()=>{try{dispatchEvent(new Event('tmg:gameover'))}catch(e){}},0); /* 22 Nov: weekly 'where are you playing?' card */
   showQuote('close');
   try{window.apertureGameDone&&window.apertureGameDone()}catch(e){}
   const bestKey='apL-best-'+(G.mode==='daily'?G.key:'random');
@@ -1314,7 +1315,7 @@ if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 <script src="/shared/lmlang.js?v=4" defer></script>
 <script src="/shared/homebtn.js?v=1" defer></script>
 <script src="/shared/gfoot.js?v=1" defer></script>
-<script src="/shared/reach.js?v=13" defer></script>
+<script src="/shared/reach.js?v=14" defer></script>
 <script src="/shared/walk.js?v=4" defer></script>
 <script src="/shared/endmore.js?v=1" defer></script>
 </body>

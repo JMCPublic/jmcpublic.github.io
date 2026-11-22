@@ -67,6 +67,11 @@ ccReady.then(cc=>{const f={};
   if(isNew&&src.root!=='walkin'&&LIVE&&!VIP){const s=x=>({stringValue:String(x)});
     fetch(`${BASE}/spread?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{root:s(src.root),step:{integerValue:String(src.step)},parent:s(src.parent||''),country:s(cc||''),at:{timestampValue:new Date().toISOString()}}})}).catch(()=>{})}
   welcome(cc);if(ww==='li'||ww==='fb')witw(ww,cc)});
+/* 22 Nov: local time of play. Each game-page visit adds one to its LOCAL hour (lt.hNN) and to its country's local hour (lc.CC.hNN),
+   sent on its own so it can never hold up the other counts. The older 'hours' counts stay on UK time. */
+ccReady.then(cc=>{window.tmgCC=cc||'';if(!/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)&&!window.TMG_SIMPLE)return;
+  const hh='h'+String(new Date().getHours()).padStart(2,'0'),f={['lt.'+hh]:1};if(cc&&/^[A-Z]{2}$/.test(cc))f['lc.'+cc+'.'+hh]=1;bump(f)});
+if((/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tmgWhereL){window.__tmgWhereL=1;const wq=document.createElement('script');wq.src='/shared/whereq.js?v=1';wq.defer=true;document.head.appendChild(wq)}
 /* devices (17 Nov): once per device, the kind of device, its system and version, the browser and (Android only) the phone model,
    all from what the browser itself reports. Nothing personal. Sent on its own so it can never hold up the other counts */
 (async()=>{if(ls('tmg-dev')==='1')return;try{const ua=navigator.userAgent,c=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,28)||'unknown';

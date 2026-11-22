@@ -111,7 +111,7 @@ function answer(k,last){const q=S.qs[S.i],ok=q.opts[k]===q.a;S.res.push(ok);
 const verdict=n=>{const r=n/PER;return CFG.verdicts[r===1?0:r>=.8?1:r>=.6?2:r>=.4?3:4]};
 function end(rev){stop();S.done=true;const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&!rev&&n>best;
   if(newBest){best=n;ls(K+'-best',String(n))}
-  if(!S.practice&&!rev){ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res}));record(n)}
+  if(!S.practice&&!rev){ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res}));record(n);setTimeout(()=>{try{dispatchEvent(new Event('tmg:gameover'))}catch(e){}},0)}
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/${PER}`;
   app.innerHTML=`${top(S.practice&&!rev?'Practice set':'')}
   <div class="panel" style="margin-top:22px"><span class="tag">Your score</span><div class="big">${n}<small> / ${PER}</small></div><p class="verdict">${esc(verdict(n))}</p>

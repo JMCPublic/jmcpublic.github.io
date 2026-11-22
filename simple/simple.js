@@ -141,6 +141,7 @@ function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),n
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}
 function end(rev){S.over=1;const n=S.res.filter(Boolean).length;let best=+ls(K+'-best')||0;const newBest=!S.practice&&n>best;if(newBest){best=n;ls(K+'-best',String(n))}
   if(!S.practice&&!rev){try{const R=JSON.parse(ls('nw_record')||'null')||{games:{},right:0,total:0},g=R.games[CFG.key]||{played:0,best:0};g.played++;const pc=n*10;if(pc>=(g.best||0)){g.best=pc;g.bestTxt=n+'/10'}R.games[CFG.key]=g;R.right=(R.right||0)+n;R.total=(R.total||0)+10;ls('nw_record',JSON.stringify(R))}catch(e){}}
+  if(!S.practice&&!rev)setTimeout(()=>{try{dispatchEvent(new Event('tmg:gameover'))}catch(e){}},0); /* 22 Nov: weekly 'where are you playing?' card listens for this */
   if(!S.practice)ls(K+'-day',JSON.stringify({d:S.seed,n,res:S.res,l:S.qs.map(q=>q.lab||label(q))}));
   const share=`${CFG.name} · twominute.games\n${S.res.map(x=>x?'🟩':'🟥').join('')} ${n}/10`;
   app.innerHTML=`<div class="top">${back}<span class="tag">${esc(S.practice&&!rev?U.practice:dateTxt())}</span></div>
