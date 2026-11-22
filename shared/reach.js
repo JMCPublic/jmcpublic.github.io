@@ -71,6 +71,11 @@ ccReady.then(cc=>{const f={};
    sent on its own so it can never hold up the other counts. The older 'hours' counts stay on UK time. */
 ccReady.then(cc=>{window.tmgCC=cc||'';if(!/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)&&!window.TMG_SIMPLE)return;
   const hh='h'+String(new Date().getHours()).padStart(2,'0'),f={['lt.'+hh]:1};if(cc&&/^[A-Z]{2}$/.test(cc))f['lc.'+cc+'.'+hh]=1;bump(f)});
+/* 22 Nov: US time zones, so the stats map can light exact states where the zone proves it (Arizona, Hawaii...) and glow the time-zone band otherwise.
+   One count per game-page visit plus the first and latest time seen, under ustz.<zone>; all-time record only; sent on its own. No IP address is used. */
+ccReady.then(cc=>{if(cc!=='US'||!LIVE||VIP||/\bClaude\//.test(navigator.userAgent))return;if(!/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)&&!window.TMG_SIMPLE)return;
+  const z=String(tzName||'').replace(/[^A-Za-z0-9]+/g,'_').slice(0,40);if(!z)return;const now=String(Date.now()),F='ustz.'+z+'.';
+  fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{transform:{document:BASE.replace(/^https:\/\/firestore\.googleapis\.com\/v1\//,'')+'/stats/reach',fieldTransforms:[{fieldPath:F+'n',increment:{integerValue:'1'}},{fieldPath:F+'first',minimum:{integerValue:now}},{fieldPath:F+'last',maximum:{integerValue:now}}]}}]})}).catch(()=>{})});
 if((/^\/(aperture\/(?!stats)|natural-wonders-|classic|noise)/.test(location.pathname)||window.TMG_SIMPLE)&&!window.__tmgWhereL){window.__tmgWhereL=1;const wq=document.createElement('script');wq.src='/shared/whereq.js?v=2';wq.defer=true;document.head.appendChild(wq)}
 /* devices (17 Nov): once per device, the kind of device, its system and version, the browser and (Android only) the phone model,
    all from what the browser itself reports. Nothing personal. Sent on its own so it can never hold up the other counts */
