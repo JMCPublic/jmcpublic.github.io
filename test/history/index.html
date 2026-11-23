@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>When in History? · mock-up v1</title>
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* When in History? mock-up v1 (23 Nov 2026). Not linked from anywhere; noindex. */
+.hint{color:var(--muted);font-size:14.5px;margin:2px 2px 12px}
+.evs{display:grid;gap:10px}
+.ev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px 14px;font-size:17.5px;font-weight:700;line-height:1.25;cursor:pointer;transition:border-color .12s,background .12s,transform .25s}
+.ev .n{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:800 16px Nunito,Inter,sans-serif;background:#f1ece2;color:#b9b0a1}
+.ev.on{border-color:var(--accent)}.ev.on .n{background:var(--accent);color:#fff}
+.ev .yr{margin-left:auto;font:800 15px Nunito,Inter,sans-serif;color:var(--muted);white-space:nowrap}
+.ev.ok{border-color:var(--good);background:var(--goodbg)}.ev.ok .n{background:var(--good);color:#fff}
+.ev.no{border-color:var(--bad);background:var(--badbg)}.ev.no .n{background:var(--bad);color:#fff}
+.ev[disabled]{cursor:default}
+@media(hover:hover){.ev:not([disabled]):hover{border-color:#bdb4a4}.ev.on:not([disabled]):hover{border-color:var(--accent)}}
+.gap{display:flex;align-items:center;gap:8px;margin:-2px 0 -2px 22px;font-size:13px;font-weight:700;color:var(--cu)}
+.gap:before{content:"";width:2px;height:22px;background:var(--line);border-radius:1px}
+.gap.close{color:var(--accent)}
+.check{display:block;width:100%;margin-top:12px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:14px;cursor:pointer}
+.check[disabled]{background:#d9d2c5;cursor:default}
+.undo{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.lvlb{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:3px 9px;margin-left:6px;vertical-align:3px}
+.lvlb.e{background:#e3f3e9;color:var(--good)}.lvlb.m{background:#fff1d6;color:#9a6200}.lvlb.h{background:#fbe6e3;color:var(--bad)}
+.mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:10px 0 0;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* Six trios a day: two easy (centuries apart), two medium (one far away + a close pair), two hard (all inside about a decade).
+   y = year used for ordering (BC negative); show = what the player sees after answering. */
+const DAY=[
+ {l:'e',ev:[['Hannibal crosses the Alps with elephants',-218,'218 BC'],['The Wright brothers make the first powered flight',1903,'1903'],['First people walk on the Moon',1969,'1969']],
+  f:'From the first powered flight to footprints on the Moon took just 66 years — one lifetime.'},
+ {l:'e',ev:[['The Great Pyramid of Giza is built',-2560,'c. 2560 BC'],['Cleopatra rules Egypt',-51,'51–30 BC'],['The first iPhone goes on sale',2007,'2007']],
+  f:'Cleopatra lived closer in time to the iPhone than to the building of the Great Pyramid.'},
+ {l:'m',ev:[['The Western Roman Empire falls',476,'476'],['England win the football World Cup',1966,'1966'],['First people walk on the Moon',1969,'1969']],
+  f:'England lifted the World Cup only three years before the Moon landing — same decade, same black-and-white TV.'},
+ {l:'m',ev:[['Julius Caesar is assassinated',-44,'44 BC'],['The Statue of Liberty is unveiled in New York',1886,'1886'],['The Eiffel Tower opens in Paris',1889,'1889']],
+  f:'Three years apart — and the Statue of Liberty’s iron skeleton was designed by Gustave Eiffel himself.'},
+ {l:'h',ev:[['The Wright brothers make the first powered flight',1903,'1903'],['The Wind in the Willows is published',1908,'1908'],['The Titanic sinks',1912,'1912']],
+  f:'People were flying aeroplanes nine years before the Titanic sank — and before Mr Toad first took the wheel.'},
+ {l:'h',ev:[['First episode of Doctor Who',1963,'1963'],['England win the football World Cup',1966,'1966'],['First people walk on the Moon',1969,'1969']],
+  f:'Doctor Who is older than England’s World Cup win. It first aired on 23 November 1963.'}
+];
+const LV={e:'Easy',m:'Medium',h:'Hard'};
+const $=s=>document.querySelector(s),app=$('#app');
+let qi=0,res=[],pick=[],order=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function hdr(){return `<div class="top"><a class="back" href="/">← All games</a><div class="ttl"><span class="tag">When in History?</span></div></div>
+ <div class="prog">${DAY.map((_,i)=>`<i class="${res[i]===true?'ok':res[i]===false?'no':i===qi?'now':''}"></i>`).join('')}</div>`}
+function intro(){app.innerHTML=`${hdr()}<div class="panel intro"><span class="tag">Daily · 6 trios</span><h2>When in History?</h2>
+ <p>Three moments from history. Tap them in order, <b>earliest first</b>.</p>
+ <ul><li>2 easy — centuries apart</li><li>2 medium — one far away, two close together</li><li>2 hard — all three inside about ten years</li></ul>
+ <div class="btns"><button class="btn" id="go">Play today’s trios</button></div>
+ <p class="mock">Mock-up v1 — not live. Tap to play; nothing is counted.</p></div>`;$('#go').onclick=()=>{qi=0;res=[];q()}}
+function q(){const t=DAY[qi];pick=[];order=shuffle([0,1,2]);draw()}
+function draw(done){const t=DAY[qi];
+ let cards;
+ if(!done){cards=order.map(i=>{const p=pick.indexOf(i);return `<button class="ev ${p>=0?'on':''}" data-i="${i}"><span class="n">${p>=0?p+1:''}</span><span>${t.ev[i][0]}</span></button>`}).join('')}
+ else{ /* reveal: true order, with each card marked against where the player put it, and the gaps between */
+  cards=[0,1,2].map(i=>{const ok=pick[i]===i,u=pick.indexOf(i)+1;return `<button class="ev ${ok?'ok':'no'}" disabled><span class="n">${u}</span><span>${t.ev[i][0]}</span><span class="yr">${t.ev[i][2]}</span></button>`+
+   (i<2?gap(t.ev[i+1][1]-t.ev[i][1]):'')}).join('')}
+ const ok=done&&pick.every((v,i)=>v===i);
+ app.innerHTML=`${hdr()}<h2 class="q">Put them in order<span class="lvlb ${t.l}">${LV[t.l]}</span></h2>
+  <p class="hint">${done?'In order, earliest at the top. The number is where you put it.':'Tap the earliest first, then the next, then the latest.'}</p>
+  <div class="evs">${cards}</div>
+  ${done?`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Spot on!':pick[0]===0?'Close — you got the earliest.':'Not quite.'}</b>${t.f}</div><button class="next" id="nx">${qi<DAY.length-1?'Next trio →':'See my score →'}</button>`
+   :`<button class="check" id="ck" ${pick.length<3?'disabled':''}>Check my order</button>${pick.length?'<button class="undo" id="un">Start this trio again</button>':''}`}`;
+ if(done){$('#nx').onclick=()=>{qi++;qi<DAY.length?q():end()};return}
+ app.querySelectorAll('.ev').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,p=pick.indexOf(i);if(p>=0)pick=pick.slice(0,p);else if(pick.length<3)pick.push(i);draw()});
+ const un=$('#un');if(un)un.onclick=()=>{pick=[];draw()};
+ $('#ck').onclick=()=>{if(pick.length<3)return;res[qi]=pick.every((v,i)=>v===i);draw(true)}}
+function gap(y){const a=Math.abs(y);const s=a<1?'the same year':a.toLocaleString('en-GB')+' year'+(a===1?'':'s')+' later';return `<div class="gap ${a<=10?'close':''}">${s}</div>`}
+function end(){const n=res.filter(Boolean).length;
+ const v=n===6?'A true historian!':n>=4?'Very good — you know your eras.':n>=2?'History is trickier than it looks.':'Time is a funny thing, isn’t it?';
+ const grid=['e','m','h'].map(l=>DAY.map((t,i)=>t.l===l?(res[i]?'🟩':'🟥'):'').join('')).join(' ');
+ app.innerHTML=`${hdr()}<div class="panel"><span class="tag">Today’s score</span><div class="big">${n}<small>/6</small></div><p class="verdict">${v}</p>
+  <div class="dots">${res.map(r=>`<i class="${r?'ok':'no'}"></i>`).join('')}</div>
+  <div class="list">${DAY.map((t,i)=>`<div class="li"><i>${res[i]?'✅':'❌'}</i><div>${t.ev.map(e=>e[0].replace(/^The /,'')).join(' → ')}<br><span>${t.ev.map(e=>e[2]).join(' · ')}</span></div></div>`).join('')}</div>
+  <div class="btns"><button class="btn" id="sh">Share my score</button><button class="btn ghost" id="ag">Play again (mock-up)</button></div>
+  <p class="small">When in History? ${n}/6 &nbsp; ${grid}<br>New trios every day.</p>
+  <p class="mock">In the real game the share button copies: “When in History? ${n}/6 ${grid} twominute.games”.</p></div>`;
+ $('#ag').onclick=intro;$('#sh').onclick=()=>{const t=`When in History? ${n}/6 ${grid}\nhttps://twominute.games`;navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>{$('#sh').textContent='Copied!'})}}
+intro();
+</script>
+</body>
+</html>
