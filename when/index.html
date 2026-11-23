@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>When was that? · twominute.games</title>
+<meta name="description" content="Three moments from history. Put them in order, earliest first. Six trios a day, free, no sign-up.">
+<link rel="canonical" href="https://twominute.games/when/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Two Minute Games">
+<meta property="og:title" content="When was that?">
+<meta property="og:description" content="You know the events. Do you know the order? Six trios a day.">
+<meta property="og:url" content="https://twominute.games/when/">
+<meta property="og:image" content="https://twominute.games/og-v4.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="apple-touch-icon" href="/icons/when-180.png?v=1">
+<meta name="apple-mobile-web-app-title" content="When was that?">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/icons/m/when-en.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght;700;800&display=swap"><link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* When was that? (live 23 Nov 2026). Engine: /when/when.js, trios: /when/trios.js. Look: the Natural Wonders simple games. */
+
+.hint{color:var(--muted);font-size:14.5px;margin:2px 2px 12px}
+.evs{display:grid;gap:10px}
+.ev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px 14px;font-size:17.5px;font-weight:700;line-height:1.25;cursor:pointer;transition:border-color .12s,background .12s,transform .25s}
+.ev .n{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:800 16px Nunito,Inter,sans-serif;background:#f1ece2;color:#b9b0a1}
+.ev.on{border-color:var(--accent)}.ev.on .n{background:var(--accent);color:#fff}
+.ev .yr{margin-left:auto;font:800 15px Nunito,Inter,sans-serif;color:var(--muted);white-space:nowrap}
+.ev.ok{border-color:var(--good);background:var(--goodbg)}.ev.ok .n{background:var(--good);color:#fff}
+.ev.no{border-color:var(--bad);background:var(--badbg)}.ev.no .n{background:var(--bad);color:#fff}
+.ev[disabled]{cursor:default}
+@media(hover:hover){.ev:not([disabled]):hover{border-color:#bdb4a4}.ev.on:not([disabled]):hover{border-color:var(--accent)}}
+.gap{display:flex;align-items:center;gap:8px;margin:-2px 0 -2px 22px;font-size:13px;font-weight:700;color:var(--cu)}
+.gap:before{content:"";width:2px;height:22px;background:var(--line);border-radius:1px}
+.gap.close{color:var(--accent)}
+.check{display:block;width:100%;margin-top:12px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:14px;cursor:pointer}
+.check[disabled]{background:#d9d2c5;cursor:default}
+.undo{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.lvlb{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:3px 9px;margin-left:6px;vertical-align:3px}
+.lvlb.e{background:#e3f3e9;color:var(--good)}.lvlb.m{background:#fff1d6;color:#9a6200}.lvlb.h{background:#fbe6e3;color:var(--bad)}
+.intro p.sub{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--cu);margin:-2px 0 10px}
+.ev.half{border-color:#d9a400;background:#fff6d6}.ev.half .n{background:#d9a400;color:#fff}
+.fact b.y{color:#9a6200}
+.dots i.half,.prog i.half{background:#d9a400}
+.ev .tx{flex:1}
+.lvlb.b{background:#16130f;color:#ffd36b}
+.gicon{display:block;width:64px;height:64px;border-radius:16px;margin:0 0 10px}
+.big .star{font-size:34px;margin-left:8px;vertical-align:14px}
+.prog i.star,.dots i.star{outline:2px solid #d9a400;outline-offset:1px}
+.intro p.sm{font-size:14px;color:var(--muted)}
+.bonus h2{margin-top:4px}
+</style>
+</head>
+<body>
+<!-- When was that? (was "When in History?"), a twominute.games history game. English only for now. -->
+<div class="wrap" id="app"></div>
+<script>window.TMG_SIMPLE=1;window.TMG_GAME='when';</script>
+<script src="/when/trios.js?v=11232300"></script>
+<script src="/when/when.js?v=11232300"></script>
+<script src="/shared/adbox.js?v=11" defer></script>
+<script src="/shared/homebtn.js?v=1" defer></script>
+<script src="/shared/gfoot.js?v=1" defer></script>
+<script src="/shared/reach.js?v=17" defer></script>
+<script src="/shared/feedback.js?v=1" defer></script>
+<script src="/shared/nwcount.js?v=2" defer></script>
+</body>
+</html>
