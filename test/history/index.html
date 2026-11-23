@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>When in History? · mock-up v1</title>
+<title>When was that? · mock-up v2</title>
 <meta name="theme-color" content="#f6f3ec">
 <link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/shared/nunito.css?v=1">
 <link rel="stylesheet" href="/simple/simple.css?v=11222216">
 <style>
-/* When in History? mock-up v1 (23 Nov 2026). Not linked from anywhere; noindex. */
+/* When was that? (was When in History?) mock-up v2 (23 Nov 2026). Not linked from anywhere; noindex. */
 .hint{color:var(--muted);font-size:14.5px;margin:2px 2px 12px}
 .evs{display:grid;gap:10px}
 .ev{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px 14px;font-size:17.5px;font-weight:700;line-height:1.25;cursor:pointer;transition:border-color .12s,background .12s,transform .25s}
@@ -31,6 +31,10 @@
 .undo{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
 .lvlb{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:3px 9px;margin-left:6px;vertical-align:3px}
 .lvlb.e{background:#e3f3e9;color:var(--good)}.lvlb.m{background:#fff1d6;color:#9a6200}.lvlb.h{background:#fbe6e3;color:var(--bad)}
+.intro p.sub{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--cu);margin:-2px 0 10px}
+.ev.half{border-color:#d9a400;background:#fff6d6}.ev.half .n{background:#d9a400;color:#fff}
+.fact b.y{color:#9a6200}
+.dots i.half,.prog i.half{background:#d9a400}
 .mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:10px 0 0;line-height:1.45}
 </style>
 </head>
@@ -57,41 +61,42 @@ const LV={e:'Easy',m:'Medium',h:'Hard'};
 const $=s=>document.querySelector(s),app=$('#app');
 let qi=0,res=[],pick=[],order=[];
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
-function hdr(){return `<div class="top"><a class="back" href="/">← All games</a><div class="ttl"><span class="tag">When in History?</span></div></div>
- <div class="prog">${DAY.map((_,i)=>`<i class="${res[i]===true?'ok':res[i]===false?'no':i===qi?'now':''}"></i>`).join('')}</div>`}
-function intro(){app.innerHTML=`${hdr()}<div class="panel intro"><span class="tag">Daily · 6 trios</span><h2>When in History?</h2>
+function hdr(){return `<div class="top"><a class="back" href="/">← All games</a><div class="ttl"><span class="tag">When was that?</span></div></div>
+ <div class="prog">${DAY.map((_,i)=>`<i class="${res[i]===1?'ok':res[i]===.5?'half':res[i]===0?'no':i===qi?'now':''}"></i>`).join('')}</div>`}
+function intro(){app.innerHTML=`${hdr()}<div class="panel intro"><span class="tag">Daily · 6 trios</span><h2>When was that?</h2><p class="sub">You know the events. Do you know the order?</p>
  <p>Three moments from history. Tap them in order, <b>earliest first</b>.</p>
  <ul><li>2 easy — centuries apart</li><li>2 medium — one far away, two close together</li><li>2 hard — all three inside about ten years</li></ul>
  <div class="btns"><button class="btn" id="go">Play today’s trios</button></div>
- <p class="mock">Mock-up v1 — not live. Tap to play; nothing is counted.</p></div>`;$('#go').onclick=()=>{qi=0;res=[];q()}}
+ <p class="mock">Mock-up v2 — not live. Tap to play; nothing is counted.</p></div>`;$('#go').onclick=()=>{qi=0;res=[];q()}}
 function q(){const t=DAY[qi];pick=[];order=shuffle([0,1,2]);draw()}
 function draw(done){const t=DAY[qi];
  let cards;
  if(!done){cards=order.map(i=>{const p=pick.indexOf(i);return `<button class="ev ${p>=0?'on':''}" data-i="${i}"><span class="n">${p>=0?p+1:''}</span><span>${t.ev[i][0]}</span></button>`}).join('')}
  else{ /* reveal: true order, with each card marked against where the player put it, and the gaps between */
-  cards=[0,1,2].map(i=>{const ok=pick[i]===i,u=pick.indexOf(i)+1;return `<button class="ev ${ok?'ok':'no'}" disabled><span class="n">${u}</span><span>${t.ev[i][0]}</span><span class="yr">${t.ev[i][2]}</span></button>`+
+  cards=[0,1,2].map(i=>{const u=pick.indexOf(i)+1,ok=u===i+1;return `<button class="ev ${ok?(res[qi]===1?'ok':'half'):'no'}" disabled><span class="n">${u}</span><span>${t.ev[i][0]}</span><span class="yr">${t.ev[i][2]}</span></button>`+
    (i<2?gap(t.ev[i+1][1]-t.ev[i][1]):'')}).join('')}
- const ok=done&&pick.every((v,i)=>v===i);
+ const r=done?res[qi]:0;
  app.innerHTML=`${hdr()}<h2 class="q">Put them in order<span class="lvlb ${t.l}">${LV[t.l]}</span></h2>
   <p class="hint">${done?'In order, earliest at the top. The number is where you put it.':'Tap the earliest first, then the next, then the latest.'}</p>
   <div class="evs">${cards}</div>
-  ${done?`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Spot on!':pick[0]===0?'Close — you got the earliest.':'Not quite.'}</b>${t.f}</div><button class="next" id="nx">${qi<DAY.length-1?'Next trio →':'See my score →'}</button>`
+  ${done?`<div class="fact"><b class="${r===1?'g':r?'y':'r'}">${r===1?'Spot on! 1 point':r?'Nearly — one in the right place. ½ point':'Not quite. 0 points'}</b>${t.f}</div><button class="next" id="nx">${qi<DAY.length-1?'Next trio →':'See my score →'}</button>`
    :`<button class="check" id="ck" ${pick.length<3?'disabled':''}>Check my order</button>${pick.length?'<button class="undo" id="un">Start this trio again</button>':''}`}`;
  if(done){$('#nx').onclick=()=>{qi++;qi<DAY.length?q():end()};return}
  app.querySelectorAll('.ev').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,p=pick.indexOf(i);if(p>=0)pick=pick.slice(0,p);else if(pick.length<3)pick.push(i);draw()});
  const un=$('#un');if(un)un.onclick=()=>{pick=[];draw()};
- $('#ck').onclick=()=>{if(pick.length<3)return;res[qi]=pick.every((v,i)=>v===i);draw(true)}}
+ $('#ck').onclick=()=>{if(pick.length<3)return;res[qi]=sc(pick);draw(true)}}
+function sc(p){const n=p.filter((v,i)=>v===i).length;return n===3?1:n===1?.5:0}
 function gap(y){const a=Math.abs(y);const s=a<1?'the same year':a.toLocaleString('en-GB')+' year'+(a===1?'':'s')+' later';return `<div class="gap ${a<=10?'close':''}">${s}</div>`}
-function end(){const n=res.filter(Boolean).length;
+function end(){const n=res.reduce((a,b)=>a+b,0),N=String(n).replace('.5','½');
  const v=n===6?'A true historian!':n>=4?'Very good — you know your eras.':n>=2?'History is trickier than it looks.':'Time is a funny thing, isn’t it?';
- const grid=['e','m','h'].map(l=>DAY.map((t,i)=>t.l===l?(res[i]?'🟩':'🟥'):'').join('')).join(' ');
- app.innerHTML=`${hdr()}<div class="panel"><span class="tag">Today’s score</span><div class="big">${n}<small>/6</small></div><p class="verdict">${v}</p>
-  <div class="dots">${res.map(r=>`<i class="${r?'ok':'no'}"></i>`).join('')}</div>
-  <div class="list">${DAY.map((t,i)=>`<div class="li"><i>${res[i]?'✅':'❌'}</i><div>${t.ev.map(e=>e[0].replace(/^The /,'')).join(' → ')}<br><span>${t.ev.map(e=>e[2]).join(' · ')}</span></div></div>`).join('')}</div>
+ const grid=['e','m','h'].map(l=>DAY.map((t,i)=>t.l===l?(res[i]===1?'🟩':res[i]?'🟨':'🟥'):'').join('')).join(' ');
+ app.innerHTML=`${hdr()}<div class="panel"><span class="tag">Today’s score</span><div class="big">${N}<small>/6</small></div><p class="verdict">${v}</p>
+  <div class="dots">${res.map(r=>`<i class="${r===1?'ok':r?'half':'no'}"></i>`).join('')}</div>
+  <div class="list">${DAY.map((t,i)=>`<div class="li"><i>${res[i]===1?'✅':res[i]?'½':'❌'}</i><div>${t.ev.map(e=>e[0].replace(/^The /,'')).join(' → ')}<br><span>${t.ev.map(e=>e[2]).join(' · ')}</span></div></div>`).join('')}</div>
   <div class="btns"><button class="btn" id="sh">Share my score</button><button class="btn ghost" id="ag">Play again (mock-up)</button></div>
-  <p class="small">When in History? ${n}/6 &nbsp; ${grid}<br>New trios every day.</p>
-  <p class="mock">In the real game the share button copies: “When in History? ${n}/6 ${grid} twominute.games”.</p></div>`;
- $('#ag').onclick=intro;$('#sh').onclick=()=>{const t=`When in History? ${n}/6 ${grid}\nhttps://twominute.games`;navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>{$('#sh').textContent='Copied!'})}}
+  <p class="small">When was that? ${N}/6 &nbsp; ${grid}<br>New trios every day.</p>
+  <p class="mock">In the real game the share button copies: “When was that? ${N}/6 ${grid} twominute.games”.</p></div>`;
+ $('#ag').onclick=intro;$('#sh').onclick=()=>{const t=`When was that? ${N}/6 ${grid}\nhttps://twominute.games`;navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>{$('#sh').textContent='Copied!'})}}
 intro();
 </script>
 </body>
