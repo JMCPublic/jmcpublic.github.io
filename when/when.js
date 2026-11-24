@@ -23,7 +23,20 @@ const POOL={};['e','m','h','b'].forEach(l=>{const T=TRIOS.filter(t=>t.l===l),ws=
   POOL[l]=ws.flatMap(w=>shuffle(T.filter(t=>(t.w||1)===w),rng('when-pool-'+l+(w>1?'-w'+w:''))))});
 const DAY0=Date.UTC(2026,10,24);
 function dayNo(seed){const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(seed);return m?Math.round((Date.UTC(+m[1],+m[2]-1,+m[3])-DAY0)/864e5):Math.floor(rng(seed)()*1e6)}
-function pick(seed){const n=dayNo(seed),used=new Set(),out=[];
+function pick(seed){const n=dayNo(seed),isDay=/^\d{4}-\d\d-\d\d$/.test(seed);
+  /* Real days: walk forward from launch day, one cursor per level. A trio skipped because it shares an event with another trio that day
+     waits at the front of the queue for the next day, so every trio is used once before any comes round again. */
+  if(isDay&&n>=0){const cur={e:0,m:0,h:0,b:0},q={e:[],m:[],h:[],b:[]};let day=null;
+    for(let d=0;d<=n;d++){const used=new Set(),out=[];
+      const take=(l,k)=>{const P=POOL[l];let got=0,guard=0;const keep=[];
+        while(q[l].length&&got<k){const t=q[l].shift();if(t.ev.some(e=>used.has(e[0])))keep.push(t);else{t.ev.forEach(e=>used.add(e[0]));out.push(t);got++}}
+        while(got<k&&guard++<P.length*2){const t=P[cur[l]%P.length];cur[l]++;if(out.includes(t))continue;
+          if(t.ev.some(e=>used.has(e[0]))){keep.push(t);continue}t.ev.forEach(e=>used.add(e[0]));out.push(t);got++}
+        q[l]=keep.concat(q[l])};
+      take('e',2);take('m',2);take('h',2);take('b',1);if(d===n)day=out}
+    return {qs:day.slice(0,6).map(t=>prep(t,seed)),bonus:day[6]?prep(day[6],seed):null}}
+  /* practice sets (owner) and any day before launch: a random-ish slice */
+  const used=new Set(),out=[];
   const take=(l,k,per)=>{const P=POOL[l];let got=0;for(let j=0;j<P.length&&got<k;j++){const t=P[(((n*per+j)%P.length)+P.length)%P.length];
       if(out.includes(t)||t.ev.some(e=>used.has(e[0])))continue;t.ev.forEach(e=>used.add(e[0]));out.push(t);got++}};
   take('e',2,2);take('m',2,2);take('h',2,2);const main=out.slice();take('b',1,1);const bonus=out[6]||null;
