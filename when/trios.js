@@ -1,7 +1,7 @@
 /* When was that? trio bank (23 Nov 2026). Each trio: three events, put in order earliest first.
    l: e = easy (centuries apart), m = medium (one far away + a close pair), h = hard (all inside about a decade), b = bonus (hardest: often the same year, so months count).
    ev: [what the player sees, value used for ordering (BC negative; .1-.9 = months within a year for same-year trios), what the answer shows].
-   w: batch (1 = the launch bank, 2 = added 24 Nov...). New trios always go in a new batch, so days already played never change.
+   w: batch (1 = the launch bank, 2 and 3 = added 24 Nov...). New trios always go in a new batch, so days already played never change.
    f: the "Oh, I didn't know that" line. Every date checked before going in; add new trios at the end of their level. */
 window.TRIOS=[
 /* ---------- easy ---------- */
@@ -60,6 +60,8 @@ window.TRIOS=[
 {w:2,l:'m',ev:[['Julius Caesar is assassinated',-44,'44 BC'],['The first FA Cup Final',1872,'1872'],['The first Wimbledon Championships',1877,'1877']],f:'The FA Cup is the oldest national football competition in the world. Wanderers won the first final.'},
 {w:2,l:'m',ev:[['The Great Pyramid of Giza is built',-2560,'c. 2560 BC'],['The first Nobel Prizes are awarded',1901,'1901'],['The Wright brothers make the first powered flight',1903,'1903']],f:'Alfred Nobel, who founded the prizes, made his fortune inventing dynamite.'},
 {w:2,l:'m',ev:[['The Colosseum opens in Rome',80,'AD 80'],['The first computer “bug”: a real moth found in a computer',1947,'1947'],['The NHS is founded',1948,'1948']],f:'The first computer bug was a real moth, stuck in a Harvard computer. The team taped it into their logbook.'},
+{w:3,l:'m',ev:[['The Battle of Hastings',1066,'1066'],['The first McDonald’s opens',1940,'1940'],['LEGO’s first plastic bricks go on sale',1949,'1949']],f:'McDonald’s is older than LEGO bricks. LEGO comes from the Danish “leg godt”: play well.'},
+{w:3,l:'m',ev:[['The Spanish Armada sails against England',1588,'1588'],['The first Walmart store opens',1962,'1962'],['First people walk on the Moon',1969,'1969']],f:'Walmart opened its first store in Rogers, Arkansas, seven years before the Moon landing.'},
 /* ---------- hard ---------- */
 {l:'h',ev:[['The Wright brothers make the first powered flight',1903,'1903'],['The Wind in the Willows is published',1908,'1908'],['The Titanic sinks',1912,'1912']],f:'People were flying aeroplanes before Mr Toad first took the wheel, and nine years before the Titanic sank.'},
 {l:'h',ev:[['First episode of Doctor Who',1963,'1963'],['England win the football World Cup',1966,'1966'],['First people walk on the Moon',1969,'1969']],f:'Doctor Who is older than England’s World Cup win. It first aired on 23 November 1963.'},
@@ -98,6 +100,16 @@ window.TRIOS=[
 {w:2,l:'h',ev:[['The Second World War ends',1945,'1945'],['The first computer “bug”: a real moth found in a computer',1947,'1947'],['The NHS is founded',1948,'1948']],f:'That first computer bug, a moth taped into a logbook, is now kept at the Smithsonian in Washington.'},
 {w:2,l:'h',ev:[['The Cuban Missile Crisis',1962,'1962'],['President Kennedy is assassinated',1963,'1963'],['England win the football World Cup',1966,'1966']],f:'The Cuban Missile Crisis, when the world came closest to nuclear war, lasted just 13 days.'},
 {w:2,l:'h',ev:[['The first Nobel Prizes are awarded',1901,'1901'],['The Wright brothers make the first powered flight',1903,'1903'],['The first Ford Model T is built',1908,'1908']],f:'In 1903, the year of the first flight, Marie Curie became the first woman to win a Nobel Prize.'},
+{w:3,l:'h',ev:[['The Penny Black, the first postage stamp',1840,'1840'],['The first fax machine is patented',1843,'1843'],['Morse sends “What hath God wrought” by telegraph',1844,'1844']],f:'The fax machine is older than the most famous telegraph message ever sent.'},
+{w:3,l:'h',ev:[['The London Underground opens',1863,'1863'],['Abraham Lincoln is assassinated',1865,'1865'],['The Suez Canal opens',1869,'1869']],f:'Londoners were already riding underground trains during the American Civil War.'},
+{w:3,l:'h',ev:[['Coca-Cola is invented',1886,'1886'],['The Eiffel Tower opens',1889,'1889'],['The first public cinema screening, in Paris',1895,'1895']],f:'Coca-Cola is three years older than the Eiffel Tower.'},
+{w:3,l:'h',ev:[['The first public cinema screening, in Paris',1895,'1895'],['The first modern Olympic Games, in Athens',1896,'1896'],['Queen Victoria dies',1901,'1901']],f:'Films are older than the modern Olympics. The Lumière brothers showed the first ones in a Paris café in December 1895.'},
+{w:3,l:'h',ev:[['The Titanic sinks',1912,'1912'],['The first crossword puzzle is published',1913,'1913'],['The First World War begins',1914,'1914']],f:'The crossword is younger than the Titanic. The first one appeared in a New York newspaper in December 1913.'},
+{w:3,l:'h',ev:[['John Logie Baird demonstrates television',1926,'1926'],['Alexander Fleming discovers penicillin',1928,'1928'],['The Wall Street Crash',1929,'1929']],f:'Television is older than penicillin. Baird first showed it off in a room in Soho, London, in 1926.'},
+{w:3,l:'h',ev:[['The Golden Gate Bridge opens',1937,'1937'],['Superman first appears in a comic',1938,'1938'],['The Second World War begins',1939,'1939']],f:'Superman’s creators sold the rights to their character for $130.'},
+{w:3,l:'h',ev:[['The Second World War ends',1945,'1945'],['Anne Frank’s diary is first published',1947,'1947'],['The NHS is founded',1948,'1948']],f:'Anne Frank’s diary was not published until 1947, two years after the war ended, by her father Otto.'},
+{w:3,l:'h',ev:[['Elvis Presley releases his first single, That’s All Right',1954,'1954'],['Disneyland opens in California',1955,'1955'],['Sputnik, the first satellite, is launched',1957,'1957']],f:'Elvis had already released his first record when Disneyland opened in July 1955.'},
+{w:3,l:'h',ev:[['The first email is sent',1971,'1971'],['Pong, the arcade game, is released',1972,'1972'],['The Rubik’s Cube is invented',1974,'1974']],f:'Email is older than Pong. Ray Tomlinson, who sent the first one, chose the @ sign to separate the name from the computer.'},
 /* ---------- bonus (the hardest: often the same year, so the months count) ---------- */
 {l:'b',ev:[['Star Wars opens in cinemas',1977.5,'May 1977'],['Elvis Presley dies',1977.8,'Aug 1977'],['France carries out its last execution by guillotine',1977.9,'Sep 1977']],f:'France was still using the guillotine when Star Wars came out. The last execution was in September 1977.'},
 {l:'b',ev:[['Captain Scott reaches the South Pole',1912.1,'Jan 1912'],['The first Oreo cookie is made',1912.3,'Mar 1912'],['The Titanic sinks',1912.4,'Apr 1912']],f:'The Oreo is older than the Titanic’s sinking, by about six weeks.'},
