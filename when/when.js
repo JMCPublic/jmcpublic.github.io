@@ -18,7 +18,9 @@ const LV={e:'Easy',m:'Medium',h:'Hard',b:'Bonus'};
 
 /* ---------- the day's trios: each level's list is shuffled once, then walked through day by day, so trios don't come back until the list runs out.
    No event appears twice on the same day. A practice seed (owner only) picks at random. ---------- */
-const POOL={};['e','m','h','b'].forEach(l=>POOL[l]=shuffle(TRIOS.filter(t=>t.l===l),rng('when-pool-'+l)));
+/* each batch is shuffled on its own and added after the earlier ones, so new trios never change days already played (as long as the list hasn't wrapped round) */
+const POOL={};['e','m','h','b'].forEach(l=>{const T=TRIOS.filter(t=>t.l===l),ws=[...new Set(T.map(t=>t.w||1))].sort((a,b)=>a-b);
+  POOL[l]=ws.flatMap(w=>shuffle(T.filter(t=>(t.w||1)===w),rng('when-pool-'+l+(w>1?'-w'+w:''))))});
 const DAY0=Date.UTC(2026,10,24);
 function dayNo(seed){const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(seed);return m?Math.round((Date.UTC(+m[1],+m[2]-1,+m[3])-DAY0)/864e5):Math.floor(rng(seed)()*1e6)}
 function pick(seed){const n=dayNo(seed),used=new Set(),out=[];

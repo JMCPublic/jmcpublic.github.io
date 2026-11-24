@@ -1,6 +1,7 @@
 /* When was that? trio bank (23 Nov 2026). Each trio: three events, put in order earliest first.
    l: e = easy (centuries apart), m = medium (one far away + a close pair), h = hard (all inside about a decade), b = bonus (hardest: often the same year, so months count).
    ev: [what the player sees, value used for ordering (BC negative; .1-.9 = months within a year for same-year trios), what the answer shows].
+   w: batch (1 = the launch bank, 2 = added 24 Nov...). New trios always go in a new batch, so days already played never change.
    f: the "Oh, I didn't know that" line. Every date checked before going in; add new trios at the end of their level. */
 window.TRIOS=[
 /* ---------- easy ---------- */
@@ -27,6 +28,7 @@ window.TRIOS=[
 {l:'e',ev:[['The first recorded Olympic Games',-776,'776 BC'],['The Battle of Hastings',1066,'1066'],['Alexander Fleming discovers penicillin',1928,'1928']],f:'Fleming found penicillin by accident: mould had grown on a dish he left out while on holiday.'},
 {l:'e',ev:[['Vikings raid the monastery at Lindisfarne',793,'793'],['King John agrees to Magna Carta',1215,'1215'],['The Battle of Waterloo',1815,'1815']],f:'Waterloo is in Belgium, about 10 miles south of Brussels.'},
 
+{w:2,l:'e',ev:[['Gutenberg’s printing press is up and running',1440,'c. 1440'],['William Shakespeare is born',1564,'1564'],['The BBC starts the world’s first regular TV service',1936,'1936']],f:'Thanks to the printing press, Shakespeare’s plays survived: friends printed 36 of them in the First Folio in 1623.'},
 /* ---------- medium ---------- */
 {l:'m',ev:[['The Western Roman Empire falls',476,'476'],['England win the football World Cup',1966,'1966'],['First people walk on the Moon',1969,'1969']],f:'England lifted the World Cup only three years before the Moon landing: same decade, same black-and-white TV.'},
 {l:'m',ev:[['Julius Caesar is assassinated',-44,'44 BC'],['The Statue of Liberty is unveiled in New York',1886,'1886'],['The Eiffel Tower opens in Paris',1889,'1889']],f:'Three years apart, and the Statue of Liberty’s iron skeleton was designed by Gustave Eiffel’s company.'},
@@ -55,6 +57,9 @@ window.TRIOS=[
 {l:'m',ev:[['Vikings raid the monastery at Lindisfarne',793,'793'],['The American Declaration of Independence',1776,'1776'],['Storming of the Bastille in Paris',1789,'1789']],f:'The French Revolution began 13 years after the American Declaration of Independence.'},
 {l:'m',ev:[['The Spanish Armada sails against England',1588,'1588'],['Amundsen reaches the South Pole',1911,'1911'],['The Titanic sinks',1912,'1912']],f:'Amundsen reached the South Pole about five weeks before Captain Scott.'},
 
+{w:2,l:'m',ev:[['Julius Caesar is assassinated',-44,'44 BC'],['The first FA Cup Final',1872,'1872'],['The first Wimbledon Championships',1877,'1877']],f:'The FA Cup is the oldest national football competition in the world. Wanderers won the first final.'},
+{w:2,l:'m',ev:[['The Great Pyramid of Giza is built',-2560,'c. 2560 BC'],['The first Nobel Prizes are awarded',1901,'1901'],['The Wright brothers make the first powered flight',1903,'1903']],f:'Alfred Nobel, who founded the prizes, made his fortune inventing dynamite.'},
+{w:2,l:'m',ev:[['The Colosseum opens in Rome',80,'AD 80'],['The first computer “bug”: a real moth found in a computer',1947,'1947'],['The NHS is founded',1948,'1948']],f:'The first computer bug was a real moth, stuck in a Harvard computer. The team taped it into their logbook.'},
 /* ---------- hard ---------- */
 {l:'h',ev:[['The Wright brothers make the first powered flight',1903,'1903'],['The Wind in the Willows is published',1908,'1908'],['The Titanic sinks',1912,'1912']],f:'People were flying aeroplanes before Mr Toad first took the wheel, and nine years before the Titanic sank.'},
 {l:'h',ev:[['First episode of Doctor Who',1963,'1963'],['England win the football World Cup',1966,'1966'],['First people walk on the Moon',1969,'1969']],f:'Doctor Who is older than England’s World Cup win. It first aired on 23 November 1963.'},
@@ -86,6 +91,13 @@ window.TRIOS=[
 {l:'h',ev:[['Star Wars opens in cinemas',1977,'1977'],['Margaret Thatcher becomes Prime Minister',1979,'1979'],['The first Space Shuttle launch',1981,'1981']],f:'Star Wars was turned down by more than one studio before 20th Century Fox agreed to make it.'},
 {l:'h',ev:[['The Falklands War',1982,'1982'],['Live Aid concerts in London and Philadelphia',1985,'1985'],['The Chernobyl disaster',1986,'1986']],f:'Live Aid was held in two cities on one day, 13 July 1985, and watched around the world.'},
 
+{w:2,l:'h',ev:[['The first FA Cup Final',1872,'1872'],['Custer’s Last Stand',1876,'1876'],['The first Wimbledon Championships',1877,'1877']],f:'The first Wimbledon had only a men’s singles, and about 200 people paid a shilling each to watch the final.'},
+{w:2,l:'h',ev:[['Alexander Graham Bell patents the telephone',1876,'1876'],['The first Wimbledon Championships',1877,'1877'],['Edison’s light bulb works for the first time',1879,'1879']],f:'Wimbledon is older than the electric light bulb.'},
+{w:2,l:'h',ev:[['The first Ford Model T is built',1908,'1908'],['The Titanic sinks',1912,'1912'],['The First World War begins',1914,'1914']],f:'Ford went on to build more than 15 million Model Ts.'},
+{w:2,l:'h',ev:[['The BBC starts the world’s first regular TV service',1936,'1936'],['The Hindenburg airship disaster',1937,'1937'],['The Second World War begins',1939,'1939']],f:'BBC television went off the air when the war began in 1939 and did not come back until 1946.'},
+{w:2,l:'h',ev:[['The Second World War ends',1945,'1945'],['The first computer “bug”: a real moth found in a computer',1947,'1947'],['The NHS is founded',1948,'1948']],f:'That first computer bug, a moth taped into a logbook, is now kept at the Smithsonian in Washington.'},
+{w:2,l:'h',ev:[['The Cuban Missile Crisis',1962,'1962'],['President Kennedy is assassinated',1963,'1963'],['England win the football World Cup',1966,'1966']],f:'The Cuban Missile Crisis, when the world came closest to nuclear war, lasted just 13 days.'},
+{w:2,l:'h',ev:[['The first Nobel Prizes are awarded',1901,'1901'],['The Wright brothers make the first powered flight',1903,'1903'],['The first Ford Model T is built',1908,'1908']],f:'In 1903, the year of the first flight, Marie Curie became the first woman to win a Nobel Prize.'},
 /* ---------- bonus (the hardest: often the same year, so the months count) ---------- */
 {l:'b',ev:[['Star Wars opens in cinemas',1977.5,'May 1977'],['Elvis Presley dies',1977.8,'Aug 1977'],['France carries out its last execution by guillotine',1977.9,'Sep 1977']],f:'France was still using the guillotine when Star Wars came out. The last execution was in September 1977.'},
 {l:'b',ev:[['Captain Scott reaches the South Pole',1912.1,'Jan 1912'],['The first Oreo cookie is made',1912.3,'Mar 1912'],['The Titanic sinks',1912.4,'Apr 1912']],f:'The Oreo is older than the Titanic’s sinking, by about six weeks.'},
@@ -95,5 +107,7 @@ window.TRIOS=[
 {l:'b',ev:[['The structure of DNA is published',1953.4,'Apr 1953'],['Everest is climbed for the first time',1953.5,'May 1953'],['Queen Elizabeth II is crowned',1953.6,'Jun 1953']],f:'Everest, DNA and a coronation: all within about six weeks in the spring of 1953.'},
 {l:'b',ev:[['Tim Berners-Lee proposes the World Wide Web',1989.3,'Mar 1989'],['Protests in Tiananmen Square',1989.5,'Jun 1989'],['The Berlin Wall falls',1989.9,'Nov 1989']],f:'The World Wide Web began as a proposal for sharing documents at CERN, near Geneva.'},
 {l:'b',ev:[['The first iPhone goes on sale',2007.5,'Jun 2007'],['The last Harry Potter book is published',2007.6,'Jul 2007'],['Amazon launches the Kindle',2007.9,'Nov 2007']],f:'The last Harry Potter book came out the same summer as the first iPhone.'},
-{l:'b',ev:[['Napoleon escapes from exile on Elba',1815.2,'Feb 1815'],['Mount Tambora erupts in Indonesia',1815.4,'Apr 1815'],['The Battle of Waterloo',1815.5,'Jun 1815']],f:'Tambora’s eruption cooled the planet: 1816 became known as the “Year Without a Summer”.'}
+{l:'b',ev:[['Napoleon escapes from exile on Elba',1815.2,'Feb 1815'],['Mount Tambora erupts in Indonesia',1815.4,'Apr 1815'],['The Battle of Waterloo',1815.5,'Jun 1815']],f:'Tambora’s eruption cooled the planet: 1816 became known as the “Year Without a Summer”.'},
+{w:2,l:'b',ev:[['Marilyn Monroe dies',1962.6,'Aug 1962'],['Dr. No, the first James Bond film, premieres',1962.8,'5 Oct 1962'],['The Cuban Missile Crisis begins',1962.85,'16 Oct 1962']],f:'Dr. No and the Beatles’ first single, Love Me Do, came out on the very same day: 5 October 1962.'},
+{w:2,l:'b',ev:[['VE Day: the war in Europe ends',1945.4,'May 1945'],['The atomic bomb is dropped on Hiroshima',1945.6,'Aug 1945'],['Japan surrenders and the Second World War ends',1945.7,'Sep 1945']],f:'Japan signed its surrender on board the battleship USS Missouri in Tokyo Bay, on 2 September 1945.'}
 ];
