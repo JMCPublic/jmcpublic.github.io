@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="/screwballs/icon-180.png">
+<title>Screwballs – Find your angle (test v1)</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#efe2c8;color:#2a170a;font-family:system-ui,-apple-system,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{position:fixed;inset:0;display:flex;gap:10px;padding:10px max(10px,env(safe-area-inset-right)) 10px max(10px,env(safe-area-inset-left));box-sizing:border-box}
+#trayWrap{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+#tray{position:relative;flex:1;border-radius:16px;background:repeating-linear-gradient(95deg,#7b4a28 0 9px,#74452a 9px 15px,#80502c 15px 26px);box-shadow:inset 0 0 0 8px #3a2213,inset 0 0 0 10px rgba(0,0,0,.3);overflow:hidden}
+#ball{position:absolute;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff 0,#e4e8ec 22%,#a9b1b9 55%,#5b636b 85%,#3d434a 100%);box-shadow:2px 5px 6px rgba(0,0,0,.45)}
+.target{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:3px dashed rgba(255,215,106,.8);box-sizing:border-box}
+#strip{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,#e8b04a 0 22%,#7fcf6a 22% 70%,#e8b04a 70%)}
+#mark{position:absolute;top:-4px;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:#2a170a}
+#saveMark{position:absolute;top:-7px;margin-left:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #7b2cf0;display:none}
+.lbls{display:flex;justify-content:space-between;font-size:11px;color:#6b3f22}
+#side{width:250px;flex:none;display:flex;flex-direction:column;gap:8px;overflow:auto;font-size:13px}
+h1{font-size:18px;margin:0}
+.card{background:#fbf4e6;border:2px solid #2a170a;border-radius:12px;padding:8px 10px}
+.row{display:flex;justify-content:space-between;gap:8px}
+.row b{font-variant-numeric:tabular-nums}
+label{display:block;font-weight:700;margin-top:4px}
+input[type=range]{width:100%;accent-color:#2a170a}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+button{min-height:40px;padding:0 12px;border-radius:999px;border:2px solid #2a170a;background:transparent;color:#2a170a;font:800 13px system-ui;cursor:pointer}
+button.main{background:#2a170a;color:#efe2c8}
+#gate{position:fixed;inset:0;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;z-index:20}
+#gate button{background:#fff;color:#111;border:0;min-height:50px;padding:0 26px;font-size:16px}
+#toast{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:#2a170a;color:#fff;font:600 13px system-ui;padding:9px 14px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:30}
+#turn{position:fixed;inset:0;z-index:25;background:#111;color:#fff;display:none;align-items:center;justify-content:center;font:700 22px system-ui;text-align:center;padding:30px}
+@media (orientation:portrait) and (max-width:700px){#turn{display:flex}}
+</style>
+</head>
+<body>
+<div id="pwg" style="position:fixed;inset:0;z-index:100;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:system-ui,sans-serif;padding:24px;text-align:center">
+  <div style="font:400 30px Bungee,system-ui,sans-serif">SCREWBALLS</div>
+  <div style="color:#aaa;font-size:14px">Find your angle · test v1</div>
+  <form id="pwf" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><label for="pwi" style="position:absolute;left:-9999px">Password</label><input id="pwi" type="password" autocomplete="current-password" placeholder="Password" style="min-height:46px;font-size:16px;padding:0 14px;border-radius:12px;border:1px solid #444;background:#1c1c1c;color:#fff;width:220px"><button style="min-height:46px;padding:0 20px;border-radius:12px;border:0;background:#fff;color:#111;font:800 16px system-ui,sans-serif">Enter</button></form>
+  <div id="pwm" role="status" style="color:#ff9a9a;font-size:13px;min-height:18px"></div>
+</div>
+<script>
+/* Same password as the stats page (PBKDF2-SHA256, 150,000 rounds); only the scrambled code is in this file. Remembered on this device after the first time. */
+(()=>{const HASH='2adfcea818ae1edf0375e35ebbf4886df8469707b5f9668b2366434cdcbc5bec',K='tmg-screwballs-ok',g=document.getElementById('pwg');
+let ok=null;try{ok=localStorage.getItem(K)}catch(e){} if(ok===HASH){g.remove();return}
+async function code(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('tmg-stats-2026'),iterations:150000},k,256);
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+document.getElementById('pwf').onsubmit=async e=>{e.preventDefault();const i=document.getElementById('pwi'),m=document.getElementById('pwm');m.textContent='Checking…';
+  const c=await code(i.value);if(c===HASH){try{localStorage.setItem(K,HASH)}catch(err){}g.remove();return}
+  i.value='';m.textContent='That’s not right. Please try again.'}})();
+</script>
+<div id="app">
+  <div id="trayWrap">
+    <div id="tray"><div class="target" id="tg"></div><div id="ball"></div></div>
+    <div><div id="strip"><div id="mark"></div><div id="saveMark"></div></div>
+      <div class="lbls"><span>Flat</span><span id="deg">Your angle: –</span><span>Upright</span></div></div>
+  </div>
+  <div id="side">
+    <h1>Find your angle <span style="font-size:11px;opacity:.6">test v1</span></h1>
+    <div class="card">
+      <div class="row"><span>Your angle</span><b id="r1">–</b></div>
+      <div class="row"><span>Saved level</span><b id="r2">none</b></div>
+      <div class="row"><span>Left/right tilt</span><b id="r3">–</b></div>
+      <div class="row"><span>Forward/back tilt</span><b id="r4">–</b></div>
+      <div class="row"><span>Targets hit</span><b id="r5">0</b></div>
+    </div>
+    <div class="btns"><button class="main" id="save">Feels right, save</button><button id="relevel">Re-level</button><button id="flat">Use flat</button></div>
+    <div class="card">
+      <label for="sens">Tilt needed for full speed: <span id="sensV"></span>°</label><input type="range" id="sens" min="8" max="40" step="1">
+      <label for="dz">Steady zone (ignores small wobbles): <span id="dzV"></span></label><input type="range" id="dz" min="0" max="0.2" step="0.01">
+      <label for="up">Uphill effort: <span id="upV"></span></label><input type="range" id="up" min="0.4" max="1" step="0.05">
+      <label for="spd">Ball speed: <span id="spdV"></span></label><input type="range" id="spd" min="1" max="5" step="1">
+      <div class="btns" style="margin-top:6px"><button id="reset">Reset sliders</button></div>
+    </div>
+    <div style="font-size:11px;color:#6b3f22">Roll the ball onto the dashed rings. Your saved level and slider settings are kept on this phone and will be used by Screwballs.</div>
+  </div>
+</div>
+<div id="gate"><div style="font-size:26px;font-weight:800">Find your angle</div><div style="color:#bbb;max-width:320px">Turn your phone sideways and tap Start. Allow motion access when asked.</div><button id="go">Start</button></div>
+<div id="turn">Turn your phone sideways</div>
+<div id="toast"></div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const DEF={sens:22,dz:0.06,up:0.75,spd:3};
+const ACC=[0,.15,.22,.3,.4,.52], VMAX=[0,3.2,4.3,5.5,6.8,8.2];
+let tune=Object.assign({},DEF); try{ Object.assign(tune,JSON.parse(localStorage.getItem("sb-tune")||"{}")); }catch(e){}
+let base=null, raw=null, sx=0, sy=0, tx=0, ty=0, b={x:100,y:100,vx:0,vy:0}, hits=0, tgt={x:.8,y:.3}, sensor=false;
+try{ const v=JSON.parse(localStorage.getItem("sb-level")||"null"); if(v&&typeof v.x==="number") base=v; }catch(e){}
+function toast(t){ const el=$("toast"); el.textContent=t; el.style.opacity=1; clearTimeout(toast.h); toast.h=setTimeout(()=>el.style.opacity=0,2200); }
+function syncSliders(){ [["sens","sensV",v=>v],["dz","dzV",v=>(+v).toFixed(2)],["up","upV",v=>(+v).toFixed(2)],["spd","spdV",v=>v]].forEach(([id,lab,f])=>{ $(id).value=tune[id]; $(lab).textContent=f(tune[id]); }); }
+["sens","dz","up","spd"].forEach(id=>$(id).oninput=e=>{ tune[id]=+e.target.value; syncSliders(); try{ localStorage.setItem("sb-tune",JSON.stringify(tune)); }catch(err){} });
+$("reset").onclick=()=>{ tune=Object.assign({},DEF); syncSliders(); try{ localStorage.setItem("sb-tune",JSON.stringify(tune)); }catch(e){} toast("Sliders reset"); };
+syncSliders();
+function clamp(v){ return Math.max(-1,Math.min(1,v)); }
+function dzf(v){ const a=Math.abs(v), d=tune.dz; return a<d?0:Math.sign(v)*Math.min(1,(a-d)/(1-d)); }
+function onOri(e){
+  if(e.gamma==null||e.beta==null) return; sensor=true;
+  const ang=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
+  let x=e.gamma, y=e.beta;
+  if(ang===90){x=e.beta; y=-e.gamma;} else if(ang===-90||ang===270){x=-e.beta; y=e.gamma;}
+  raw={x,y}; if(!base) base={x,y};
+  sx=dzf((x-base.x)/tune.sens); let v=dzf((y-base.y)/tune.sens); if(v<0) v*=tune.up; sy=v;
+}
+function newTarget(){ tgt={x:.1+Math.random()*.8,y:.15+Math.random()*.7}; }
+function tick(){
+  const tr=$("tray"), W=tr.clientWidth, H=tr.clientHeight, r=11;
+  tx+=(sx-tx)*.15; ty+=(sy-ty)*.15;
+  b.vx=(b.vx+tx*ACC[tune.spd])*.985; b.vy=(b.vy+ty*ACC[tune.spd])*.985;
+  const sp=Math.hypot(b.vx,b.vy), vm=VMAX[tune.spd]; if(sp>vm){ b.vx*=vm/sp; b.vy*=vm/sp; }
+  b.x+=b.vx; b.y+=b.vy;
+  if(b.x<10+r){b.x=10+r;b.vx*=-.3;} if(b.x>W-10-r){b.x=W-10-r;b.vx*=-.3;}
+  if(b.y<10+r){b.y=10+r;b.vy*=-.3;} if(b.y>H-10-r){b.y=H-10-r;b.vy*=-.3;}
+  $("ball").style.left=(b.x-r)+"px"; $("ball").style.top=(b.y-r)+"px";
+  const gx=tgt.x*W, gy=tgt.y*H; $("tg").style.left=gx+"px"; $("tg").style.top=gy+"px";
+  if(Math.hypot(b.x-gx,b.y-gy)<12){ hits++; $("r5").textContent=hits; newTarget(); if(navigator.vibrate) navigator.vibrate(20); }
+  if(raw){ const deg=Math.max(0,Math.min(90,Math.abs(raw.y))); $("mark").style.left=(deg/90*100)+"%"; $("deg").textContent="Your angle: "+Math.round(deg)+"°"; $("r1").textContent=Math.round(deg)+"°";
+    $("r3").textContent=(raw.x-base.x).toFixed(0)+"°"; $("r4").textContent=(raw.y-base.y).toFixed(0)+"°"; }
+  let sv=null; try{ sv=JSON.parse(localStorage.getItem("sb-level")||"null"); }catch(e){}
+  if(sv){ $("saveMark").style.display="block"; $("saveMark").style.left=(Math.min(90,Math.abs(sv.y))/90*100)+"%"; $("r2").textContent=Math.round(Math.abs(sv.y))+"°"; } else { $("saveMark").style.display="none"; $("r2").textContent="none"; }
+  requestAnimationFrame(tick);
+}
+function centre(){ const tr=$("tray"); b={x:tr.clientWidth/2,y:tr.clientHeight/2,vx:0,vy:0}; tx=ty=0; }
+$("relevel").onclick=()=>{ if(raw) base={x:raw.x,y:raw.y}; centre(); toast("Level set to how you're holding it"); };
+$("save").onclick=()=>{ if(raw) base={x:raw.x,y:raw.y}; try{ localStorage.setItem("sb-level",JSON.stringify(base)); localStorage.setItem("sb-tune",JSON.stringify(tune)); }catch(e){} centre(); toast("Saved. Screwballs will use this angle"); };
+$("flat").onclick=()=>{ base={x:0,y:0}; try{ localStorage.setItem("sb-level",JSON.stringify(base)); }catch(e){} centre(); toast("Saved as flat"); };
+$("go").onclick=async()=>{
+  try{ if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function") await DeviceOrientationEvent.requestPermission(); }catch(e){}
+  window.addEventListener("deviceorientation",onOri);
+  try{ if(screen.orientation&&screen.orientation.lock) await screen.orientation.lock("landscape"); }catch(e){}
+  $("gate").style.display="none"; setTimeout(()=>{ centre(); if(!sensor) toast("No tilt sensor found on this device"); },800);
+};
+addEventListener("orientationchange",()=>setTimeout(centre,300));
+centre(); newTarget(); requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
