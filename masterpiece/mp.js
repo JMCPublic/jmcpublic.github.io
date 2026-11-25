@@ -104,7 +104,7 @@ function galWire(){app.querySelectorAll('.more .lvls button').forEach(b=>b.oncli
 function galEnd(){S.over=true;const n=S.sc.reduce((a,b)=>a+b,0),g=S.gal;
   app.innerHTML=`${hdr(GALS[g].n)}<div class="panel"><div class="score"><div class="tag">${esc(GALS[g].n)} · ${LEVELS[S.lvl].n}</div><div class="big">${n}<small> / 20</small></div><p class="verdict">${esc(verdict(n))}</p><div class="dots">${S.sc.map(p=>`<i class="${cls(p)}"></i>`).join('')}</div></div>
    <div class="list">${S.qs.map((p,k)=>`<div class="li"><i>${S.sc[k]?SQ(S.sc[k]):'❌'}</i><div><b>${esc(p.t)}</b> <span>· ${esc(p.a)}</span></div></div>`).join('')}</div>
-   <div class="btns"><button class="btn" id="more5">Another five</button></div></div>${galPanel()}${more()}`;
+   <div class="again"><b>Play another five?</b><div class="btns"><button class="btn" id="more5">Yes, five more ${esc(GALS[g].n)}</button></div></div></div>${galPanel()}${more()}`;
   $('#more5').onclick=()=>start('g'+Date.now(),true,g);galWire();scrollTo(0,0)}
 
 /* Play another today */
