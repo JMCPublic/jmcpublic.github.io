@@ -2,6 +2,8 @@
    A famous artwork seen close up; zoom out step by step and name it from four. 4, 3, 2 or 1 points depending on how early. Five a day: two easy, two medium, one hard.
    Setting (Jonathan, 25 Nov): Easy / Medium / Hard changes how close the first view is (Easy shows more). Saved on the device, like Aperture's.
    House pieces as the other games: Goldilocks (rating.js via reach), weekly where-are-you card (tmg:gameover), counts (nwcount), feedback, footer, home button.
+   v0.2 (25 Nov, Jonathan: "I wanted to play more"): Galleries after the daily five, Greatest Hits and Everything, a random five as often as you like (practice: not counted or shared).
+   Easy now has wrong answers from a different artist and a different era, and a clue (nationality and decade) after the first zoom out.
    Content: /masterpiece/art.js (images from Wikimedia Commons, all public domain). English for now. */
 (()=>{
 const app=document.getElementById('app'),$=s=>document.querySelector(s);
@@ -28,11 +30,15 @@ const MIX=[['e',2],['m',2],['h',1]];
 function pick(seed){const n=dayNo(seed);let day;
   if(n>=0){const cur={e:0,m:0,h:0};for(let d=0;d<=n;d++){const out=[];MIX.forEach(([l,k])=>{for(let j=0;j<k;j++){out.push(POOL[l][cur[l]%POOL[l].length]);cur[l]++}});if(d===n)day=out}}
   else{const r=rng(seed);day=MIX.flatMap(([l,k])=>shuffle(POOL[l],r).slice(0,k))}
-  return day.map(t=>({...t,opts:options(t,seed)}))}
+  return day}
+const yr=t=>+(String(t.y!==undefined?t.y:t[2]).match(/\d{4}/)||[0])[0];
 /* wrong answers: another work by the same artist if there is one (from the list or the decoys), the rest from the same level */
-function options(t,seed){const r=rng(seed+'|'+t.t);const all=ART.map(x=>[x.t,x.a,x.l]).concat(DECOYS.map(d=>[d[0],d[1],'d']));
-  const same=shuffle(all.filter(x=>x[1]===t.a&&x[0]!==t.t),r).slice(0,1);
-  const rest=shuffle(all.filter(x=>x[1]!==t.a&&(x[2]===t.l||x[2]==='d')),r).slice(0,3-same.length);
+/* Easy: no same-artist trap, and the wrong answers come from at least 80 years away, so half-knowing it is enough */
+function options(t,seed,lvl){const r=rng(seed+'|'+lvl+'|'+t.t),ty=yr(t);const all=ART.map(x=>[x.t,x.a,x.l,yr(x)]).concat(DECOYS.map(d=>[d[0],d[1],'d',d[2]]));
+  let same=[],rest;
+  if(lvl==='easy'){rest=shuffle(all.filter(x=>x[1]!==t.a&&Math.abs(x[3]-ty)>=80),r).slice(0,3);if(rest.length<3)rest=rest.concat(shuffle(all.filter(x=>x[1]!==t.a&&!rest.includes(x)),r).slice(0,3-rest.length))}
+  else{same=shuffle(all.filter(x=>x[1]===t.a&&x[0]!==t.t),r).slice(0,1);
+  rest=shuffle(all.filter(x=>x[1]!==t.a&&(x[2]===t.l||x[2]==='d')),r).slice(0,3-same.length)}
   return shuffle([[t.t,t.a],...same.map(x=>[x[0],x[1]]),...rest.map(x=>[x[0],x[1]])],r)}
 
 /* ---------- page shell ---------- */
@@ -43,24 +49,31 @@ let S=null;
 window.tmgMidGame=()=>!!(S&&!S.over&&S.sc&&S.sc.length>0&&S.sc.length<S.qs.length);
 const cls=p=>p>=3?'ok':p>=1?'half':'no';
 function prog(){return `<div class="prog">${S.qs.map((_,k)=>`<i class="${k<S.sc.length?cls(S.sc[k]):k===S.i?'now':''}"></i>`).join('')}</div>`}
-function start(seed,practice){S={seed,practice,qs:pick(seed),i:0,sc:[],lvl:LVL,over:false};S.qs.forEach(p=>{const im=new Image();im.src=p.img});q()}  /* fetch all five at the start so the next one is ready */
+/* Galleries: a random five from the gallery, avoiding today's daily five and anything already seen this visit */
+const GALS={hits:{n:'Greatest Hits',d:'The world-famous ones',f:t=>t.l==='e'},all:{n:'Everything',d:'Every work, famous or not',f:()=>true}};
+let SEEN=[];try{SEEN=JSON.parse(sessionStorage.getItem('mp-seen')||'[]')}catch(e){}
+function galPick(g){const r=Math.random,today5=new Set(pick(today()).map(t=>t.t));let c=ART.filter(t=>GALS[g].f(t)&&!today5.has(t.t)&&!SEEN.includes(t.t));
+  if(c.length<5){SEEN=[];c=ART.filter(t=>GALS[g].f(t)&&!today5.has(t.t))}
+  const out=shuffle(c,r).slice(0,5);SEEN=SEEN.concat(out.map(t=>t.t));try{sessionStorage.setItem('mp-seen',JSON.stringify(SEEN))}catch(e){}return out}
+function start(seed,practice,gal){const qs=gal?galPick(gal):pick(seed);S={seed,practice:practice||!!gal,gal,qs:qs.map(t=>({...t,opts:options(t,seed,LVL)})),i:0,sc:[],lvl:LVL,over:false};S.qs.forEach(p=>{const im=new Image();im.src=p.img});q()}  /* fetch all five at the start so the next one is ready */
 function q(){S.z=0;S.done=false;draw();scrollTo(0,0)}
 const Z=()=>LEVELS[S.lvl].z;
 function frame(p,scale){return `<div class="wrapf"><div class="frame" data-l="Loading the work…" style="aspect-ratio:${p.r};width:min(100%,calc(var(--fh)*${p.r}))"><img src="${esc(p.img)}" alt="" style="transform-origin:${p.f[0]}% ${p.f[1]}%;transform:scale(${scale})"></div></div>`}
 function draw(){const p=S.qs[S.i],done=S.done,z=Z();
-  app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${S.qs.length} · ${LEVELS[S.lvl].n}`)}${prog()}${frame(p,done?1:z[S.z])}
-   ${done?'':`<div class="step">${z.map((_,k)=>`<i class="${k<=S.z?'on':''}"></i>`).join('')}</div><p class="pts">Name it now for <b>${PTS[S.z]} point${PTS[S.z]>1?'s':''}</b></p>
+  app.innerHTML=`<div class="play">${hdr(`${S.gal?GALS[S.gal].n+' · ':''}${S.i+1} of ${S.qs.length} · ${LEVELS[S.lvl].n}`)}${prog()}${frame(p,done?1:z[S.z])}
+   ${done?'':`<div class="step">${z.map((_,k)=>`<i class="${k<=S.z?'on':''}"></i>`).join('')}</div><p class="clue" id="clue">${clue(p)}</p><p class="pts">Name it now for <b>${PTS[S.z]} point${PTS[S.z]>1?'s':''}</b></p>
    <button class="zoom" id="zo" ${S.z>=z.length-1?'disabled':''}>${S.z>=z.length-1?'The whole work is showing':'Zoom out (−1 point)'}</button>`}
    <div class="opts">${p.opts.map((o,k)=>`<button class="opt" data-k="${k}" ${done?'disabled':''}><span class="k">${'ABCD'[k]}</span><span>${esc(o[0])}<small>${esc(o[1])}</small></span></button>`).join('')}</div><div id="after"></div></div>`;
   if(done)return after();
   $('#zo').onclick=()=>{if(S.z<z.length-1){S.z++;$('.frame img').style.transform=`scale(${z[S.z]})`;const st=app.querySelectorAll('.step i');st[S.z].classList.add('on');
-    $('.pts').innerHTML=`Name it now for <b>${PTS[S.z]} point${PTS[S.z]>1?'s':''}</b>`;if(S.z>=z.length-1){$('#zo').disabled=true;$('#zo').textContent='The whole work is showing'}}};
+    $('#clue').innerHTML=clue(p);$('.pts').innerHTML=`Name it now for <b>${PTS[S.z]} point${PTS[S.z]>1?'s':''}</b>`;if(S.z>=z.length-1){$('#zo').disabled=true;$('#zo').textContent='The whole work is showing'}}};
   app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=p.opts[+b.dataset.k];S.pickT=o[0];S.got=o[0]===p.t?PTS[S.z]:0;S.sc.push(S.got);S.done=true;draw()})}
+function clue(p){return S.lvl==='easy'&&S.z>=1?`Clue: ${esc(NAT[p.a]||'')} · ${Math.floor(yr(p)/10)*10}s`:''}
 function after(){const p=S.qs[S.i],last=S.i===S.qs.length-1;
   app.querySelectorAll('.opt').forEach(b=>{const o=p.opts[+b.dataset.k];b.classList.add(o[0]===p.t?'ok':o[0]===S.pickT?'no':'dim')});
   $('#after').innerHTML=`<div class="fact"><b class="${S.got?'g':'r'}">${S.got?`Yes! ${S.got} point${S.got>1?'s':''}`:'Not this time.'}</b><b class="ttl2">${esc(p.t)} · ${esc(p.a)}, ${esc(p.y)}</b>${esc(p.m.charAt(0).toUpperCase()+p.m.slice(1))}. ${esc(p.fact)}<div class="cap">Image: <a href="${esc(p.page)}" target="_blank" rel="noopener">Wikimedia Commons</a> · public domain</div></div>
    <button class="next" id="nx">${last?'See my score':'Next work →'}</button>`;
-  $('#nx').onclick=()=>{if(last)end();else{S.i++;q()}};$('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
+  $('#nx').onclick=()=>{if(last)(S.gal?galEnd():end());else{S.i++;q()}};$('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
 
 /* ---------- the end ---------- */
 const verdict=n=>n>=18?'A true connoisseur 🖼️':n>=14?'Brilliant. You know your galleries.':n>=10?'A good eye. Very nicely done.':n>=5?'Not bad! Some of these are tricky up close.':'Art takes time. Five new works tomorrow.';
@@ -79,9 +92,20 @@ function end(rev){S.over=true;const n=S.sc.reduce((a,b)=>a+b,0);let best=+ls(K+'
    <div class="list">${S.qs.map((p,k)=>`<div class="li"><i>${S.sc[k]?SQ(S.sc[k]):'❌'}</i><div><b>${esc(p.t)}</b> <span>· ${esc(p.a)}</span></div></div>`).join('')}</div>
    <div class="btns"><button class="btn" id="share">Share my score</button></div>
    <p class="small">Five new masterpieces tomorrow, the same for everyone.</p><p class="small srcl"><button type="button" class="lnk" id="srcBtn">Sources</button></p></div>
-  ${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">Practice set (owner only)</button></div>':''}`;
+  ${galPanel()}${more()}${VIP?'<div class="btns"><button class="btn ghost" id="again">Practice set (owner only)</button></div>':''}`;galWire();
   $('#share').onclick=async()=>{try{if(navigator.share){await navigator.share({text:share+'\nhttps://twominute.games/masterpiece/'})}else{await navigator.clipboard.writeText(share+'\nhttps://twominute.games/masterpiece/');$('#share').textContent='Copied ✓'}}catch(e){}};
   $('#srcBtn').onclick=sources;const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true);scrollTo(0,0)}
+
+/* Keep playing: the galleries, offered once today's five are done */
+function galPanel(){return `<div class="panel more"><div class="tag">Keep playing</div><p class="small" style="margin:2px 0 10px">Five more, as often as you like. Just for fun: not counted.</p><div class="lvls" role="group" aria-label="How close to start">${Object.entries(LEVELS).map(([k,v])=>`<button type="button" data-l="${k}" class="${k===LVL?'on':''}">${v.n}</button>`).join('')}</div>
+  <div class="gals">${Object.entries(GALS).map(([k,g])=>`<button class="gal" data-g="${k}"><b>${g.n}</b><span>${g.d}</span></button>`).join('')}</div></div>`}
+function galWire(){app.querySelectorAll('.more .lvls button').forEach(b=>b.onclick=()=>{LVL=b.dataset.l;ls('mp-level',LVL);app.querySelectorAll('.more .lvls button').forEach(x=>x.classList.toggle('on',x===b))});
+  app.querySelectorAll('.gal').forEach(b=>b.onclick=()=>start('g'+Date.now(),true,b.dataset.g))}
+function galEnd(){S.over=true;const n=S.sc.reduce((a,b)=>a+b,0),g=S.gal;
+  app.innerHTML=`${hdr(GALS[g].n)}<div class="panel"><div class="score"><div class="tag">${esc(GALS[g].n)} · ${LEVELS[S.lvl].n}</div><div class="big">${n}<small> / 20</small></div><p class="verdict">${esc(verdict(n))}</p><div class="dots">${S.sc.map(p=>`<i class="${cls(p)}"></i>`).join('')}</div></div>
+   <div class="list">${S.qs.map((p,k)=>`<div class="li"><i>${S.sc[k]?SQ(S.sc[k]):'❌'}</i><div><b>${esc(p.t)}</b> <span>· ${esc(p.a)}</span></div></div>`).join('')}</div>
+   <div class="btns"><button class="btn" id="more5">Another five</button></div></div>${galPanel()}${more()}`;
+  $('#more5').onclick=()=>start('g'+Date.now(),true,g);galWire();scrollTo(0,0)}
 
 /* Play another today */
 const OTHERS=[['Aperture','/aperture/','aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/','landmarks','apL-best-'],['When was that?','/when/','when','when-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
@@ -113,11 +137,11 @@ function intro(){const r=dayRec(),played=!!r;
    <ul><li>Five works, about two minutes</li><li>Name it early for more points: 4, 3, 2 or 1</li><li>Where it hangs and a fact about every one</li></ul>
    <div class="lvls" role="group" aria-label="How close to start">${Object.entries(LEVELS).map(([k,v])=>`<button type="button" data-l="${k}" class="${k===LVL?'on':''}" ${played?'disabled':''}>${v.n}</button>`).join('')}</div>
    <p class="lvlh">${played?'':'Easy starts further out; Hard starts very close.'}</p>
-   <div class="btns">${played?`<p class="best" style="text-align:center;margin:0">Today you scored ${r.n} / 20 (${LEVELS[r.lvl]?LEVELS[r.lvl].n:''})</p>`:''}<button class="btn" id="go">${played?'Admire my score':'Start'}</button>${VIP?'<button class="btn ghost" id="again">Practice set (owner only)</button>':''}</div></div>`;
-  app.querySelectorAll('.lvls button').forEach(b=>b.onclick=()=>{LVL=b.dataset.l;ls('mp-level',LVL);app.querySelectorAll('.lvls button').forEach(x=>x.classList.toggle('on',x===b))});
+   <div class="btns">${played?`<p class="best" style="text-align:center;margin:0">Today you scored ${r.n} / 20 (${LEVELS[r.lvl]?LEVELS[r.lvl].n:''})</p>`:''}<button class="btn" id="go">${played?'Admire my score':'Start'}</button>${VIP?'<button class="btn ghost" id="again">Practice set (owner only)</button>':''}</div></div>${played?galPanel():''}`;if(played)galWire();
+  app.querySelectorAll('.intro .lvls button').forEach(b=>b.onclick=()=>{LVL=b.dataset.l;ls('mp-level',LVL);app.querySelectorAll('.intro .lvls button').forEach(x=>x.classList.toggle('on',x===b))});
   $('#go').onclick=()=>{if(!played)return start(today(),false);
     const qs=(r.t||[]).map(x=>({t:x[0],a:x[1]}));S={seed:r.d,practice:false,qs,sc:r.sc,lvl:LEVELS[r.lvl]?r.lvl:'easy',over:true};end(true)};
   const ag=$('#again');if(ag)ag.onclick=()=>start(today()+':p'+Date.now(),true)}
-window.__mp={pick,POOL};
+window.__mp={pick,POOL,options,galPick};
 intro();
 })();

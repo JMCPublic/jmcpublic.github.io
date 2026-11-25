@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Masterpiece · twominute.games</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="apple-touch-icon" href="/icons/masterpiece-180.png?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://upload.wikimedia.org">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Masterpiece v0.2 (25 Nov 2026), test version for Jonathan. Not linked from the home page; noindex; no counts. Engine /masterpiece/mp.js, works /masterpiece/art.js. */
+:root{--fh:46dvh}
+.frame{position:relative;margin:4px auto 0;max-width:100%;border-radius:12px;overflow:hidden;background:#1b1712;box-shadow:0 0 0 6px #6b4f2a,0 0 0 8px #3a2a15,0 10px 24px -10px rgba(0,0,0,.5)}
+.frame:before{content:attr(data-l);position:absolute;inset:0;display:grid;place-items:center;color:#8a7b62;font-size:14px}
+.frame img{position:relative;display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.3,.7,.3,1)}
+.wrapf{display:flex;justify-content:center;padding:12px 10px 6px}
+.step{display:flex;justify-content:center;gap:6px;margin:12px 0 2px}.step i{width:26px;height:6px;border-radius:3px;background:var(--line)}.step i.on{background:var(--accent)}
+.pts{text-align:center;font-size:13.5px;color:var(--muted);margin:2px 0 8px}.pts b{color:var(--ink)}
+.zoom{display:block;margin:0 auto 10px;border:1.5px solid var(--ink);background:none;color:var(--ink);border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px;cursor:pointer}
+.zoom[disabled]{opacity:.35;cursor:default}
+.play .opts{margin-top:14px}.opt{padding:11px 13px;font-size:16px}.opt small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
+.fact b.ttl2{font-size:14.5px;color:var(--ink)}
+.cap{font-size:12.5px;color:var(--muted);margin-top:6px}.cap a{color:inherit}
+.intro p.sub{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--cu);margin:-2px 0 10px}
+.gicon{display:block;width:64px;height:64px;border-radius:16px;margin:0 0 10px}
+.prog i.half,.dots i.half{background:#d9a400}
+.lvls{display:flex;gap:6px;background:#f1ece2;border-radius:999px;padding:4px;margin:14px 0 4px}
+.lvls button{flex:1;border:0;background:none;border-radius:999px;padding:9px 4px;font:700 15px Inter,system-ui,sans-serif;color:var(--muted);cursor:pointer}
+.lvls button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.lvls button[disabled]{cursor:default}
+.lvlh{font-size:13px;color:var(--muted);margin:2px 2px 6px;min-height:1em}
+.clue{text-align:center;font-size:13.5px;font-weight:700;color:var(--cu);margin:4px 0 0;min-height:1.2em}
+.gals{display:grid;gap:8px;margin-top:10px}.gal{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;cursor:pointer;font:inherit;color:var(--ink)}.gal b{font-size:16px}.gal span{font-size:13.5px;color:var(--muted)}
+@media(hover:hover){.gal:hover{border-color:var(--accent)}}
+.ver{position:fixed;right:8px;bottom:6px;font-size:11px;color:var(--muted);opacity:.7}
+@media (max-height:700px){:root{--fh:40dvh}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<span class="ver">v0.2</span>
+<script>window.TMG_SIMPLE=1;</script>
+<script src="/masterpiece/art.js?v=2"></script>
+<script src="/masterpiece/mp.js?v=2"></script>
+<script src="/shared/homebtn.js?v=2" defer></script>
+</body>
+</html>
