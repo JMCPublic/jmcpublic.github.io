@@ -1,3 +1,12 @@
+/* Safari toolbar (tested 18 Nov on /test/rivers/, approved by Jonathan 25 Nov, rolled out to every game):
+   on phones the page is 2px taller than the screen with Safari's toolbar hidden, so one swipe up shrinks the toolbar and it stays small;
+   and when a game jumps to the top for the next question, it stops 1px short once the player has swiped, so the toolbar stays small. */
+(function(){
+  if(!matchMedia('(hover:none) and (pointer:coarse)').matches)return;  /* phones and tablets only: no stray scrollbar on computers */
+  var st=document.createElement('style');st.textContent='html{min-height:calc(100lvh + 2px)}';document.head.appendChild(st);
+  var to=window.scrollTo.bind(window);
+  window.scrollTo=function(x,y){if(arguments.length===2&&x===0&&y===0&&window.scrollY>0)return to(0,1);return to.apply(window,arguments)};
+})();
 /* Round home button for every game (18 Nov 2026).
    Any <a class="tmghome"> goes to the home page. If the page says a game is under way
    (window.tmgMidGame() returns true), it asks first so a slip of the thumb can't lose a game.
