@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Old Masters · mock-up v0.1</title>
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Old Masters mock-up v0.1 (25 Nov 2026): name the painting from a close-up that zooms out. Not linked; noindex. Paintings: public domain, shown from Wikimedia Commons. */
+.frame{position:relative;margin:4px auto 0;max-height:44dvh;max-width:100%;border-radius:14px;overflow:hidden;background:#1b1712;box-shadow:0 0 0 6px #6b4f2a,0 0 0 8px #3a2a15,0 10px 24px -10px rgba(0,0,0,.5)}
+.frame img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.3,.7,.3,1)}
+.wrapf{display:flex;justify-content:center;padding:10px 8px 6px}
+.step{display:flex;justify-content:center;gap:6px;margin:10px 0 2px}.step i{width:26px;height:6px;border-radius:3px;background:var(--line)}.step i.on{background:var(--accent)}
+.pts{text-align:center;font-size:13.5px;color:var(--muted);margin:2px 0 8px}.pts b{color:var(--ink)}
+.zoom{display:block;margin:0 auto 10px;border:1.5px solid var(--ink);background:none;border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px;cursor:pointer}
+.zoom[disabled]{opacity:.35;cursor:default}
+.opt small{display:block;font-weight:500;font-size:13.5px;color:var(--muted)}
+.cap{font-size:13px;color:var(--muted);margin-top:6px}
+.mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:10px 0 0;line-height:1.45}
+.intro p.sub{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--cu);margin:-2px 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const W='https://upload.wikimedia.org/wikipedia/commons/thumb/';
+const P=[
+ {t:'Mona Lisa',a:'Leonardo da Vinci',y:'c. 1503–1519',m:'Louvre, Paris',img:W+'e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/960px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',r:7479/11146,f:[52,84],
+  w:[['The Arnolfini Portrait','Jan van Eyck'],['Lady with an Ermine','Leonardo da Vinci'],['The Birth of Venus','Sandro Botticelli']],
+  fact:'It was stolen from the Louvre in 1911 and missing for two years. The theft is what made it the most famous painting in the world.',page:'https://commons.wikimedia.org/wiki/File:Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg'},
+ {t:'The Great Wave off Kanagawa',a:'Katsushika Hokusai',y:'c. 1831',m:'woodblock print: copies in many museums',img:W+'a/a5/Tsunami_by_hokusai_19th_century.jpg/960px-Tsunami_by_hokusai_19th_century.jpg',r:3859/2594,f:[66,70],
+  w:[['The Starry Night','Vincent van Gogh'],['The Hay Wain','John Constable'],['Impression, Sunrise','Claude Monet']],
+  fact:'That little peak under the wave is Mount Fuji. It’s a woodblock print, so thousands of copies were made.',page:'https://commons.wikimedia.org/wiki/File:Tsunami_by_hokusai_19th_century.jpg'},
+ {t:'Girl with a Pearl Earring',a:'Johannes Vermeer',y:'c. 1665',m:'Mauritshuis, The Hague',img:W+'0/0f/1665_Girl_with_a_Pearl_Earring.jpg/960px-1665_Girl_with_a_Pearl_Earring.jpg',r:12285/14550,f:[50,18],
+  w:[['The Milkmaid','Johannes Vermeer'],['Self-Portrait with Two Circles','Rembrandt'],['Portrait of a Young Woman','Petrus Christus']],
+  fact:'Nobody knows who the girl was. It isn’t a portrait of a real sitter but a “tronie”, a study of a face and a costume.',page:'https://commons.wikimedia.org/wiki/File:1665_Girl_with_a_Pearl_Earring.jpg'},
+ {t:'The Birth of Venus',a:'Sandro Botticelli',y:'c. 1485',m:'Uffizi Gallery, Florence',img:W+'0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/960px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg',r:30000/18840,f:[47,82],
+  w:[['Primavera','Sandro Botticelli'],['The School of Athens','Raphael'],['Venus of Urbino','Titian']],
+  fact:'Botticelli painted it on canvas, unusual in Florence at the time, when most paintings were done on wooden panels.',page:'https://commons.wikimedia.org/wiki/File:Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg'},
+ {t:'The Starry Night',a:'Vincent van Gogh',y:'1889',m:'Museum of Modern Art, New York',img:W+'e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/960px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',r:44567/35291,f:[87,15],
+  w:[['Café Terrace at Night','Vincent van Gogh'],['Starry Night Over the Rhône','Vincent van Gogh'],['The Scream','Edvard Munch']],
+  fact:'Van Gogh painted it in the asylum at Saint-Rémy, from the view out of his bedroom window, and he wasn’t pleased with it.',page:'https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg'}
+];
+const Z=[6,3.2,1.7,1],PTS=[4,3,2,1];
+const $=s=>document.querySelector(s),app=$('#app');let S;
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const hdr=t=>`<div class="top"><a class="back" href="/">← All games</a><span class="tag">${t||'Old Masters'}</span></div>`;
+function intro(){app.innerHTML=`${hdr()}<div class="panel intro"><span class="tag">Art · daily</span><h2>Old Masters</h2><p class="sub">Can you name the painting before you see it all?</p>
+ <p>A famous painting, seen close up. Zoom out bit by bit and name it as soon as you can.</p>
+ <ul><li>Five paintings, about two minutes</li><li>Name it early for more points: 4, 3, 2 or 1</li><li>Where it hangs and a fact about every one</li></ul>
+ <div class="btns"><button class="btn" id="go">Start</button></div><p class="mock">Mock-up v0.1, not live. Paintings are public domain, shown from Wikimedia Commons.</p></div>`;
+ $('#go').onclick=()=>{S={i:0,sc:[]};q()}}
+function prog(){return `<div class="prog">${P.map((_,k)=>`<i class="${k<S.sc.length?(S.sc[k]?'ok':'no'):k===S.i?'now':''}"></i>`).join('')}</div>`}
+function q(){const p=P[S.i];S.z=0;S.done=false;S.opts=sh([[p.t,p.a],...p.w]);draw();scrollTo(0,0)}
+function draw(){const p=P[S.i],done=S.done;
+ app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${P.length}`)}${prog()}
+  <div class="wrapf"><div class="frame" style="aspect-ratio:${p.r};width:min(100%,calc(44dvh*${p.r}))"><img src="${p.img}" alt="" style="transform-origin:${p.f[0]}% ${p.f[1]}%;transform:scale(${done?1:Z[S.z]})"></div></div>
+  ${done?'':`<div class="step">${Z.map((_,k)=>`<i class="${k<=S.z?'on':''}"></i>`).join('')}</div><p class="pts">Name it now for <b>${PTS[S.z]} point${PTS[S.z]>1?'s':''}</b></p>
+  <button class="zoom" id="zo" ${S.z>=Z.length-1?'disabled':''}>${S.z>=Z.length-1?'Whole painting shown':'Zoom out (−1 point)'}</button>`}
+  <div class="opts">${S.opts.map((o,k)=>`<button class="opt" data-k="${k}" ${done?'disabled':''}><span class="k">${'ABCD'[k]}</span><span>${o[0]}<small>${o[1]}</small></span></button>`).join('')}</div><div id="after"></div></div>`;
+ if(done)return after();
+ $('#zo').onclick=()=>{if(S.z<Z.length-1){S.z++;const im=$('.frame img');im.style.transform=`scale(${Z[S.z]})`;draw()}};
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=S.opts[+b.dataset.k];S.pick=o[0];S.got=o[0]===p.t?PTS[S.z]:0;S.sc.push(S.got);S.done=true;draw()})}
+function after(){const p=P[S.i],last=S.i===P.length-1;
+ app.querySelectorAll('.opt').forEach(b=>{const o=S.opts[+b.dataset.k];b.classList.add(o[0]===p.t?'ok':o[0]===S.pick?'no':'dim')});
+ $('#after').innerHTML=`<div class="fact"><b class="${S.got?'g':'r'}">${S.got?`Yes! ${S.got} point${S.got>1?'s':''}`:`It’s ${p.t}.`}</b><b style="margin-top:4px">${p.t} · ${p.a}, ${p.y}</b>${p.m}. ${p.fact}<div class="cap">Image: <a href="${p.page}" target="_blank" rel="noopener">Wikimedia Commons</a> · public domain</div></div>
+ <button class="next" id="nx">${last?'See my score':'Next painting →'}</button>`;
+ $('#nx').onclick=()=>{if(last)end();else{S.i++;q()}};$('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
+function end(){const n=S.sc.reduce((a,b)=>a+b,0);
+ app.innerHTML=`${hdr()}<div class="panel"><div class="score"><div class="tag">Your score</div><div class="big">${n}<small> / 20</small></div><p class="verdict">${n>=17?'A true connoisseur 🖼️':n>=12?'You know your galleries.':n>=7?'A good eye. Tomorrow, five more.':'Art takes time. Five new paintings tomorrow.'}</p>
+ <div class="dots">${S.sc.map(x=>`<i class="${x?'ok':'no'}"></i>`).join('')}</div></div>
+ <div class="list">${P.map((p,k)=>`<div class="li"><i>${S.sc[k]?S.sc[k]:'❌'}</i><div><b>${p.t}</b> <span>· ${p.a}</span></div></div>`).join('')}</div>
+ <div class="btns"><button class="btn" id="ag">Play again (mock-up)</button></div>
+ <p class="small">In the real game: Share squares, Goldilocks, Play another today, the weekly where-are-you card, like the other games.</p></div>`;$('#ag').onclick=intro}
+intro();
+</script>
+</body>
+</html>
