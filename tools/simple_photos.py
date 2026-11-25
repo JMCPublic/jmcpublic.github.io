@@ -23,3 +23,12 @@ for q in d['q']:
         a, lic, url = PH[k]; q['ph'] = [f'/natural-wonders-lakes/photos/{k}.jpg', a, lic, url]; n += 1
     else: q.pop('ph', None)
 save(p, head, d); print(f'lakes: {n} of {len(d["q"])} with photos')
+
+# Mountains (25 Nov 2026): one Wikimedia Commons photo per mountain (the lead photo of its Wikipedia article), shown straight from
+# Wikimedia at 960 px wide, with the author, licence and file page as the credit. tools/data/mountains_photos.json: name -> [url, author, licence, page]
+MP = json.loads((ROOT / 'tools' / 'data' / 'mountains_photos.json').read_text())
+p, head, d = load('mountains'); n = 0
+for q in d['q']:
+    if q['a'] in MP: q['ph'] = MP[q['a']]; n += 1
+    else: q.pop('ph', None)
+save(p, head, d); print(f'mountains: {n} of {len(d["q"])} with photos')
