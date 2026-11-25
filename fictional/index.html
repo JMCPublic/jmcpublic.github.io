@@ -178,6 +178,8 @@ a{color:inherit}
 html.fx-nofb .tmgfb-pill{display:none!important}
 html.tmg-iosbar{--tmg-iosbar:76px;--fx-ios:76px}
 @media (max-height:700px){.hero h1{font-size:44px}.how{gap:6px;padding:10px 13px}.qtext{font-size:20px;min-height:48px}}
+/* 25 Nov: the shared footer with Share (gfoot.js) replaces this page footer, so it is not shown twice */
+footer.foot2{display:none}
 </style>
 </head>
 <body>
@@ -594,6 +596,7 @@ show('start');drawStart();
 })();
 </script>
 <script src="/shared/homebtn.js?v=2" defer></script>
+<script src="/shared/gfoot.js?v=1" defer></script>
 <script src="/shared/feedback.js?v=1" defer></script>
 <script src="/shared/nwcount.js?v=1" defer></script>
 <script src="/shared/adbox.js?v=11" defer></script>
