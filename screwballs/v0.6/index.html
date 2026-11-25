@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="robots" content="noindex, nofollow">
+<title>Screwballs v0.6</title>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;background:#111}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+#hd{height:0;overflow:hidden;transition:height .25s ease;flex:none;display:flex;align-items:center;gap:8px;padding:0 10px;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));box-sizing:border-box;font:600 13px system-ui,sans-serif;position:relative;z-index:5}
+#hd.open{height:40px;overflow:visible}
+#tab{position:absolute;left:50%;top:0;transform:translateX(-50%);width:96px;height:20px;border:0;border-radius:0 0 12px 12px;z-index:6;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.85;transition:top .25s ease;touch-action:none;padding:0}
+#bpop{position:absolute;top:44px;right:90px;display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:6}
+#bpop.open{display:flex}
+#bpop input{width:150px}
+#hd .word{font-size:17px;white-space:nowrap}
+#hd .sp{flex:1}
+.hb{min-height:32px;min-width:32px;padding:0 10px;border-radius:999px;border:1.5px solid currentColor;background:transparent;color:inherit;font:700 12px system-ui,sans-serif;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.hb svg{flex:none}
+#qwrap{position:relative}
+#qdrop{display:none;position:absolute;top:38px;left:0;width:300px;padding:14px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:500 14px/1.4 system-ui,sans-serif}
+#qwrap:hover #qdrop,#qwrap.open #qdrop{display:block}
+#qdrop b{display:block;font-size:20px;margin-top:6px}
+#area{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+#mazeBox{position:relative;flex:none}
+#disc{position:absolute;right:3%;bottom:3%;width:38%;height:38%;border-radius:50%;opacity:.32;touch-action:none;display:none;transition:opacity .15s}
+#disc.on{display:block}#disc.act{opacity:.6}
+#knob{position:absolute;width:34%;height:34%;margin:-17% 0 0 -17%;border-radius:50%;left:50%;top:50%}
+#count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font:800 120px Bungee,system-ui,sans-serif;color:#fff;text-shadow:0 6px 0 rgba(0,0,0,.35);background:rgba(0,0,0,.25);border-radius:6%;pointer-events:none}
+#res{position:absolute;inset:3%;border-radius:4%;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;box-sizing:border-box;font-family:system-ui,sans-serif}
+#res .t{font-size:30px;font-weight:800}#res .b{font-size:16px;line-height:1.4;max-width:280px}
+#res .row{display:flex;gap:10px;margin-top:6px}
+#res button{min-height:46px;padding:0 20px;border-radius:999px;font:800 15px system-ui;cursor:pointer}
+#splash{position:fixed;inset:0;z-index:7;display:flex;align-items:center;justify-content:center;overflow:auto;padding:14px;box-sizing:border-box}
+#sp{width:100%;max-width:760px;display:flex;flex-direction:column;gap:12px}
+.ans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ans button{min-height:54px;display:flex;align-items:center;gap:12px;padding:0 14px;border-radius:14px;font-size:18px;font-weight:700;cursor:pointer;text-align:left}
+.ans .l{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex:none}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer}
+.foot input{width:20px;height:20px}
+#lock{min-height:52px;padding:0 30px;border-radius:999px;border:0;font:800 17px system-ui,sans-serif;cursor:pointer}
+#lock:disabled{opacity:.4;cursor:default}
+#looks{position:absolute;top:44px;right:10px;display:none;gap:8px;padding:10px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:6}
+#looks.open{display:flex}
+#looks button{min-height:40px;padding:0 12px;border-radius:999px;border:2px solid rgba(127,127,127,.5);font:700 13px system-ui;cursor:pointer;display:flex;align-items:center;gap:6px}
+#looks i{width:14px;height:14px;border-radius:50%;display:block}
+#turn{position:fixed;inset:0;z-index:20;background:#111;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:600 16px system-ui;text-align:center;padding:30px}
+@media (orientation:portrait) and (max-width:700px){#turn{display:flex}}
+@media (max-width:720px){#hd .word{display:none}#hd{gap:5px}.hb{padding:0 7px}#discLab{display:none}#tilt{font-size:10px}}
+#toast{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:#fff;color:#111;font:600 13px system-ui;padding:9px 14px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:30;max-width:90vw;text-align:center}
+</style>
+</head>
+<body>
+<div id="pwg" style="position:fixed;inset:0;z-index:100;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:system-ui,sans-serif;padding:24px;text-align:center">
+  <div style="font:400 30px Bungee,system-ui,sans-serif">SCREWBALLS</div>
+  <div style="color:#aaa;font-size:14px">Private test version · v0.6</div>
+  <form id="pwf" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><label for="pwi" style="position:absolute;left:-9999px">Password</label><input id="pwi" type="password" autocomplete="current-password" placeholder="Password" style="min-height:46px;font-size:16px;padding:0 14px;border-radius:12px;border:1px solid #444;background:#1c1c1c;color:#fff;width:220px"><button style="min-height:46px;padding:0 20px;border-radius:12px;border:0;background:#fff;color:#111;font:800 16px system-ui,sans-serif">Enter</button></form>
+  <div id="pwm" role="status" style="color:#ff9a9a;font-size:13px;min-height:18px"></div>
+</div>
+<script>
+/* Same password as the stats page (PBKDF2-SHA256, 150,000 rounds); only the scrambled code is in this file. Remembered on this device after the first time. */
+(()=>{const HASH='2adfcea818ae1edf0375e35ebbf4886df8469707b5f9668b2366434cdcbc5bec',K='tmg-screwballs-ok',g=document.getElementById('pwg');
+let ok=null;try{ok=localStorage.getItem(K)}catch(e){} if(ok===HASH){g.remove();return}
+async function code(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('tmg-stats-2026'),iterations:150000},k,256);
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+document.getElementById('pwf').onsubmit=async e=>{e.preventDefault();const i=document.getElementById('pwi'),m=document.getElementById('pwm');m.textContent='Checking…';
+  const c=await code(i.value);if(c===HASH){try{localStorage.setItem(K,HASH)}catch(err){}g.remove();return}
+  i.value='';m.textContent='That’s not right. Please try again.'}})();
+</script>
+<div id="app">
+  <header id="hd">
+    <span class="word" id="word">SCREWBALLS</span>
+    <div id="qwrap"><button class="hb" id="qbtn" aria-label="Show your target hole"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="qlab">Q1 · reminder</span></button><div id="qdrop"></div></div>
+    <span class="sp"></span>
+    <span id="time" style="font-variant-numeric:tabular-nums;font-weight:800">0:00</span>
+    <span id="score" style="font-weight:800">0/0</span>
+    <span class="sp"></span>
+    <button class="hb" id="mode" aria-label="Free roll or hold">Free roll</button>
+    <button class="hb" id="bBtn" aria-label="Bounce setting">Bounce <span id="bLab">3</span></button>
+    <button class="hb" id="sBtn" aria-label="Speed setting">Speed <span id="sLab">3</span></button>
+    <button class="hb" id="discBtn" aria-label="Tilt disc on or off"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="discLab">Disc</span></button>
+    <button class="hb" id="snd" aria-label="Sound on or off"></button>
+    <button class="hb" id="lookBtn" aria-label="Change look">Look</button>
+    <span id="tilt" style="font-size:11px;font-weight:700;opacity:.75">Tilt: –</span>
+    <span style="font-size:11px;opacity:.6">v0.6</span>
+    <div id="looks"></div>
+    <div id="bpop"><div style="display:grid;grid-template-columns:auto auto 150px auto;align-items:center;gap:6px 10px"><span style="font-size:11px;font-weight:600">bounce</span><span style="font-size:11px">1</span><input type="range" id="bnc" min="1" max="5" step="1" value="3" aria-label="Bounce, 1 low to 5 high"><span style="font-size:11px">5</span><span style="font-size:11px;font-weight:600">speed</span><span style="font-size:11px">1</span><input type="range" id="spd" min="1" max="5" step="1" value="3" aria-label="Speed, 1 slow to 5 fast"><span style="font-size:11px">5</span></div></div>
+  </header>
+  <button id="tab" aria-label="Pull down the menu"><svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path id="tabArrow" d="M3 3l6 6 6-6"/></svg></button>
+  <main id="area">
+    <div id="mazeBox">
+      <div id="mazeInner" style="transform-origin:0 0"></div>
+      <div id="disc"><div id="knob"></div></div>
+      <div id="count"></div>
+      <div id="res"><div class="t" id="rt"></div><div class="b" id="rb"></div><div class="row"><button id="retry">Try again</button><button id="next">Next question</button></div></div>
+    </div>
+  </main>
+</div>
+<div id="splash"><div id="sp"></div></div>
+<div id="turn"><svg width="60" height="60" viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="4"/><path d="M50 40a18 18 0 0 1-18 18M50 40l-5-1M50 40l1 5"/></svg><div style="font:400 26px Bungee,sans-serif">Turn sideways</div><div style="color:#bbb">Screwballs plays in landscape.</div></div>
+<div id="toast"></div>
+<script>
+(function(){
+const VER="v0.6";
+const G=["#####A#################","#.....#.......#.......#","#.#####.#.###.#.###.#.#","#...........#.#.#.....#","#.#####.#.###.#.#.#####","D.#.....#.#.....#.#...B","#.#.###.#.#######.#.#.#","#...#.#.........#...#.#","#####.#.#.#.###.#####.#","#...........#.........#","#################C#####"];
+const GW=23, GH=11, BW=GW*30, BH=GH*30, FW=BW+20, FH=BH+20, SX=11*30+15, SY=5*30+15;
+const EXIT={A:[5,0],B:[22,5],C:[17,10],D:[0,5]};
+const REST=[0,.05,.15,.3,.45,.6], ACC=[0,.15,.22,.3,.4,.52], VMAX=[0,3.2,4.3,5.5,6.8,8.2];
+const ROUNDS=[
+ {cat:"GEOGRAPHY",q:"Which is the longest river in Africa?",a:{A:"Congo",B:"Nile",C:"Niger",D:"Zambezi"},ok:"B"},
+ {cat:"SCIENCE",q:"What is the chemical symbol for gold?",a:{A:"Ag",B:"Go",C:"Au",D:"Gd"},ok:"C"},
+ {pick:"D"},
+ {cat:"MATHS",q:"How many sides does a hexagon have?",a:{A:"Six",B:"Eight",C:"Five",D:"Seven"},ok:"A"}
+];
+const SK={
+ walnut:{name:"Walnut",sw:"#a8713f",frame:"#3a2213",frameShadow:"inset 0 2px 0 #5a3a22, 0 10px 24px rgba(0,0,0,.35)",board:"repeating-linear-gradient(95deg,#7b4a28 0 9px,#74452a 9px 15px,#80502c 15px 26px)",wallTop:"#d8a66c",wallShadow:"0 6px 0 #8a5530, 0 9px 8px rgba(0,0,0,.4)",radius:4,holeIn:"#140b05",holeRim:"#c9a03a",label:"#f3e2bf",accent:"#ffd76a",veil:"rgba(30,16,6,.88)",veilText:"#f6ead2",btnBg:"#d8a66c",btnText:"#2a170a",
+  ui:{bg:"#efe2c8",ink:"#2a170a",sub:"#6b3f22",card:"#fbf4e6",border:"2px solid #2a170a",shadow:"0 5px 0 #2a170a",chip:"#efe2c8",sel:"#2a170a",selText:"#efe2c8",word:"Bungee,sans-serif",wordCol:"#6b3f22",font:"Inter,system-ui,sans-serif",drop:"#fbf4e6"},
+  disc:{bg:"#2a170a",knob:"#d8a66c"}},
+ neon:{name:"Neon",sw:"#2de2e6",frame:"#151937",frameShadow:"0 0 0 1px #2a2f66, 0 10px 24px rgba(0,0,0,.5)",board:"#080b1d",wallTop:"#2de2e6",wallShadow:"0 6px 0 #0b6b85, 0 0 14px rgba(45,226,230,.45)",radius:3,holeIn:"#02030a",holeRim:"#ff3ea5",label:"#ff8fcb",accent:"#ffe14d",veil:"rgba(5,6,20,.9)",veilText:"#e9f6ff",btnBg:"#2de2e6",btnText:"#05101a",
+  ui:{bg:"#05061a",ink:"#e9f6ff",sub:"#ff8fcb",card:"#0c0f2a",border:"1.5px solid #2a2f66",shadow:"0 0 24px rgba(45,226,230,.12)",chip:"#151937",sel:"#2de2e6",selText:"#05101a",word:"Bungee,sans-serif",wordCol:"#2de2e6",font:"'Space Grotesk',system-ui,sans-serif",drop:"#0c0f2a"},
+  disc:{bg:"#2de2e6",knob:"#ff3ea5"}},
+ toy:{name:"Toy",sw:"#ff8a65",frame:"#ffffff",frameShadow:"0 0 0 4px #2b3a55, 0 8px 0 4px #2b3a55",board:"#c9eedc",wallTop:"#ff8a65",wallShadow:"0 7px 0 #c9553a",radius:8,holeIn:"#2b3a55",holeRim:"#ffd54f",label:"#ffffff",accent:"#7c4dff",veil:"rgba(43,58,85,.92)",veilText:"#ffffff",btnBg:"#ffd54f",btnText:"#2b3a55",
+  ui:{bg:"#fff4d6",ink:"#2b3a55",sub:"#6a7894",card:"#ffffff",border:"4px solid #2b3a55",shadow:"0 6px 0 #2b3a55",chip:"#fff4d6",sel:"#7c4dff",selText:"#ffffff",word:"'Baloo 2',sans-serif",wordCol:"#2b3a55",font:"'Baloo 2',system-ui,sans-serif",drop:"#ffffff"},
+  disc:{bg:"#2b3a55",knob:"#7c4dff"}},
+ steel:{name:"Steel",sw:"#b9c0c7",frame:"#1f2327",frameShadow:"inset 0 1px 0 #3a4046, 0 10px 24px rgba(0,0,0,.45)",board:"repeating-linear-gradient(0deg,#3b4046 0 2px,#363b41 2px 4px)",wallTop:"linear-gradient(180deg,#dde2e6,#9aa3ab)",wallShadow:"0 6px 0 #5d656d, 0 9px 8px rgba(0,0,0,.45)",radius:2,holeIn:"#090a0c",holeRim:"#c7ccd1",label:"#e6eaee",accent:"#ff7a1a",veil:"rgba(15,17,20,.9)",veilText:"#eef1f4",btnBg:"#ff7a1a",btnText:"#1a0d02",screws:true,
+  ui:{bg:"#15181b",ink:"#eef1f4",sub:"#a9b2ba",card:"#1f2327",border:"1px solid #343a40",shadow:"none",chip:"#2b3035",sel:"#ff7a1a",selText:"#1a0d02",word:"'Space Grotesk',sans-serif",wordCol:"#eef1f4",font:"'Space Grotesk',system-ui,sans-serif",drop:"#1f2327"},
+  disc:{bg:"#c7ccd1",knob:"#ff7a1a"}}
+};
+const $=id=>document.getElementById(id);
+const ICON_ON='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+const ICON_OFF='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+
+let skin="walnut", s=SK.walnut, round=0, R=ROUNDS[0], chosen=null, target=null;
+let state="splash", b={x:SX,y:SY,vx:0,vy:0}, tx=0, ty=0, px=0, py=0, drag=null, discDrag=null, mode="free", disc=false;
+let sensor=false, sx=0, sy=0, base=null, lastTap=0, muted=false, t0=0, elapsed=0, played=0, right=0;
+let bounce=3, speed=3, hdOpen=false, hdTimer=0, gotOri=false;
+let boardEl, ballEl, ac=null, master, rollGain, rollFilt, lastBump=0;
+
+/* ---------- audio ---------- */
+function initAudio(){
+  if(ac){ ac.resume&&ac.resume(); return; }
+  try{
+    ac=new (window.AudioContext||window.webkitAudioContext)();
+    master=ac.createGain(); master.gain.value=muted?0:.9; master.connect(ac.destination);
+    const len=ac.sampleRate*2, buf=ac.createBuffer(1,len,ac.sampleRate), d=buf.getChannelData(0); let last=0;
+    for(let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+.02*w)/1.02; d[i]=last*3.5; }
+    const src=ac.createBufferSource(); src.buffer=buf; src.loop=true;
+    rollFilt=ac.createBiquadFilter(); rollFilt.type="lowpass"; rollFilt.frequency.value=300; rollFilt.Q.value=2;
+    rollGain=ac.createGain(); rollGain.gain.value=0;
+    src.connect(rollFilt); rollFilt.connect(rollGain); rollGain.connect(master); src.start();
+  }catch(e){ ac=null; }
+}
+function tone(f,dur,vol,type,when){
+  if(!ac) return; const t=ac.currentTime+(when||0), o=ac.createOscillator(), g=ac.createGain();
+  o.type=type||"sine"; o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol||.3,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.05);
+}
+function beep(go){ if(go){ tone(988,.45,.32); tone(1976,.45,.08); } else { tone(659,.2,.3); tone(1318,.2,.06); } }
+function bump(v){ const now=performance.now(); if(now-lastBump<60) return; lastBump=now; tone(140+Math.random()*40,.06,Math.min(.35,v*.07),"triangle"); }
+function plop(){ if(!ac) return; const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain(); o.type="sine"; o.frequency.setValueAtTime(520,t); o.frequency.exponentialRampToValueAtTime(90,t+.35); g.gain.setValueAtTime(.35,t); g.gain.exponentialRampToValueAtTime(.0001,t+.4); o.connect(g); g.connect(master); o.start(t); o.stop(t+.45); }
+function fanfare(w){ [[523,0,.11],[659,.11,.11],[784,.22,.11],[1047,.33,.55]].forEach(([f,d,l])=>{ tone(f,l+.15,.22,"triangle",w+d); tone(f*2,l,.05,"square",w+d); }); [523,659,784,1047].forEach(f=>tone(f,1.1,.09,"triangle",w+.33)); tone(1568,.6,.05,"sine",w+.45); }
+function wah(f,w,dur,vib){ if(!ac) return; const t=ac.currentTime+w, o=ac.createOscillator(), lp=ac.createBiquadFilter(), g=ac.createGain();
+  o.type="sawtooth"; o.frequency.setValueAtTime(f,t); o.frequency.linearRampToValueAtTime(f*.96,t+dur);
+  lp.type="lowpass"; lp.Q.value=6; lp.frequency.setValueAtTime(300,t); lp.frequency.linearRampToValueAtTime(1500,t+.09); lp.frequency.linearRampToValueAtTime(450,t+dur);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.03); g.gain.setValueAtTime(.22,t+dur*.8); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  if(vib){ const l=ac.createOscillator(), lg=ac.createGain(); l.frequency.value=5.5; lg.gain.value=7; l.connect(lg); lg.connect(o.frequency); l.start(t+.25); l.stop(t+dur); }
+  o.connect(lp); lp.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.05); }
+function jingle(good){ if(good) fanfare(.4); else { wah(392,.45,.36); wah(370,.85,.36); wah(349,1.25,.36); wah(330,1.65,1.2,true); } }
+function setMute(m){ muted=m; if(master) master.gain.value=m?0:.9; $("snd").innerHTML=m?ICON_OFF:ICON_ON; $("snd").setAttribute("aria-label",m?"Sound off":"Sound on"); }
+
+/* ---------- look ---------- */
+function applySkin(){
+  s=SK[skin]; const u=s.ui;
+  const hd=$("hd"); hd.style.background=u.bg; hd.style.color=u.ink; hd.style.fontFamily=u.font; hd.style.borderBottom="1px solid rgba(127,127,127,.25)";
+  $("word").style.fontFamily=u.word; $("word").style.color=u.wordCol;
+  $("area").style.background=u.bg;
+  const qd=$("qdrop"); qd.style.background=u.drop; qd.style.color=u.ink; qd.style.border=u.border;
+  const lk=$("looks"); lk.style.background=u.drop; lk.style.border=u.border;
+  const bp=$("bpop"); bp.style.background=u.drop; bp.style.border=u.border; bp.style.color=u.ink; $("bnc").style.accentColor=u.sel; $("spd").style.accentColor=u.sel;
+  const tb=$("tab"); tb.style.background=u.drop; tb.style.color=u.ink; tb.style.boxShadow="0 2px 8px rgba(0,0,0,.25)";
+  lk.innerHTML=Object.keys(SK).map(k=>`<button data-k="${k}" style="background:${k===skin?u.sel:"transparent"};color:${k===skin?u.selText:u.ink}"><i style="background:${SK[k].sw}"></i>${SK[k].name}</button>`).join("");
+  lk.querySelectorAll("button").forEach(x=>x.onclick=()=>{skin=x.dataset.k; lk.classList.remove("open"); applySkin();});
+  const res=$("res"); res.style.background=s.veil; res.style.color=s.veilText;
+  $("retry").style.cssText=`background:transparent;color:${s.veilText};border:2px solid ${s.veilText}`;
+  $("next").style.cssText=`background:${s.btnBg};color:${s.btnText};border:0`;
+  $("disc").style.background=`radial-gradient(circle, transparent 0 42%, ${s.disc.bg} 43% 47%, transparent 48%), ${s.disc.bg}33`;
+  $("disc").style.border=`3px solid ${s.disc.bg}`; $("knob").style.background=s.disc.knob;
+  buildMaze(); updateReminder(); if(state==="splash") renderSplash(); fit();
+}
+function buildMaze(){
+  const screws=s.screws?["left:2px;top:2px","right:2px;top:2px","left:2px;bottom:2px","right:2px;bottom:2px"].map(p=>`<div style="position:absolute;${p};width:7px;height:7px;border-radius:50%;background:#8d959c;box-shadow:inset 0 0 0 1px #4a5157"></div>`).join(""):"";
+  let walls=""; G.forEach((row,r)=>{for(let c=0;c<GW;c++) if(row[c]==="#") walls+=`<div style="position:absolute;left:${c*30}px;top:${r*30-5}px;width:30px;height:30px;background:${s.wallTop};border-radius:${s.radius}px;box-shadow:${s.wallShadow}"></div>`;});
+  const pos=EXIT;
+  const holes=["A","B","C","D"].map(L=>`<div style="position:absolute;left:${pos[L][0]*30+4}px;top:${pos[L][1]*30+4}px;width:22px;height:22px;box-sizing:border-box;border-radius:50%;background:${s.holeIn};border:3px solid ${s.holeRim};box-shadow:inset 0 3px 6px rgba(0,0,0,.7)${L===target?`, 0 0 0 3px ${s.accent}, 0 0 14px ${s.accent}`:""};display:flex;align-items:center;justify-content:center;color:${s.label};font:800 10px system-ui">${L}</div>`).join("");
+  $("mazeInner").innerHTML=`<div style="width:${FW}px;height:${FH}px;box-sizing:border-box;padding:10px;border-radius:22px;background:${s.frame};box-shadow:${s.frameShadow};position:relative">${screws}
+   <div style="width:${BW}px;height:${BH}px;perspective:1400px"><div id="board" style="position:relative;width:${BW}px;height:${BH}px;border-radius:10px;background:${s.board};box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)">${walls}${holes}
+   <div id="ball" role="img" aria-label="Silver ball" style="position:absolute;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff 0,#e4e8ec 22%,#a9b1b9 55%,#5b636b 85%,#3d434a 100%);box-shadow:2px 5px 6px rgba(0,0,0,.45);transition:transform .3s, filter .3s"></div></div></div></div>`;
+  boardEl=$("board"); ballEl=$("ball");
+  if(state==="drop"||state==="result"){ ballEl.style.transform="scale(.55)"; ballEl.style.filter="brightness(.5)"; }
+}
+let lastW=0,lastH=0;
+function fit(){
+  const area=$("area"), W=area.clientWidth, H=area.clientHeight; lastW=W; lastH=H;
+  const k=Math.max(.2,Math.min((W-8)/FW,(H-8)/FH));
+  $("mazeBox").style.width=Math.floor(FW*k)+"px"; $("mazeBox").style.height=Math.floor(FH*k)+"px";
+  $("mazeInner").style.width=FW+"px"; $("mazeInner").style.height=FH+"px";
+  $("mazeInner").style.transform="scale("+k+")";
+  $("count").style.fontSize=Math.round(FH*k*.45)+"px";
+}
+
+/* ---------- splash / rounds ---------- */
+function renderSplash(){
+  const u=s.ui, sp=$("splash"); sp.style.background=u.bg; sp.style.color=u.ink; sp.style.fontFamily=u.font;
+  const top=`<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-family:${u.word};font-size:22px;color:${u.wordCol}">SCREWBALLS</span><span style="font-size:13px;font-weight:700;color:${u.sub}">Question ${round+1} · ${VER}</span></div>`;
+  const foot=`<div class="foot"><label><input type="checkbox" id="discChk" ${disc?"checked":""}> Show a see-through tilt disc over the maze</label><button id="lock" style="background:${u.sel};color:${u.selText}" ${R.pick||chosen?"":"disabled"}>${R.pick?"Ready":"Lock in"}</button></div>`;
+  let mid;
+  if(R.pick){
+    mid=`<div style="display:flex;align-items:center;gap:18px;padding:18px;border-radius:18px;background:${u.card};border:${u.border};box-shadow:${u.shadow}">
+      <div style="width:84px;height:84px;flex:none;border-radius:20px;background:${s.accent};color:${skin==="toy"?"#fff":"#111"};display:flex;align-items:center;justify-content:center;font:800 56px ${u.word}">${R.pick}</div>
+      <div><div style="font-size:14px;font-weight:700;color:${u.sub}">No question this round. The game picks…</div><div style="font-size:30px;font-weight:800;line-height:1.1">Roll to hole ${R.pick}</div></div></div>`;
+  } else {
+    mid=`<div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:12px;font-weight:800;letter-spacing:2px;color:${u.sub}">${R.cat}</div><div style="font-size:26px;font-weight:800;line-height:1.2">${R.q}</div></div>
+     <div class="ans">${Object.keys(R.a).map(L=>{const on=chosen===L; return `<button data-l="${L}" style="background:${on?u.sel:u.card};color:${on?u.selText:u.ink};border:${u.border}"><span class="l" style="background:${on?u.selText:u.sel};color:${on?u.sel:u.selText}">${L}</span>${R.a[L]}</button>`;}).join("")}</div>`;
+  }
+  $("sp").innerHTML=top+mid+foot;
+  $("sp").querySelectorAll(".ans button").forEach(x=>x.onclick=()=>{chosen=x.dataset.l; renderSplash();});
+  $("discChk").onchange=e=>setDisc(e.target.checked);
+  $("lock").onclick=lockIn;
+}
+function showSplash(){
+  state="splash"; R=ROUNDS[round%ROUNDS.length]; chosen=null; target=null;
+  $("res").style.display="none"; $("splash").style.display="flex"; renderSplash(); updateReminder(); buildMaze();
+}
+function updateReminder(){
+  $("qlab").textContent="Q"+(round+1)+" hole";
+  const d=$("qdrop");
+  if(!target){ d.innerHTML="Choose your answer first."; return; }
+  d.innerHTML=R.pick?`The game picked this round.<b>Roll to hole ${target}</b>`:`${R.q}<br><span style="opacity:.75">Your answer: ${chosen} · ${R.a[chosen]}</span><b>Roll to hole ${target}</b>`;
+}
+async function lockIn(){
+  initAudio();
+  try{ if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function") await DeviceOrientationEvent.requestPermission(); }catch(e){}
+  if(!window._ori){ window._ori=1; window.addEventListener("deviceorientation",onOri); }
+  try{ const d=document.documentElement; if(!document.fullscreenElement&&d.requestFullscreen) await d.requestFullscreen(); if(screen.orientation&&screen.orientation.lock) await screen.orientation.lock("landscape"); }catch(e){}
+  target=R.pick||chosen; updateReminder(); setTimeout(()=>{ if(!gotOri) setTilt(); if(!gotOri&&!window._tw){ window._tw=1; toast("Phone tilt is blocked inside claude.ai, so drag beside the maze for now"); } },2500);
+  $("splash").style.display="none"; startRound();
+}
+function startRound(){
+  b={x:SX,y:SY,vx:0,vy:0}; px=py=0; tx=ty=0; $("res").style.display="none";
+  buildMaze(); setTimeout(fit,50);
+  state="count"; const c=$("count"); c.style.display="flex"; let n=3;
+  const step=()=>{ if(n>0){ c.textContent=n; beep(false); n--; setTimeout(step,800); } else { c.textContent="GO"; beep(true); state="play"; t0=performance.now(); openHd(2500); setTimeout(()=>{c.style.display="none";},450); } };
+  setTimeout(step,250);
+}
+function finish(L){
+  state="drop"; ballEl.style.transform="scale(.55)"; ballEl.style.filter="brightness(.5)"; plop();
+  let good=false, t, body;
+  if(R.pick){ good=L===R.pick; t=good?"Bang on!":"Wrong hole"; body=good?`Into hole ${L} in ${fmt(elapsed)}.`:`You rolled into ${L}. The game picked ${R.pick}.`; }
+  else if(L!==chosen){ t="Missed your hole"; body=`You locked in ${chosen} but rolled into ${L}.`; }
+  else { good=chosen===R.ok; t=good?"Correct!":"Wrong answer"; body=good?`${R.a[R.ok]} it is. Home in ${fmt(elapsed)}.`:`You made it to ${L}, but the answer was ${R.ok} · ${R.a[R.ok]}.`; }
+  played++; if(good) right++; $("score").textContent=right+"/"+played;
+  jingle(good);
+  setTimeout(()=>{ state="result"; $("rt").textContent=t; $("rb").textContent=body; $("res").style.display="flex"; },good?1300:2700);
+}
+function fmt(ms){ const sec=Math.floor(ms/1000); return Math.floor(sec/60)+":"+String(sec%60).padStart(2,"0"); }
+
+/* ---------- physics ---------- */
+function wall(x,y){const c=Math.floor(x/30),r=Math.floor(y/30); if(r<0||r>=GH||c<0||c>=GW) return true; return G[r][c]==="#";}
+function hit(x,y){const r=8.5; return wall(x-r,y-r)||wall(x+r,y-r)||wall(x-r,y+r)||wall(x+r,y+r);}
+function pocket(){ const x=b.x,y=b.y;
+  for(const L in EXIT){ const [c,r]=EXIT[L], x0=c*30, y0=r*30;
+    if(r===0&&y<12&&x>x0&&x<x0+30) return L; if(r===GH-1&&y>BH-12&&x>x0&&x<x0+30) return L;
+    if(c===0&&x<12&&y>y0&&y<y0+30) return L; if(c===GW-1&&x>BW-12&&y>y0&&y<y0+30) return L; }
+  return null; }
+const clamp=v=>Math.max(-1,Math.min(1,v));
+function tick(){
+  const manual=drag||discDrag||px!==0||py!==0;
+  const wx=manual?px:(sensor?sx:0), wy=manual?py:(sensor?sy:0);
+  tx+=(wx-tx)*.15; ty+=(wy-ty)*.15;
+  let sp=0;
+  if(state==="play"){
+    elapsed=performance.now()-t0; $("time").textContent=fmt(elapsed);
+    b.vx=(b.vx+tx*ACC[speed])*.985; b.vy=(b.vy+ty*ACC[speed])*.985;
+    const vm=VMAX[speed]; sp=Math.hypot(b.vx,b.vy); if(sp>vm){b.vx*=vm/sp; b.vy*=vm/sp; sp=vm;}
+    const nx=b.x+b.vx; if(hit(nx,b.y)){ if(Math.abs(b.vx)>1) bump(Math.abs(b.vx)); b.vx*=-REST[bounce]; } else b.x=nx;
+    const ny=b.y+b.vy; if(hit(b.x,ny)){ if(Math.abs(b.vy)>1) bump(Math.abs(b.vy)); b.vy*=-REST[bounce]; } else b.y=ny;
+    const L=pocket(); if(L) finish(L);
+  }
+  if(ac&&rollGain){ const v=state==="play"?Math.min(sp/6,1):0; rollGain.gain.setTargetAtTime(v*.55,ac.currentTime,.05); rollFilt.frequency.setTargetAtTime(160+v*700,ac.currentTime,.05); }
+  if(boardEl){ boardEl.style.transform="rotateX("+(-ty*14).toFixed(2)+"deg) rotateY("+(tx*8).toFixed(2)+"deg)";
+    if(area.clientWidth!==lastW||area.clientHeight!==lastH) fit(); ballEl.style.left=(b.x-10)+"px"; ballEl.style.top=(b.y-10)+"px"; }
+  $("knob").style.left=(50+wx*33)+"%"; $("knob").style.top=(50+wy*33)+"%";
+  requestAnimationFrame(tick);
+}
+function onOri(e){
+  if(e.gamma==null||e.beta==null) return; gotOri=true; setTilt();
+  const ang=(screen.orientation&&screen.orientation.angle)||window.orientation||0;
+  let x=e.gamma, y=e.beta;
+  if(ang===90){x=e.beta; y=-e.gamma;} else if(ang===-90||ang===270){x=-e.beta; y=e.gamma;}
+  if(base==null){ base={x,y}; if(!sensor) toast("Tilt sensor on: tilt the phone, or drag beside the maze"); }
+  sensor=true; sx=clamp((x-base.x)/22); sy=clamp((y-base.y)/22);
+}
+
+/* ---------- controls ---------- */
+function level(){ px=py=0; base=null; toast("Board levelled"); }
+function setDisc(on){ disc=on; $("disc").classList.toggle("on",on); $("discLab").textContent=on?"Disc on":"Disc off"; }
+function setMode(m){ mode=m; $("mode").textContent=m==="free"?"Free roll":"Hold"; armHide(5000); if(m==="hold") px=py=0; }
+const area=$("area");
+area.addEventListener("pointerdown",e=>{
+  if(e.target.closest("button")||e.target.closest("#disc")) return;
+  const now=performance.now(); if(now-lastTap<280){ lastTap=0; level(); return; } lastTap=now;
+  drag={id:e.pointerId,ox:e.clientX,oy:e.clientY,bx:mode==="free"?px:0,by:mode==="free"?py:0};
+  try{area.setPointerCapture(e.pointerId);}catch(err){}
+});
+area.addEventListener("pointermove",e=>{ if(!drag||e.pointerId!==drag.id) return; const k=Math.max(50,Math.min(innerWidth,innerHeight)*.16); px=clamp(drag.bx+(e.clientX-drag.ox)/k); py=clamp(drag.by+(e.clientY-drag.oy)/k); });
+const endDrag=e=>{ if(drag&&e.pointerId===drag.id){ drag=null; if(mode==="hold"){px=py=0;} } };
+area.addEventListener("pointerup",endDrag); area.addEventListener("pointercancel",endDrag);
+const dEl=$("disc");
+const discAim=e=>{ const r=dEl.getBoundingClientRect(); let x=((e.clientX-r.left)/r.width-.5)*2, y=((e.clientY-r.top)/r.height-.5)*2; const m=Math.hypot(x,y); if(m>1){x/=m;y/=m;} px=x; py=y; };
+dEl.addEventListener("pointerdown",e=>{ e.stopPropagation(); discDrag=e.pointerId; dEl.classList.add("act"); try{dEl.setPointerCapture(e.pointerId);}catch(err){} discAim(e); });
+dEl.addEventListener("pointermove",e=>{ if(discDrag===e.pointerId) discAim(e); });
+const endDisc=e=>{ if(discDrag===e.pointerId){ discDrag=null; dEl.classList.remove("act"); if(mode==="hold"){px=py=0;} } };
+dEl.addEventListener("pointerup",endDisc); dEl.addEventListener("pointercancel",endDisc);
+
+function openHd(ms){ hdOpen=true; $("hd").classList.add("open"); $("tab").style.top="40px"; $("tabArrow").setAttribute("d","M3 9l6-6 6 6"); armHide(ms||5000); }
+function closeHd(){ if($("looks").classList.contains("open")||$("bpop").classList.contains("open")||$("qwrap").classList.contains("open")){ armHide(3000); return; }
+  hdOpen=false; $("hd").classList.remove("open"); $("tab").style.top="0px"; $("tabArrow").setAttribute("d","M3 3l6 6 6-6"); }
+function armHide(ms){ clearTimeout(hdTimer); hdTimer=setTimeout(closeHd,ms); }
+let tabY=null;
+$("tab").addEventListener("pointerdown",e=>{ e.stopPropagation(); tabY=e.clientY; try{$("tab").setPointerCapture(e.pointerId);}catch(err){} });
+$("tab").addEventListener("pointerup",e=>{ if(tabY==null) return; const dy=e.clientY-tabY; tabY=null; if(dy>12) openHd(); else if(dy<-12) closeHd(); else (hdOpen?closeHd():openHd()); });
+let hdY=null;
+$("hd").addEventListener("pointerdown",e=>{ hdY=e.clientY; armHide(5000); });
+$("hd").addEventListener("pointermove",e=>{ if(hdY!=null&&e.clientY-hdY<-18&&!e.target.closest("input")){ hdY=null; closeHd(); } });
+$("hd").addEventListener("pointerup",()=>{ hdY=null; });
+$("bBtn").onclick=e=>{ e.stopPropagation(); $("bpop").classList.toggle("open"); };
+$("sBtn").onclick=e=>{ e.stopPropagation(); $("bpop").classList.toggle("open"); };
+$("spd").oninput=e=>{ speed=+e.target.value; $("sLab").textContent=speed; armHide(5000); };
+$("bnc").oninput=e=>{ bounce=+e.target.value; $("bLab").textContent=bounce; armHide(5000); };
+function setTilt(){ $("tilt").textContent=gotOri?"Tilt: on":"Tilt: blocked"; }
+$("mode").onclick=()=>setMode(mode==="free"?"hold":"free");
+$("discBtn").onclick=()=>setDisc(!disc);
+$("snd").onclick=()=>{ initAudio(); setMute(!muted); };
+$("lookBtn").onclick=e=>{ e.stopPropagation(); $("looks").classList.toggle("open"); };
+$("qbtn").onclick=e=>{ e.stopPropagation(); $("qwrap").classList.toggle("open"); };
+document.addEventListener("pointerdown",e=>{ if(!e.target.closest("#qwrap")) $("qwrap").classList.remove("open"); if(!e.target.closest("#looks")&&!e.target.closest("#lookBtn")) $("looks").classList.remove("open"); if(!e.target.closest("#bpop")&&!e.target.closest("#bBtn")&&!e.target.closest("#sBtn")) $("bpop").classList.remove("open"); });
+$("retry").onclick=()=>{ initAudio(); startRound(); };
+$("next").onclick=()=>{ round++; showSplash(); };
+function toast(t){ const el=$("toast"); el.textContent=t; el.style.opacity=1; clearTimeout(toast.h); toast.h=setTimeout(()=>el.style.opacity=0,2200); }
+addEventListener("resize",fit); addEventListener("orientationchange",()=>{ base=null; setTimeout(fit,250); });
+
+setMute(false); setDisc(false); setMode("free"); applySkin(); showSplash(); fit(); requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
