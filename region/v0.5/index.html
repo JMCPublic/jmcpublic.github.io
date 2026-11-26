@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Point to the Region · v0.5</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Name the country, then find the region on the map: Saxony, Alberta, Shropshire… Five a day, free, no sign-up.">
+<link rel="canonical" href="https://twominute.games/region/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Two Minute Games">
+<meta property="og:title" content="Point to the Region"><meta property="og:description" content="Name the country. Then find the region. Five a day.">
+<meta property="og:url" content="https://twominute.games/region/"><meta property="og:image" content="https://twominute.games/og-v4.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="apple-touch-icon" href="/icons/region-180.png?v=1">
+<meta name="apple-mobile-web-app-title" content="Point to the Region"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/icons/m/region-en.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Point to the Region (live 26 Nov 2026). Engine /region/region.js, rounds /region/rounds.js, maps /region/data/ (Natural Earth, public domain). Mock-ups: /test/region/v0.1–v0.4. */
+.q{font:800 21px/1.2 Nunito,Inter,sans-serif;margin:8px 2px 8px}.q b{color:var(--accent)}
+.pmap{position:relative;background:#fff;border:2px solid var(--line);border-radius:22px;padding:6px;height:min(46dvh,430px);min-height:240px;display:flex;overflow:hidden;touch-action:manipulation}
+.pmap svg{width:100%;height:100%}
+.pmap .o{fill:#16130f;stroke:#7a7267;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-width:.7}
+.pmap .c{fill:#e2552d;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.pmap .rg path{fill:#ffd2b0;stroke:#fff;stroke-width:1.2;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .25s}
+.pmap .cxp{fill:#efe9df;stroke:#fff;stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none}
+.pmap .rg path.sel{fill:#e2552d}.pmap .rg path.ok{fill:#1f7a4a}.pmap .rg path.no{fill:#c0392b}
+.pmap .lvl{position:absolute;right:12px;top:10px;font:800 11px Inter;letter-spacing:.08em;text-transform:uppercase;background:#e3f3e9;color:#1f7a4a;border-radius:999px;padding:3px 9px}
+.pmap .lvl.m{background:#fff1d6;color:#9a6200}.pmap .lvl.h{background:#fbe6e3;color:#c0392b}
+.pmap .hint{position:absolute;left:12px;bottom:10px;font-size:12px;font-weight:700;color:#55606b;background:rgba(255,255,255,.9);border-radius:999px;padding:4px 10px;pointer-events:none}
+.play .opts{margin-top:12px}
+.next[disabled]{background:#d9d2c5;cursor:default}
+.half{display:inline-block;font:800 12px Inter;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.half.g{background:var(--goodbg);color:var(--good)}.half.r{background:var(--badbg);color:var(--bad)}
+.fact b.inl{display:inline;font-size:inherit;margin:0}
+.prog i.h,.dots i.h{background:#d9a400}
+.intro p.sub{font:600 14px/1.3 Inter,system-ui,sans-serif;color:var(--cu);margin:-2px 0 10px}
+.gicon{display:block;width:64px;height:64px;border-radius:16px;margin:0 0 10px}
+.again{margin-top:14px;text-align:center}.again b{display:block;font-size:17px;margin-bottom:2px}
+.loading{text-align:center;color:var(--muted);margin:40px 0}
+@media (max-height:700px){.pmap{height:40dvh}.opt{padding:10px 12px;font-size:16px}.q{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>window.TMG_SIMPLE=1;</script>
+<script src="/region/rounds.js?v=1"></script>
+<script src="/region/region.js?v=1"></script>
+<script src="/shared/homebtn.js?v=2" defer></script>
+<script src="/shared/gfoot.js?v=1" defer></script>
+<script src="/shared/feedback.js?v=2" defer></script>
+</body>
+</html>
+<span style="position:fixed;right:8px;bottom:6px;font-size:11px;color:#888">v0.5</span>
