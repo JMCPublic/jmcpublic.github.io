@@ -71,8 +71,8 @@ html,body{margin:0;height:100%;overflow:hidden;touch-action:none;overscroll-beha
   <div id="pwm" role="status" style="color:#ff9a9a;font-size:13px;min-height:18px"></div>
 </div>
 <script>
-/* Same password as the stats page (PBKDF2-SHA256, 150,000 rounds); only the scrambled code is in this file. Remembered on this device after the first time. */
-(()=>{const HASH='2adfcea818ae1edf0375e35ebbf4886df8469707b5f9668b2366434cdcbc5bec',K='tmg-screwballs-ok',g=document.getElementById('pwg');
+/* Screwballs testers' password (PBKDF2-SHA256, 150,000 rounds); only the scrambled code is in this file. Remembered on this device after the first time. */
+(()=>{const HASH='62f7ab5170f7ac403a872ceada42789f4086533b05b5f28474107ec441d6ab1b',K='tmg-screwballs-ok',g=document.getElementById('pwg');
 let ok=null;try{ok=localStorage.getItem(K)}catch(e){} if(ok===HASH){g.remove();return}
 async function code(pw){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
   const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode('tmg-stats-2026'),iterations:150000},k,256);
