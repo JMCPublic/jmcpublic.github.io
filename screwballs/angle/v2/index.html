@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>/* Opened from the home-screen icon: always jump to the latest angle test (see /screwballs/angle/latest.json). */
 (function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;
-fetch('/screwballs/angle/latest.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var m=location.pathname.match(/\/screwballs\/angle\/(v[0-9]+)\//);if(j&&j.v&&(!m||m[1]!==j.v))location.replace('/screwballs/angle/'+j.v+'/')}).catch(function(){})})();</script>
+fetch('/screwballs/angle/latest.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var m=location.pathname.match(/\/screwballs\/angle\/(v[0-9]+)\//);if(j&&j.v&&(!m||m[1]!==j.v))location.replace('/screwballs/angle/'+j.v+'/')}).catch(function(){})})();</script>
 <title>Screwballs – Find your angle (test v2)</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#efe2c8;color:#2a170a;font-family:system-ui,-apple-system,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
