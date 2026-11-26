@@ -172,7 +172,7 @@ function end(rev){S.over=true;const n=S.res.reduce((a,b)=>a+b,0);let best=+ls(K+
 
 /* Play another today: the other games on the home page, ticked when played today (Aperture and Landmarks open in this language) */
 const AD=L==='en'?'':L+'/';
-const OTHERS=[['Aperture','/aperture/'+AD,'aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/'+AD,'landmarks','apL-best-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
+const OTHERS=[['Aperture','/aperture/'+AD,'aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/'+AD,'landmarks','apL-best-'],['Masterpiece','/masterpiece/','masterpiece','mp-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
 function more(){return `<div class="panel more"><div class="tag">${esc(U.another)}</div><div class="mgs">${OTHERS.map(([n,h,ic,k])=>{const d=k&&ls(k+today());
   return `<a class="mg${d?' done':''}" href="${h}"><img src="/icons/${ic}-180.png?v=3" alt="" width="40" height="40"><b>${esc(n)}</b><span>${esc(d?U.done:U.go)}</span></a>`}).join('')}</div></div>`}
 

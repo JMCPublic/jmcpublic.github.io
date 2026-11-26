@@ -4,34 +4,43 @@
 (()=>{if(window.tmgFb||window.top!==window)return;
 const CFG={p:'aperture-c0961',k:'AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI'};
 const ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>';
-const KINDS=[['idea','💡 Idea','What would make it better?'],['like','👍 Like it','What did you enjoy?'],['wrong','🐞 Something’s wrong','What went wrong, and where?']];
+/* words in the page's language (26 Nov): taken from <html lang>, English otherwise */
+const FL=(document.documentElement.lang||'en').slice(0,2).toLowerCase();
+const FT={en:{dlg:'Feedback or report a problem',h:'Tell us what you think',p:'Choose Idea, Like it or Something’s wrong and let us know. It goes privately to the Two Minute Games back office only. It isn’t a public message, and nobody else can read it.',k:['💡 Idea','👍 Like it','🐞 Something’s wrong'],ph:['What would make it better?','What did you enjoy?','What went wrong, and where?'],msg:'Your message',ct:'Name or email, only if you’d like a reply (optional)',cta:'Name or email (optional)',meta:'We also send which game you were on and your type of device, nothing else.',cancel:'Cancel',send:'Send',sending:'Sending…',sent:'Thank you. Sent!',fail:'Couldn’t send just now. Please try again in a moment.',pill:'Feedback or bug'},
+de:{dlg:'Feedback oder Problem melden',h:'Sag uns deine Meinung',p:'Wähle Idee, Gefällt mir oder Etwas stimmt nicht und schreib uns. Die Nachricht geht nur privat an das Team von Two Minute Games. Sie ist nicht öffentlich, und niemand sonst kann sie lesen.',k:['💡 Idee','👍 Gefällt mir','🐞 Etwas stimmt nicht'],ph:['Was würde es besser machen?','Was hat dir gefallen?','Was ist schiefgelaufen, und wo?'],msg:'Deine Nachricht',ct:'Name oder E-Mail, nur wenn du eine Antwort möchtest (freiwillig)',cta:'Name oder E-Mail (freiwillig)',meta:'Wir senden nur mit, welches Spiel du gespielt hast und welche Art Gerät du nutzt, sonst nichts.',cancel:'Abbrechen',send:'Senden',sending:'Wird gesendet…',sent:'Danke. Gesendet!',fail:'Das hat gerade nicht geklappt. Bitte versuch es gleich noch einmal.',pill:'Feedback oder Fehler'},
+tr:{dlg:'Geri bildirim veya sorun bildir',h:'Ne düşündüğünü söyle',p:'Fikir, Beğendim veya Bir sorun var seçeneğini seç ve bize yaz. Mesajın yalnızca Two Minute Games ekibine özel olarak gider. Herkese açık değildir ve başka kimse okuyamaz.',k:['💡 Fikir','👍 Beğendim','🐞 Bir sorun var'],ph:['Ne daha iyi yapardı?','Neyi beğendin?','Ne ters gitti, nerede?'],msg:'Mesajın',ct:'Yanıt istersen adın veya e-postan (isteğe bağlı)',cta:'Ad veya e-posta (isteğe bağlı)',meta:'Ayrıca yalnızca hangi oyunda olduğunu ve cihaz türünü göndeririz, başka bir şey değil.',cancel:'Vazgeç',send:'Gönder',sending:'Gönderiliyor…',sent:'Teşekkürler. Gönderildi!',fail:'Şu an gönderilemedi. Lütfen biraz sonra tekrar dene.',pill:'Geri bildirim veya hata'},
+fr:{dlg:'Avis ou signaler un problème',h:'Dites-nous ce que vous en pensez',p:'Choisissez Idée, J’aime ou Un problème et écrivez-nous. Le message arrive uniquement, en privé, chez l’équipe de Two Minute Games. Il n’est pas public et personne d’autre ne peut le lire.',k:['💡 Idée','👍 J’aime','🐞 Un problème'],ph:['Qu’est-ce qui le rendrait meilleur ?','Qu’avez-vous aimé ?','Qu’est-ce qui n’a pas marché, et où ?'],msg:'Votre message',ct:'Nom ou e-mail, seulement si vous voulez une réponse (facultatif)',cta:'Nom ou e-mail (facultatif)',meta:'Nous envoyons aussi le jeu où vous étiez et votre type d’appareil, rien d’autre.',cancel:'Annuler',send:'Envoyer',sending:'Envoi…',sent:'Merci. Envoyé !',fail:'Envoi impossible pour le moment. Réessayez dans un instant.',pill:'Avis ou bug'},
+es:{dlg:'Opinión o informar de un problema',h:'Cuéntanos qué te parece',p:'Elige Idea, Me gusta o Algo va mal y escríbenos. El mensaje llega solo, en privado, al equipo de Two Minute Games. No es público y nadie más puede leerlo.',k:['💡 Idea','👍 Me gusta','🐞 Algo va mal'],ph:['¿Qué lo haría mejor?','¿Qué te ha gustado?','¿Qué ha fallado y dónde?'],msg:'Tu mensaje',ct:'Nombre o correo, solo si quieres respuesta (opcional)',cta:'Nombre o correo (opcional)',meta:'También enviamos en qué juego estabas y tu tipo de dispositivo, nada más.',cancel:'Cancelar',send:'Enviar',sending:'Enviando…',sent:'¡Gracias! Enviado.',fail:'No se ha podido enviar ahora. Inténtalo de nuevo en un momento.',pill:'Opinión o fallo'},
+pt:{dlg:'Opinião ou comunicar um problema',h:'Diga-nos o que acha',p:'Escolha Ideia, Gosto ou Algo está mal e escreva-nos. A mensagem vai apenas, em privado, para a equipa da Two Minute Games. Não é pública e mais ninguém a pode ler.',k:['💡 Ideia','👍 Gosto','🐞 Algo está mal'],ph:['O que o tornaria melhor?','Do que gostou?','O que correu mal, e onde?'],msg:'A sua mensagem',ct:'Nome ou e-mail, só se quiser resposta (opcional)',cta:'Nome ou e-mail (opcional)',meta:'Também enviamos o jogo em que estava e o tipo de dispositivo, mais nada.',cancel:'Cancelar',send:'Enviar',sending:'A enviar…',sent:'Obrigado. Enviado!',fail:'Não foi possível enviar agora. Tente de novo daqui a pouco.',pill:'Opinião ou erro'}};
+const W=FT[FL]||FT.en;
+const KINDS=[['idea',W.k[0],W.ph[0]],['like',W.k[1],W.ph[1]],['wrong',W.k[2],W.ph[2]]];
 let v,kind='idea';
 const dev=()=>{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c?(m>=600?'tablet':'phone'):'desktop'};
 function build(){v=document.createElement('div');v.className='tmgfb-v';v.hidden=true;
-  v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="Feedback or report a problem"><h2>Tell us what you think</h2>
-  <p>Choose Idea, Like it or Something’s wrong and let us know. It goes privately to the Two Minute Games back office only. It isn’t a public message, and nobody else can read it.</p>
+  v.innerHTML=`<form class="tmgfb-c" role="dialog" aria-label="${W.dlg}"><h2>${W.h}</h2>
+  <p>${W.p}</p>
   <div class="tmgfb-chips">${KINDS.map(k=>`<button type="button" class="tmgfb-chip" data-k="${k[0]}" aria-pressed="${k[0]===kind}">${k[1]}</button>`).join('')}</div>
-  <textarea maxlength="1500" required aria-label="Your message"></textarea>
-  <input maxlength="150" autocomplete="email" placeholder="Name or email, only if you’d like a reply (optional)" aria-label="Name or email (optional)">
-  <div class="tmgfb-meta">We also send which game you were on and your type of device, nothing else.</div>
-  <div class="tmgfb-row"><span class="tmgfb-msg" aria-live="polite"></span><button type="button" class="tmgfb-b">Cancel</button><button type="submit" class="tmgfb-b go">Send</button></div></form>`;
+  <textarea maxlength="1500" required aria-label="${W.msg}"></textarea>
+  <input maxlength="150" autocomplete="email" placeholder="${W.ct}" aria-label="${W.cta}">
+  <div class="tmgfb-meta">${W.meta}</div>
+  <div class="tmgfb-row"><span class="tmgfb-msg" aria-live="polite"></span><button type="button" class="tmgfb-b">${W.cancel}</button><button type="submit" class="tmgfb-b go">${W.send}</button></div></form>`;
   document.body.appendChild(v);const f=v.querySelector('form'),t=f.querySelector('textarea'),c=f.querySelector('input'),m=f.querySelector('.tmgfb-msg'),go=f.querySelector('.go');
   const setK=k=>{kind=k;f.querySelectorAll('.tmgfb-chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));t.placeholder=KINDS.find(x=>x[0]===k)[2]};setK(kind);
   f.querySelectorAll('.tmgfb-chip').forEach(b=>b.onclick=()=>setK(b.dataset.k));
   f.querySelector('.tmgfb-b:not(.go)').onclick=close;v.addEventListener('click',e=>{if(e.target===v)close()});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&!v.hidden)close()});
   f.onsubmit=async e=>{e.preventDefault();const msg=t.value.trim();if(!msg){t.focus();return}
-    go.disabled=true;m.textContent='Sending…';let where='';try{if(window.tmgFbWhere)where=String(window.tmgFbWhere()).slice(0,400)}catch(_){}
+    go.disabled=true;m.textContent=W.sending;let where='';try{if(window.tmgFbWhere)where=String(window.tmgFbWhere()).slice(0,400)}catch(_){}
     const s=x=>({stringValue:String(x)});
     const fields={kind:s(kind),message:s(msg.slice(0,1500)),contact:s(c.value.trim().slice(0,150)),game:s(document.title.slice(0,120)),page:s(location.pathname.slice(0,200)),device:s(dev()),where:s(where),ua:s(navigator.userAgent.slice(0,300)),at:{timestampValue:new Date().toISOString()}};
     try{const r=await fetch(`https://firestore.googleapis.com/v1/projects/${CFG.p}/databases/(default)/documents/feedback?key=${CFG.k}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields})});
-      if(!r.ok)throw 0;m.textContent='Thank you. Sent!';t.value='';c.value='';setTimeout(close,1400)}
-    catch(_){m.textContent='Couldn’t send just now. Please try again in a moment.';go.disabled=false}}}
+      if(!r.ok)throw 0;m.textContent=W.sent;t.value='';c.value='';setTimeout(close,1400)}
+    catch(_){m.textContent=W.fail;go.disabled=false}}}
 function open(){if(!v)build();const m=v.querySelector('.tmgfb-msg');m.textContent='';v.querySelector('.go').disabled=false;v.hidden=false;setTimeout(()=>v.querySelector('textarea').focus(),50)}
 function close(){if(v)v.hidden=true}
 window.tmgFb={open,close};
 function wire(){const own=document.querySelectorAll('[data-tmg-feedback]');
   if(own.length){own.forEach(b=>b.addEventListener('click',e=>{e.preventDefault();open()}));return}
-  const p=document.createElement('button');p.type='button';p.className='tmgfb-pill';p.setAttribute('aria-label','Feedback or report a problem');p.innerHTML=ICON+'Feedback or bug';p.onclick=open;document.body.appendChild(p)}
+  const p=document.createElement('button');p.type='button';p.className='tmgfb-pill';p.setAttribute('aria-label',W.dlg);p.innerHTML=ICON+W.pill;p.onclick=open;document.body.appendChild(p)}
 if(document.body)wire();else addEventListener('DOMContentLoaded',wire);
 })();

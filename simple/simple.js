@@ -17,7 +17,7 @@ const LOC=(()=>{const n=navigator.language||'';return n.toLowerCase().startsWith
 const dateTxt=()=>{try{return new Date().toLocaleDateString(LOC,{weekday:'short',day:'numeric',month:'short'})}catch(e){return U.today}};
 const gameUrl=k=>(CFG.base||'/natural-wonders-')+k+'/';
 const VIP=ls('ap-vip')==='1';  /* the owner's devices can play extra practice sets for testing */
-const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain'],['aperture','Aperture'],['landmarks','Landmarks']];  /* Aperture and Landmarks too (17 Nov), so every daily game links to the others */
+const GAMES=[['rivers','Rivers'],['lakes','Lakes'],['bodies-of-water','Bodies of Water'],['mountains','Mountains'],['deserts','Deserts'],['forests','Forests'],['river-cities','River Cities'],['where-is-bigger','Where is Bigger?'],['which-of-five','Which of Three?'],['how-many-borders','How Many Borders?'],['masterbrain','Masterbrain'],['aperture','Aperture'],['landmarks','Landmarks'],['when','When was that?'],['masterpiece','Masterpiece']];  /* + When was that? and Masterpiece (26 Nov) */  /* Aperture and Landmarks too (17 Nov), so every daily game links to the others */
 const APK={aperture:'ap2-day-',landmarks:'apL-day-'},APDIR=['de','tr','fr','es','pt'].includes(L)?L+'/':'';
 const dayRec=k=>{const raw=ls('s'+k+'-day')||'';try{const o=JSON.parse(raw);if(o&&o.d)return o}catch(e){}const p=raw.split(':');return p[0]?{d:p[0],n:+p[1]}:null};
 const playedToday=k=>{const r=dayRec(k);return r&&r.d===today()?r:null};
@@ -130,12 +130,14 @@ function answer(o){if(S.answered)return;S.answered=true;const q=S.qs[S.i],ok=o==
   $('#after').innerHTML=`<div class="fact">${phHTML(q)}<b class="${ok?'g':'r'}">${ok?U.right[S.i%4]:esc(U.wrong(art(q.a)+nm(q.a)))}</b>${factHTML(q)}</div><button class="next">${last?esc(U.score):esc(CFG.next||'Next →')}</button>`;
   $('#after .next').onclick=()=>{if(last)end();else{S.i++;playQ()}};
   $('#after').scrollIntoView({block:'nearest',behavior:'smooth'})}
+const OWN={when:['/when/','when-done-'],masterpiece:['/masterpiece/','mp-done-']},WHN={fr:'C’était quand ?',es:'¿Cuándo fue?'};
 const apDone=k=>{try{return JSON.parse(ls(APK[k]+today())||'null')}catch(e){return null}};
 function more(){const rows=GAMES.filter(g=>g[0]!==CFG.key).map(([k,n])=>{
+    if(OWN[k]){const d=ls(OWN[k][1]+today());return `<a class="mg${d!==null?' done':''}" href="${OWN[k][0]}"><img src="/icons/${k}-180.png?v=1" alt="" width="40" height="40"><b>${esc(k==='when'?(WHN[L]||n):n)}</b><span>${d!==null?'✓ '+esc(d)+(k==='masterpiece'?' / 20':''):esc(U.play)}</span></a>`}
     if(APK[k]){const r=apDone(k);return `<a class="mg${r?' done':''}" href="/aperture/${k==='landmarks'?'landmarks/':''}${APDIR}"><img src="/icons/${k}-180.png?v=3" alt="" width="40" height="40"><b>${esc(n)}</b><span>${r?'✓ '+esc(r.t||''):esc(U.play)}</span></a>`}
     const r=playedToday(k);
     return `<a class="mg${r?' done':''}" href="${gameUrl(k)}"><img src="/icons/${k}-180.png?v=3" alt="" width="40" height="40"><b>${esc(gname(k))}</b><span>${r?'✓ '+r.n+' / 10':esc(U.play)}</span></a>`}).join('');
-  const left=GAMES.filter(g=>g[0]!==CFG.key&&!APK[g[0]]&&!playedToday(g[0])).length;  /* the message counts the Natural Wonders games */
+  const left=GAMES.filter(g=>g[0]!==CFG.key&&!APK[g[0]]&&!OWN[g[0]]&&!playedToday(g[0])).length;  /* the message counts the Natural Wonders games */
   return `<div class="panel more"><div class="tag">${esc(left?U.another:U.alldone)}</div><p class="msub">${esc(left?U.left(left):U.allmsg)}</p><div class="mgs">${rows}</div></div>`}
 function mbLine(){const g=S.qs.map(q=>gname(q.g)),ok=g.filter((_,k)=>S.res[k]),no=g.filter((_,k)=>!S.res[k]);return U.mbs(listJoin(ok.slice(0,3)),listJoin(no.slice(0,2)))}
 function verdict(n){return U.v[n===10?0:n>=8?1:n>=6?2:n>=4?3:4](CFG.noun)}

@@ -72,7 +72,7 @@ const top=extra=>`<div class="top">${brand}<span class="tr"><span class="datep">
 addEventListener('DOMContentLoaded',()=>document.querySelectorAll('.tmghome').forEach(a=>{if(!a.innerHTML.trim())a.innerHTML=window.TMG_HOUSE||''}));
 window.tmgMidGame=()=>!!(S&&!S.done);
 const gameCard=g=>`<a class="mg" href="${g.href}">${g.img?`<img class="ic im" src="${g.img}" alt="">`:`<span class="ic">${g.e}</span>`}<span class="t"><b>${esc(g.n)}</b><small>${esc(g.d)}</small></span><span class="pill">Play</span></a>`;
-const OTHERS=[CFG.other,{e:'🔍',n:'Aperture',d:'An everyday object through tiny viewpoints.',href:'/aperture/',img:'/icons/aperture-180.png?v=3'},{e:'🌍',n:'Natural Wonders',d:'Rivers, lakes, peaks and deserts.',href:'/wonders/',img:'/icons/natural-wonders-180.png?v=3'}];
+const OTHERS=[CFG.other,{e:'🔍',n:'Aperture',d:'An everyday object through tiny viewpoints.',href:'/aperture/',img:'/icons/aperture-180.png?v=3'},{e:'🌍',n:'Natural Wonders',d:'Rivers, lakes, peaks and deserts.',href:'/wonders/',img:'/icons/natural-wonders-180.png?v=3'},{e:'⏳',n:'When was that?',d:'Three moments from history. Put them in order.',href:'/when/',img:'/icons/when-180.png?v=1'},{e:'🎨',n:'Masterpiece',d:'A famous work of art, seen close up. Name it.',href:'/masterpiece/',img:'/icons/masterpiece-180.png?v=1'}];  /* + When and Masterpiece in the end list (26 Nov) */
 document.body.insertAdjacentHTML('afterbegin',`<div class="bg" aria-hidden="true"><div class="glow"></div></div>
 <div class="shell"><aside class="side l"><div class="sc"><span class="tag">Have you tried</span>${gameCard(OTHERS[0])}</div><div class="sc" id="stL"></div></aside>
 <main id="app"></main>
