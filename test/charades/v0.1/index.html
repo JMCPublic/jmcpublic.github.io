@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Film Charades · mock-up v0.1</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Film Charades mock-up v0.1 (26 Nov 2026). Stick people mime a famous film scene; two soft-toy hosts read the clues. 3 points on clue 1, 2 on clue 2, 1 on clue 3. */
+.stage{background:#fff;border:2px solid var(--line);border-radius:22px;overflow:hidden;margin-top:6px}
+.stage svg{display:block;width:100%;height:auto}
+.curtain{height:10px;background:repeating-linear-gradient(90deg,#b8322a 0 14px,#9b2620 14px 28px)}
+.hosts{display:flex;gap:8px;align-items:flex-start;margin:10px 0 2px}
+.hosts .av{flex:none;width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.hosts .av svg{width:42px;height:42px}
+.bub{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:9px 12px;font-size:15px;line-height:1.35;flex:1}
+.bub small{display:block;font:800 11px Inter;letter-spacing:.08em;text-transform:uppercase;color:var(--cu);margin-bottom:2px}
+.clues{margin:6px 0 0}
+.clues .bub{margin-top:6px}
+.more{display:block;margin:10px auto 2px;border:1.5px solid var(--ink);background:none;color:var(--ink);border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px;cursor:pointer}
+.more[disabled]{opacity:.35;cursor:default}
+.pts{text-align:center;font-size:13.5px;color:var(--muted);margin:6px 0 6px}.pts b{color:var(--ink)}
+.play .opts{margin-top:8px}.opt{padding:11px 13px;font-size:16px}
+.lvl{display:inline-block;font:800 11px Inter;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:3px 9px;margin-left:6px;vertical-align:2px}
+.lvl.e{background:#e3f3e9;color:#1f7a4a}.lvl.m{background:#fff1d6;color:#9a6200}.lvl.h{background:#fbe6e3;color:#c0392b}
+.prog i.h,.dots i.h{background:#d9a400}
+.mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:12px 0 0;line-height:1.45}
+.ver{position:fixed;right:8px;bottom:6px;font-size:11px;color:var(--muted);opacity:.7}
+.q{font:800 20px/1.2 Nunito,Inter,sans-serif;margin:6px 2px 4px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div><span class="ver">v0.1</span>
+<script src="/charades/stage.js?v=1"></script>
+<script>
+(()=>{
+const app=document.getElementById('app'),$=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const F=[
+ {t:'Titanic',y:1997,l:'e',sc:[['sea',0,200],['bow',40,205],['fig',250,145,'wide'],['fig',214,147,'hold',{s:.95}]],
+  c:['A great ship sails towards disaster.','A poor artist and a rich girl fall in love at sea.','They stand at the very front of the ship, arms out, as if flying.'],
+  w:['Pearl Harbor','Romeo + Juliet','The Notebook'],f:'A nearly full-size copy of the ship was built at a new studio on the coast of Mexico.'},
+ {t:'Singin’ in the Rain',y:1952,l:'m',sc:[['rain'],['puddle',220,212,{w:60}],['lamppost',170,70],['fig',190,170,'swing'],['umbrella',202,135]],
+  c:['A Hollywood musical about the movies learning to talk.','A film star is too happy to mind a downpour.','He dances through puddles and swings round a lamppost, umbrella in hand.'],
+  w:['An American in Paris','The Band Wagon','Guys and Dolls'],f:'Gene Kelly danced the famous title number in a single, carefully planned sequence that took days to film.'},
+ {t:'The Seventh Seal',y:1957,l:'h',sc:[['sea',0,150],['beach',0,170],['chess',200,190],['piece',190,174],['piece',210,174,{c:'#fff'}],['fig',150,190,'sit',{s:.95}],['fig',250,190,'sit',{flip:1,hat:'hood',s:.95}]],
+  c:['A Swedish classic set in the Middle Ages.','A knight home from the Crusades makes a bargain.','He plays chess on a beach against Death himself.'],
+  w:['Wild Strawberries','The Virgin Spring','Persona'],f:'The director said the chess game came from a medieval church painting he saw as a boy.'}];
+const H=[{k:'bramble',n:'Bramble',lines:['Ooh, ooh! I know this one! …Actually I don’t.','Right, here comes a clue, hold on to your popcorn!']},{k:'lumpkin',n:'Sir Lumpkin',lines:['Ahem. A clue, if you please.','One more hint, then. Purely out of generosity.']}];
+const YES=['Splendid! Absolutely splendid.','You’re a natural! I knew it!','Bravo. I shall polish my monocle in your honour.'],NO=['Oh dear. Even I got that one. Almost.','Never mind! Popcorn’s still warm.','Hmm. The stick people did their best.'];
+let S;const PTS=[3,2,1];
+const hdr=t=>`<div class="top"><a class="back" href="/">← All games</a><span class="tag">${esc(t)}</span></div>`;
+const cls=p=>p===3?'ok':p===0?'no':'h';
+const prog=()=>`<div class="prog">${F.map((_,k)=>`<i class="${k<S.sc.length?cls(S.sc[k]):k===S.i?'now':''}"></i>`).join('')}</div>`;
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function intro(){app.innerHTML=`${hdr('Mock-up v0.1')}<div class="panel intro"><span class="tag">Film · daily</span><h2>Film Charades</h2><p style="font:600 14px Inter;color:var(--cu);margin:-2px 0 10px">The stick people are acting. What’s the film?</p>
+ <div class="hosts"><span class="av">${CHS.HOST.bramble}</span><div class="bub"><small>Bramble</small>Hello! I’m Bramble, a knitted hedgehog. I love films. I have never seen one.</div></div>
+ <div class="hosts"><span class="av">${CHS.HOST.lumpkin}</span><div class="bub"><small>Sir Lumpkin</small>And I am Sir Lumpkin, velvet hippopotamus and critic. Do try to keep up.</div></div>
+ <ul><li>Five films, about two minutes</li><li>Name it on the first clue for 3 points, then 2, then 1</li><li>A behind-the-scenes fact for every film</li></ul>
+ <div class="btns"><button class="btn" id="st">Start</button></div>
+ <p class="mock">Mock-up v0.1: three sample films (easy, medium, hard). The real game has five a day and all the usual extras.</p></div>`;$('#st').onclick=()=>{S={i:0,sc:[]};round()}}
+function round(){const q=F[S.i];S.n=0;S.done=false;S.opts=sh([q.t,...q.w]);draw();scrollTo(0,0)}
+function clueHTML(q,n){return q.c.slice(0,n+1).map((c,k)=>{const h=H[k%2];return `<div class="hosts"><span class="av">${CHS.HOST[h.k]}</span><div class="bub"><small>${h.n} · clue ${k+1}</small>${esc(c)}</div></div>`}).join('')}
+function draw(){const q=F[S.i];
+ app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${F.length}`)}${prog()}<p class="q">What’s the film? <span class="lvl ${q.l}">${{e:'Easy',m:'Medium',h:'Hard'}[q.l]}</span></p>
+  <div class="stage"><div class="curtain"></div>${CHS.scene(q.sc)}</div>
+  <div class="clues" id="cl">${clueHTML(q,S.n)}</div>
+  ${S.done?'':`<button class="more" id="mo" ${S.n>=2?'disabled':''}>${S.n>=2?'That’s every clue':'Another clue (−1 point)'}</button><p class="pts">Name it now for <b>${PTS[S.n]} point${PTS[S.n]>1?'s':''}</b></p>`}
+  <div class="opts">${S.opts.map((o,k)=>`<button class="opt" data-k="${k}" ${S.done?'disabled':''}><span class="k">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="out"></div></div>`;
+ if(S.done)return;
+ $('#mo').onclick=()=>{if(S.n<2){S.n++;draw()}};
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=S.opts[+b.dataset.k],ok=o===q.t,p=ok?PTS[S.n]:0;S.sc.push(p);S.done=true;draw();
+   app.querySelectorAll('.opt').forEach(x=>{const v=S.opts[+x.dataset.k];x.classList.add(v===q.t?'ok':v===o?'no':'dim')});
+   const host=H[(S.i+1)%2],line=(ok?YES:NO)[S.i%3],last=S.i===F.length-1;
+   $('#out').innerHTML=`<div class="hosts"><span class="av">${CHS.HOST[host.k]}</span><div class="bub"><small>${host.n}</small>${esc(line)}</div></div><div class="fact"><b class="${ok?'g':'r'}">${ok?'Yes! +'+p:'It’s '+esc(q.t)}</b><b style="font-size:14.5px">${esc(q.t)} (${q.y})</b>${esc(q.f)}</div><button class="next" id="nx">${last?'See my score':'Next film →'}</button>`;
+   $('#nx').onclick=()=>{if(last)end();else{S.i++;round()}};$('#out').scrollIntoView({block:'nearest',behavior:'smooth'})})}
+function end(){const n=S.sc.reduce((a,b)=>a+b,0),max=F.length*3;
+ app.innerHTML=`${hdr('Mock-up v0.1')}<div class="panel"><div class="score"><div class="tag">Your score</div><div class="big">${n}<small> / ${max}</small></div><p class="verdict">${n>=max-1?'Box office gold 🎬':n>=max/2?'A proper film buff.':'The stick people need more rehearsal.'}</p><div class="dots">${S.sc.map(p=>`<i class="${cls(p)}"></i>`).join('')}</div></div>
+ <div class="list">${F.map((q,k)=>`<div class="li"><i>${S.sc[k]===3?'🟩':S.sc[k]?'🟨':'🟥'}</i><div><b>${esc(q.t)}</b> <span>· ${q.y}</span></div></div>`).join('')}</div>
+ <div class="btns"><button class="btn" id="ag">Play the mock-up again</button></div><p class="mock">The real game would add: five films a day, share squares, Goldilocks, Sources, Play another today, Keep playing.</p></div>`;$('#ag').onclick=intro}
+intro();
+})();
+</script>
+</body>
+</html>
