@@ -185,6 +185,13 @@ footer a{white-space:nowrap}
       <span class="play" data-t="play">Play</span>
     </a>
   </main>
+  <script>/* card order (26 Nov, Jonathan): Aperture and Landmarks always 2nd and 3rd (they swap places each half day);
+     the other games rotate every half day (midnight and noon, local time): the first card moves to the end and the rest move up */
+  (()=>{const m=document.querySelector('main.games');if(!m)return;const c=k=>m.querySelector('.card[data-k="'+k+'"]');
+    const h=Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/432e5);
+    const R=['wn','mp','nw','fx','cl','ns'].map(c).filter(Boolean),n=R.length;if(!n)return;
+    const rot=R.map((_,i)=>R[(i+h)%n]),A=[c('ap'),c('lm')];if(h%2)A.reverse();
+    [rot[0],...A,...rot.slice(1)].forEach(x=>x&&m.appendChild(x))})();</script>
   <footer>
     <span data-t="f1">New puzzles every day at midnight, your time.</span>
     <span><a href="/add/">📱 Put the games on your home screen</a></span>
