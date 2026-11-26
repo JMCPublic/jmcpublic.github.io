@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Point to the Region · mock-up v0.3</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Point to the Region, mock-up v0.3 (26 Nov 2026, Jonathan: the UK goes country → region (North West, Wales…) → county in that region; ½ + ¼ + ¼).
+   Built on (26 Nov 2026, Jonathan: "What is this country?" from a big picture with its neighbours, like How Many Borders; then "Where is Saxony?").
+   Not linked; noindex; no counts. Maps: Natural Earth (public domain). ½ point for the country, ½ for the region; five rounds = 5 points. */
+.q{font:800 21px/1.2 Nunito,Inter,sans-serif;margin:8px 2px 8px}.q b{color:var(--accent)}
+.pmap{position:relative;background:#fff;border:2px solid var(--line);border-radius:22px;padding:6px;height:min(46dvh,430px);min-height:240px;display:flex;overflow:hidden;touch-action:manipulation}
+.pmap svg{width:100%;height:100%}
+.pmap .o{fill:#16130f;stroke:#7a7267;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-width:.7}
+.pmap .c{fill:#e2552d;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.pmap .rg path{fill:#ffd2b0;stroke:#fff;stroke-width:1.2;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .25s}
+.pmap .cxp{fill:#efe9df;stroke:#fff;stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none}
+.pmap .rg path.sel{fill:#e2552d}.pmap .rg path.ok{fill:#1f7a4a}.pmap .rg path.no{fill:#c0392b}
+.pmap .lvl{position:absolute;right:12px;top:10px;font:800 11px Inter;letter-spacing:.08em;text-transform:uppercase;background:#e3f3e9;color:#1f7a4a;border-radius:999px;padding:3px 9px}
+.pmap .lvl.Medium{background:#fff1d6;color:#9a6200}.pmap .lvl.Hard{background:#fbe6e3;color:#c0392b}
+.pmap .hint{position:absolute;left:12px;bottom:10px;font-size:12px;font-weight:700;color:#55606b;background:rgba(255,255,255,.9);border-radius:999px;padding:4px 10px;pointer-events:none}
+.play .opts{margin-top:12px}
+.go{display:block;width:100%;margin-top:12px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:14px;cursor:pointer}
+.go[disabled]{background:#d9d2c5;cursor:default}
+.half{display:inline-block;font:800 12px Inter;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.half.g{background:var(--goodbg);color:var(--good)}.half.r{background:var(--badbg);color:var(--bad)}
+.fact b.inl{display:inline;font-size:inherit;margin:0}
+.prog i.h,.dots i.h{background:#d9a400}
+.mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:12px 0 0;line-height:1.45}
+.ver{position:fixed;right:8px;bottom:6px;font-size:11px;color:var(--muted);opacity:.7}
+@media (max-height:700px){.pmap{height:40dvh}.opt{padding:10px 12px;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div><span class="ver">v0.3</span>
+<script src="ptr3.js?v=1"></script>
+<script>
+(()=>{
+const app=document.getElementById('app'),$=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=[ /* mock-up rounds, easy to hard; wrong answers picked from the neighbours */
+ {c:'DEU',cn:'Germany',w:['Poland','Austria','France'],r:'Saxony',lv:'Easy',f:'Saxony’s capital is Dresden, rebuilt after 1945; Leipzig, its biggest city, is where Bach worked for 27 years.'},
+ {c:'CAN',cn:'Canada',w:['United States','Greenland','Russia'],r:'Alberta',lv:'Easy',f:'Home to Banff, Canada’s first national park, and the Calgary Stampede.'},
+ {c:'AUS',cn:'Australia',w:['New Zealand','Indonesia','Papua New Guinea'],r:'Queensland',lv:'Easy',f:'The Great Barrier Reef runs along its coast for over 2,000 km: the largest living structure on Earth.'},
+ {c:'IND',cn:'India',w:['Pakistan','Bangladesh','Myanmar'],r:'Rajasthan',lv:'Medium',f:'India’s largest state, home to the Thar Desert and the pink city of Jaipur.'},
+ {c:'GBR',cn:'United Kingdom',w:['Ireland','Iceland','Denmark'],rg:'West Midlands',r:'Shropshire',lv:'Hard',f:'Ironbridge in Shropshire has the world’s first iron bridge (1779), a birthplace of the Industrial Revolution.'}];
+let S;
+const hdr=t=>`<div class="top"><a class="back" href="/">← All games</a><span class="tag">${esc(t)}</span></div>`;
+const cls=p=>p===1?'ok':p===0?'no':'h';
+const prog=()=>`<div class="prog">${R.map((_,k)=>`<i class="${k<S.sc.length?cls(S.sc[k]):k===S.i?'now':''}"></i>`).join('')}</div>`;
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function intro(){app.innerHTML=`${hdr('Mock-up v0.3')}<div class="panel intro"><span class="tag">Geography · daily</span><h2>Point to the Region</h2><p class="sub" style="font:600 14px Inter;color:var(--cu);margin:-2px 0 10px">Name the country. Then find the region.</p>
+ <p>A country lights up on the map. Name it, then tap a region inside it.</p><ul><li>Five countries, about two minutes</li><li>½ point for the country, ½ for the region</li><li>A fact about every region</li></ul>
+ <div class="btns"><button class="btn" id="st">Start</button></div>
+ <p class="mock">Mock-up v0.3: five sample rounds, easy to hard: Germany → Saxony, Canada → Alberta, Australia → Queensland, India → Rajasthan, and the UK in three steps: UK → West Midlands → Shropshire (½ + ¼ + ¼).</p></div>`;
+ $('#st').onclick=()=>{S={i:0,sc:[]};round()}}
+function svg(q,D,vb){return `<svg id="m" viewBox="${vb.join(' ')}" preserveAspectRatio="xMidYMid meet">${D.o.map(o=>`<path class="o" d="${o.d}"/>`).join('')}<path class="c" id="cty" d="${D.c}"/><g id="cx"></g><g class="rg" id="rg"></g></svg>`}
+function round(){const q=R[S.i],D=PD[q.c];S.got=[];S.opts=sh([q.cn,...q.w]);S.sel=null;
+ app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${R.length}`)}${prog()}<p class="q" id="qq">What is this country?</p>
+  <div class="pmap"><span class="lvl ${q.lv}">${q.lv}</span>${svg(q,D,D.vb1)}<span class="hint" id="hint" style="display:none"></span></div>
+  <div class="opts" id="opts">${S.opts.map((o,k)=>`<button class="opt" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="out"></div></div>`;
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=S.opts[+b.dataset.k],ok=o===q.cn;S.got[0]=ok?.5:0;
+   app.querySelectorAll('.opt').forEach(x=>{x.disabled=true;const v=S.opts[+x.dataset.k];x.classList.add(v===q.cn?'ok':v===o?'no':'dim')});
+   $('#out').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Yes! It’s '+esc(q.cn):'It’s '+esc(q.cn)}<span class="half ${ok?'g':'r'}">${ok?'+½':'0'}</span></b>${ok?'':'You can still get the next ½.'}</div><button class="go" id="nx">Now: where is ${esc(q.r)}? →</button>`;
+   $('#nx').onclick=()=>step2(q,D);$('#out').scrollIntoView({block:'nearest',behavior:'smooth'})});
+ scrollTo(0,0)}
+function zoomTo(svgEl,from,to,ms,done){const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);svgEl.setAttribute('viewBox',from.map((v,i)=>v+(to[i]-v)*e).join(' '));if(k<1)requestAnimationFrame(f);else done&&done()};requestAnimationFrame(f)}
+/* the region steps: most countries have one (½ point); the UK has two: its region (¼), then a county in it (¼) */
+function steps(q,D){return q.rg?[{list:D.r,name:q.rg,vb:D.vb2,pts:.25,what:'region'},{list:null,name:q.r,pts:.25,what:'county'}]:[{list:D.r,name:q.r,vb:D.vb2,pts:.5,what:'region'}]}
+function step2(q,D){S.st=steps(q,D);S.si=0;$('#opts').remove();$('#cty').style.display='none';scrollTo({top:0,behavior:'smooth'});S.from=D.vb1;doStep(q,D)}
+const pf=p=>p===.5?'½':p===.25?'¼':String(p);
+function doStep(q,D){const st=S.st[S.si],m=$('#m'),rg=$('#rg');S.sel=null;S.done2=false;
+ if(!st.list){const g=S.st[0].list.find(r=>r.n===S.st[0].name);st.list=D.cs.filter(c=>c.g===g.n);st.vb=g.vb}
+ $('#qq').innerHTML=`Where is <b>${esc(st.name)}</b>?`;$('#out').innerHTML=`<button class="go" id="lk" disabled>Lock in ${st.what}</button>`;$('#hint').style.display='none';
+ $('#cx').innerHTML=st.what==='county'?S.st[0].list.filter(r=>r.n!==S.st[0].name).map(r=>`<path class="cxp" d="${r.d}"/>`).join(''):'';
+ rg.innerHTML=st.list.map((r,k)=>`<path d="${r.d}" data-i="${k}"/>`).join('');
+ zoomTo(m,S.from,st.vb,650,()=>{const h=$('#hint');h.textContent='Tap the '+st.what;h.style.display=''});S.from=st.vb;
+ rg.onclick=e=>{if(S.done2)return;const t=e.target.closest('path');if(!t)return;rg.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');S.sel=+t.dataset.i;$('#lk').disabled=false};
+ $('#lk').onclick=()=>{if(S.sel===null)return;S.done2=true;const ri=st.list.findIndex(r=>r.n===st.name),ok=S.sel===ri;S.got.push(ok?st.pts:0);$('#hint').style.display='none';
+   rg.querySelectorAll('path').forEach(p=>{p.classList.remove('sel');const i=+p.dataset.i;if(i===ri)p.classList.add('ok');else if(i===S.sel)p.classList.add('no')});
+   const more=S.si<S.st.length-1;
+   if(more){$('#out').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Yes! That’s '+esc(st.name):'Not quite: that’s '+esc(st.list[S.sel].n)}<span class="half ${ok?'g':'r'}">${ok?'+'+pf(st.pts):'0'}</span></b>${ok?'':esc(st.name)+' is in green.'}</div><button class="go" id="nx">Now: where is ${esc(S.st[S.si+1].name)}? →</button>`;
+     $('#nx').onclick=()=>{S.si++;doStep(q,D)};return}
+   const tot=S.got.reduce((a,b)=>a+b,0);S.sc.push(tot);$('.prog').outerHTML=prog();const last=S.i===R.length-1;
+   $('#out').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Spot on!':'Not quite: that’s '+esc(st.list[S.sel].n)}<span class="half ${ok?'g':'r'}">${ok?'+'+pf(st.pts):'0'}</span></b>This round: <b class="inl">${tot===1?'1 point':tot===0?'0':fmt(tot)+' point'}</b>. ${esc(q.f)}</div><button class="go" id="nx">${last?'See my score':'Next country →'}</button>`;
+   $('#nx').onclick=()=>{if(last)end();else{S.i++;round()}};$('#out').scrollIntoView({block:'nearest',behavior:'smooth'})}}
+const fmt=n=>{const w=Math.floor(n),f=Math.round((n-w)*4);return (w||!f?w:'')+['','¼','½','¾'][f]};
+function end(){const n=S.sc.reduce((a,b)=>a+b,0);
+ app.innerHTML=`${hdr('Mock-up v0.3')}<div class="panel"><div class="score"><div class="tag">Your score</div><div class="big">${fmt(n)}<small> / 5</small></div><p class="verdict">${n>=4.5?'A walking atlas 🗺️':n>=3?'Great sense of place.':n>=2?'Not bad at all.':'Maps are tricky. Five new ones tomorrow.'}</p>
+ <div class="dots">${S.sc.map(p=>`<i class="${cls(p)}"></i>`).join('')}</div></div>
+ <div class="list">${R.map((q,k)=>`<div class="li"><i>${S.sc[k]===1?'🟩':S.sc[k]>0?'🟨':'🟥'}</i><div><b>${esc(q.r)}</b> <span>· ${esc(q.cn)}</span></div></div>`).join('')}</div>
+ <div class="btns"><button class="btn" id="ag">Play the mock-up again</button></div>
+ <p class="mock">The real game would add: share squares, Goldilocks, Sources, Play another today, Easy/Medium/Hard and five new countries a day.</p></div>`;$('#ag').onclick=intro}
+intro();
+})();
+</script>
+</body>
+</html>
