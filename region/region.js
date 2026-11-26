@@ -113,9 +113,9 @@ function moreEnd(){S.over=true;const n=S.sc.reduce((a,b)=>a+b,0);
    ${list()}<div class="again"><b>Play another five?</b><div class="btns"><button class="btn" id="keep">Yes, five more countries</button></div></div></div>${more()}`;keepWire();scrollTo(0,0)}
 
 /* Play another today */
-const OTHERS=[['Aperture','/aperture/','aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/','landmarks','apL-best-'],['When was that?','/when/','when','when-done-'],['Masterpiece','/masterpiece/','masterpiece','mp-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
+const OTHERS=[['Aperture','/aperture/','aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/','landmarks','apL-best-'],['When was that?','/when/','when','when-done-'],['Masterpiece','/masterpiece/','masterpiece','mp-done-'],['Film Charades','/charades/','charades','fc-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
 function more(){return `<div class="panel more"><div class="tag">Play another today</div><div class="mgs">${OTHERS.map(([n,h,ic,k])=>{const d=k&&ls(k+today());
-  return `<a class="mg${d?' done':''}" href="${h}"><img src="/icons/${ic}-180.png?v=${ic==='when'||ic==='masterpiece'?1:3}" alt="" width="40" height="40"><b>${esc(n)}</b><span>${d?'✓ Played':'Play'}</span></a>`}).join('')}</div></div>`}
+  return `<a class="mg${d?' done':''}" href="${h}"><img src="/icons/${ic}-180.png?v=${['when','masterpiece','charades'].includes(ic)?1:3}" alt="" width="40" height="40"><b>${esc(n)}</b><span>${d?'✓ Played':'Play'}</span></a>`}).join('')}</div></div>`}
 
 /* Sources: same as the other games; the email is used only to send the list, then deleted */
 function sources(){const ov=document.createElement('div');ov.className='srcov';

@@ -137,9 +137,9 @@ function galEnd(){S.over=true;const n=S.sc.reduce((a,b)=>a+b,0),g=S.gal;
 
 /* Play another today */
 const AD=L!=='en'?L+'/':'',WN={es:'¿Cuándo fue?',fr:'C’était quand ?'}[L]||'When was that?';
-const OTHERS=[['Aperture','/aperture/'+AD,'aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/'+AD,'landmarks','apL-best-'],[WN,'/when/','when','when-done-'],['Point to the Region','/region/','region','rg-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
+const OTHERS=[['Aperture','/aperture/'+AD,'aperture','aperture2-best-'],['Landmarks','/aperture/landmarks/'+AD,'landmarks','apL-best-'],[WN,'/when/','when','when-done-'],['Point to the Region','/region/','region','rg-done-'],['Film Charades','/charades/','charades','fc-done-'],['Natural Wonders','/wonders/','natural-wonders',''],['Fictional a→z','/fictional/','fictional','fictional-best-'],['Name That Classic','/classic/','classic','lclassic-done-'],['What’s That Noise?','/noise/','noise','lnoise-done-']];
 function more(){return `<div class="panel more"><div class="tag">${esc(U.another)}</div><div class="mgs">${OTHERS.map(([n,h,ic,k])=>{const d=k&&ls(k+today());
-  return `<a class="mg${d?' done':''}" href="${h}"><img src="/icons/${ic}-180.png?v=${ic==='when'||ic==='region'?1:3}" alt="" width="40" height="40"><b>${esc(n)}</b><span>${esc(d?U.played:U.play)}</span></a>`}).join('')}</div></div>`}
+  return `<a class="mg${d?' done':''}" href="${h}"><img src="/icons/${ic}-180.png?v=${['when','region','charades'].includes(ic)?1:3}" alt="" width="40" height="40"><b>${esc(n)}</b><span>${esc(d?U.played:U.play)}</span></a>`}).join('')}</div></div>`}
 
 /* Sources: same as the other games; the email is used only to send the list, then deleted */
 function sources(){const ov=document.createElement('div');ov.className='srcov';
