@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Point to the Region · mock-up v0.1</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f6f3ec">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="/shared/nunito.css?v=1">
+<link rel="stylesheet" href="/simple/simple.css?v=11222216">
+<style>
+/* Point to the Region, mock-up v0.1 (26 Nov 2026). Not linked; noindex; no counts. Maps: Natural Earth (public domain).
+   A round: tap the country (½ point), then tap the region inside it (½ point). Five rounds = 5 points. */
+.q{font:800 22px/1.2 Nunito,Inter,sans-serif;margin:8px 2px 2px}.q b{color:var(--accent)}
+.stepl{font-size:13.5px;color:var(--muted);margin:0 2px 8px}
+.mapbox{position:relative;background:#dfeaf2;border:1.5px solid var(--line);border-radius:18px;overflow:hidden;touch-action:manipulation}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox.world svg{aspect-ratio:2/1.05}
+.mapbox.ctry svg{max-height:52dvh}
+.mapbox path{fill:#f7f3ea;stroke:#a89f8f;stroke-width:.5;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .3s}
+.mapbox.ctry path{fill:#efe7d6;stroke:#8a8172;stroke-width:.8}
+.mapbox path.home{fill:#f3d9b8}
+.mapbox path.sel{fill:var(--accent)!important}
+.mapbox path.ok{fill:var(--good)!important}.mapbox path.no{fill:var(--bad)!important}
+.mapbox path.dim{opacity:.55}
+.zhint{position:absolute;left:10px;bottom:8px;font-size:12px;font-weight:700;color:#55606b;background:rgba(255,255,255,.85);border-radius:999px;padding:4px 10px;pointer-events:none}
+.zout{position:absolute;right:8px;top:8px;border:0;border-radius:999px;background:rgba(22,24,29,.85);color:#fff;font:700 12.5px Inter,sans-serif;padding:7px 12px;cursor:pointer}
+.go{display:block;width:100%;margin-top:12px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:17px;padding:14px;cursor:pointer}
+.go[disabled]{background:#d9d2c5;cursor:default}
+.res{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.res b{display:block;font-size:15.5px;margin-bottom:2px}.res b.g{color:var(--good)}.res b.r{color:var(--bad)}
+.half{display:inline-block;font:800 12px Inter;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.half.g{background:var(--goodbg);color:var(--good)}.half.r{background:var(--badbg);color:var(--bad)}
+.prog i.h{background:#d9a400}
+.mock{background:#fff8d6;border:1px dashed #d8b84a;border-radius:12px;padding:8px 12px;font-size:12.5px;color:#6b5a1d;margin:12px 0 0;line-height:1.45}
+.ver{position:fixed;right:8px;bottom:6px;font-size:11px;color:var(--muted);opacity:.7}
+.big small{font-size:.4em}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div><span class="ver">v0.1</span>
+<script src="ptrdata.js?v=1"></script>
+<script>
+(()=>{
+const app=document.getElementById('app'),$=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=[ /* mock-up rounds: easy → hard */
+ {r:'Saxony',c:'DEU',cn:'Germany',f:'Saxony’s capital is Dresden, rebuilt after 1945; Leipzig, its biggest city, is where Bach worked for 27 years.'},
+ {r:'Alberta',c:'CAN',cn:'Canada',f:'Home to Banff, Canada’s first national park, and the Calgary Stampede, “the greatest outdoor show on earth”.'},
+ {r:'Queensland',c:'AUS',cn:'Australia',f:'The Great Barrier Reef runs along its coast for over 2,000 km: the largest living structure on Earth.'},
+ {r:'Rajasthan',c:'IND',cn:'India',f:'India’s largest state, home to the Thar Desert and the pink city of Jaipur.'},
+ {r:'Shropshire',c:'GBR',cn:'United Kingdom',f:'Ironbridge Gorge in Shropshire has the world’s first iron bridge (1779), birthplace of the Industrial Revolution.'}];
+let S={i:0,sc:[],step:0,sel:null,z:false,got:[0,0]};
+const hdr=t=>`<div class="top"><a class="back" href="/">← All games</a><span class="tag">${esc(t)}</span></div>`;
+const prog=()=>`<div class="prog">${R.map((_,k)=>`<i class="${k<S.sc.length?(S.sc[k]===1?'ok':S.sc[k]===0?'no':'h'):k===S.i?'now':''}"></i>`).join('')}</div>`;
+function intro(){app.innerHTML=`${hdr('Mock-up v0.1')}<div class="panel intro"><span class="tag">Geography · daily</span><h2>Point to the Region</h2><p class="sub" style="font:600 14px Inter;color:var(--cu)">Saxony? Alberta? Shropshire? Show us where.</p>
+ <p>We name a region. First tap its country, then tap the region itself.</p><ul><li>Five regions, about two minutes</li><li>½ point for the country, ½ for the region</li><li>Wrong country? You still get to find the region</li></ul>
+ <div class="btns"><button class="btn" id="st">Start</button></div>
+ <p class="mock">Mock-up: five sample rounds (Saxony, Alberta, Queensland, Rajasthan, Shropshire), easy to hard. On the world map, tap once to zoom in, then tap the country.</p></div>`;$('#st').onclick=()=>{S={i:0,sc:[],step:0,sel:null,z:false,got:[0,0]};round()}}
+function round(){S.step=0;S.sel=null;S.z=false;S.got=[0,0];world();scrollTo(0,0)}
+function world(){const q=R[S.i];
+ app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${R.length}`)}${prog()}<p class="q">Where is <b>${esc(q.r)}</b>?</p><p class="stepl">Step 1 of 2: tap the <b>country</b> it’s in.</p>
+  <div class="mapbox world"><svg id="m" viewBox="0 0 1000 500">${PW.map(c=>`<path d="${c.d}" data-k="${c.k}"/>`).join('')}</svg><span class="zhint">${S.z?'Tap the country':'Tap to zoom in'}</span>${S.z?'<button class="zout" id="zo">Zoom out</button>':''}</div>
+  <button class="go" id="lk" disabled>Lock in country</button><div id="out"></div></div>`;
+ const m=$('#m');
+ if(S.z)m.setAttribute('viewBox',S.z.join(' '));
+ m.addEventListener('click',e=>{if(S.step!==0)return;
+   if(!S.z){const pt=m.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(m.getScreenCTM().inverse());const w=1000/3.6,h=w/2.0*1.05;S.z=[Math.max(0,Math.min(1000-w,p.x-w/2)),Math.max(0,Math.min(500-h,p.y-h/2)),w,h];world();return}
+   const t=e.target.closest('path');if(!t)return;m.querySelectorAll('path.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');S.sel=t.dataset.k;$('#lk').disabled=false});
+ const zo=$('#zo');if(zo)zo.onclick=e=>{e.stopPropagation();S.z=false;S.sel=null;world()};
+ $('#lk').onclick=()=>{if(!S.sel)return;S.step=1;const ok=S.sel===q.c;S.got[0]=ok?.5:0;
+   m.querySelectorAll('path').forEach(p=>{p.classList.remove('sel');if(p.dataset.k===q.c)p.classList.add('ok');else if(p.dataset.k===S.sel)p.classList.add('no')});
+   const pick=(PW.find(c=>c.k===S.sel)||{}).n;
+   $('#lk').outerHTML='';$('#out').innerHTML=`<div class="res"><b class="${ok?'g':'r'}">${ok?'Yes! It’s in '+esc(q.cn):'Not quite: that’s '+esc(pick||'')}<span class="half ${ok?'g':'r'}">${ok?'+½':'0'}</span></b>${ok?'':esc(q.r)+' is in <b style="display:inline;font-size:inherit">'+esc(q.cn)+'</b>. You can still find it for ½.'}</div><button class="go" id="nx">Now find ${esc(q.r)} →</button>`;
+   $('#nx').onclick=ctry}}
+function ctry(){const q=R[S.i],C=PC[q.c];S.sel=null;S.step=2;
+ app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${R.length}`)}${prog()}<p class="q">Where is <b>${esc(q.r)}</b>?</p><p class="stepl">Step 2 of 2: tap the <b>region</b> in ${esc(q.cn)}.</p>
+  <div class="mapbox ctry"><svg id="m" viewBox="${C.vb.join(' ')}">${C.r.map((r,k)=>`<path d="${r.d}" data-i="${k}"/>`).join('')}</svg></div>
+  <button class="go" id="lk" disabled>Lock in region</button><div id="out"></div></div>`;
+ const m=$('#m');m.addEventListener('click',e=>{if(S.step!==2)return;const t=e.target.closest('path');if(!t)return;m.querySelectorAll('path.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');S.sel=+t.dataset.i;$('#lk').disabled=false});
+ $('#lk').onclick=()=>{if(S.sel===null)return;S.step=3;const ri=C.r.findIndex(r=>r.n===q.r),ok=S.sel===ri;S.got[1]=ok?.5:0;
+   m.querySelectorAll('path').forEach(p=>{p.classList.remove('sel');const i=+p.dataset.i;if(i===ri)p.classList.add('ok');else if(i===S.sel)p.classList.add('no')});
+   const tot=S.got[0]+S.got[1];S.sc.push(tot);$('.prog').outerHTML=prog();const last=S.i===R.length-1;
+   $('#lk').outerHTML='';$('#out').innerHTML=`<div class="res"><b class="${ok?'g':'r'}">${ok?'Spot on!':'Not quite: that’s '+esc(C.r[S.sel].n)}<span class="half ${ok?'g':'r'}">${ok?'+½':'0'}</span></b>This round: <b style="display:inline;font-size:inherit">${tot===1?'1 point':tot===.5?'½ point':'0'}</b>. ${esc(q.f)}</div><button class="go" id="nx">${last?'See my score':'Next region →'}</button>`;
+   $('#nx').onclick=()=>{if(last)end();else{S.i++;round()}}}}
+const fmt=n=>{const w=Math.floor(n),h=n-w>0;return (w||!h?w:'')+(h?'½':'')};
+function end(){const n=S.sc.reduce((a,b)=>a+b,0);
+ app.innerHTML=`${hdr('Mock-up v0.1')}<div class="panel"><div class="score"><div class="tag">Your score</div><div class="big">${fmt(n)}<small> / 5</small></div><p class="verdict">${n>=4.5?'A walking atlas 🗺️':n>=3?'Great sense of place.':n>=2?'Not bad at all.':'Maps are tricky. Five new regions tomorrow.'}</p>
+ <div class="dots">${S.sc.map(p=>`<i class="${p===1?'ok':p===0?'no':'h'}" style="${p===.5?'background:#d9a400':''}"></i>`).join('')}</div></div>
+ <div class="list">${R.map((q,k)=>`<div class="li"><i>${S.sc[k]===1?'🟩':S.sc[k]===.5?'🟨':'🟥'}</i><div><b>${esc(q.r)}</b> <span>· ${esc(q.cn)}</span></div></div>`).join('')}</div>
+ <div class="btns"><button class="btn" id="ag">Play the mock-up again</button></div>
+ <p class="mock">The real game would add: share squares, Goldilocks, Sources, Play another today, Easy/Medium/Hard, five new regions a day.</p></div>`;$('#ag').onclick=intro}
+intro();
+})();
+</script>
+</body>
+</html>
