@@ -65,7 +65,7 @@ function round(){const q=R[S.i],D=PD[q.c];S.got=[];S.opts=sh([q.cn,...q.w]);S.se
  app.innerHTML=`<div class="play">${hdr(`${S.i+1} of ${R.length}`)}${prog()}<p class="q" id="qq">What is this country?</p>
   <div class="pmap"><span class="lvl ${q.lv}">${q.lv}</span>${svg(q,D,D.vb1)}<span class="hint" id="hint" style="display:none"></span></div>
   <div class="opts" id="opts">${S.opts.map((o,k)=>`<button class="opt" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="out"></div></div>`;
- app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=S.opts[+b.dataset.k],ok=o===q.cn;S.got[0]=ok?.5:0;
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const o=S.opts[+b.dataset.k],ok=o===q.cn;S.got[0]=ok?PS(q):0;
    app.querySelectorAll('.opt').forEach(x=>{x.disabled=true;const v=S.opts[+x.dataset.k];x.classList.add(v===q.cn?'ok':v===o?'no':'dim')});
    $('#out').innerHTML=`<div class="fact"><b class="${ok?'g':'r'}">${ok?'Yes! It’s '+esc(q.cn):'It’s '+esc(q.cn)}<span class="half ${ok?'g':'r'}">${ok?'+'+PS(q):'0'}</span></b>${ok?'':'You can still get the next '+PS(q)+'.'}</div><button class="go" id="nx">Now: where is ${esc(q.r)}? →</button>`;
    $('#nx').onclick=()=>step2(q,D);$('#out').scrollIntoView({block:'nearest',behavior:'smooth'})});
