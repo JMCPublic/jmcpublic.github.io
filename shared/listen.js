@@ -50,7 +50,18 @@ const A={
 };
 window.A=A;
 function stop(){live.forEach(o=>{try{o.stop()}catch(e){}});live=[];clearTimeout(endT)}
-function play(item,done){audio();stop();const dur=item.p(A);endT=setTimeout(done,dur*1000+250)}
+/* a real recording when the item has one (item.a = clip URL), decoded once and cached; it goes straight to the
+   speakers and the halo meter (no added echo). If the clip can't load, the synthesised version plays instead. */
+const BUF={};
+function loadClip(url){return BUF[url]||(BUF[url]=fetch(url).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(b=>new Promise((ok,no)=>ctx.decodeAudioData(b,ok,no))).catch(()=>{delete BUF[url];return null}))}
+function play(item,done){audio();stop();
+  if(item.a){const tok={};play.tok=tok;loadClip(item.a).then(buf=>{if(play.tok!==tok)return;
+      if(!buf){const d=item.p(A);endT=setTimeout(done,d*1000+250);return}
+      const s=ctx.createBufferSource(),g=ctx.createGain();g.gain.value=1;s.buffer=buf;s.connect(g);g.connect(an);
+      s.start(ctx.currentTime+.05);live.push(s);endT=setTimeout(done,buf.duration*1000+200)});return}
+  const dur=item.p(A);endT=setTimeout(done,dur*1000+250)}
+/* fetch the next clip while the player listens to this one */
+function prefetch(item){if(item&&item.a&&ctx)loadClip(item.a)}
 /* the halo breathes with the sound */
 (function meter(){const b=$('#pb');if(b&&an){const d=new Uint8Array(an.fftSize);an.getByteTimeDomainData(d);let s=0;for(const v of d){const x=(v-128)/128;s+=x*x}
   const lvl=Math.min(1,Math.sqrt(s/d.length)*4);b.style.setProperty('--lvl',lvl.toFixed(3));
@@ -99,7 +110,7 @@ function playQ(){const q=S.qs[S.i],last=S.i===PER-1;
   <div id="after"></div>`;
   const pb=$('#pb'),go=()=>{pb.classList.add('on');$('#pi').textContent='♪';$('#mh').textContent='Listening…';
     play(q.a,()=>{pb.classList.remove('on');$('#pi').textContent='↻';$('#mh').textContent='Tap to hear it again'})};
-  pb.onclick=go;go();
+  pb.onclick=go;go();prefetch(S.qs[S.i+1]);
   document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.k,last))}
 function answer(k,last){const q=S.qs[S.i],ok=q.opts[k]===q.a;S.res.push(ok);
   document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;b.classList.add(q.opts[j]===q.a?'ok':j===k?'no':'dim')});
