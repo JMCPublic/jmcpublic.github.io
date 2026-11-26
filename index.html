@@ -192,6 +192,17 @@ footer a{white-space:nowrap}
     const R=['wn','mp','nw','fx','cl','ns'].map(c).filter(Boolean),n=R.length;if(!n)return;
     const rot=R.map((_,i)=>R[(i+h)%n]),A=[c('ap'),c('lm')];if(h%2)A.reverse();
     [rot[0],...A,...rot.slice(1)].forEach(x=>x&&m.appendChild(x))})();</script>
+  <script>/* home-card counter (26 Nov): which game is tapped from which position (1 = top), plus home page views, to see whether the rotation changes what people open.
+     stats/home (all time), home-YYYY-MM, home-YYYY-MM-DD (UK date). Nothing about the person. Not counted for the owner's devices, Claude's test browser or off the live site. */
+  (()=>{const LIVE=location.hostname==='twominute.games',ls=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+    if(!LIVE||ls('ap-vip')==='1'||/\bClaude\//.test(navigator.userAgent))return;
+    const P='aperture-c0961',K='AIzaSyCLMslnXssvPk7S7l_0MuajudNtHRK-VAI',BASE=`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents`;
+    const d=(()=>{try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),g=t=>p.find(x=>x.type===t).value;return g('year')+'-'+g('month')+'-'+g('day')}catch(e){return new Date().toISOString().slice(0,10)}})();
+    const commit=(id,f)=>fetch(`${BASE}:commit?key=${K}`,{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{transform:{document:`projects/${P}/databases/(default)/documents/stats/${id}`,fieldTransforms:Object.entries(f).map(([k,n])=>({fieldPath:k,increment:{integerValue:String(n)}}))}}]})}).catch(()=>{});
+    const bump=f=>{commit('home',f);commit('home-'+d.slice(0,7),f);commit('home-'+d,f)};
+    let seen=false;try{seen=sessionStorage.getItem('tmg-home-view')==='1';sessionStorage.setItem('tmg-home-view','1')}catch(e){}
+    if(!seen)bump({views:1});
+    document.querySelectorAll('main.games .card[data-k]').forEach(a=>a.addEventListener('click',()=>{const pos=[...a.parentNode.querySelectorAll('.card[data-k]')].indexOf(a)+1;bump({['clicks.'+a.dataset.k+'_p'+pos]:1})}))})();</script>
   <footer>
     <span data-t="f1">New puzzles every day at midnight, your time.</span>
     <span><a href="/add/">📱 Put the games on your home screen</a></span>
