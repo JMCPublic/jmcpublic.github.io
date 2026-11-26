@@ -3,12 +3,12 @@
 (()=>{
 const L=(document.documentElement.lang||'en').slice(0,2);
 const G=(location.pathname.match(/natural-wonders-([a-z-]+)/)||[])[1]||window.TMG_GAME||'';
-const TP={en:{rivers:'rivers',lakes:'lakes',mountains:'mountains',deserts:'deserts',forests:'forests','bodies-of-water':'oceanography','river-cities':'river cities',masterbrain:'everything',when:'history',masterpiece:'art',_:'geography'},
- de:{rivers:'Flüssen',lakes:'Seen',mountains:'Bergen',deserts:'Wüsten',forests:'Wäldern','bodies-of-water':'Ozeanografie','river-cities':'Flussstädten',masterbrain:'allem',when:'Geschichte',masterpiece:'Kunst',_:'Geografie'},
- tr:{rivers:'nehirler',lakes:'göller',mountains:'dağlar',deserts:'çöller',forests:'ormanlar','bodies-of-water':'oşinografi','river-cities':'nehir şehirleri',masterbrain:'her şey',when:'tarih',masterpiece:'sanat',_:'coğrafya'},
- fr:{rivers:'fleuves',lakes:'lacs',mountains:'montagnes',deserts:'déserts',forests:'forêts','bodies-of-water':'océanographie','river-cities':'villes fluviales',masterbrain:'tout',when:'histoire',masterpiece:'art',_:'géographie'},
- es:{rivers:'ríos',lakes:'lagos',mountains:'montañas',deserts:'desiertos',forests:'bosques','bodies-of-water':'oceanografía','river-cities':'ciudades fluviales',masterbrain:'todo',when:'historia',masterpiece:'arte',_:'geografía'},
- pt:{rivers:'rios',lakes:'lagos',mountains:'montanhas',deserts:'desertos',forests:'florestas','bodies-of-water':'oceanografia','river-cities':'cidades fluviais',masterbrain:'tudo',when:'história',masterpiece:'arte',_:'geografia'}};
+const TP={en:{rivers:'rivers',lakes:'lakes',mountains:'mountains',deserts:'deserts',forests:'forests','bodies-of-water':'oceanography','river-cities':'river cities',masterbrain:'everything',when:'history',masterpiece:'art',charades:'film',_:'geography'},
+ de:{rivers:'Flüssen',lakes:'Seen',mountains:'Bergen',deserts:'Wüsten',forests:'Wäldern','bodies-of-water':'Ozeanografie','river-cities':'Flussstädten',masterbrain:'allem',when:'Geschichte',masterpiece:'Kunst',charades:'Film',_:'Geografie'},
+ tr:{rivers:'nehirler',lakes:'göller',mountains:'dağlar',deserts:'çöller',forests:'ormanlar','bodies-of-water':'oşinografi','river-cities':'nehir şehirleri',masterbrain:'her şey',when:'tarih',masterpiece:'sanat',charades:'sinema',_:'coğrafya'},
+ fr:{rivers:'fleuves',lakes:'lacs',mountains:'montagnes',deserts:'déserts',forests:'forêts','bodies-of-water':'océanographie','river-cities':'villes fluviales',masterbrain:'tout',when:'histoire',masterpiece:'art',charades:'cinéma',_:'géographie'},
+ es:{rivers:'ríos',lakes:'lagos',mountains:'montañas',deserts:'desiertos',forests:'bosques','bodies-of-water':'oceanografía','river-cities':'ciudades fluviales',masterbrain:'todo',when:'historia',masterpiece:'arte',charades:'cine',_:'geografía'},
+ pt:{rivers:'rios',lakes:'lagos',mountains:'montanhas',deserts:'desertos',forests:'florestas','bodies-of-water':'oceanografia','river-cities':'cidades fluviais',masterbrain:'tudo',when:'história',masterpiece:'arte',charades:'cinema',_:'geografia'}};
 const tp=(TP[L]||TP.en),TOPIC=tp[G]||tp._;
 const TT={en:['How was that?','Too tough',`I don't have a degree in ${TOPIC}!`,'Too easy','At least try and challenge me','Just right','You have found my level','Thanks! We use this to get the levels right.'],
  de:['Wie war das?','Zu schwer',`Ich habe kein Diplom in ${TOPIC}!`,'Zu leicht','Fordere mich wenigstens ein bisschen','Genau richtig','Du hast mein Niveau gefunden','Danke! So stimmen wir die Stufen ab.'],
