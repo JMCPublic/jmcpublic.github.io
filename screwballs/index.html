@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-title" content="Screwballs">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>/* Opened from the home-screen icon: always jump to the latest version (see /screwballs/latest.json). */
-(function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;
+(function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;if(document.referrer&&document.referrer.indexOf(location.host)>-1)return;
 fetch('/screwballs/latest.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var m=location.pathname.match(/\/screwballs\/(v[0-9.]+)\//);if(j&&j.v&&(!m||m[1]!==j.v))location.replace('/screwballs/'+j.v+'/')}).catch(function(){})})();</script>
 
-<title>Screwballs</title><meta http-equiv="refresh" content="0; url=/screwballs/v0.14/">
-</head><body style="background:#111;color:#fff;font-family:system-ui;padding:24px"><a href="/screwballs/v0.14/" style="color:#fff">Open Screwballs (latest: v0.14)</a></body></html>
+<title>Screwballs</title><meta http-equiv="refresh" content="0; url=/screwballs/v0.15/">
+</head><body style="background:#111;color:#fff;font-family:system-ui;padding:24px"><a href="/screwballs/v0.15/" style="color:#fff">Open Screwballs (latest: v0.15)</a></body></html>

@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="SB Radar">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>/* Opened from the home-screen icon: always jump to the latest angle test (see /screwballs/angle/radar/latest.json). */
-(function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;
+(function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;if(document.referrer&&document.referrer.indexOf(location.host)>-1)return;
 fetch('/screwballs/angle/radar/latest.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var m=location.pathname.match(/\/screwballs\/angle\/radar\/(v[0-9]+)\//);if(j&&j.v&&(!m||m[1]!==j.v))location.replace('/screwballs/angle/radar/'+j.v+'/')}).catch(function(){})})();</script>
 <title>Screwballs – Radar (v4)</title>
 <style>
