@@ -69,7 +69,9 @@ function draw(){if(!WM||!PL)return;const a3={};Object.entries(WM.a2).forEach(([k
   let tz='';for(let h=-11;h<=12;h++){const x=500+h*(492/12);s+=`<line class="tzl" x1="${x}" y1="10" x2="${x}" y2="512"/>`;tz+=`<text class="tzt ${h===0?'uk':''}" x="${x}" y="${ty}" style="font-size:${fs}px">${h===0?'UK':(h>0?'+':'−')+Math.abs(h)}</text>`}
   s+=Object.entries(WM.c).map(([k,d])=>{const c=a3[k],ok=c&&PL.caps[c];return `<path d="${d}" class="${ok?'ct':''}${hc.has(c)?' has':''}" ${ok?`data-c="${c}"`:''} fill="#e6e9ef" stroke="#fff" stroke-width=".6"/>`}).join('');
   const dr=ZOOM?2.6*k*1.4:2.6,hr=ZOOM?5*k*1.4:5;Object.entries(PL.caps).forEach(([c,[x,y]])=>{s+=`<circle class="hit" data-c="${c}" cx="${x}" cy="${y}" r="${hr}"/>`});
-  PL.cities.forEach(([c,n,x,y])=>{s+=`<g class="city${hcity.has(c+'|'+n)?' has':''}" data-c="${c}" data-city="${esc(n)}"><circle class="d" cx="${x}" cy="${y}" r="${dr}"/><circle cx="${x}" cy="${y}" r="${hr}" fill="transparent"/></g>`});
+  /* 27 Nov (Jonathan): the island places out in the oceans are hidden until one of his contacts lives there, then the dot comes back by itself */
+  const OCEAN=new Set(['US|Honolulu','ES|Canary Islands','PT|Azores','CL|Easter Island','EC|Galápagos','NZ|Chatham Islands','KI|Kiritimati']);
+  PL.cities.forEach(([c,n,x,y])=>{if(OCEAN.has(c+'|'+n)&&!hcity.has(c+'|'+n))return;s+=`<g class="city${hcity.has(c+'|'+n)?' has':''}" data-c="${c}" data-city="${esc(n)}"><circle class="d" cx="${x}" cy="${y}" r="${dr}"/><circle cx="${x}" cy="${y}" r="${hr}" fill="transparent"/></g>`});
   s+=tz;
   const svg=$('#hpSvg');svg.innerHTML=s;if(ZOOM){const pad=ZOOM[2]*.03;svg.setAttribute('viewBox',`${ZOOM[0]-pad} ${ZOOM[1]-fs*1.4} ${ZOOM[2]+pad*2} ${ZOOM[3]+fs*1.4+pad}`)}const mb=$('#hpMap'),tip=$('#hpTip');
   svg.querySelectorAll('[data-c]').forEach(g=>{const c=g.dataset.c,city=g.dataset.city||'';
