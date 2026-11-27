@@ -367,7 +367,7 @@ document.querySelectorAll("#hmSel button").forEach(x=>x.onclick=()=>{ holeMode=x
 document.querySelectorAll("#gmSel button").forEach(x=>x.onclick=()=>{ game=x.dataset.v; try{ localStorage.setItem("sb-holegame",game); }catch(e){} syncOpts(); $("res").style.display="none"; $("hud").style.display="none"; mode="practice"; resetTray(); showScores(); });
 document.querySelectorAll("#windSel button").forEach(x=>x.onclick=()=>{ windOn=x.dataset.v; try{ localStorage.setItem("sb-wind",windOn); }catch(e){} syncOpts(); });
 syncOpts();
-$("verLinks").innerHTML=" · Versions: "+["v1","v2","v3","v4","v5","v6","v7"].map(x=>x==="v6"?"<b>v6</b>":`<a href="/screwballs/angle/holes/${x}/" style="color:#6b3f22">${x}</a>`).join(" · ");
+$("verLinks").innerHTML=" · Versions: "+["v1","v2","v3","v4","v5","v6","v7","v8"].map(x=>x==="v6"?"<b>v6</b>":`<a href="/screwballs/angle/holes/${x}/" style="color:#6b3f22">${x}</a>`).join(" · ");
 function syncWx(){ document.querySelectorAll("#wxSel button").forEach(x=>x.classList.toggle("main",x.dataset.v===wx)); }
 document.querySelectorAll("#wxSel button").forEach(x=>x.onclick=()=>{ wx=x.dataset.v; try{ localStorage.setItem("sb-weather",wx); }catch(e){} syncWx(); fog.on=false; fog.next=performance.now()+1500; showScores(); });
 syncWx();

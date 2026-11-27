@@ -10,5 +10,5 @@
 (function(){var sa=window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);if(!sa)return;
 fetch('/screwballs/latest.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){var m=location.pathname.match(/\/screwballs\/(v[0-9.]+)\//);if(j&&j.v&&(!m||m[1]!==j.v))location.replace('/screwballs/'+j.v+'/')}).catch(function(){})})();</script>
 
-<title>Screwballs</title><meta http-equiv="refresh" content="0; url=/screwballs/v0.12/">
-</head><body style="background:#111;color:#fff;font-family:system-ui;padding:24px"><a href="/screwballs/v0.12/" style="color:#fff">Open Screwballs (latest: v0.12)</a></body></html>
+<title>Screwballs</title><meta http-equiv="refresh" content="0; url=/screwballs/v0.13/">
+</head><body style="background:#111;color:#fff;font-family:system-ui;padding:24px"><a href="/screwballs/v0.13/" style="color:#fff">Open Screwballs (latest: v0.13)</a></body></html>
